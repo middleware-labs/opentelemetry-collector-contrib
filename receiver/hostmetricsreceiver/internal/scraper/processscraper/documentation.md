@@ -8,6 +8,7 @@ These are the metrics available for this scraper.
 
 | Name | Description | Unit | Type | Attributes |
 | ---- | ----------- | ---- | ---- | ---------- |
+| **process.cpu.percent** | Percent of CPU used by the process. | % | Gauge(Double) | <ul> </ul> |
 | **process.cpu.time** | Total CPU seconds broken down by different states. | s | Sum(Double) | <ul> <li>state</li> </ul> |
 | **process.disk.io** | Disk bytes transferred. | By | Sum(Int) | <ul> <li>direction</li> </ul> |
 | **process.disk.io.read** | Disk bytes read. | By | Sum(Int) | <ul> </ul> |
