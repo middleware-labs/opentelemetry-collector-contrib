@@ -94,6 +94,14 @@ Percentage of total CPU time used by the process since last scrape, expressed as
 | ---- | ----------- | ------ |
 | state | Breakdown of CPU usage by type. | Str: ``system``, ``user``, ``wait`` |
 
+### process.cpu.percent
+
+Percent of CPU used by the process.
+
+| Unit | Metric Type | Value Type |
+|------| ----------- | ---------- |
+| %    | Gauge | Double |
+
 ### process.disk.operations
 
 Number of disk operations performed by the process.
