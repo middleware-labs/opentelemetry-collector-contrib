@@ -94,6 +94,13 @@ metrics:
       aggregation_temporality: cumulative
       monotonic: true
     attributes: [context_switch_type]
+  process.cpu.percent:
+    enabled: true
+    description: "Percent of CPU used by the process."
+    unit: "%"
+    gauge:
+      value_type: double
+
   process.cpu.time:
     enabled: true
     description: Total CPU seconds broken down by different states.

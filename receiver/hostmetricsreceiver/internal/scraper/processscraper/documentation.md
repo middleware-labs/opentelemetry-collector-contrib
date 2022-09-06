@@ -12,6 +12,14 @@ metrics:
     enabled: false
 ```
 
+### process.cpu.percent
+
+Percent of CPU used by the process.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| % | Gauge | Double |
+
 ### process.cpu.time
 
 Total CPU seconds broken down by different states.
@@ -192,4 +200,4 @@ The time the process has been running.
 | process.owner | The username of the user that owns the process. | Any Str | true |
 | process.parent_pid | Parent Process identifier (PPID). | Any Int | true |
 | process.pid | Process identifier (PID). | Any Int | true |
-| process.started_on | Process Start Time. | Any Int | true |
+| process.started_on | Process Start Time. | Any Int | false |
