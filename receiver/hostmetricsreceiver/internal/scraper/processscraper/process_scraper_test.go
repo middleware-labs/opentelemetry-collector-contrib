@@ -326,6 +326,11 @@ func (p *processHandleMock) CmdlineSlice() ([]string, error) {
 	return args.Get(0).([]string), args.Error(1)
 }
 
+func (p *processHandleMock) Memory() (float32, error) {
+	args := p.MethodCalled("Memory")
+	return args.Get(0).(float32), args.Error(1)
+}
+
 func (p *processHandleMock) Times() (*cpu.TimesStat, error) {
 	args := p.MethodCalled("Times")
 	return args.Get(0).(*cpu.TimesStat), args.Error(1)

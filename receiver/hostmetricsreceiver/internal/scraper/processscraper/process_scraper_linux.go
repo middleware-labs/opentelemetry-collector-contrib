@@ -24,6 +24,10 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper/internal/metadata"
 )
 
+func (s *scraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
+	s.mb.RecordProcessMemoryPercentDataPoint(now, memoryPercent, metadata.AttributeStateUser)
+}
+
 func (s *scraper) recordCPUTimeMetric(now pcommon.Timestamp, cpuTime *cpu.TimesStat) {
 	s.mb.RecordProcessCPUTimeDataPoint(now, cpuTime.User, metadata.AttributeStateUser)
 	s.mb.RecordProcessCPUTimeDataPoint(now, cpuTime.System, metadata.AttributeStateSystem)

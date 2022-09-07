@@ -12,6 +12,7 @@ These are the metrics available for this scraper.
 | **process.disk.io** | Disk bytes transferred. | By | Sum(Int) | <ul> <li>direction</li> </ul> |
 | **process.disk.io.read** | Disk bytes read. | By | Sum(Int) | <ul> </ul> |
 | **process.disk.io.write** | Disk bytes written. | By | Sum(Int) | <ul> </ul> |
+| **process.memory.percent** | Percent of Memory used by the process. | % | Gauge(Double) | <ul> </ul> |
 | **process.memory.physical_usage** | The amount of physical memory in use. | By | Sum(Int) | <ul> </ul> |
 | **process.memory.virtual_usage** | Virtual memory size. | By | Sum(Int) | <ul> </ul> |
 | process.threads | Process threads count. | {threads} | Sum(Int) | <ul> </ul> |

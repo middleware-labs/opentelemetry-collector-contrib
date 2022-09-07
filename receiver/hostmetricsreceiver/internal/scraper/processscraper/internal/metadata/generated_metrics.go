@@ -22,6 +22,7 @@ type MetricsSettings struct {
 	ProcessDiskIo              MetricSettings `mapstructure:"process.disk.io"`
 	ProcessDiskIoRead          MetricSettings `mapstructure:"process.disk.io.read"`
 	ProcessDiskIoWrite         MetricSettings `mapstructure:"process.disk.io.write"`
+	ProcessMemoryPercent       MetricSettings `mapstructure:"process.memory.percent"`
 	ProcessMemoryPhysicalUsage MetricSettings `mapstructure:"process.memory.physical_usage"`
 	ProcessMemoryVirtualUsage  MetricSettings `mapstructure:"process.memory.virtual_usage"`
 	ProcessThreads             MetricSettings `mapstructure:"process.threads"`
@@ -39,6 +40,9 @@ func DefaultMetricsSettings() MetricsSettings {
 			Enabled: true,
 		},
 		ProcessDiskIoWrite: MetricSettings{
+			Enabled: true,
+		},
+		ProcessMemoryPercent: MetricSettings{
 			Enabled: true,
 		},
 		ProcessMemoryPhysicalUsage: MetricSettings{
@@ -317,6 +321,55 @@ func newMetricProcessDiskIoWrite(settings MetricSettings) metricProcessDiskIoWri
 	return m
 }
 
+type metricProcessMemoryPercent struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills process.memory.percent metric with initial data.
+func (m *metricProcessMemoryPercent) init() {
+	m.data.SetName("process.memory.percent")
+	m.data.SetDescription("Percent of Memory used by the process.")
+	m.data.SetUnit("%")
+	m.data.SetDataType(pmetric.MetricDataTypeGauge)
+}
+
+func (m *metricProcessMemoryPercent) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleVal(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricProcessMemoryPercent) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricProcessMemoryPercent) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricProcessMemoryPercent(settings MetricSettings) metricProcessMemoryPercent {
+	m := metricProcessMemoryPercent{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricProcessMemoryPhysicalUsage struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	settings MetricSettings // metric settings provided by user.
@@ -482,6 +535,7 @@ type MetricsBuilder struct {
 	metricProcessDiskIo              metricProcessDiskIo
 	metricProcessDiskIoRead          metricProcessDiskIoRead
 	metricProcessDiskIoWrite         metricProcessDiskIoWrite
+	metricProcessMemoryPercent       metricProcessMemoryPercent
 	metricProcessMemoryPhysicalUsage metricProcessMemoryPhysicalUsage
 	metricProcessMemoryVirtualUsage  metricProcessMemoryVirtualUsage
 	metricProcessThreads             metricProcessThreads
@@ -506,6 +560,7 @@ func NewMetricsBuilder(settings MetricsSettings, buildInfo component.BuildInfo, 
 		metricProcessDiskIo:              newMetricProcessDiskIo(settings.ProcessDiskIo),
 		metricProcessDiskIoRead:          newMetricProcessDiskIoRead(settings.ProcessDiskIoRead),
 		metricProcessDiskIoWrite:         newMetricProcessDiskIoWrite(settings.ProcessDiskIoWrite),
+		metricProcessMemoryPercent:       newMetricProcessMemoryPercent(settings.ProcessMemoryPercent),
 		metricProcessMemoryPhysicalUsage: newMetricProcessMemoryPhysicalUsage(settings.ProcessMemoryPhysicalUsage),
 		metricProcessMemoryVirtualUsage:  newMetricProcessMemoryVirtualUsage(settings.ProcessMemoryVirtualUsage),
 		metricProcessThreads:             newMetricProcessThreads(settings.ProcessThreads),
@@ -615,6 +670,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricProcessDiskIo.emit(ils.Metrics())
 	mb.metricProcessDiskIoRead.emit(ils.Metrics())
 	mb.metricProcessDiskIoWrite.emit(ils.Metrics())
+	mb.metricProcessMemoryPercent.emit(ils.Metrics())
 	mb.metricProcessMemoryPhysicalUsage.emit(ils.Metrics())
 	mb.metricProcessMemoryVirtualUsage.emit(ils.Metrics())
 	mb.metricProcessThreads.emit(ils.Metrics())
@@ -655,6 +711,11 @@ func (mb *MetricsBuilder) RecordProcessDiskIoReadDataPoint(ts pcommon.Timestamp,
 // RecordProcessDiskIoWriteDataPoint adds a data point to process.disk.io.write metric.
 func (mb *MetricsBuilder) RecordProcessDiskIoWriteDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricProcessDiskIoWrite.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordProcessMemoryPercentDataPoint adds a data point to process.memory.percent metric.
+func (mb *MetricsBuilder) RecordProcessMemoryPercentDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricProcessMemoryPercent.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordProcessMemoryPhysicalUsageDataPoint adds a data point to process.memory.physical_usage metric.
