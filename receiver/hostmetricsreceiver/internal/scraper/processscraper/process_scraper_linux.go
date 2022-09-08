@@ -25,6 +25,10 @@ func (s *processScraper) recordCPUTimeMetric(now pcommon.Timestamp, cpuTime *cpu
 	s.mb.RecordProcessCPUTimeDataPoint(now, cpuTime.Iowait, metadata.AttributeStateWait)
 }
 
+func (s *scraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
+	s.mb.RecordProcessCPUPercentDataPoint(now, float64(memoryPercent))
+}
+
 func (s *processScraper) recordCPUUtilization(now pcommon.Timestamp, cpuUtilization ucal.CPUUtilization) {
 	s.mb.RecordProcessCPUUtilizationDataPoint(now, cpuUtilization.User, metadata.AttributeStateUser)
 	s.mb.RecordProcessCPUUtilizationDataPoint(now, cpuUtilization.System, metadata.AttributeStateSystem)

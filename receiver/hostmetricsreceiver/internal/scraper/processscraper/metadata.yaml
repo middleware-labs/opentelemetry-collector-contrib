@@ -125,6 +125,14 @@ metrics:
     gauge:
       value_type: double
     attributes: [state]
+
+    process.memory.percent:
+      enabled: true
+      description: "Percent of Memory used by the process."
+      unit: "%"
+      gauge:
+        value_type: double
+
   process.disk.io:
     enabled: true
     description: Disk bytes transferred.
