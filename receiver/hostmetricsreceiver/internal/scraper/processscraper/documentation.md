@@ -172,8 +172,8 @@ Process threads count.
 
 ## Resource Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
+| Name | Description | Values  |
+| ---- | ----------- |---------|
 | process.command | The command used to launch the process (i.e. the command name). On Linux based systems, can be set to the zeroth string in proc/[pid]/cmdline. On Windows, can be set to the first parameter extracted from GetCommandLineW. | Any Str |
 | process.command_line | The full command used to launch the process as a single string representing the full command. On Windows, can be set to the result of GetCommandLineW. Do not set this if you have to assemble it just for monitoring; use process.command_args instead. | Any Str |
 | process.executable.name | The name of the process executable. On Linux based systems, can be set to the Name in proc/[pid]/status. On Windows, can be set to the base name of GetProcessImageFileNameW. | Any Str |
@@ -181,3 +181,4 @@ Process threads count.
 | process.owner | The username of the user that owns the process. | Any Str |
 | process.parent_pid | Parent Process identifier (PPID). | Any Int |
 | process.pid | Process identifier (PID). | Any Int |
+| process.started_on | Process Start Time. | Any Int |
