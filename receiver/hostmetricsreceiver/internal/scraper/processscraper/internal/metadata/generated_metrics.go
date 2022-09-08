@@ -18,6 +18,7 @@ type MetricSettings struct {
 
 // MetricsSettings provides settings for hostmetricsreceiver/process metrics.
 type MetricsSettings struct {
+	ProcessCPUPercent          MetricSettings `mapstructure:"process.cpu.percent"`
 	ProcessCPUTime             MetricSettings `mapstructure:"process.cpu.time"`
 	ProcessDiskIo              MetricSettings `mapstructure:"process.disk.io"`
 	ProcessDiskIoRead          MetricSettings `mapstructure:"process.disk.io.read"`
@@ -29,6 +30,9 @@ type MetricsSettings struct {
 
 func DefaultMetricsSettings() MetricsSettings {
 	return MetricsSettings{
+		ProcessCPUPercent: MetricSettings{
+			Enabled: true,
+		},
 		ProcessCPUTime: MetricSettings{
 			Enabled: true,
 		},
@@ -107,6 +111,55 @@ var MapAttributeState = map[string]AttributeState{
 	"system": AttributeStateSystem,
 	"user":   AttributeStateUser,
 	"wait":   AttributeStateWait,
+}
+
+type metricProcessCPUPercent struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills process.cpu.percent metric with initial data.
+func (m *metricProcessCPUPercent) init() {
+	m.data.SetName("process.cpu.percent")
+	m.data.SetDescription("Percent of CPU used by the process.")
+	m.data.SetUnit("%")
+	m.data.SetDataType(pmetric.MetricDataTypeGauge)
+}
+
+func (m *metricProcessCPUPercent) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleVal(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricProcessCPUPercent) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricProcessCPUPercent) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricProcessCPUPercent(settings MetricSettings) metricProcessCPUPercent {
+	m := metricProcessCPUPercent{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
 }
 
 type metricProcessCPUTime struct {
@@ -478,6 +531,7 @@ type MetricsBuilder struct {
 	resourceCapacity                 int                 // maximum observed number of resource attributes.
 	metricsBuffer                    pmetric.Metrics     // accumulates metrics data before emitting.
 	buildInfo                        component.BuildInfo // contains version information
+	metricProcessCPUPercent          metricProcessCPUPercent
 	metricProcessCPUTime             metricProcessCPUTime
 	metricProcessDiskIo              metricProcessDiskIo
 	metricProcessDiskIoRead          metricProcessDiskIoRead
@@ -502,6 +556,7 @@ func NewMetricsBuilder(settings MetricsSettings, buildInfo component.BuildInfo, 
 		startTime:                        pcommon.NewTimestampFromTime(time.Now()),
 		metricsBuffer:                    pmetric.NewMetrics(),
 		buildInfo:                        buildInfo,
+		metricProcessCPUPercent:          newMetricProcessCPUPercent(settings.ProcessCPUPercent),
 		metricProcessCPUTime:             newMetricProcessCPUTime(settings.ProcessCPUTime),
 		metricProcessDiskIo:              newMetricProcessDiskIo(settings.ProcessDiskIo),
 		metricProcessDiskIoRead:          newMetricProcessDiskIoRead(settings.ProcessDiskIoRead),
@@ -618,6 +673,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	ils.Scope().SetName("otelcol/hostmetricsreceiver/process")
 	ils.Scope().SetVersion(mb.buildInfo.Version)
 	ils.Metrics().EnsureCapacity(mb.metricsCapacity)
+	mb.metricProcessCPUPercent.emit(ils.Metrics())
 	mb.metricProcessCPUTime.emit(ils.Metrics())
 	mb.metricProcessDiskIo.emit(ils.Metrics())
 	mb.metricProcessDiskIoRead.emit(ils.Metrics())
@@ -642,6 +698,11 @@ func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
 	metrics := pmetric.NewMetrics()
 	mb.metricsBuffer.MoveTo(metrics)
 	return metrics
+}
+
+// RecordProcessCPUPercentDataPoint adds a data point to process.cpu.percent metric.
+func (mb *MetricsBuilder) RecordProcessCPUPercentDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricProcessCPUPercent.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordProcessCPUTimeDataPoint adds a data point to process.cpu.time metric.
