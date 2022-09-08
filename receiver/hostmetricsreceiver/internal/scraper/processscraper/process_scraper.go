@@ -33,7 +33,7 @@ import (
 )
 
 const (
-	cpuMetricsLen    = 1
+	cpuMetricsLen    = 2
 	memoryMetricsLen = 2
 	diskMetricsLen   = 1
 	threadMetricsLen = 1
