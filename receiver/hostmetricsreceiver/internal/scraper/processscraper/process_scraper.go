@@ -277,6 +277,7 @@ func (s *processScraper) getProcessMetadata(ctx context.Context) ([]*processMeta
 			command:    command,
 			username:   username,
 			handle:     handle,
+			startedOn:  createTime,
 			createTime: createTime,
 		}
 
