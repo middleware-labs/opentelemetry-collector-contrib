@@ -36,6 +36,7 @@ metrics:
 | process.owner | The username of the user that owns the process. | String |
 | process.parent_pid | Parent Process identifier (PPID). | Int |
 | process.pid | Process identifier (PID). | Int |
+| process.started_on | Process Start Time. | Int |
 
 ## Metric attributes
 
