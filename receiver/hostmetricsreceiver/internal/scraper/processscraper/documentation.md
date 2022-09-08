@@ -40,6 +40,14 @@ Disk bytes transferred.
 | ---- | ----------- | ------ |
 | direction | Direction of flow of bytes (read or write). | Str: ``read``, ``write`` |
 
+### process.memory.percent
+
+Percent of Memory used by the process.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+|------|-------------| ---------- | ----------------------- | --------- |
+| %    | Gauge       | Int | Cumulative | true |
+
 ### process.memory.physical_usage
 
 Deprecated: use `process.memory.usage` metric instead. The amount of physical memory in use.
@@ -120,9 +128,9 @@ Number of disk operations performed by the process.
 
 The amount of physical memory in use.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| By | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type |
+| ---- | ----------- |------------|
+| By | Sum | Double     | 
 
 ### process.memory.utilization
 
