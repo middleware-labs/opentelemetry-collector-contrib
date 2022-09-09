@@ -46,6 +46,7 @@ func ContainerStatsToMetrics(
 	resourceAttr.PutStr(conventions.AttributeContainerImageName, container.Config.Image)
 	resourceAttr.PutStr(conventions.AttributeContainerName, strings.TrimPrefix(container.Name, "/"))
 	resourceAttr.PutStr("container.hostname", container.Config.Hostname)
+	resourceAttr.PutStr("container.started_on", container.State.StartedAt)
 	updateConfiguredResourceAttributes(resourceAttr, container, config)
 	ils := rs.ScopeMetrics().AppendEmpty()
 

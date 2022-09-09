@@ -683,3 +683,4 @@ Packets sent.
 | container.image.name | The name of the docker image in use by the container. | Any Str |
 | container.name | The name of the container. | Any Str |
 | container.runtime | The runtime of the container. For this receiver, it will always be 'docker'. | Any Str |
+| container.started_on | Container start time. | String |
