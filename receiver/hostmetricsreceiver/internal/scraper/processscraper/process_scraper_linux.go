@@ -35,7 +35,7 @@ func (s *scraper) recordCPUTimeMetric(now pcommon.Timestamp, cpuTime *cpu.TimesS
 }
 
 func (s *scraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
-	s.mb.RecordProcessCPUPercentDataPoint(now, float64(memoryPercent))
+	s.mb.RecordProcessMemoryPercentDataPoint(now, float64(memoryPercent))
 }
 
 func getProcessExecutable(proc processHandle) (*executableMetadata, error) {
