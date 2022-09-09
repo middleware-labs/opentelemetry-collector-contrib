@@ -94,6 +94,7 @@ func (r *receiver) recordContainerStats(now pcommon.Timestamp, containerStats *d
 	resourceMetricsOptions = append(resourceMetricsOptions,
 		metadata.WithContainerRuntime("docker"),
 		metadata.WithContainerHostname(container.Config.Hostname),
+		metadata.WithContainerStartedOn(container.State.StartedAt),
 		metadata.WithContainerID(container.ID),
 		metadata.WithContainerImageName(container.Config.Image),
 		metadata.WithContainerName(strings.TrimPrefix(container.Name, "/")))
