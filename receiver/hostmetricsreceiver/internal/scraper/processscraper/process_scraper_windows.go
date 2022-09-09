@@ -36,6 +36,10 @@ func (s *scraper) recordCPUTimeMetric(now pcommon.Timestamp, cpuTime *cpu.TimesS
 	s.mb.RecordProcessCPUTimeDataPoint(now, cpuTime.System, metadata.AttributeStateSystem)
 }
 
+func (s *scraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
+	s.mb.RecordProcessMemoryPercentDataPoint(now, float64(memoryPercent))
+}
+
 func getProcessExecutable(proc processHandle) (*executableMetadata, error) {
 	exe, err := proc.Exe()
 	if err != nil {
