@@ -19,6 +19,9 @@ resource_attributes:
   container.hostname:
     description: "The hostname of the container."
     type: string
+  container.started_on:
+    description: "Container start time."
+    type: string
 
 attributes:
   core:
