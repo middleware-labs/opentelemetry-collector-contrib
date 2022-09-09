@@ -26,7 +26,7 @@ func (s *processScraper) recordCPUTimeMetric(now pcommon.Timestamp, cpuTime *cpu
 }
 
 func (s *scraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
-	s.mb.RecordProcessCPUPercentDataPoint(now, float64(memoryPercent))
+	s.mb.RecordProcessMemoryPercentDataPoint(now, float64(memoryPercent))
 }
 
 func (s *processScraper) recordCPUUtilization(now pcommon.Timestamp, cpuUtilization ucal.CPUUtilization) {
