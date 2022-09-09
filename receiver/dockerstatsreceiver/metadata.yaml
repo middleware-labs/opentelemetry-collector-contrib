@@ -50,6 +50,18 @@ resource_attributes:
     description: "The runtime of the container. For this receiver, it will always be 'docker'."
     type: string
     enabled: true
+  container.image.id:
+    description: "The ID of the container image."
+    type: string
+    enabled: false
+  container.command_line:
+    description: "The full command executed by the container."
+    type: string
+    enabled: false
+  container.started_on:
+    description: "Container start time."
+    type: string
+    enabled: true
 
 attributes:
   core:
