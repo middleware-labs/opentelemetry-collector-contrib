@@ -111,6 +111,7 @@ These are the metrics available for this scraper.
 | **container.network.io.usage.tx_dropped** | Outgoing packets dropped. | {packets} | Sum(Int) | <ul> <li>interface</li> </ul> |
 | **container.network.io.usage.tx_errors** | Sent errors. | {errors} | Sum(Int) | <ul> <li>interface</li> </ul> |
 | **container.network.io.usage.tx_packets** | Packets sent. | {packets} | Sum(Int) | <ul> <li>interface</li> </ul> |
+| **container.status** | Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead |  | Gauge(Int) | <ul> </ul> |
 
 **Highlighted metrics** are emitted by default. Other metrics are optional and not emitted by default.
 Any metric can be enabled or disabled with the following scraper configuration:
