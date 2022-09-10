@@ -121,6 +121,7 @@ type MetricsSettings struct {
 	ContainerNetworkIoUsageTxDropped               MetricSettings `mapstructure:"container.network.io.usage.tx_dropped"`
 	ContainerNetworkIoUsageTxErrors                MetricSettings `mapstructure:"container.network.io.usage.tx_errors"`
 	ContainerNetworkIoUsageTxPackets               MetricSettings `mapstructure:"container.network.io.usage.tx_packets"`
+	ContainerStatus                                MetricSettings `mapstructure:"container.status"`
 }
 
 func DefaultMetricsSettings() MetricsSettings {
@@ -432,6 +433,9 @@ func DefaultMetricsSettings() MetricsSettings {
 			Enabled: true,
 		},
 		ContainerNetworkIoUsageTxPackets: MetricSettings{
+			Enabled: true,
+		},
+		ContainerStatus: MetricSettings{
 			Enabled: true,
 		},
 	}
@@ -5848,6 +5852,55 @@ func newMetricContainerNetworkIoUsageTxPackets(settings MetricSettings) metricCo
 	return m
 }
 
+type metricContainerStatus struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills container.status metric with initial data.
+func (m *metricContainerStatus) init() {
+	m.data.SetName("container.status")
+	m.data.SetDescription("Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead")
+	m.data.SetUnit("")
+	m.data.SetDataType(pmetric.MetricDataTypeGauge)
+}
+
+func (m *metricContainerStatus) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntVal(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricContainerStatus) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricContainerStatus) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricContainerStatus(settings MetricSettings) metricContainerStatus {
+	m := metricContainerStatus{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 // MetricsBuilder provides an interface for scrapers to report metrics while taking care of all the transformations
 // required to produce metric representation defined in metadata and user settings.
 type MetricsBuilder struct {
@@ -5959,6 +6012,7 @@ type MetricsBuilder struct {
 	metricContainerNetworkIoUsageTxDropped               metricContainerNetworkIoUsageTxDropped
 	metricContainerNetworkIoUsageTxErrors                metricContainerNetworkIoUsageTxErrors
 	metricContainerNetworkIoUsageTxPackets               metricContainerNetworkIoUsageTxPackets
+	metricContainerStatus                                metricContainerStatus
 }
 
 // metricBuilderOption applies changes to default metrics builder.
@@ -6079,6 +6133,7 @@ func NewMetricsBuilder(settings MetricsSettings, buildInfo component.BuildInfo, 
 		metricContainerNetworkIoUsageTxDropped:               newMetricContainerNetworkIoUsageTxDropped(settings.ContainerNetworkIoUsageTxDropped),
 		metricContainerNetworkIoUsageTxErrors:                newMetricContainerNetworkIoUsageTxErrors(settings.ContainerNetworkIoUsageTxErrors),
 		metricContainerNetworkIoUsageTxPackets:               newMetricContainerNetworkIoUsageTxPackets(settings.ContainerNetworkIoUsageTxPackets),
+		metricContainerStatus:                                newMetricContainerStatus(settings.ContainerStatus),
 	}
 	for _, op := range options {
 		op(mb)
@@ -6277,6 +6332,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricContainerNetworkIoUsageTxDropped.emit(ils.Metrics())
 	mb.metricContainerNetworkIoUsageTxErrors.emit(ils.Metrics())
 	mb.metricContainerNetworkIoUsageTxPackets.emit(ils.Metrics())
+	mb.metricContainerStatus.emit(ils.Metrics())
 	for _, op := range rmo {
 		op(rm)
 	}
@@ -6809,6 +6865,11 @@ func (mb *MetricsBuilder) RecordContainerNetworkIoUsageTxErrorsDataPoint(ts pcom
 // RecordContainerNetworkIoUsageTxPacketsDataPoint adds a data point to container.network.io.usage.tx_packets metric.
 func (mb *MetricsBuilder) RecordContainerNetworkIoUsageTxPacketsDataPoint(ts pcommon.Timestamp, val int64, interfaceAttributeValue string) {
 	mb.metricContainerNetworkIoUsageTxPackets.recordDataPoint(mb.startTime, ts, val, interfaceAttributeValue)
+}
+
+// RecordContainerStatusDataPoint adds a data point to container.status metric.
+func (mb *MetricsBuilder) RecordContainerStatusDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricContainerStatus.recordDataPoint(mb.startTime, ts, val)
 }
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
