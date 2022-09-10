@@ -55,6 +55,7 @@ func ContainerStatsToMetrics(
 	appendCPUMetrics(ils.Metrics(), &containerStats.CPUStats, &containerStats.PreCPUStats, now, config.ProvidePerCoreCPUMetrics)
 	appendMemoryMetrics(ils.Metrics(), &containerStats.MemoryStats, now)
 	appendNetworkMetrics(ils.Metrics(), &containerStats.Networks, now)
+	appendStatus(ils.Metrics(), container, now)
 
 	return md
 }
@@ -77,6 +78,21 @@ type blkioStat struct {
 	name    string
 	unit    string
 	entries []dtypes.BlkioStatEntry
+}
+
+// metrics for https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt
+func appendStatus(dest pmetric.MetricSlice, container docker.Container, ts pcommon.Timestamp) {
+	// 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead
+	statusMap := map[string]int64{
+		"created":    0,
+		"running":    1,
+		"paused":     2,
+		"restarting": 3,
+		"removing":   4,
+		"exited":     5,
+		"dead":       6,
+	}
+	populateCumulative(dest.AppendEmpty(), "status", "", statusMap[container.State.Status], ts, []string{}, []string{})
 }
 
 // metrics for https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt
