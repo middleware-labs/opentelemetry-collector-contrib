@@ -130,6 +130,7 @@ metrics:
 | container.image.name | The name of the docker image in use by the container. | String |
 | container.name | The name of the container. | String |
 | container.runtime | The runtime of the container. For this receiver, it will always be 'docker'. | String |
+| container.started_on | Container start time. | String |
 
 ## Metric attributes
 
