@@ -160,6 +160,14 @@ Outgoing packets dropped.
 | ---- | ----------- | ------ | ----------------- | ------------------- |
 | interface | Network interface. | Any Str | Recommended | - |
 
+### container.status
+
+Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
 ## Optional Metrics
 
 The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
@@ -740,34 +748,6 @@ Number of restarts for the container.
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | {restarts} | Sum | Int | Cumulative | true | Development |
 
-### container.state.health.status
-
-The number of containers that are currently in a given health state. All possible container health states will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current health state will be non-zero.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| {container} | Sum | Int | Cumulative | false | Development |
-
-#### Attributes
-
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| container.state.health.state | The health state of the container. | Str: ``starting``, ``healthy``, ``unhealthy`` | Recommended | - |
-
-### container.state.status
-
-Number of containers in a given state. State is one of - created, running, paused, restarting, removing, exited and dead
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| {status} | Sum | Int | Cumulative | false | Development |
-
-#### Attributes
-
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| container.state.status | Container State | Str: ``created``, ``running``, ``paused``, ``restarting``, ``removing``, ``exited``, ``dead`` | Recommended | - |
-
 ### container.uptime
 
 Time elapsed since container start time.
@@ -778,12 +758,13 @@ Time elapsed since container start time.
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled | Semantic Convention | Stability |
-| ---- | ----------- | ------ | ------- | ------------------- | --------- |
-| container.command_line | The full command executed by the container. | Any Str | false | - | - |
-| container.hostname | The hostname of the container. | Any Str | true | - | - |
-| container.id | The ID of the container. | Any Str | true | - | - |
-| container.image.id | The ID of the container image. | Any Str | false | - | - |
-| container.image.name | The name of the docker image in use by the container. | Any Str | true | - | - |
-| container.name | The name of the container. | Any Str | true | - | - |
-| container.runtime | The runtime of the container. For this receiver, it will always be 'docker'. | Any Str | true | - | - |
+| Name | Description | Values | Enabled | Semantic Convention |
+| ---- | ----------- | ------ | ------- | ------------------- |
+| container.command_line | The full command executed by the container. | Any Str | false | - |
+| container.hostname | The hostname of the container. | Any Str | true | - |
+| container.id | The ID of the container. | Any Str | true | - |
+| container.image.id | The ID of the container image. | Any Str | false | - |
+| container.image.name | The name of the docker image in use by the container. | Any Str | true | - |
+| container.name | The name of the container. | Any Str | true | - |
+| container.runtime | The runtime of the container. For this receiver, it will always be 'docker'. | Any Str | true | - |
+| container.started_on | Container start time. | Any Str | true | - |
