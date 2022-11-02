@@ -273,9 +273,10 @@ func (s *processScraper) getProcessMetadata(ctx context.Context) ([]*processMeta
 		parentProcessID := int32(0)
 		if s.config.ResourceAttributes.ProcessParentPid.Enabled {
 			parentProcessID, err = parentPid(ctx, handle, pid)
-			if err != nil {
-				errs.AddPartial(0, fmt.Errorf("error reading parent pid for process %q (pid %v): %w", executable.name, pid, err))
-			}
+		if err != nil {
+            if !s.config.AvoidSelectedErrors {
+                errs.AddPartial(0, fmt.Errorf("error reading parent pid for process %q (pid %v): %w", executable.name, pid, err))
+		    }
 		}
 
 		md := &processMetadata{
