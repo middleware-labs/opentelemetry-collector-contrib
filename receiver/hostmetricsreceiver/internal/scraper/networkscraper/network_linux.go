@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
@@ -52,4 +54,11 @@ func (s *scraper) recordNetworkConntrackMetrics() error {
 	s.mb.RecordSystemNetworkConntrackCountDataPoint(now, conntrack[0].ConnTrackCount)
 	s.mb.RecordSystemNetworkConntrackMaxDataPoint(now, conntrack[0].ConnTrackMax)
 	return nil
+}
+
+func (s *scraper) recordSystemNetworkIoBandwidth(now pcommon.Timestamp, networkBandwidth bcal.NetworkBandwidth) {
+	if s.config.Metrics.SystemNetworkIoBandwidth.Enabled {
+		s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.InboundRate, metadata.AttributeDirectionReceive)
+		s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.OutboundRate, metadata.AttributeDirectionTransmit)
+	}
 }
