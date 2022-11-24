@@ -45,3 +45,10 @@ func (s *networkScraper) recordNetworkConntrackMetrics(ctx context.Context) erro
 	s.mb.RecordSystemNetworkConntrackMaxDataPoint(now, conntrack[0].ConnTrackMax)
 	return nil
 }
+
+func (s *scraper) recordSystemNetworkIoBandwidth(now pcommon.Timestamp, networkBandwidth bcal.NetworkBandwidth) {
+	if s.config.MetricsBuilderConfig.Metrics.SystemNetworkIoBandwidth.Enabled {
+		s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.InboundRate, metadata.AttributeDirectionReceive)
+		s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.OutboundRate, metadata.AttributeDirectionTransmit)
+	}
+}

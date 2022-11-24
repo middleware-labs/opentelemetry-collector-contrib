@@ -17,6 +17,8 @@ import (
 	"go.opentelemetry.io/collector/scraper/scrapererror"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/filter/filterset"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
 )
 
@@ -28,6 +30,7 @@ const (
 // scraper for Network Metrics
 type networkScraper struct {
 	settings  scraper.Settings
+	bcal      *bcal.NetworkBandwidthCalculator
 	config    *Config
 	mb        *metadata.MetricsBuilder
 	startTime pcommon.Timestamp
@@ -50,6 +53,7 @@ func newNetworkScraper(_ context.Context, settings scraper.Settings, cfg *Config
 		ioCounters:  net.IOCountersWithContext,
 		connections: net.ConnectionsWithContext,
 		conntrack:   net.FilterCountersWithContext,
+		bcal:        &bcal.NetworkBandwidthCalculator{},
 	}
 
 	var err error
@@ -120,6 +124,7 @@ func (s *networkScraper) recordNetworkCounterMetrics(ctx context.Context) error 
 		s.recordNetworkDroppedPacketsMetric(now, ioCounters)
 		s.recordNetworkErrorPacketsMetric(now, ioCounters)
 		s.recordNetworkIOMetric(now, ioCounters)
+		s.bcal.CalculateAndRecord(now, ioCounters, s.recordSystemNetworkIoBandwidth)
 	}
 
 	return nil
