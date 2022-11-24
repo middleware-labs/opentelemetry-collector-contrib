@@ -72,6 +72,21 @@ The number of bytes transmitted and received.
 | device | Name of the network interface. | Any Str |
 | direction | Direction of flow of bytes/operations (receive or transmit). | Str: ``receive``, ``transmit`` |
 
+### system.network.io.bandwidth
+
+The rate of transmission and reception.
+
+| Unit | Metric Type | Value Type |
+|------|-------------|------------|
+| By/s | Gauge       | Double     | 
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| direction | Direction of flow of bytes/operations (receive or transmit). | Str: ``receive``, ``transmit`` |
+
+
 ### system.network.packets
 
 The number of packets transferred.
