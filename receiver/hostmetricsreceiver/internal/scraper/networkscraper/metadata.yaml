@@ -150,6 +150,15 @@ metrics:
       monotonic: true
     attributes: [device]
 
+  # produced when receiver.hostmetricsreceiver.emitMetricsWithDirectionAttribute feature gate is enabled
+  system.network.io.bandwidth:
+    enabled: false
+    description: The rate of transmission and reception.
+    unit: "By/s"
+    gauge:
+      value_type: double
+    attributes: [direction]
+
   system.network.connections:
     enabled: true
     description: The number of connections.

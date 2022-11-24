@@ -18,6 +18,7 @@ These are the metrics available for this scraper.
 | **system.network.errors.receive** | The number of errors encountered on receive. | {errors} | Sum(Int) | <ul> <li>device</li> </ul> |
 | **system.network.errors.transmit** | The number of errors encountered on transmit. | {errors} | Sum(Int) | <ul> <li>device</li> </ul> |
 | **system.network.io** | The number of bytes transmitted and received. (Deprecated) | By | Sum(Int) | <ul> <li>device</li> <li>direction</li> </ul> |
+| system.network.io.bandwidth | The rate of transmission and reception. | By/s | Gauge(Double) | <ul> <li>direction</li> </ul> |
 | **system.network.io.receive** | The number of bytes received. | By | Sum(Int) | <ul> <li>device</li> </ul> |
 | **system.network.io.transmit** | The number of bytes transmitted. | By | Sum(Int) | <ul> <li>device</li> </ul> |
 | **system.network.packets** | The number of packets transferred. (Deprecated) | {packets} | Sum(Int) | <ul> <li>device</li> <li>direction</li> </ul> |
