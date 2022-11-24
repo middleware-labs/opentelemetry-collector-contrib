@@ -29,6 +29,7 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/processor/filterset"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
 )
 
@@ -39,6 +40,7 @@ const (
 
 // scraper for Network Metrics
 type scraper struct {
+	bcal      *bcal.NetworkBandwidthCalculator
 	settings  component.ReceiverCreateSettings
 	config    *Config
 	mb        *metadata.MetricsBuilder
@@ -64,6 +66,7 @@ func newNetworkScraper(_ context.Context, settings component.ReceiverCreateSetti
 		ioCounters:                           net.IOCounters,
 		connections:                          net.Connections,
 		conntrack:                            net.FilterCounters,
+		bcal:                                 &bcal.NetworkBandwidthCalculator{},
 		emitMetricsWithDirectionAttribute:    featuregate.GetRegistry().IsEnabled(internal.EmitMetricsWithDirectionAttributeFeatureGateID),
 		emitMetricsWithoutDirectionAttribute: featuregate.GetRegistry().IsEnabled(internal.EmitMetricsWithoutDirectionAttributeFeatureGateID),
 	}
@@ -136,6 +139,7 @@ func (s *scraper) recordNetworkCounterMetrics() error {
 		s.recordNetworkDroppedPacketsMetric(now, ioCounters)
 		s.recordNetworkErrorPacketsMetric(now, ioCounters)
 		s.recordNetworkIOMetric(now, ioCounters)
+		s.bcal.CalculateAndRecord(now, ioCounters, s.recordSystemNetworkIoBandwidth)
 	}
 
 	return nil
