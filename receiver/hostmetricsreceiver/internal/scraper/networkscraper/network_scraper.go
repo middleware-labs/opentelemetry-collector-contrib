@@ -28,6 +28,8 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/filter/filterset"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
 )
 
@@ -38,6 +40,7 @@ const (
 
 // scraper for Network Metrics
 type scraper struct {
+	bcal      *bcal.NetworkBandwidthCalculator
 	settings  receiver.CreateSettings
 	config    *Config
 	mb        *metadata.MetricsBuilder
@@ -61,6 +64,7 @@ func newNetworkScraper(_ context.Context, settings receiver.CreateSettings, cfg 
 		ioCounters:  net.IOCounters,
 		connections: net.Connections,
 		conntrack:   net.FilterCounters,
+        bcal:        &bcal.NetworkBandwidthCalculator{},
 	}
 
 	var err error
@@ -131,6 +135,7 @@ func (s *scraper) recordNetworkCounterMetrics() error {
 		s.recordNetworkDroppedPacketsMetric(now, ioCounters)
 		s.recordNetworkErrorPacketsMetric(now, ioCounters)
 		s.recordNetworkIOMetric(now, ioCounters)
+		s.bcal.CalculateAndRecord(now, ioCounters, s.recordSystemNetworkIoBandwidth)
 	}
 
 	return nil
