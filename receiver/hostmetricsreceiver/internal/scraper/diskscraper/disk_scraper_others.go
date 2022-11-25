@@ -20,6 +20,7 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/filter/filterset"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper/internal/metadata"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper/scal"
 )
 
 const (
@@ -30,6 +31,7 @@ const (
 // scraper for Disk Metrics
 type diskScraper struct {
 	settings  scraper.Settings
+	scal      *scal.DiskSpeedCalculator
 	config    *Config
 	startTime pcommon.Timestamp
 	mb        *metadata.MetricsBuilder
@@ -92,6 +94,7 @@ func (s *diskScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 		s.recordDiskOperationTimeMetric(now, ioCounters)
 		s.recordDiskPendingOperationsMetric(now, ioCounters)
 		s.recordSystemSpecificDataPoints(now, ioCounters)
+		s.scal.CalculateAndRecord(now, ioCounters, s.recordSystemDiskIoSpeed)
 	}
 
 	return s.mb.Emit(), nil
