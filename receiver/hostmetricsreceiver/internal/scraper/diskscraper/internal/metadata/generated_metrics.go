@@ -41,12 +41,16 @@ type MetricsSettings struct {
 	SystemDiskOperations        MetricSettings `mapstructure:"system.disk.operations"`
 	SystemDiskPendingOperations MetricSettings `mapstructure:"system.disk.pending_operations"`
 	SystemDiskWeightedIoTime    MetricSettings `mapstructure:"system.disk.weighted_io_time"`
+    SystemDiskIoSpeed           MetricSettings `mapstructure:"system.disk.io.speed"`
 }
 
 func DefaultMetricsSettings() MetricsSettings {
 	return MetricsSettings{
 		SystemDiskIo: MetricSettings{
 			Enabled: true,
+		},
+		SystemDiskIoSpeed: MetricSettings{
+			Enabled: false,
 		},
 		SystemDiskIoTime: MetricSettings{
 			Enabled: true,
@@ -142,6 +146,163 @@ func (m *metricSystemDiskIo) emit(metrics pmetric.MetricSlice) {
 
 func newMetricSystemDiskIo(settings MetricSettings) metricSystemDiskIo {
 	m := metricSystemDiskIo{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricSystemDiskIoRead struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills system.disk.io.read metric with initial data.
+func (m *metricSystemDiskIoRead) init() {
+	m.data.SetName("system.disk.io.read")
+	m.data.SetDescription("Disk bytes read.")
+	m.data.SetUnit("By")
+	m.data.SetDataType(pmetric.MetricDataTypeSum)
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.MetricAggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricSystemDiskIoRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, deviceAttributeValue string) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntVal(val)
+	dp.Attributes().UpsertString("device", deviceAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricSystemDiskIoRead) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricSystemDiskIoRead) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricSystemDiskIoRead(settings MetricSettings) metricSystemDiskIoRead {
+	m := metricSystemDiskIoRead{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricSystemDiskIoSpeed struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills system.disk.io.speed metric with initial data.
+func (m *metricSystemDiskIoSpeed) init() {
+	m.data.SetName("system.disk.io.speed")
+	m.data.SetDescription("The rate of transmission and reception.")
+	m.data.SetUnit("By/s")
+	m.data.SetDataType(pmetric.MetricDataTypeGauge)
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricSystemDiskIoSpeed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, directionAttributeValue string) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleVal(val)
+	dp.Attributes().UpsertString("direction", directionAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricSystemDiskIoSpeed) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricSystemDiskIoSpeed) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricSystemDiskIoSpeed(settings MetricSettings) metricSystemDiskIoSpeed {
+	m := metricSystemDiskIoSpeed{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricSystemDiskIoWrite struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills system.disk.io.write metric with initial data.
+func (m *metricSystemDiskIoWrite) init() {
+	m.data.SetName("system.disk.io.write")
+	m.data.SetDescription("Disk bytes written.")
+	m.data.SetUnit("By")
+	m.data.SetDataType(pmetric.MetricDataTypeSum)
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.MetricAggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricSystemDiskIoWrite) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, deviceAttributeValue string) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntVal(val)
+	dp.Attributes().UpsertString("device", deviceAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricSystemDiskIoWrite) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricSystemDiskIoWrite) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricSystemDiskIoWrite(settings MetricSettings) metricSystemDiskIoWrite {
+	m := metricSystemDiskIoWrite{settings: settings}
 	if settings.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -485,6 +646,7 @@ type MetricsBuilder struct {
 	metricSystemDiskOperations        metricSystemDiskOperations
 	metricSystemDiskPendingOperations metricSystemDiskPendingOperations
 	metricSystemDiskWeightedIoTime    metricSystemDiskWeightedIoTime
+    metricSystemDiskIoSpeed           metricSystemDiskIoSpeed
 }
 
 // metricBuilderOption applies changes to default metrics builder.
@@ -509,6 +671,7 @@ func NewMetricsBuilder(ms MetricsSettings, settings receiver.CreateSettings, opt
 		metricSystemDiskOperations:        newMetricSystemDiskOperations(ms.SystemDiskOperations),
 		metricSystemDiskPendingOperations: newMetricSystemDiskPendingOperations(ms.SystemDiskPendingOperations),
 		metricSystemDiskWeightedIoTime:    newMetricSystemDiskWeightedIoTime(ms.SystemDiskWeightedIoTime),
+	    metricSystemDiskIoSpeed:           newMetricSystemDiskIoSpeed(settings.SystemDiskIoSpeed),
 	}
 	for _, op := range options {
 		op(mb)
@@ -563,6 +726,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	ils.Scope().SetVersion(mb.buildInfo.Version)
 	ils.Metrics().EnsureCapacity(mb.metricsCapacity)
 	mb.metricSystemDiskIo.emit(ils.Metrics())
+	mb.metricSystemDiskIoSpeed.emit(ils.Metrics())
 	mb.metricSystemDiskIoTime.emit(ils.Metrics())
 	mb.metricSystemDiskMerged.emit(ils.Metrics())
 	mb.metricSystemDiskOperationTime.emit(ils.Metrics())
@@ -591,6 +755,11 @@ func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
 // RecordSystemDiskIoDataPoint adds a data point to system.disk.io metric.
 func (mb *MetricsBuilder) RecordSystemDiskIoDataPoint(ts pcommon.Timestamp, val int64, deviceAttributeValue string, directionAttributeValue AttributeDirection) {
 	mb.metricSystemDiskIo.recordDataPoint(mb.startTime, ts, val, deviceAttributeValue, directionAttributeValue.String())
+}
+
+// RecordSystemDiskIoSpeedDataPoint adds a data point to system.disk.io.speed metric.
+func (mb *MetricsBuilder) RecordSystemDiskIoSpeedDataPoint(ts pcommon.Timestamp, val float64, directionAttributeValue AttributeDirection) {
+	mb.metricSystemDiskIoSpeed.recordDataPoint(mb.startTime, ts, val, directionAttributeValue.String())
 }
 
 // RecordSystemDiskIoTimeDataPoint adds a data point to system.disk.io_time metric.

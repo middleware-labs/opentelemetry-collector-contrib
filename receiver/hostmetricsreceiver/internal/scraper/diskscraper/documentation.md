@@ -27,6 +27,20 @@ Disk bytes transferred.
 | device | Name of the disk. | Any Str |
 | direction | Direction of flow of bytes/operations (read or write). | Str: ``read``, ``write`` |
 
+### system.disk.io.speed
+
+The rate of transmission and reception.
+
+| Unit | Metric Type | Value Type |
+|------|-------------| ---------- |
+| By/s | Gauge       | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| direction | Direction of flow of bytes/operations (read or write). | Str: ``read``, ``write`` |
+
 ### system.disk.io_time
 
 Time disk spent activated. On Windows, this is calculated as the inverse of disk idle time.
