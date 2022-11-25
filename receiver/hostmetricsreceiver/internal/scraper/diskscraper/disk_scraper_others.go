@@ -33,6 +33,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/processor/filterset"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper/internal/metadata"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/diskscraper/scal"
 )
 
 const (
@@ -42,6 +43,7 @@ const (
 
 // scraper for Disk Metrics
 type scraper struct {
+	scal      *scal.DiskSpeedCalculator
 	settings  component.ReceiverCreateSettings
 	config    *Config
 	startTime pcommon.Timestamp
@@ -58,7 +60,7 @@ type scraper struct {
 
 // newDiskScraper creates a Disk Scraper
 func newDiskScraper(_ context.Context, settings component.ReceiverCreateSettings, cfg *Config) (*scraper, error) {
-	scraper := &scraper{settings: settings, config: cfg, bootTime: host.BootTime, ioCounters: disk.IOCounters}
+	scraper := &scraper{settings: settings, config: cfg, bootTime: host.BootTime, ioCounters: disk.IOCounters, scal: &scal.DiskSpeedCalculator{}}
 	scraper.emitMetricsWithDirectionAttribute = featuregate.GetRegistry().IsEnabled(internal.EmitMetricsWithDirectionAttributeFeatureGateID)
 	scraper.emitMetricsWithoutDirectionAttribute = featuregate.GetRegistry().IsEnabled(internal.EmitMetricsWithoutDirectionAttributeFeatureGateID)
 
@@ -109,6 +111,7 @@ func (s *scraper) scrape(_ context.Context) (pmetric.Metrics, error) {
 		s.recordDiskOperationTimeMetric(now, ioCounters)
 		s.recordDiskPendingOperationsMetric(now, ioCounters)
 		s.recordSystemSpecificDataPoints(now, ioCounters)
+		s.scal.CalculateAndRecord(now, ioCounters, s.recordSystemDiskIoSpeed)
 	}
 
 	return s.mb.Emit(), nil
