@@ -20,6 +20,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap"
+	"k8s.io/apimachinery/pkg/types"
 	stats "k8s.io/kubelet/pkg/apis/stats/v1alpha1"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver/internal/metadata"
@@ -74,6 +75,7 @@ func (a *metricDataAccumulator) nodeStats(s stats.NodeStats) {
 	a.m = append(a.m, a.mbs.NodeMetricsBuilder.Emit(
 		metadata.WithStartTimeOverride(pcommon.NewTimestampFromTime(s.StartTime.Time)),
 		metadata.WithK8sNodeName(s.NodeName),
+		metadata.WithK8sNodeUID(string(types.UID(s.NodeName))),
 	))
 }
 
