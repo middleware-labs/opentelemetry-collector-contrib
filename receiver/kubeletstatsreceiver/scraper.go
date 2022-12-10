@@ -129,7 +129,17 @@ func (r *kubletScraper) scrape(context.Context) (pmetric.Metrics, error) {
 		}
 	}
 
-	metadata := kubelet.NewMetadata(r.extraMetadataLabels, podsMetadata, r.detailedPVCLabelsSetter())
+	var nodesMetadata *v1.NodeList
+	// fetch metadata only when extra metadata labels are needed
+	if len(r.extraMetadataLabels) > 0 {
+		nodesMetadata, err = r.metadataProvider.Nodes()
+		if err != nil {
+			r.logger.Error("call to /nodes endpoint failed", zap.Error(err))
+			return pmetric.Metrics{}, err
+		}
+	}
+
+	metadata := kubelet.NewMetadata(r.extraMetadataLabels, podsMetadata, nodesMetadata, r.detailedPVCLabelsSetter())
 	mds := kubelet.MetricsData(r.logger, summary, metadata, r.metricGroupsToCollect, r.mbs, r.emitMetricsWithDirectionAttribute, r.emitMetricsWithoutDirectionAttribute)
 	md := pmetric.NewMetrics()
 	for i := range mds {

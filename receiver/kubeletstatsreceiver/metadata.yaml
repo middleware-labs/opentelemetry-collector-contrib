@@ -1,6 +1,9 @@
 name: kubeletstatsreceiver
 
 resource_attributes:
+  k8s.node.uid:
+    description: "The UID of the Node"
+    type: string
   k8s.node.name:
     description: "The name of the Node"
     type: string

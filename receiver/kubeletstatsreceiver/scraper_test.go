@@ -481,6 +481,7 @@ var _ kubelet.RestClient = (*fakeRestClient)(nil)
 type fakeRestClient struct {
 	statsSummaryFail bool
 	podsFail         bool
+	nodesFail        bool
 }
 
 func (f *fakeRestClient) StatsSummary() ([]byte, error) {
@@ -495,4 +496,11 @@ func (f *fakeRestClient) Pods() ([]byte, error) {
 		return nil, errors.New("")
 	}
 	return os.ReadFile("testdata/pods.json")
+}
+
+func (f *fakeRestClient) Nodes() ([]byte, error) {
+	if f.nodesFail {
+		return nil, errors.New("")
+	}
+	return os.ReadFile("testdata/nodes.json")
 }
