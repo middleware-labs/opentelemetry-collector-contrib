@@ -140,7 +140,6 @@ func (m *Metadata) getNodeUID(nodeName string) (string, error) {
 		}
 	}
 	return "", nil
-	// return "", fmt.Errorf("could not find node UID for: %s", nodeName)
 }
 
 // getContainerID retrieves container id from metadata for given pod UID and container name,

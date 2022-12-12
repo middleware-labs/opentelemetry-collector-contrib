@@ -44,7 +44,7 @@ func (p *MetadataProvider) Pods() (*v1.PodList, error) {
 	return &out, nil
 }
 
-// Pods calls the /nodes endpoint and unmarshals the
+// Nodes calls the /nodes endpoint and unmarshals the
 // results into a v1.NodeList struct.
 func (n *MetadataProvider) Nodes() (*v1.NodeList, error) {
 	nodes, err := n.rc.Nodes()
