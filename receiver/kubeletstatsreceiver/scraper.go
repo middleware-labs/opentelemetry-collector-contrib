@@ -17,6 +17,7 @@ package kubeletstatsreceiver // import "github.com/open-telemetry/opentelemetry-
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -130,12 +131,14 @@ func (r *kubletScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	}
 
 	var nodesMetadata *v1.NodeList
-	// fetch metadata only when extra metadata labels are needed
-	if len(r.extraMetadataLabels) > 0 {
-		nodesMetadata, err = r.metadataProvider.Nodes()
+
+	if r.k8sAPIClient != nil {
+		corev1 := r.k8sAPIClient.CoreV1()
+		nodes := corev1.Nodes()
+		nodesMetadata, err = nodes.List(context.Background(), metav1.ListOptions{})
 		if err != nil {
-			r.logger.Error("call to /nodes endpoint failed", zap.Error(err))
-			return pmetric.Metrics{}, err
+			log.Println("nodesMetadata err", err.Error())
+			return pmetric.Metrics{}, nil
 		}
 	}
 

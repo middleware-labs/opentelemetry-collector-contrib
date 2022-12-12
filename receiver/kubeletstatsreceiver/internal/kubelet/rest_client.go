@@ -22,7 +22,6 @@ import (
 type RestClient interface {
 	StatsSummary() ([]byte, error)
 	Pods() ([]byte, error)
-	Nodes() ([]byte, error)
 }
 
 // HTTPRestClient is a thin wrapper around a kubelet client, encapsulating endpoints
@@ -43,8 +42,4 @@ func (c *HTTPRestClient) StatsSummary() ([]byte, error) {
 
 func (c *HTTPRestClient) Pods() ([]byte, error) {
 	return c.client.Get("/pods")
-}
-
-func (c *HTTPRestClient) Nodes() ([]byte, error) {
-	return c.client.Get("/nodes")
 }
