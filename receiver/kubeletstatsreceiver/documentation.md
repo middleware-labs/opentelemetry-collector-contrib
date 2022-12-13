@@ -395,3 +395,4 @@ The inodes used by the filesystem. This may not equal inodes - free because file
 | k8s.volume.name | The name of the Volume | Any Str |
 | k8s.volume.type | The type of the Volume | Any Str |
 | partition | The partition in the Volume | Any Str |
+| k8s.node.uid | The UID of the Node | String |
