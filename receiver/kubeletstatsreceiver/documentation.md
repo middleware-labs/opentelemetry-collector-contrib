@@ -81,6 +81,7 @@ metrics:
 | k8s.container.name | Container name used by container runtime | String |
 | k8s.namespace.name | The name of the namespace that the pod is running in | String |
 | k8s.node.name | The name of the Node | String |
+| k8s.node.uid | The UID of the Node | String |
 | k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | String |
 | k8s.pod.name | The name of the Pod | String |
 | k8s.pod.uid | The UID of the Pod | String |
