@@ -12,6 +12,14 @@ metrics:
     enabled: false
 ```
 
+### process.cpu.percent
+
+Percent of CPU used by the process.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| % | Gauge | Double |
+
 ### process.cpu.time
 
 Total CPU seconds broken down by different states.
@@ -44,9 +52,9 @@ Disk bytes transferred.
 
 Percent of Memory used by the process.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-|------|-------------| ---------- | ----------------------- | --------- |
-| %    | Gauge       | Int | Cumulative | true |
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| % | Gauge | Double |
 
 ### process.memory.physical_usage
 
@@ -102,14 +110,6 @@ Percentage of total CPU time used by the process since last scrape, expressed as
 | ---- | ----------- | ------ |
 | state | Breakdown of CPU usage by type. | Str: ``system``, ``user``, ``wait`` |
 
-### process.cpu.percent
-
-Percent of CPU used by the process.
-
-| Unit | Metric Type | Value Type |
-|------| ----------- | ---------- |
-| %    | Gauge | Double |
-
 ### process.disk.operations
 
 Number of disk operations performed by the process.
@@ -128,9 +128,9 @@ Number of disk operations performed by the process.
 
 The amount of physical memory in use.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- |------------|
-| By | Sum | Double     | 
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | false |
 
 ### process.memory.utilization
 
@@ -188,8 +188,8 @@ Process threads count.
 
 ## Resource Attributes
 
-| Name | Description | Values  |
-| ---- | ----------- |---------|
+| Name | Description | Values |
+| ---- | ----------- | ------ |
 | process.command | The command used to launch the process (i.e. the command name). On Linux based systems, can be set to the zeroth string in proc/[pid]/cmdline. On Windows, can be set to the first parameter extracted from GetCommandLineW. | Any Str |
 | process.command_line | The full command used to launch the process as a single string representing the full command. On Windows, can be set to the result of GetCommandLineW. Do not set this if you have to assemble it just for monitoring; use process.command_args instead. | Any Str |
 | process.executable.name | The name of the process executable. On Linux based systems, can be set to the Name in proc/[pid]/status. On Windows, can be set to the base name of GetProcessImageFileNameW. | Any Str |

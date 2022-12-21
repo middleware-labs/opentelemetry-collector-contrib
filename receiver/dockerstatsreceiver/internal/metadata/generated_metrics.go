@@ -97,7 +97,7 @@ type MetricsSettings struct {
 	ContainerNetworkIoUsageTxDropped           MetricSettings `mapstructure:"container.network.io.usage.tx_dropped"`
 	ContainerNetworkIoUsageTxErrors            MetricSettings `mapstructure:"container.network.io.usage.tx_errors"`
 	ContainerNetworkIoUsageTxPackets           MetricSettings `mapstructure:"container.network.io.usage.tx_packets"`
-ContainerStatus                                MetricSettings `mapstructure:"container.status"`
+	ContainerStatus                            MetricSettings `mapstructure:"container.status"`
 }
 
 func DefaultMetricsSettings() MetricsSettings {
@@ -289,7 +289,7 @@ func DefaultMetricsSettings() MetricsSettings {
 			Enabled: false,
 		},
 		ContainerNetworkIoUsageTxPackets: MetricSettings{
-			Enabled: true,
+			Enabled: false,
 		},
 		ContainerStatus: MetricSettings{
 			Enabled: true,
@@ -3567,7 +3567,7 @@ func (m *metricContainerStatus) init() {
 	m.data.SetName("container.status")
 	m.data.SetDescription("Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead")
 	m.data.SetUnit("")
-	m.data.SetDataType(pmetric.MetricDataTypeGauge)
+	m.data.SetEmptyGauge()
 }
 
 func (m *metricContainerStatus) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
@@ -3577,7 +3577,7 @@ func (m *metricContainerStatus) recordDataPoint(start pcommon.Timestamp, ts pcom
 	dp := m.data.Gauge().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntVal(val)
+	dp.SetIntValue(val)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3676,7 +3676,7 @@ type MetricsBuilder struct {
 	metricContainerNetworkIoUsageTxDropped           metricContainerNetworkIoUsageTxDropped
 	metricContainerNetworkIoUsageTxErrors            metricContainerNetworkIoUsageTxErrors
 	metricContainerNetworkIoUsageTxPackets           metricContainerNetworkIoUsageTxPackets
-    metricContainerStatus                            metricContainerStatus
+	metricContainerStatus                            metricContainerStatus
 }
 
 // metricBuilderOption applies changes to default metrics builder.
@@ -3757,7 +3757,7 @@ func NewMetricsBuilder(ms MetricsSettings, settings receiver.CreateSettings, opt
 		metricContainerNetworkIoUsageTxDropped:           newMetricContainerNetworkIoUsageTxDropped(ms.ContainerNetworkIoUsageTxDropped),
 		metricContainerNetworkIoUsageTxErrors:            newMetricContainerNetworkIoUsageTxErrors(ms.ContainerNetworkIoUsageTxErrors),
 		metricContainerNetworkIoUsageTxPackets:           newMetricContainerNetworkIoUsageTxPackets(ms.ContainerNetworkIoUsageTxPackets),
-        metricContainerStatus:                                newMetricContainerStatus(ms.ContainerStatus),
+		metricContainerStatus:                            newMetricContainerStatus(ms.ContainerStatus),
 	}
 	for _, op := range options {
 		op(mb)
@@ -3816,7 +3816,7 @@ func WithContainerRuntime(val string) ResourceMetricsOption {
 // WithContainerStartedOn sets provided value as "container.started_on" attribute for current resource.
 func WithContainerStartedOn(val string) ResourceMetricsOption {
 	return func(rm pmetric.ResourceMetrics) {
-		rm.Resource().Attributes().UpsertString("container.started_on", val)
+		rm.Resource().Attributes().PutStr("container.started_on", val)
 	}
 }
 
