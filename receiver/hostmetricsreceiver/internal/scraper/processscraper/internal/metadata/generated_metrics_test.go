@@ -34,6 +34,9 @@ func TestDefaultMetrics(t *testing.T) {
 
 	mb.RecordProcessContextSwitchesDataPoint(ts, 1, AttributeContextSwitchType(1))
 
+	enabledMetrics["process.cpu.percent"] = true
+	mb.RecordProcessCPUPercentDataPoint(ts, 1)
+
 	enabledMetrics["process.cpu.time"] = true
 	mb.RecordProcessCPUTimeDataPoint(ts, 1, AttributeState(1))
 
@@ -43,6 +46,9 @@ func TestDefaultMetrics(t *testing.T) {
 	mb.RecordProcessDiskIoDataPoint(ts, 1, AttributeDirection(1))
 
 	mb.RecordProcessDiskOperationsDataPoint(ts, 1, AttributeDirection(1))
+
+	enabledMetrics["process.memory.percent"] = true
+	mb.RecordProcessMemoryPercentDataPoint(ts, 1)
 
 	enabledMetrics["process.memory.physical_usage"] = true
 	mb.RecordProcessMemoryPhysicalUsageDataPoint(ts, 1)
@@ -82,6 +88,24 @@ func TestDefaultMetrics(t *testing.T) {
 func TestAllMetrics(t *testing.T) {
 	start := pcommon.Timestamp(1_000_000_000)
 	ts := pcommon.Timestamp(1_000_001_000)
+	metricsSettings := MetricsSettings{
+		ProcessContextSwitches:     MetricSettings{Enabled: true},
+		ProcessCPUPercent:          MetricSettings{Enabled: true},
+		ProcessCPUTime:             MetricSettings{Enabled: true},
+		ProcessCPUUtilization:      MetricSettings{Enabled: true},
+		ProcessDiskIo:              MetricSettings{Enabled: true},
+		ProcessDiskOperations:      MetricSettings{Enabled: true},
+		ProcessMemoryPercent:       MetricSettings{Enabled: true},
+		ProcessMemoryPhysicalUsage: MetricSettings{Enabled: true},
+		ProcessMemoryUsage:         MetricSettings{Enabled: true},
+		ProcessMemoryUtilization:   MetricSettings{Enabled: true},
+		ProcessMemoryVirtual:       MetricSettings{Enabled: true},
+		ProcessMemoryVirtualUsage:  MetricSettings{Enabled: true},
+		ProcessOpenFileDescriptors: MetricSettings{Enabled: true},
+		ProcessPagingFaults:        MetricSettings{Enabled: true},
+		ProcessSignalsPending:      MetricSettings{Enabled: true},
+		ProcessThreads:             MetricSettings{Enabled: true},
+	}
 	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
 	settings := receivertest.NewNopCreateSettings()
 	settings.Logger = zap.New(observedZapCore)
@@ -92,10 +116,12 @@ func TestAllMetrics(t *testing.T) {
 	assert.Equal(t, 2, observedLogs.Len())
 
 	mb.RecordProcessContextSwitchesDataPoint(ts, 1, AttributeContextSwitchType(1))
+	mb.RecordProcessCPUPercentDataPoint(ts, 1)
 	mb.RecordProcessCPUTimeDataPoint(ts, 1, AttributeState(1))
 	mb.RecordProcessCPUUtilizationDataPoint(ts, 1, AttributeState(1))
 	mb.RecordProcessDiskIoDataPoint(ts, 1, AttributeDirection(1))
 	mb.RecordProcessDiskOperationsDataPoint(ts, 1, AttributeDirection(1))
+	mb.RecordProcessMemoryPercentDataPoint(ts, 1)
 	mb.RecordProcessMemoryPhysicalUsageDataPoint(ts, 1)
 	mb.RecordProcessMemoryUsageDataPoint(ts, 1)
 	mb.RecordProcessMemoryUtilizationDataPoint(ts, 1)
@@ -106,7 +132,7 @@ func TestAllMetrics(t *testing.T) {
 	mb.RecordProcessSignalsPendingDataPoint(ts, 1)
 	mb.RecordProcessThreadsDataPoint(ts, 1)
 
-	metrics := mb.Emit(WithProcessCommand("attr-val"), WithProcessCommandLine("attr-val"), WithProcessExecutableName("attr-val"), WithProcessExecutablePath("attr-val"), WithProcessOwner("attr-val"), WithProcessParentPid(1), WithProcessPid(1))
+	metrics := mb.Emit(WithProcessCommand("attr-val"), WithProcessCommandLine("attr-val"), WithProcessExecutableName("attr-val"), WithProcessExecutablePath("attr-val"), WithProcessOwner("attr-val"), WithProcessParentPid(1), WithProcessPid(1), WithProcessStartedOn(1))
 
 	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
 	rm := metrics.ResourceMetrics().At(0)
@@ -139,6 +165,10 @@ func TestAllMetrics(t *testing.T) {
 	attrVal, ok = rm.Resource().Attributes().Get("process.pid")
 	assert.True(t, ok)
 	assert.EqualValues(t, 1, attrVal.Int())
+	attrCount++
+	attrVal, ok = rm.Resource().Attributes().Get("process.started_on")
+	assert.True(t, ok)
+	assert.EqualValues(t, 1, attrVal.Int())
 	assert.Equal(t, attrCount, rm.Resource().Attributes().Len())
 
 	assert.Equal(t, 1, rm.ScopeMetrics().Len())
@@ -164,6 +194,17 @@ func TestAllMetrics(t *testing.T) {
 			assert.True(t, ok)
 			assert.Equal(t, "involuntary", attrVal.Str())
 			validatedMetrics["process.context_switches"] = struct{}{}
+		case "process.cpu.percent":
+			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+			assert.Equal(t, "Percent of CPU used by the process.", ms.At(i).Description())
+			assert.Equal(t, "%", ms.At(i).Unit())
+			dp := ms.At(i).Gauge().DataPoints().At(0)
+			assert.Equal(t, start, dp.StartTimestamp())
+			assert.Equal(t, ts, dp.Timestamp())
+			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+			assert.Equal(t, float64(1), dp.DoubleValue())
+			validatedMetrics["process.cpu.percent"] = struct{}{}
 		case "process.cpu.time":
 			assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 			assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
@@ -226,6 +267,17 @@ func TestAllMetrics(t *testing.T) {
 			assert.True(t, ok)
 			assert.Equal(t, "read", attrVal.Str())
 			validatedMetrics["process.disk.operations"] = struct{}{}
+		case "process.memory.percent":
+			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+			assert.Equal(t, "Percent of Memory used by the process.", ms.At(i).Description())
+			assert.Equal(t, "%", ms.At(i).Unit())
+			dp := ms.At(i).Gauge().DataPoints().At(0)
+			assert.Equal(t, start, dp.StartTimestamp())
+			assert.Equal(t, ts, dp.Timestamp())
+			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+			assert.Equal(t, float64(1), dp.DoubleValue())
+			validatedMetrics["process.memory.percent"] = struct{}{}
 		case "process.memory.physical_usage":
 			assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 			assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
@@ -352,6 +404,24 @@ func TestAllMetrics(t *testing.T) {
 func TestNoMetrics(t *testing.T) {
 	start := pcommon.Timestamp(1_000_000_000)
 	ts := pcommon.Timestamp(1_000_001_000)
+	metricsSettings := MetricsSettings{
+		ProcessContextSwitches:     MetricSettings{Enabled: false},
+		ProcessCPUPercent:          MetricSettings{Enabled: false},
+		ProcessCPUTime:             MetricSettings{Enabled: false},
+		ProcessCPUUtilization:      MetricSettings{Enabled: false},
+		ProcessDiskIo:              MetricSettings{Enabled: false},
+		ProcessDiskOperations:      MetricSettings{Enabled: false},
+		ProcessMemoryPercent:       MetricSettings{Enabled: false},
+		ProcessMemoryPhysicalUsage: MetricSettings{Enabled: false},
+		ProcessMemoryUsage:         MetricSettings{Enabled: false},
+		ProcessMemoryUtilization:   MetricSettings{Enabled: false},
+		ProcessMemoryVirtual:       MetricSettings{Enabled: false},
+		ProcessMemoryVirtualUsage:  MetricSettings{Enabled: false},
+		ProcessOpenFileDescriptors: MetricSettings{Enabled: false},
+		ProcessPagingFaults:        MetricSettings{Enabled: false},
+		ProcessSignalsPending:      MetricSettings{Enabled: false},
+		ProcessThreads:             MetricSettings{Enabled: false},
+	}
 	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
 	settings := receivertest.NewNopCreateSettings()
 	settings.Logger = zap.New(observedZapCore)
@@ -360,10 +430,12 @@ func TestNoMetrics(t *testing.T) {
 	assert.Equal(t, 0, observedLogs.Len())
 
 	mb.RecordProcessContextSwitchesDataPoint(ts, 1, AttributeContextSwitchType(1))
+	mb.RecordProcessCPUPercentDataPoint(ts, 1)
 	mb.RecordProcessCPUTimeDataPoint(ts, 1, AttributeState(1))
 	mb.RecordProcessCPUUtilizationDataPoint(ts, 1, AttributeState(1))
 	mb.RecordProcessDiskIoDataPoint(ts, 1, AttributeDirection(1))
 	mb.RecordProcessDiskOperationsDataPoint(ts, 1, AttributeDirection(1))
+	mb.RecordProcessMemoryPercentDataPoint(ts, 1)
 	mb.RecordProcessMemoryPhysicalUsageDataPoint(ts, 1)
 	mb.RecordProcessMemoryUsageDataPoint(ts, 1)
 	mb.RecordProcessMemoryUtilizationDataPoint(ts, 1)

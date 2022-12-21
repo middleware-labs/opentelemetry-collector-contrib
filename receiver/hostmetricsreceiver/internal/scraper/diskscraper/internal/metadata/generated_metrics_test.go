@@ -33,6 +33,8 @@ func TestDefaultMetrics(t *testing.T) {
 	enabledMetrics["system.disk.io"] = true
 	mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 
+	mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
+
 	enabledMetrics["system.disk.io_time"] = true
 	mb.RecordSystemDiskIoTimeDataPoint(ts, 1, "attr-val")
 
@@ -69,6 +71,16 @@ func TestDefaultMetrics(t *testing.T) {
 func TestAllMetrics(t *testing.T) {
 	start := pcommon.Timestamp(1_000_000_000)
 	ts := pcommon.Timestamp(1_000_001_000)
+	metricsSettings := MetricsSettings{
+		SystemDiskIo:                MetricSettings{Enabled: true},
+		SystemDiskIoSpeed:           MetricSettings{Enabled: true},
+		SystemDiskIoTime:            MetricSettings{Enabled: true},
+		SystemDiskMerged:            MetricSettings{Enabled: true},
+		SystemDiskOperationTime:     MetricSettings{Enabled: true},
+		SystemDiskOperations:        MetricSettings{Enabled: true},
+		SystemDiskPendingOperations: MetricSettings{Enabled: true},
+		SystemDiskWeightedIoTime:    MetricSettings{Enabled: true},
+	}
 	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
 	settings := receivertest.NewNopCreateSettings()
 	settings.Logger = zap.New(observedZapCore)
@@ -77,6 +89,7 @@ func TestAllMetrics(t *testing.T) {
 	assert.Equal(t, 0, observedLogs.Len())
 
 	mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
+	mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
 	mb.RecordSystemDiskIoTimeDataPoint(ts, 1, "attr-val")
 	mb.RecordSystemDiskMergedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 	mb.RecordSystemDiskOperationTimeDataPoint(ts, 1, "attr-val", AttributeDirection(1))
@@ -117,6 +130,20 @@ func TestAllMetrics(t *testing.T) {
 			assert.True(t, ok)
 			assert.Equal(t, "read", attrVal.Str())
 			validatedMetrics["system.disk.io"] = struct{}{}
+		case "system.disk.io.speed":
+			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+			assert.Equal(t, "The rate of transmission and reception.", ms.At(i).Description())
+			assert.Equal(t, "By/s", ms.At(i).Unit())
+			dp := ms.At(i).Gauge().DataPoints().At(0)
+			assert.Equal(t, start, dp.StartTimestamp())
+			assert.Equal(t, ts, dp.Timestamp())
+			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+			assert.Equal(t, float64(1), dp.DoubleValue())
+			attrVal, ok := dp.Attributes().Get("direction")
+			assert.True(t, ok)
+			assert.Equal(t, "read", attrVal.Str())
+			validatedMetrics["system.disk.io.speed"] = struct{}{}
 		case "system.disk.io_time":
 			assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 			assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
@@ -230,6 +257,16 @@ func TestAllMetrics(t *testing.T) {
 func TestNoMetrics(t *testing.T) {
 	start := pcommon.Timestamp(1_000_000_000)
 	ts := pcommon.Timestamp(1_000_001_000)
+	metricsSettings := MetricsSettings{
+		SystemDiskIo:                MetricSettings{Enabled: false},
+		SystemDiskIoSpeed:           MetricSettings{Enabled: false},
+		SystemDiskIoTime:            MetricSettings{Enabled: false},
+		SystemDiskMerged:            MetricSettings{Enabled: false},
+		SystemDiskOperationTime:     MetricSettings{Enabled: false},
+		SystemDiskOperations:        MetricSettings{Enabled: false},
+		SystemDiskPendingOperations: MetricSettings{Enabled: false},
+		SystemDiskWeightedIoTime:    MetricSettings{Enabled: false},
+	}
 	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
 	settings := receivertest.NewNopCreateSettings()
 	settings.Logger = zap.New(observedZapCore)
@@ -238,6 +275,7 @@ func TestNoMetrics(t *testing.T) {
 	assert.Equal(t, 0, observedLogs.Len())
 
 	mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
+	mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
 	mb.RecordSystemDiskIoTimeDataPoint(ts, 1, "attr-val")
 	mb.RecordSystemDiskMergedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 	mb.RecordSystemDiskOperationTimeDataPoint(ts, 1, "attr-val", AttributeDirection(1))

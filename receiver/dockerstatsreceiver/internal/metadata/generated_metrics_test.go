@@ -169,6 +169,9 @@ func TestDefaultMetrics(t *testing.T) {
 
 	mb.RecordContainerNetworkIoUsageTxPacketsDataPoint(ts, 1, "attr-val")
 
+	enabledMetrics["container.status"] = true
+	mb.RecordContainerStatusDataPoint(ts, 1)
+
 	metrics := mb.Emit()
 
 	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
@@ -187,6 +190,72 @@ func TestDefaultMetrics(t *testing.T) {
 func TestAllMetrics(t *testing.T) {
 	start := pcommon.Timestamp(1_000_000_000)
 	ts := pcommon.Timestamp(1_000_001_000)
+	metricsSettings := MetricsSettings{
+		ContainerBlockioIoMergedRecursive:          MetricSettings{Enabled: true},
+		ContainerBlockioIoQueuedRecursive:          MetricSettings{Enabled: true},
+		ContainerBlockioIoServiceBytesRecursive:    MetricSettings{Enabled: true},
+		ContainerBlockioIoServiceTimeRecursive:     MetricSettings{Enabled: true},
+		ContainerBlockioIoServicedRecursive:        MetricSettings{Enabled: true},
+		ContainerBlockioIoTimeRecursive:            MetricSettings{Enabled: true},
+		ContainerBlockioIoWaitTimeRecursive:        MetricSettings{Enabled: true},
+		ContainerBlockioSectorsRecursive:           MetricSettings{Enabled: true},
+		ContainerCPUPercent:                        MetricSettings{Enabled: true},
+		ContainerCPUThrottlingDataPeriods:          MetricSettings{Enabled: true},
+		ContainerCPUThrottlingDataThrottledPeriods: MetricSettings{Enabled: true},
+		ContainerCPUThrottlingDataThrottledTime:    MetricSettings{Enabled: true},
+		ContainerCPUUsageKernelmode:                MetricSettings{Enabled: true},
+		ContainerCPUUsagePercpu:                    MetricSettings{Enabled: true},
+		ContainerCPUUsageSystem:                    MetricSettings{Enabled: true},
+		ContainerCPUUsageTotal:                     MetricSettings{Enabled: true},
+		ContainerCPUUsageUsermode:                  MetricSettings{Enabled: true},
+		ContainerMemoryActiveAnon:                  MetricSettings{Enabled: true},
+		ContainerMemoryActiveFile:                  MetricSettings{Enabled: true},
+		ContainerMemoryCache:                       MetricSettings{Enabled: true},
+		ContainerMemoryDirty:                       MetricSettings{Enabled: true},
+		ContainerMemoryHierarchicalMemoryLimit:     MetricSettings{Enabled: true},
+		ContainerMemoryHierarchicalMemswLimit:      MetricSettings{Enabled: true},
+		ContainerMemoryInactiveAnon:                MetricSettings{Enabled: true},
+		ContainerMemoryInactiveFile:                MetricSettings{Enabled: true},
+		ContainerMemoryMappedFile:                  MetricSettings{Enabled: true},
+		ContainerMemoryPercent:                     MetricSettings{Enabled: true},
+		ContainerMemoryPgfault:                     MetricSettings{Enabled: true},
+		ContainerMemoryPgmajfault:                  MetricSettings{Enabled: true},
+		ContainerMemoryPgpgin:                      MetricSettings{Enabled: true},
+		ContainerMemoryPgpgout:                     MetricSettings{Enabled: true},
+		ContainerMemoryRss:                         MetricSettings{Enabled: true},
+		ContainerMemoryRssHuge:                     MetricSettings{Enabled: true},
+		ContainerMemorySwap:                        MetricSettings{Enabled: true},
+		ContainerMemoryTotalActiveAnon:             MetricSettings{Enabled: true},
+		ContainerMemoryTotalActiveFile:             MetricSettings{Enabled: true},
+		ContainerMemoryTotalCache:                  MetricSettings{Enabled: true},
+		ContainerMemoryTotalDirty:                  MetricSettings{Enabled: true},
+		ContainerMemoryTotalInactiveAnon:           MetricSettings{Enabled: true},
+		ContainerMemoryTotalInactiveFile:           MetricSettings{Enabled: true},
+		ContainerMemoryTotalMappedFile:             MetricSettings{Enabled: true},
+		ContainerMemoryTotalPgfault:                MetricSettings{Enabled: true},
+		ContainerMemoryTotalPgmajfault:             MetricSettings{Enabled: true},
+		ContainerMemoryTotalPgpgin:                 MetricSettings{Enabled: true},
+		ContainerMemoryTotalPgpgout:                MetricSettings{Enabled: true},
+		ContainerMemoryTotalRss:                    MetricSettings{Enabled: true},
+		ContainerMemoryTotalRssHuge:                MetricSettings{Enabled: true},
+		ContainerMemoryTotalSwap:                   MetricSettings{Enabled: true},
+		ContainerMemoryTotalUnevictable:            MetricSettings{Enabled: true},
+		ContainerMemoryTotalWriteback:              MetricSettings{Enabled: true},
+		ContainerMemoryUnevictable:                 MetricSettings{Enabled: true},
+		ContainerMemoryUsageLimit:                  MetricSettings{Enabled: true},
+		ContainerMemoryUsageMax:                    MetricSettings{Enabled: true},
+		ContainerMemoryUsageTotal:                  MetricSettings{Enabled: true},
+		ContainerMemoryWriteback:                   MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageRxBytes:             MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageRxDropped:           MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageRxErrors:            MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageRxPackets:           MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageTxBytes:             MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageTxDropped:           MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageTxErrors:            MetricSettings{Enabled: true},
+		ContainerNetworkIoUsageTxPackets:           MetricSettings{Enabled: true},
+		ContainerStatus:                            MetricSettings{Enabled: true},
+	}
 	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
 	settings := receivertest.NewNopCreateSettings()
 	settings.Logger = zap.New(observedZapCore)
@@ -257,8 +326,9 @@ func TestAllMetrics(t *testing.T) {
 	mb.RecordContainerNetworkIoUsageTxDroppedDataPoint(ts, 1, "attr-val")
 	mb.RecordContainerNetworkIoUsageTxErrorsDataPoint(ts, 1, "attr-val")
 	mb.RecordContainerNetworkIoUsageTxPacketsDataPoint(ts, 1, "attr-val")
+	mb.RecordContainerStatusDataPoint(ts, 1)
 
-	metrics := mb.Emit(WithContainerHostname("attr-val"), WithContainerID("attr-val"), WithContainerImageName("attr-val"), WithContainerName("attr-val"), WithContainerRuntime("attr-val"))
+	metrics := mb.Emit(WithContainerHostname("attr-val"), WithContainerID("attr-val"), WithContainerImageName("attr-val"), WithContainerName("attr-val"), WithContainerRuntime("attr-val"), WithContainerStartedOn("attr-val"))
 
 	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
 	rm := metrics.ResourceMetrics().At(0)
@@ -281,6 +351,10 @@ func TestAllMetrics(t *testing.T) {
 	assert.EqualValues(t, "attr-val", attrVal.Str())
 	attrCount++
 	attrVal, ok = rm.Resource().Attributes().Get("container.runtime")
+	assert.True(t, ok)
+	assert.EqualValues(t, "attr-val", attrVal.Str())
+	attrCount++
+	attrVal, ok = rm.Resource().Attributes().Get("container.started_on")
 	assert.True(t, ok)
 	assert.EqualValues(t, "attr-val", attrVal.Str())
 	assert.Equal(t, attrCount, rm.Resource().Attributes().Len())
@@ -1206,6 +1280,17 @@ func TestAllMetrics(t *testing.T) {
 			assert.True(t, ok)
 			assert.EqualValues(t, "attr-val", attrVal.Str())
 			validatedMetrics["container.network.io.usage.tx_packets"] = struct{}{}
+		case "container.status":
+			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+			assert.Equal(t, "Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead", ms.At(i).Description())
+			assert.Equal(t, "", ms.At(i).Unit())
+			dp := ms.At(i).Gauge().DataPoints().At(0)
+			assert.Equal(t, start, dp.StartTimestamp())
+			assert.Equal(t, ts, dp.Timestamp())
+			assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+			assert.Equal(t, int64(1), dp.IntValue())
+			validatedMetrics["container.status"] = struct{}{}
 		}
 	}
 	assert.Equal(t, allMetricsCount, len(validatedMetrics))
@@ -1214,6 +1299,72 @@ func TestAllMetrics(t *testing.T) {
 func TestNoMetrics(t *testing.T) {
 	start := pcommon.Timestamp(1_000_000_000)
 	ts := pcommon.Timestamp(1_000_001_000)
+	metricsSettings := MetricsSettings{
+		ContainerBlockioIoMergedRecursive:          MetricSettings{Enabled: false},
+		ContainerBlockioIoQueuedRecursive:          MetricSettings{Enabled: false},
+		ContainerBlockioIoServiceBytesRecursive:    MetricSettings{Enabled: false},
+		ContainerBlockioIoServiceTimeRecursive:     MetricSettings{Enabled: false},
+		ContainerBlockioIoServicedRecursive:        MetricSettings{Enabled: false},
+		ContainerBlockioIoTimeRecursive:            MetricSettings{Enabled: false},
+		ContainerBlockioIoWaitTimeRecursive:        MetricSettings{Enabled: false},
+		ContainerBlockioSectorsRecursive:           MetricSettings{Enabled: false},
+		ContainerCPUPercent:                        MetricSettings{Enabled: false},
+		ContainerCPUThrottlingDataPeriods:          MetricSettings{Enabled: false},
+		ContainerCPUThrottlingDataThrottledPeriods: MetricSettings{Enabled: false},
+		ContainerCPUThrottlingDataThrottledTime:    MetricSettings{Enabled: false},
+		ContainerCPUUsageKernelmode:                MetricSettings{Enabled: false},
+		ContainerCPUUsagePercpu:                    MetricSettings{Enabled: false},
+		ContainerCPUUsageSystem:                    MetricSettings{Enabled: false},
+		ContainerCPUUsageTotal:                     MetricSettings{Enabled: false},
+		ContainerCPUUsageUsermode:                  MetricSettings{Enabled: false},
+		ContainerMemoryActiveAnon:                  MetricSettings{Enabled: false},
+		ContainerMemoryActiveFile:                  MetricSettings{Enabled: false},
+		ContainerMemoryCache:                       MetricSettings{Enabled: false},
+		ContainerMemoryDirty:                       MetricSettings{Enabled: false},
+		ContainerMemoryHierarchicalMemoryLimit:     MetricSettings{Enabled: false},
+		ContainerMemoryHierarchicalMemswLimit:      MetricSettings{Enabled: false},
+		ContainerMemoryInactiveAnon:                MetricSettings{Enabled: false},
+		ContainerMemoryInactiveFile:                MetricSettings{Enabled: false},
+		ContainerMemoryMappedFile:                  MetricSettings{Enabled: false},
+		ContainerMemoryPercent:                     MetricSettings{Enabled: false},
+		ContainerMemoryPgfault:                     MetricSettings{Enabled: false},
+		ContainerMemoryPgmajfault:                  MetricSettings{Enabled: false},
+		ContainerMemoryPgpgin:                      MetricSettings{Enabled: false},
+		ContainerMemoryPgpgout:                     MetricSettings{Enabled: false},
+		ContainerMemoryRss:                         MetricSettings{Enabled: false},
+		ContainerMemoryRssHuge:                     MetricSettings{Enabled: false},
+		ContainerMemorySwap:                        MetricSettings{Enabled: false},
+		ContainerMemoryTotalActiveAnon:             MetricSettings{Enabled: false},
+		ContainerMemoryTotalActiveFile:             MetricSettings{Enabled: false},
+		ContainerMemoryTotalCache:                  MetricSettings{Enabled: false},
+		ContainerMemoryTotalDirty:                  MetricSettings{Enabled: false},
+		ContainerMemoryTotalInactiveAnon:           MetricSettings{Enabled: false},
+		ContainerMemoryTotalInactiveFile:           MetricSettings{Enabled: false},
+		ContainerMemoryTotalMappedFile:             MetricSettings{Enabled: false},
+		ContainerMemoryTotalPgfault:                MetricSettings{Enabled: false},
+		ContainerMemoryTotalPgmajfault:             MetricSettings{Enabled: false},
+		ContainerMemoryTotalPgpgin:                 MetricSettings{Enabled: false},
+		ContainerMemoryTotalPgpgout:                MetricSettings{Enabled: false},
+		ContainerMemoryTotalRss:                    MetricSettings{Enabled: false},
+		ContainerMemoryTotalRssHuge:                MetricSettings{Enabled: false},
+		ContainerMemoryTotalSwap:                   MetricSettings{Enabled: false},
+		ContainerMemoryTotalUnevictable:            MetricSettings{Enabled: false},
+		ContainerMemoryTotalWriteback:              MetricSettings{Enabled: false},
+		ContainerMemoryUnevictable:                 MetricSettings{Enabled: false},
+		ContainerMemoryUsageLimit:                  MetricSettings{Enabled: false},
+		ContainerMemoryUsageMax:                    MetricSettings{Enabled: false},
+		ContainerMemoryUsageTotal:                  MetricSettings{Enabled: false},
+		ContainerMemoryWriteback:                   MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageRxBytes:             MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageRxDropped:           MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageRxErrors:            MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageRxPackets:           MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageTxBytes:             MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageTxDropped:           MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageTxErrors:            MetricSettings{Enabled: false},
+		ContainerNetworkIoUsageTxPackets:           MetricSettings{Enabled: false},
+		ContainerStatus:                            MetricSettings{Enabled: false},
+	}
 	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
 	settings := receivertest.NewNopCreateSettings()
 	settings.Logger = zap.New(observedZapCore)
@@ -1284,6 +1435,7 @@ func TestNoMetrics(t *testing.T) {
 	mb.RecordContainerNetworkIoUsageTxDroppedDataPoint(ts, 1, "attr-val")
 	mb.RecordContainerNetworkIoUsageTxErrorsDataPoint(ts, 1, "attr-val")
 	mb.RecordContainerNetworkIoUsageTxPacketsDataPoint(ts, 1, "attr-val")
+	mb.RecordContainerStatusDataPoint(ts, 1)
 
 	metrics := mb.Emit()
 
