@@ -105,6 +105,7 @@ func getResourceForStatefulSet(ss *appsv1.StatefulSet) *resourcepb.Resource {
 			conventions.AttributeK8SStatefulSetUID:  string(ss.UID),
 			conventions.AttributeK8SStatefulSetName: ss.Name,
 			conventions.AttributeK8SNamespaceName:   ss.Namespace,
+			"k8s.statefulset.start_time":            ss.GetCreationTimestamp().String(),
 		},
 	}
 }
