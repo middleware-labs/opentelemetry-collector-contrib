@@ -80,7 +80,8 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordSystemNetworkIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 
-	mb.RecordSystemNetworkIoBandwidthDataPoint(ts, 1, AttributeDirection(1))
+			allMetricsCount++
+			mb.RecordSystemNetworkIoBandwidthDataPoint(ts, 1, AttributeDirection(1))
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -88,49 +89,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			metrics := mb.Emit()
 
-	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
-	sm := metrics.ResourceMetrics().At(0).ScopeMetrics()
-	assert.Equal(t, 1, sm.Len())
-	ms := sm.At(0).Metrics()
-	assert.Equal(t, len(enabledMetrics), ms.Len())
-	seenMetrics := make(map[string]bool)
-	for i := 0; i < ms.Len(); i++ {
-		assert.True(t, enabledMetrics[ms.At(i).Name()])
-		seenMetrics[ms.At(i).Name()] = true
-	}
-	assert.Equal(t, len(enabledMetrics), len(seenMetrics))
-}
-
-func TestAllMetrics(t *testing.T) {
-	start := pcommon.Timestamp(1_000_000_000)
-	ts := pcommon.Timestamp(1_000_001_000)
-	metricsSettings := MetricsSettings{
-		SystemNetworkConnections:    MetricSettings{Enabled: true},
-		SystemNetworkConntrackCount: MetricSettings{Enabled: true},
-		SystemNetworkConntrackMax:   MetricSettings{Enabled: true},
-		SystemNetworkDropped:        MetricSettings{Enabled: true},
-		SystemNetworkErrors:         MetricSettings{Enabled: true},
-		SystemNetworkIo:             MetricSettings{Enabled: true},
-		SystemNetworkIoBandwidth:    MetricSettings{Enabled: true},
-		SystemNetworkPackets:        MetricSettings{Enabled: true},
-	}
-	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
-	settings := receivertest.NewNopCreateSettings()
-	settings.Logger = zap.New(observedZapCore)
-	mb := NewMetricsBuilder(loadConfig(t, "all_metrics"), settings, WithStartTime(start))
-
-	assert.Equal(t, 0, observedLogs.Len())
-
-	mb.RecordSystemNetworkConnectionsDataPoint(ts, 1, AttributeProtocol(1), "attr-val")
-	mb.RecordSystemNetworkConntrackCountDataPoint(ts, 1)
-	mb.RecordSystemNetworkConntrackMaxDataPoint(ts, 1)
-	mb.RecordSystemNetworkDroppedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemNetworkErrorsDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemNetworkIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemNetworkIoBandwidthDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordSystemNetworkPacketsDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-
-	metrics := mb.Emit()
+			if test.metricsSet == testMetricsSetNo {
+				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
+				return
+			}
 
 			assert.Equal(t, 1, metrics.ResourceMetrics().Len())
 			rm := metrics.ResourceMetrics().At(0)
@@ -256,20 +218,21 @@ func TestAllMetrics(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("direction")
 					assert.True(t, ok)
 					assert.Equal(t, "receive", attrVal.Str())
-		case "system.network.io.bandwidth":
-			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-			assert.Equal(t, "The rate of transmission and reception.", ms.At(i).Description())
-			assert.Equal(t, "By/s", ms.At(i).Unit())
-			dp := ms.At(i).Gauge().DataPoints().At(0)
-			assert.Equal(t, start, dp.StartTimestamp())
-			assert.Equal(t, ts, dp.Timestamp())
-			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
-			assert.Equal(t, float64(1), dp.DoubleValue())
-			attrVal, ok := dp.Attributes().Get("direction")
-			assert.True(t, ok)
-			assert.Equal(t, "receive", attrVal.Str())
-			validatedMetrics["system.network.io.bandwidth"] = struct{}{}
+				case "system.network.io.bandwidth":
+					assert.False(t, validatedMetrics["system.network.io.bandwidth"], "Found a duplicate in the metrics slice: system.network.io.bandwidth")
+					validatedMetrics["system.network.io.bandwidth"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The rate of transmission and reception.", ms.At(i).Description())
+					assert.Equal(t, "By/s", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("direction")
+					assert.True(t, ok)
+					assert.Equal(t, "receive", attrVal.Str())
 				case "system.network.packets":
 					assert.False(t, validatedMetrics["system.network.packets"], "Found a duplicate in the metrics slice: system.network.packets")
 					validatedMetrics["system.network.packets"] = true
@@ -294,41 +257,6 @@ func TestAllMetrics(t *testing.T) {
 			}
 		})
 	}
-	assert.Equal(t, allMetricsCount, len(validatedMetrics))
-}
-
-func TestNoMetrics(t *testing.T) {
-	start := pcommon.Timestamp(1_000_000_000)
-	ts := pcommon.Timestamp(1_000_001_000)
-	metricsSettings := MetricsSettings{
-		SystemNetworkConnections:    MetricSettings{Enabled: false},
-		SystemNetworkConntrackCount: MetricSettings{Enabled: false},
-		SystemNetworkConntrackMax:   MetricSettings{Enabled: false},
-		SystemNetworkDropped:        MetricSettings{Enabled: false},
-		SystemNetworkErrors:         MetricSettings{Enabled: false},
-		SystemNetworkIo:             MetricSettings{Enabled: false},
-		SystemNetworkIoBandwidth:    MetricSettings{Enabled: false},
-		SystemNetworkPackets:        MetricSettings{Enabled: false},
-	}
-	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
-	settings := receivertest.NewNopCreateSettings()
-	settings.Logger = zap.New(observedZapCore)
-	mb := NewMetricsBuilder(loadConfig(t, "no_metrics"), settings, WithStartTime(start))
-
-	assert.Equal(t, 0, observedLogs.Len())
-
-	mb.RecordSystemNetworkConnectionsDataPoint(ts, 1, AttributeProtocol(1), "attr-val")
-	mb.RecordSystemNetworkConntrackCountDataPoint(ts, 1)
-	mb.RecordSystemNetworkConntrackMaxDataPoint(ts, 1)
-	mb.RecordSystemNetworkDroppedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemNetworkErrorsDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemNetworkIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemNetworkIoBandwidthDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordSystemNetworkPacketsDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-
-	metrics := mb.Emit()
-
-	assert.Equal(t, 0, metrics.ResourceMetrics().Len())
 }
 
 func loadConfig(t *testing.T, name string) MetricsSettings {

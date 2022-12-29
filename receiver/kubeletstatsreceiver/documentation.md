@@ -389,10 +389,10 @@ The inodes used by the filesystem. This may not equal inodes - free because file
 | k8s.container.name | Container name used by container runtime | Any Str |
 | k8s.namespace.name | The name of the namespace that the pod is running in | Any Str |
 | k8s.node.name | The name of the Node | Any Str |
+| k8s.node.uid | The UID of the Node | Any Str |
 | k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str |
 | k8s.pod.name | The name of the Pod | Any Str |
 | k8s.pod.uid | The UID of the Pod | Any Str |
 | k8s.volume.name | The name of the Volume | Any Str |
 | k8s.volume.type | The type of the Volume | Any Str |
 | partition | The partition in the Volume | Any Str |
-| k8s.node.uid | The UID of the Node | String |

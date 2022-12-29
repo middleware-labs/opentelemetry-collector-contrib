@@ -69,8 +69,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordProcessContextSwitchesDataPoint(ts, 1, AttributeContextSwitchType(1))
 
-	enabledMetrics["process.cpu.percent"] = true
-	mb.RecordProcessCPUPercentDataPoint(ts, 1)
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordProcessCPUPercentDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -86,8 +87,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordProcessDiskOperationsDataPoint(ts, 1, AttributeDirection(1))
 
-	enabledMetrics["process.memory.percent"] = true
-	mb.RecordProcessMemoryPercentDataPoint(ts, 1)
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordProcessMemoryPercentDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -118,110 +120,49 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordProcessThreadsDataPoint(ts, 1)
 
-			metrics := mb.Emit(WithProcessCommand("attr-val"), WithProcessCommandLine("attr-val"), WithProcessExecutableName("attr-val"), WithProcessExecutablePath("attr-val"), WithProcessOwner("attr-val"), WithProcessParentPid(1), WithProcessPid(1))
+			metrics := mb.Emit(WithProcessCommand("attr-val"), WithProcessCommandLine("attr-val"), WithProcessExecutableName("attr-val"), WithProcessExecutablePath("attr-val"), WithProcessOwner("attr-val"), WithProcessParentPid(1), WithProcessPid(1), WithProcessStartedOn(1))
 
-	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
-	sm := metrics.ResourceMetrics().At(0).ScopeMetrics()
-	assert.Equal(t, 1, sm.Len())
-	ms := sm.At(0).Metrics()
-	assert.Equal(t, len(enabledMetrics), ms.Len())
-	seenMetrics := make(map[string]bool)
-	for i := 0; i < ms.Len(); i++ {
-		assert.True(t, enabledMetrics[ms.At(i).Name()])
-		seenMetrics[ms.At(i).Name()] = true
-	}
-	assert.Equal(t, len(enabledMetrics), len(seenMetrics))
-}
-
-func TestAllMetrics(t *testing.T) {
-	start := pcommon.Timestamp(1_000_000_000)
-	ts := pcommon.Timestamp(1_000_001_000)
-	metricsSettings := MetricsSettings{
-		ProcessContextSwitches:     MetricSettings{Enabled: true},
-		ProcessCPUPercent:          MetricSettings{Enabled: true},
-		ProcessCPUTime:             MetricSettings{Enabled: true},
-		ProcessCPUUtilization:      MetricSettings{Enabled: true},
-		ProcessDiskIo:              MetricSettings{Enabled: true},
-		ProcessDiskOperations:      MetricSettings{Enabled: true},
-		ProcessMemoryPercent:       MetricSettings{Enabled: true},
-		ProcessMemoryPhysicalUsage: MetricSettings{Enabled: true},
-		ProcessMemoryUsage:         MetricSettings{Enabled: true},
-		ProcessMemoryUtilization:   MetricSettings{Enabled: true},
-		ProcessMemoryVirtual:       MetricSettings{Enabled: true},
-		ProcessMemoryVirtualUsage:  MetricSettings{Enabled: true},
-		ProcessOpenFileDescriptors: MetricSettings{Enabled: true},
-		ProcessPagingFaults:        MetricSettings{Enabled: true},
-		ProcessSignalsPending:      MetricSettings{Enabled: true},
-		ProcessThreads:             MetricSettings{Enabled: true},
-	}
-	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
-	settings := receivertest.NewNopCreateSettings()
-	settings.Logger = zap.New(observedZapCore)
-	mb := NewMetricsBuilder(loadConfig(t, "all_metrics"), settings, WithStartTime(start))
-
-	assert.Equal(t, "[WARNING] `process.memory.physical_usage` should not be enabled: The metric is deprecated and will be removed in v0.70.0. Please use `process.memory.usage` instead. See https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver#transition-to-process-memory-metric-names-aligned-with-opentelemetry-specification for more details.", observedLogs.All()[0].Message)
-	assert.Equal(t, "[WARNING] `process.memory.virtual_usage` should not be enabled: The metric is deprecated and will be removed in v0.70.0. Please use `process.memory.virtual` metric instead. See  https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/hostmetricsreceiver#transition-to-process-memory-metric-names-aligned-with-opentelemetry-specification for more details.", observedLogs.All()[1].Message)
-	assert.Equal(t, 2, observedLogs.Len())
-
-	mb.RecordProcessContextSwitchesDataPoint(ts, 1, AttributeContextSwitchType(1))
-	mb.RecordProcessCPUPercentDataPoint(ts, 1)
-	mb.RecordProcessCPUTimeDataPoint(ts, 1, AttributeState(1))
-	mb.RecordProcessCPUUtilizationDataPoint(ts, 1, AttributeState(1))
-	mb.RecordProcessDiskIoDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordProcessDiskOperationsDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordProcessMemoryPercentDataPoint(ts, 1)
-	mb.RecordProcessMemoryPhysicalUsageDataPoint(ts, 1)
-	mb.RecordProcessMemoryUsageDataPoint(ts, 1)
-	mb.RecordProcessMemoryUtilizationDataPoint(ts, 1)
-	mb.RecordProcessMemoryVirtualDataPoint(ts, 1)
-	mb.RecordProcessMemoryVirtualUsageDataPoint(ts, 1)
-	mb.RecordProcessOpenFileDescriptorsDataPoint(ts, 1)
-	mb.RecordProcessPagingFaultsDataPoint(ts, 1, AttributePagingFaultType(1))
-	mb.RecordProcessSignalsPendingDataPoint(ts, 1)
-	mb.RecordProcessThreadsDataPoint(ts, 1)
-
-	metrics := mb.Emit(WithProcessCommand("attr-val"), WithProcessCommandLine("attr-val"), WithProcessExecutableName("attr-val"), WithProcessExecutablePath("attr-val"), WithProcessOwner("attr-val"), WithProcessParentPid(1), WithProcessPid(1), WithProcessStartedOn(1))
 			if test.metricsSet == testMetricsSetNo {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
 				return
 			}
 
-	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
-	rm := metrics.ResourceMetrics().At(0)
-	attrCount := 0
-	attrCount++
-	attrVal, ok := rm.Resource().Attributes().Get("process.command")
-	assert.True(t, ok)
-	assert.EqualValues(t, "attr-val", attrVal.Str())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.command_line")
-	assert.True(t, ok)
-	assert.EqualValues(t, "attr-val", attrVal.Str())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.executable.name")
-	assert.True(t, ok)
-	assert.EqualValues(t, "attr-val", attrVal.Str())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.executable.path")
-	assert.True(t, ok)
-	assert.EqualValues(t, "attr-val", attrVal.Str())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.owner")
-	assert.True(t, ok)
-	assert.EqualValues(t, "attr-val", attrVal.Str())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.parent_pid")
-	assert.True(t, ok)
-	assert.EqualValues(t, 1, attrVal.Int())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.pid")
-	assert.True(t, ok)
-	assert.EqualValues(t, 1, attrVal.Int())
-	attrCount++
-	attrVal, ok = rm.Resource().Attributes().Get("process.started_on")
-	assert.True(t, ok)
-	assert.EqualValues(t, 1, attrVal.Int())
-	assert.Equal(t, attrCount, rm.Resource().Attributes().Len())
+			assert.Equal(t, 1, metrics.ResourceMetrics().Len())
+			rm := metrics.ResourceMetrics().At(0)
+			attrCount := 0
+			attrCount++
+			attrVal, ok := rm.Resource().Attributes().Get("process.command")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.command_line")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.executable.name")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.executable.path")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.owner")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.parent_pid")
+			assert.True(t, ok)
+			assert.EqualValues(t, 1, attrVal.Int())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.pid")
+			assert.True(t, ok)
+			assert.EqualValues(t, 1, attrVal.Int())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("process.started_on")
+			assert.True(t, ok)
+			assert.EqualValues(t, 1, attrVal.Int())
+			assert.Equal(t, attrCount, rm.Resource().Attributes().Len())
 
 			assert.Equal(t, 1, rm.ScopeMetrics().Len())
 			ms := rm.ScopeMetrics().At(0).Metrics()
@@ -251,17 +192,18 @@ func TestAllMetrics(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("type")
 					assert.True(t, ok)
 					assert.Equal(t, "involuntary", attrVal.Str())
-		case "process.cpu.percent":
-			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-			assert.Equal(t, "Percent of CPU used by the process.", ms.At(i).Description())
-			assert.Equal(t, "%", ms.At(i).Unit())
-			dp := ms.At(i).Gauge().DataPoints().At(0)
-			assert.Equal(t, start, dp.StartTimestamp())
-			assert.Equal(t, ts, dp.Timestamp())
-			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
-			assert.Equal(t, float64(1), dp.DoubleValue())
-			validatedMetrics["process.cpu.percent"] = struct{}{}
+				case "process.cpu.percent":
+					assert.False(t, validatedMetrics["process.cpu.percent"], "Found a duplicate in the metrics slice: process.cpu.percent")
+					validatedMetrics["process.cpu.percent"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Percent of CPU used by the process.", ms.At(i).Description())
+					assert.Equal(t, "%", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
 				case "process.cpu.time":
 					assert.False(t, validatedMetrics["process.cpu.time"], "Found a duplicate in the metrics slice: process.cpu.time")
 					validatedMetrics["process.cpu.time"] = true
@@ -328,17 +270,18 @@ func TestAllMetrics(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("direction")
 					assert.True(t, ok)
 					assert.Equal(t, "read", attrVal.Str())
-		case "process.memory.percent":
-			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-			assert.Equal(t, "Percent of Memory used by the process.", ms.At(i).Description())
-			assert.Equal(t, "%", ms.At(i).Unit())
-			dp := ms.At(i).Gauge().DataPoints().At(0)
-			assert.Equal(t, start, dp.StartTimestamp())
-			assert.Equal(t, ts, dp.Timestamp())
-			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
-			assert.Equal(t, float64(1), dp.DoubleValue())
-			validatedMetrics["process.memory.percent"] = struct{}{}
+				case "process.memory.percent":
+					assert.False(t, validatedMetrics["process.memory.percent"], "Found a duplicate in the metrics slice: process.memory.percent")
+					validatedMetrics["process.memory.percent"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Percent of Memory used by the process.", ms.At(i).Description())
+					assert.Equal(t, "%", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
 				case "process.memory.physical_usage":
 					assert.False(t, validatedMetrics["process.memory.physical_usage"], "Found a duplicate in the metrics slice: process.memory.physical_usage")
 					validatedMetrics["process.memory.physical_usage"] = true
@@ -470,57 +413,6 @@ func TestAllMetrics(t *testing.T) {
 			}
 		})
 	}
-	assert.Equal(t, allMetricsCount, len(validatedMetrics))
-}
-
-func TestNoMetrics(t *testing.T) {
-	start := pcommon.Timestamp(1_000_000_000)
-	ts := pcommon.Timestamp(1_000_001_000)
-	metricsSettings := MetricsSettings{
-		ProcessContextSwitches:     MetricSettings{Enabled: false},
-		ProcessCPUPercent:          MetricSettings{Enabled: false},
-		ProcessCPUTime:             MetricSettings{Enabled: false},
-		ProcessCPUUtilization:      MetricSettings{Enabled: false},
-		ProcessDiskIo:              MetricSettings{Enabled: false},
-		ProcessDiskOperations:      MetricSettings{Enabled: false},
-		ProcessMemoryPercent:       MetricSettings{Enabled: false},
-		ProcessMemoryPhysicalUsage: MetricSettings{Enabled: false},
-		ProcessMemoryUsage:         MetricSettings{Enabled: false},
-		ProcessMemoryUtilization:   MetricSettings{Enabled: false},
-		ProcessMemoryVirtual:       MetricSettings{Enabled: false},
-		ProcessMemoryVirtualUsage:  MetricSettings{Enabled: false},
-		ProcessOpenFileDescriptors: MetricSettings{Enabled: false},
-		ProcessPagingFaults:        MetricSettings{Enabled: false},
-		ProcessSignalsPending:      MetricSettings{Enabled: false},
-		ProcessThreads:             MetricSettings{Enabled: false},
-	}
-	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
-	settings := receivertest.NewNopCreateSettings()
-	settings.Logger = zap.New(observedZapCore)
-	mb := NewMetricsBuilder(loadConfig(t, "no_metrics"), settings, WithStartTime(start))
-
-	assert.Equal(t, 0, observedLogs.Len())
-
-	mb.RecordProcessContextSwitchesDataPoint(ts, 1, AttributeContextSwitchType(1))
-	mb.RecordProcessCPUPercentDataPoint(ts, 1)
-	mb.RecordProcessCPUTimeDataPoint(ts, 1, AttributeState(1))
-	mb.RecordProcessCPUUtilizationDataPoint(ts, 1, AttributeState(1))
-	mb.RecordProcessDiskIoDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordProcessDiskOperationsDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordProcessMemoryPercentDataPoint(ts, 1)
-	mb.RecordProcessMemoryPhysicalUsageDataPoint(ts, 1)
-	mb.RecordProcessMemoryUsageDataPoint(ts, 1)
-	mb.RecordProcessMemoryUtilizationDataPoint(ts, 1)
-	mb.RecordProcessMemoryVirtualDataPoint(ts, 1)
-	mb.RecordProcessMemoryVirtualUsageDataPoint(ts, 1)
-	mb.RecordProcessOpenFileDescriptorsDataPoint(ts, 1)
-	mb.RecordProcessPagingFaultsDataPoint(ts, 1, AttributePagingFaultType(1))
-	mb.RecordProcessSignalsPendingDataPoint(ts, 1)
-	mb.RecordProcessThreadsDataPoint(ts, 1)
-
-	metrics := mb.Emit()
-
-	assert.Equal(t, 0, metrics.ResourceMetrics().Len())
 }
 
 func loadConfig(t *testing.T, name string) MetricsSettings {

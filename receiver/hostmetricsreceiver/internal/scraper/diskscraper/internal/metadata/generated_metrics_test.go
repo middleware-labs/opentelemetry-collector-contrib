@@ -62,7 +62,8 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 
-	mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
+			allMetricsCount++
+			mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -90,49 +91,6 @@ func TestMetricsBuilder(t *testing.T) {
 
 			metrics := mb.Emit()
 
-	assert.Equal(t, 1, metrics.ResourceMetrics().Len())
-	sm := metrics.ResourceMetrics().At(0).ScopeMetrics()
-	assert.Equal(t, 1, sm.Len())
-	ms := sm.At(0).Metrics()
-	assert.Equal(t, len(enabledMetrics), ms.Len())
-	seenMetrics := make(map[string]bool)
-	for i := 0; i < ms.Len(); i++ {
-		assert.True(t, enabledMetrics[ms.At(i).Name()])
-		seenMetrics[ms.At(i).Name()] = true
-	}
-	assert.Equal(t, len(enabledMetrics), len(seenMetrics))
-}
-
-func TestAllMetrics(t *testing.T) {
-	start := pcommon.Timestamp(1_000_000_000)
-	ts := pcommon.Timestamp(1_000_001_000)
-	metricsSettings := MetricsSettings{
-		SystemDiskIo:                MetricSettings{Enabled: true},
-		SystemDiskIoSpeed:           MetricSettings{Enabled: true},
-		SystemDiskIoTime:            MetricSettings{Enabled: true},
-		SystemDiskMerged:            MetricSettings{Enabled: true},
-		SystemDiskOperationTime:     MetricSettings{Enabled: true},
-		SystemDiskOperations:        MetricSettings{Enabled: true},
-		SystemDiskPendingOperations: MetricSettings{Enabled: true},
-		SystemDiskWeightedIoTime:    MetricSettings{Enabled: true},
-	}
-	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
-	settings := receivertest.NewNopCreateSettings()
-	settings.Logger = zap.New(observedZapCore)
-	mb := NewMetricsBuilder(loadConfig(t, "all_metrics"), settings, WithStartTime(start))
-
-	assert.Equal(t, 0, observedLogs.Len())
-
-	mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordSystemDiskIoTimeDataPoint(ts, 1, "attr-val")
-	mb.RecordSystemDiskMergedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskOperationTimeDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskOperationsDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskPendingOperationsDataPoint(ts, 1, "attr-val")
-	mb.RecordSystemDiskWeightedIoTimeDataPoint(ts, 1, "attr-val")
-
-	metrics := mb.Emit()
 			if test.metricsSet == testMetricsSetNo {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
 				return
@@ -174,20 +132,21 @@ func TestAllMetrics(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("direction")
 					assert.True(t, ok)
 					assert.Equal(t, "read", attrVal.Str())
-		case "system.disk.io.speed":
-			assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-			assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-			assert.Equal(t, "The rate of transmission and reception.", ms.At(i).Description())
-			assert.Equal(t, "By/s", ms.At(i).Unit())
-			dp := ms.At(i).Gauge().DataPoints().At(0)
-			assert.Equal(t, start, dp.StartTimestamp())
-			assert.Equal(t, ts, dp.Timestamp())
-			assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
-			assert.Equal(t, float64(1), dp.DoubleValue())
-			attrVal, ok := dp.Attributes().Get("direction")
-			assert.True(t, ok)
-			assert.Equal(t, "read", attrVal.Str())
-			validatedMetrics["system.disk.io.speed"] = struct{}{}
+				case "system.disk.io.speed":
+					assert.False(t, validatedMetrics["system.disk.io.speed"], "Found a duplicate in the metrics slice: system.disk.io.speed")
+					validatedMetrics["system.disk.io.speed"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The rate of transmission and reception.", ms.At(i).Description())
+					assert.Equal(t, "By/s", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("direction")
+					assert.True(t, ok)
+					assert.Equal(t, "read", attrVal.Str())
 				case "system.disk.io_time":
 					assert.False(t, validatedMetrics["system.disk.io_time"], "Found a duplicate in the metrics slice: system.disk.io_time")
 					validatedMetrics["system.disk.io_time"] = true
@@ -303,41 +262,6 @@ func TestAllMetrics(t *testing.T) {
 			}
 		})
 	}
-	assert.Equal(t, allMetricsCount, len(validatedMetrics))
-}
-
-func TestNoMetrics(t *testing.T) {
-	start := pcommon.Timestamp(1_000_000_000)
-	ts := pcommon.Timestamp(1_000_001_000)
-	metricsSettings := MetricsSettings{
-		SystemDiskIo:                MetricSettings{Enabled: false},
-		SystemDiskIoSpeed:           MetricSettings{Enabled: false},
-		SystemDiskIoTime:            MetricSettings{Enabled: false},
-		SystemDiskMerged:            MetricSettings{Enabled: false},
-		SystemDiskOperationTime:     MetricSettings{Enabled: false},
-		SystemDiskOperations:        MetricSettings{Enabled: false},
-		SystemDiskPendingOperations: MetricSettings{Enabled: false},
-		SystemDiskWeightedIoTime:    MetricSettings{Enabled: false},
-	}
-	observedZapCore, observedLogs := observer.New(zap.WarnLevel)
-	settings := receivertest.NewNopCreateSettings()
-	settings.Logger = zap.New(observedZapCore)
-	mb := NewMetricsBuilder(loadConfig(t, "no_metrics"), settings, WithStartTime(start))
-
-	assert.Equal(t, 0, observedLogs.Len())
-
-	mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
-	mb.RecordSystemDiskIoTimeDataPoint(ts, 1, "attr-val")
-	mb.RecordSystemDiskMergedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskOperationTimeDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskOperationsDataPoint(ts, 1, "attr-val", AttributeDirection(1))
-	mb.RecordSystemDiskPendingOperationsDataPoint(ts, 1, "attr-val")
-	mb.RecordSystemDiskWeightedIoTimeDataPoint(ts, 1, "attr-val")
-
-	metrics := mb.Emit()
-
-	assert.Equal(t, 0, metrics.ResourceMetrics().Len())
 }
 
 func loadConfig(t *testing.T, name string) MetricsSettings {
