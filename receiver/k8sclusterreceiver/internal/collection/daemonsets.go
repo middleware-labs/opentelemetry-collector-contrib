@@ -95,6 +95,7 @@ func getResourceForDaemonSet(ds *appsv1.DaemonSet) *resourcepb.Resource {
 			conventions.AttributeK8SDaemonSetUID:  string(ds.UID),
 			conventions.AttributeK8SDaemonSetName: ds.Name,
 			conventions.AttributeK8SNamespaceName: ds.Namespace,
+			"k8s.daemonset.start_time":            ds.GetCreationTimestamp().String(),
 		},
 	}
 }
