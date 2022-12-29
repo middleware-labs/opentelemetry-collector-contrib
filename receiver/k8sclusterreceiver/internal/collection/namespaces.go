@@ -52,6 +52,7 @@ func getResourceForNamespace(ns *corev1.Namespace) *resourcepb.Resource {
 			k8sKeyNamespaceUID:                    string(ns.UID),
 			conventions.AttributeK8SNamespaceName: ns.ObjectMeta.Name,
 			"k8s.namespace.start_time":            ns.GetCreationTimestamp().String(),
+			"k8s.cluster.name":                    "unknown",
 		},
 	}
 }
