@@ -126,6 +126,8 @@ all_metrics:
     enabled: true
   container.network.io.usage.tx_packets:
     enabled: true
+  container.status:
+    enabled: true
 no_metrics:
   container.blockio.io_merged_recursive:
     enabled: false
@@ -252,4 +254,6 @@ no_metrics:
   container.network.io.usage.tx_errors:
     enabled: false
   container.network.io.usage.tx_packets:
+    enabled: false
+  container.status:
     enabled: false

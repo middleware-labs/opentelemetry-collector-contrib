@@ -2513,7 +2513,7 @@ func WithK8sNodeName(val string) ResourceMetricsOption {
 // WithK8sNodeUID sets provided value as "k8s.node.uid" attribute for current resource.
 func WithK8sNodeUID(val string) ResourceMetricsOption {
 	return func(rm pmetric.ResourceMetrics) {
-		rm.Resource().Attributes().UpsertString("k8s.node.uid", val)
+		rm.Resource().Attributes().PutStr("k8s.node.uid", val)
 	}
 }
 
