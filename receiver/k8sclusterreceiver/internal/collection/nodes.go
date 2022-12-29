@@ -113,6 +113,8 @@ func getResourceForNode(node *corev1.Node) *resourcepb.Resource {
 		Labels: map[string]string{
 			conventions.AttributeK8SNodeUID:  string(node.UID),
 			conventions.AttributeK8SNodeName: node.Name,
+			"k8s.node.start_time":            node.GetCreationTimestamp().String(),
+			"k8s.cluster.name":               "unknown",
 		},
 	}
 }
