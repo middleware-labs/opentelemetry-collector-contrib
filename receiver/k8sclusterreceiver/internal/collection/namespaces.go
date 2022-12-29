@@ -51,6 +51,7 @@ func getResourceForNamespace(ns *corev1.Namespace) *resourcepb.Resource {
 		Labels: map[string]string{
 			k8sKeyNamespaceUID:                    string(ns.UID),
 			conventions.AttributeK8SNamespaceName: ns.ObjectMeta.Name,
+			"k8s.namespace.start_time":            ns.GetCreationTimestamp().String(),
 		},
 	}
 }
