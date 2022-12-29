@@ -134,7 +134,7 @@ func (r *kubeletScraper) scrape(context.Context) (pmetric.Metrics, error) {
 		nodeInfo = r.node()
 	}
 
-	metaD := kubelet.NewMetadata(r.extraMetadataLabels, podsMetadata, nodeInfo, r.detailedPVCLabelsSetter())
+	metaD := kubelet.NewMetadata(r.extraMetadataLabels, podsMetadata, nodesMetadata, node, r.detailedPVCLabelsSetter())
 
 	mds := kubelet.MetricsData(r.logger, summary, metaD, r.metricGroupsToCollect, r.allNetworkInterfaces, r.mbs)
 	md := pmetric.NewMetrics()
