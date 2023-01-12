@@ -63,7 +63,7 @@ func TestMetricsBuilder(t *testing.T) {
 			mb.RecordSystemDiskIoDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 
 			allMetricsCount++
-			mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, AttributeDirection(1))
+			mb.RecordSystemDiskIoSpeedDataPoint(ts, 1, "attr-val", AttributeDirection(1))
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -144,7 +144,10 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
 					assert.Equal(t, float64(1), dp.DoubleValue())
-					attrVal, ok := dp.Attributes().Get("direction")
+					attrVal, ok := dp.Attributes().Get("device")
+					assert.True(t, ok)
+					assert.EqualValues(t, "attr-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("direction")
 					assert.True(t, ok)
 					assert.Equal(t, "read", attrVal.Str())
 				case "system.disk.io_time":

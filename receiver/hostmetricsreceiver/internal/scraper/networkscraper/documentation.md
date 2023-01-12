@@ -125,4 +125,5 @@ The rate of transmission and reception.
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
+| device | Name of the network interface. | Any Str |
 | direction | Direction of flow of bytes/operations (receive or transmit). | Str: ``receive``, ``transmit`` |
