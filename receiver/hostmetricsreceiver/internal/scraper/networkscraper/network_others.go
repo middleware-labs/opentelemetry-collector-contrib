@@ -37,9 +37,11 @@ func (*networkScraper) recordNetworkConntrackMetrics(context.Context) error {
 	return nil
 }
 
-func (s *scraper) recordSystemNetworkIoBandwidth(now pcommon.Timestamp, networkBandwidth bcal.NetworkBandwidth) {
+func (s *scraper) recordSystemNetworkIoBandwidth(now pcommon.Timestamp, networkBandwidthMap map[string]bcal.NetworkBandwidth) {
 	if s.config.Metrics.SystemNetworkIoBandwidth.Enabled {
-		s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.InboundRate, metadata.AttributeDirectionReceive)
-		s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.OutboundRate, metadata.AttributeDirectionTransmit)
+		for device, networkBandwidth := range networkBandwidthMap {
+			s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.InboundRate, device, metadata.AttributeDirectionReceive)
+			s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.OutboundRate, device, metadata.AttributeDirectionTransmit)
+		}
 	}
 }

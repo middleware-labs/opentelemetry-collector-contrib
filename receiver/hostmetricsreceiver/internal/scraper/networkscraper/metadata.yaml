@@ -98,7 +98,7 @@ metrics:
     unit: "By/s"
     gauge:
       value_type: double
-    attributes: [ direction ]
+    attributes: [ device, direction ]
   system.network.packets:
     enabled: true
     description: The number of packets transferred.

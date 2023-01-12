@@ -123,6 +123,15 @@ func (s *diskScraper) recordDiskIOTimeMetric(now pcommon.Timestamp, ioCounters m
 	}
 }
 
+func (s *scraper) recordSystemDiskIoSpeed(now pcommon.Timestamp, diskSpeedMap map[string]scal.DiskSpeed) {
+	if s.config.Metrics.SystemDiskIoSpeed.Enabled {
+		for device, speed := range diskSpeedMap {
+			s.mb.RecordSystemDiskIoSpeedDataPoint(now, speed.ReadSpeed, device, metadata.AttributeDirectionRead)
+			s.mb.RecordSystemDiskIoSpeedDataPoint(now, speed.WriteSpeed, device, metadata.AttributeDirectionWrite)
+		}
+	}
+}
+
 func (s *diskScraper) recordDiskOperationTimeMetric(now pcommon.Timestamp, ioCounters map[string]disk.IOCountersStat) {
 	for device := range ioCounters {
 		ioCounter := ioCounters[device]
