@@ -45,9 +45,11 @@ func (s *scraper) recordDiskMergedMetric(now pcommon.Timestamp, ioCounters map[s
 	}
 }
 
-func (s *scraper) recordSystemDiskIoSpeed(now pcommon.Timestamp, diskSpeed scal.DiskSpeed) {
+func (s *scraper) recordSystemDiskIoSpeed(now pcommon.Timestamp, diskSpeedMap map[string]scal.DiskSpeed) {
 	if s.config.Metrics.SystemDiskIoSpeed.Enabled {
-		s.mb.RecordSystemDiskIoSpeedDataPoint(now, diskSpeed.ReadSpeed, metadata.AttributeDirectionRead)
-		s.mb.RecordSystemDiskIoSpeedDataPoint(now, diskSpeed.WriteSpeed, metadata.AttributeDirectionWrite)
+		for device, speed := range diskSpeedMap {
+			s.mb.RecordSystemDiskIoSpeedDataPoint(now, speed.ReadSpeed, device, metadata.AttributeDirectionRead)
+			s.mb.RecordSystemDiskIoSpeedDataPoint(now, speed.WriteSpeed, device, metadata.AttributeDirectionWrite)
+		}
 	}
 }
