@@ -114,6 +114,7 @@ func getResourceForJob(j *batchv1.Job) *resourcepb.Resource {
 			conventions.AttributeK8SJobName:       j.Name,
 			conventions.AttributeK8SNamespaceName: j.Namespace,
 			"k8s.job.start_time":                  j.GetCreationTimestamp().String(),
+			"k8s.cluster.name":                    "unknown",
 		},
 	}
 }
