@@ -84,6 +84,7 @@ func getResourceForCronJob(cj *batchv1.CronJob) *resourcepb.Resource {
 			conventions.AttributeK8SCronJobName:   cj.Name,
 			conventions.AttributeK8SNamespaceName: cj.Namespace,
 			"k8s.cronjob.start_time":              cj.GetCreationTimestamp().String(),
+			"k8s.cluster.name":                    "unknown",
 		},
 	}
 }
