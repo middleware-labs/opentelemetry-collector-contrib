@@ -48,6 +48,7 @@ func getResourceForReplicaSet(rs *appsv1.ReplicaSet) *resourcepb.Resource {
 			conventions.AttributeK8SReplicaSetName: rs.Name,
 			conventions.AttributeK8SNamespaceName:  rs.Namespace,
 			"k8s.replicaset.start_time":            rs.GetCreationTimestamp().String(),
+			"k8s.cluster.name":                     "unknown",
 		},
 	}
 }

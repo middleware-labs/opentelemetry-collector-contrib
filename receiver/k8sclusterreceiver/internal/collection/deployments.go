@@ -47,6 +47,7 @@ func getResourceForDeployment(dep *appsv1.Deployment) *resourcepb.Resource {
 			conventions.AttributeK8SDeploymentName: dep.Name,
 			conventions.AttributeK8SNamespaceName:  dep.Namespace,
 			"k8s.deployment.start_time":            dep.GetCreationTimestamp().String(),
+			"k8s.cluster.name":                     "unknown",
 		},
 	}
 }
