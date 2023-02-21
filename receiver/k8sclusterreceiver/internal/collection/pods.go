@@ -118,6 +118,7 @@ func getResourceForPod(pod *corev1.Pod) *resourcepb.Resource {
 			conventions.AttributeK8SPodName:       pod.Name,
 			conventions.AttributeK8SNodeName:      pod.Spec.NodeName,
 			conventions.AttributeK8SNamespaceName: pod.Namespace,
+			"k8s.cluster.name":                    "unknown",
 		},
 	}
 }
