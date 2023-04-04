@@ -118,9 +118,9 @@ func getResourceForPod(pod *corev1.Pod) *resourcepb.Resource {
 		AuthType: k8sconfig.AuthTypeServiceAccount,
 	})
 
-	node, err := client.CoreV1().Nodes().Get(context.Background(), pod.Spec.NodeName, metav1.GetOptions{})
+	node, err := client.CoreV1().Nodes().Get(context.Background(), pod.Spec.NodeName, v1.GetOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("error getting Node object for Pod: %v", err)
+		fmt.Errorf("error getting Node object for Pod: %v", err)
 	}
 
 	return &resourcepb.Resource{
