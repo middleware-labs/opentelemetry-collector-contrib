@@ -15,6 +15,7 @@
 package collection // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/collection"
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -32,6 +33,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/maps"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	metadataPkg "github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/utils"
 )
@@ -111,12 +113,23 @@ func listResourceMetrics(rms map[string]*resourceMetrics) []*resourceMetrics {
 
 // getResourceForPod returns a proto representation of the pod.
 func getResourceForPod(pod *corev1.Pod) *resourcepb.Resource {
+
+	client, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
+		AuthType: k8sconfig.AuthTypeServiceAccount,
+	})
+
+	node, err := client.CoreV1().Nodes().Get(context.Background(), pod.Spec.NodeName, v1.GetOptions{})
+	if err != nil {
+		fmt.Errorf("error getting Node object for Pod: %v", err)
+	}
+
 	return &resourcepb.Resource{
 		Type: k8sType,
 		Labels: map[string]string{
 			conventions.AttributeK8SPodUID:        string(pod.UID),
 			conventions.AttributeK8SPodName:       pod.Name,
 			conventions.AttributeK8SNodeName:      pod.Spec.NodeName,
+			conventions.AttributeK8SNodeUID:       string(node.UID),
 			conventions.AttributeK8SNamespaceName: pod.Namespace,
 			"k8s.cluster.name":                    "unknown",
 		},
