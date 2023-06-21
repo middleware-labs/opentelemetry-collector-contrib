@@ -17,6 +17,7 @@ package collection // import "github.com/open-telemetry/opentelemetry-collector-
 import (
 	"context"
 	"fmt"
+	k8s "k8s.io/client-go/kubernetes"
 	"strings"
 	"time"
 
@@ -131,9 +132,30 @@ func getResourceForPod(pod *corev1.Pod) *resourcepb.Resource {
 			conventions.AttributeK8SNodeName:      pod.Spec.NodeName,
 			conventions.AttributeK8SNodeUID:       string(node.UID),
 			conventions.AttributeK8SNamespaceName: pod.Namespace,
+			"k8s.service_account.name":            pod.Spec.ServiceAccountName,
+			"k8s.service.name":                    getServiceNameForPod(client, pod),
 			"k8s.cluster.name":                    "unknown",
 		},
 	}
+}
+
+func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
+	var service *corev1.Service
+
+	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, svc := range serviceList.Items {
+		if svc.Spec.Selector != nil {
+			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
+				service = &svc
+				break
+			}
+		}
+	}
+	return service.Name
 }
 
 func phaseToInt(phase corev1.PodPhase) int32 {

@@ -47,6 +47,7 @@ const (
 
 	// Resource labels keys for UID.
 	k8sKeyNamespaceUID             = "k8s.namespace.uid"
+	k8sKeyServiceUID               = "k8s.service.uid"
 	k8sKeyReplicationControllerUID = "k8s.replicationcontroller.uid"
 	k8sKeyHPAUID                   = "k8s.hpa.uid"
 	k8sKeyResourceQuotaUID         = "k8s.resourcequota.uid"
@@ -137,6 +138,8 @@ func (dc *DataCollector) SyncMetrics(obj interface{}) {
 		rm = getMetricsForReplicationController(o)
 	case *corev1.ResourceQuota:
 		rm = getMetricsForResourceQuota(o)
+	case *corev1.Service:
+		rm = getMetricsForService(o)
 	case *appsv1.Deployment:
 		rm = getMetricsForDeployment(o)
 	case *appsv1.ReplicaSet:
