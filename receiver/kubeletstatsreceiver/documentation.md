@@ -386,6 +386,7 @@ The inodes used by the filesystem. This may not equal inodes - free because file
 | gce.pd.name | The name of the persistent disk in GCE | Any Str |
 | glusterfs.endpoints.name | The endpoint name that details Glusterfs topology | Any Str |
 | glusterfs.path | Glusterfs volume path | Any Str |
+| k8s.cluster.name | The name of the Cluster | Any Str |
 | k8s.container.name | Container name used by container runtime | Any Str |
 | k8s.namespace.name | The name of the namespace that the pod is running in | Any Str |
 | k8s.node.name | The name of the Node | Any Str |
@@ -393,6 +394,8 @@ The inodes used by the filesystem. This may not equal inodes - free because file
 | k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str |
 | k8s.pod.name | The name of the Pod | Any Str |
 | k8s.pod.uid | The UID of the Pod | Any Str |
+| k8s.service.name | The name of the Service | Any Str |
+| k8s.service_account.name | The name of the Service-account | Any Str |
 | k8s.volume.name | The name of the Volume | Any Str |
 | k8s.volume.type | The type of the Volume | Any Str |
 | partition | The partition in the Volume | Any Str |
