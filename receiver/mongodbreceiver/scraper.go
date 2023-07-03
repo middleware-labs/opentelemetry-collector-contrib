@@ -151,6 +151,23 @@ func (s *mongodbScraper) collectDatabase(ctx context.Context, now pcommon.Timest
 		return
 	}
 	s.recordNormalServerStats(now, serverStatus, databaseName, errs)
+
+	rb := s.mb.NewResourceBuilder()
+	rb.SetDatabase(databaseName)
+	s.mb.EmitForResource(
+		metadata.WithResource(rb.Emit()),
+		metadata.WithMongodbDatabaseName(databaseName),
+	)
+}
+
+func (s *mongodbScraper) collectAdminDatabase(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	serverStatus, err := s.client.ServerStatus(ctx, "admin")
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf("failed to fetch admin server status metrics: %w", err))
+		return
+	}
+	s.recordAdminStats(now, serverStatus, errs)
+	s.mb.EmitForResource()
 }
 
 func (s *mongodbScraper) collectTopStats(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
