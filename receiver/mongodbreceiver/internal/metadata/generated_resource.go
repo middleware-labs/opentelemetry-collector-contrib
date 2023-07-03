@@ -28,6 +28,13 @@ func (rb *ResourceBuilder) SetDatabase(val string) {
 	}
 }
 
+// SetMongodbDatabaseName sets provided value as "mongodb.database.name" attribute.
+func (rb *ResourceBuilder) SetMongodbDatabaseName(val string) {
+	if rb.config.MongodbDatabaseName.Enabled {
+		rb.res.Attributes().PutStr("mongodb.database.name", val)
+	}
+}
+
 // SetServerAddress sets provided value as "server.address" attribute.
 func (rb *ResourceBuilder) SetServerAddress(val string) {
 	if rb.config.ServerAddress.Enabled {
