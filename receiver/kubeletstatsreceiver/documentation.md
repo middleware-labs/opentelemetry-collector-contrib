@@ -556,6 +556,7 @@ The number of used bytes in the pod volume.
 | gce.pd.name | [DEPRECATED] The name of the persistent disk in GCE | Any Str | false | - |
 | glusterfs.endpoints.name | [DEPRECATED] The endpoint name that details Glusterfs topology | Any Str | false | - |
 | glusterfs.path | [DEPRECATED] Glusterfs volume path | Any Str | false | - |
+| k8s.cluster.name | The name of the Cluster | Any Str | false |
 | k8s.container.name | Container name used by container runtime | Any Str | true | - |
 | k8s.namespace.name | The name of the namespace that the pod is running in | Any Str | true | - |
 | k8s.node.name | The name of the Node | Any Str | true | - |
@@ -564,6 +565,8 @@ The number of used bytes in the pod volume.
 | k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str | true | - |
 | k8s.pod.name | The name of the Pod | Any Str | true | - |
 | k8s.pod.uid | The UID of the Pod | Any Str | true | - |
+| k8s.service.name | The name of the Service | Any Str | false |
+| k8s.service_account.name | The name of the Service-account | Any Str | false |
 | k8s.volume.name | The name of the Volume | Any Str | true | - |
 | k8s.volume.type | The type of the Volume | Any Str | true | - |
 | partition | [DEPRECATED] The partition in the Volume | Any Str | false | - |

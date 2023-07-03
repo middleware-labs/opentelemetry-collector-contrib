@@ -239,6 +239,8 @@ reaggregate_set:
     mongodb.wtcache.bytes.read:
       enabled: true
   resource_attributes:
+    mongodb.database.name:
+      enabled: true
     server.address:
       enabled: true
     server.port:
@@ -362,6 +364,10 @@ none_set:
     mongodb.wtcache.bytes.read:
       enabled: false
   resource_attributes:
+    database:
+      enabled: false
+    mongodb.database.name:
+      enabled: false
     server.address:
       enabled: false
     server.port:

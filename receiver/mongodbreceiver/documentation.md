@@ -541,3 +541,9 @@ The number of bytes read into the WiredTiger cache.
 | server.address | The address of the MongoDB host. | Any Str | true | - |
 | server.port | The port of the MongoDB host. | Any Int | false | - |
 | service.instance.id | A unique identifier of the MongoDB resource as a UUID v5, derived from server address and port. | Any Str | true | - |
+| Name | Description | Values | Enabled |
+| ---- | ----------- | ------ | ------- |
+| database | The name of a database. | Any Str | true |
+| mongodb.database.name | The name of a database (redundant). | Any Str | false |
+| server.address | The address of the MongoDB host. | Any Str | true |
+| server.port | The port of the MongoDB host. | Any Int | false |
