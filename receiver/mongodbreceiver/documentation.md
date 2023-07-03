@@ -385,3 +385,4 @@ The number of replicated operations executed.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | database | The name of a database. | Any Str |
+| mongodb.database.name | The name of a database (redundant). | Any Str |

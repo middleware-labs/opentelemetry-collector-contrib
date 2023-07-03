@@ -164,7 +164,7 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordMongodbStorageSizeDataPoint(ts, 1, "attr-val")
 
-			metrics := mb.Emit(WithDatabase("attr-val"))
+			metrics := mb.Emit(WithDatabase("attr-val"), WithMongodbDatabaseName("attr-val"))
 
 			if test.metricsSet == testMetricsSetNo {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
@@ -176,6 +176,10 @@ func TestMetricsBuilder(t *testing.T) {
 			attrCount := 0
 			attrCount++
 			attrVal, ok := rm.Resource().Attributes().Get("database")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("mongodb.database.name")
 			assert.True(t, ok)
 			assert.EqualValues(t, "attr-val", attrVal.Str())
 			assert.Equal(t, attrCount, rm.Resource().Attributes().Len())
