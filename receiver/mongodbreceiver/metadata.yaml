@@ -4,6 +4,9 @@ resource_attributes:
   database:
     description: The name of a database.
     type: string
+  mongodb.database.name:
+    description: The name of a database.
+    type: string
 
 attributes:
   database:
