@@ -14,6 +14,7 @@ func TestResourceBuilder(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, tt)
 			rb := NewResourceBuilder(cfg)
 			rb.SetDatabase("database-val")
+			rb.SetMongodbDatabaseName("mongodb.database.name-val")
 			rb.SetServerAddress("server.address-val")
 			rb.SetServerPort(11)
 
@@ -24,6 +25,7 @@ func TestResourceBuilder(t *testing.T) {
 			case "default":
 				assert.Equal(t, 2, res.Attributes().Len())
 			case "all_set":
+				assert.Equal(t, 2, res.Attributes().Len())
 				assert.Equal(t, 3, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
@@ -36,6 +38,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "database-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("mongodb.database.name")
+			assert.Equal(t, test == "all_set", ok)
+			if ok {
+				assert.EqualValues(t, "mongodb.database.name-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("server.address")
 			assert.True(t, ok)
