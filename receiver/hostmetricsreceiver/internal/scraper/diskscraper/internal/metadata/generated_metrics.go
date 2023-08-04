@@ -145,7 +145,7 @@ func (m *metricSystemDiskIoSpeed) init() {
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricSystemDiskIoSpeed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, directionAttributeValue string) {
+func (m *metricSystemDiskIoSpeed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, deviceAttributeValue string, directionAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -153,6 +153,7 @@ func (m *metricSystemDiskIoSpeed) recordDataPoint(start pcommon.Timestamp, ts pc
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("device", deviceAttributeValue)
 	dp.Attributes().PutStr("direction", directionAttributeValue)
 }
 
@@ -652,8 +653,8 @@ func (mb *MetricsBuilder) RecordSystemDiskIoDataPoint(ts pcommon.Timestamp, val 
 }
 
 // RecordSystemDiskIoSpeedDataPoint adds a data point to system.disk.io.speed metric.
-func (mb *MetricsBuilder) RecordSystemDiskIoSpeedDataPoint(ts pcommon.Timestamp, val float64, directionAttributeValue AttributeDirection) {
-	mb.metricSystemDiskIoSpeed.recordDataPoint(mb.startTime, ts, val, directionAttributeValue.String())
+func (mb *MetricsBuilder) RecordSystemDiskIoSpeedDataPoint(ts pcommon.Timestamp, val float64, deviceAttributeValue string, directionAttributeValue AttributeDirection) {
+	mb.metricSystemDiskIoSpeed.recordDataPoint(mb.startTime, ts, val, deviceAttributeValue, directionAttributeValue.String())
 }
 
 // RecordSystemDiskIoTimeDataPoint adds a data point to system.disk.io_time metric.
