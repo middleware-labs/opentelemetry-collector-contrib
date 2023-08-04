@@ -15,6 +15,7 @@
 package collection // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/collection"
 
 import (
+	"fmt"
 	"reflect"
 	"time"
 
@@ -140,6 +141,10 @@ func (dc *DataCollector) SyncMetrics(obj interface{}) {
 		rm = getMetricsForResourceQuota(o)
 	case *corev1.Service:
 		rm = getMetricsForService(o)
+	case *corev1.PersistentVolumeClaim:
+		fmt.Println("Pending to implement for PersistentVolumeClaim.")
+	case *corev1.PersistentVolume:
+		fmt.Println("Pending to implement for PersistentVolume.")
 	case *appsv1.Deployment:
 		rm = getMetricsForDeployment(o)
 	case *appsv1.ReplicaSet:

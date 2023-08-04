@@ -2489,6 +2489,13 @@ func WithGlusterfsPath(val string) ResourceMetricsOption {
 	}
 }
 
+// WithK8sClusterName sets provided value as "k8s.cluster.name" attribute for current resource.
+func WithK8sClusterName(val string) ResourceMetricsOption {
+	return func(rm pmetric.ResourceMetrics) {
+		rm.Resource().Attributes().PutStr("k8s.cluster.name", val)
+	}
+}
+
 // WithK8sContainerName sets provided value as "k8s.container.name" attribute for current resource.
 func WithK8sContainerName(val string) ResourceMetricsOption {
 	return func(rm pmetric.ResourceMetrics) {
@@ -2535,6 +2542,20 @@ func WithK8sPodName(val string) ResourceMetricsOption {
 func WithK8sPodUID(val string) ResourceMetricsOption {
 	return func(rm pmetric.ResourceMetrics) {
 		rm.Resource().Attributes().PutStr("k8s.pod.uid", val)
+	}
+}
+
+// WithK8sServiceName sets provided value as "k8s.service.name" attribute for current resource.
+func WithK8sServiceName(val string) ResourceMetricsOption {
+	return func(rm pmetric.ResourceMetrics) {
+		rm.Resource().Attributes().PutStr("k8s.service.name", val)
+	}
+}
+
+// WithK8sServiceAccountName sets provided value as "k8s.service_account.name" attribute for current resource.
+func WithK8sServiceAccountName(val string) ResourceMetricsOption {
+	return func(rm pmetric.ResourceMetrics) {
+		rm.Resource().Attributes().PutStr("k8s.service_account.name", val)
 	}
 }
 

@@ -226,7 +226,7 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordK8sVolumeInodesUsedDataPoint(ts, 1)
 
-			metrics := mb.Emit(WithAwsVolumeID("attr-val"), WithContainerID("attr-val"), WithFsType("attr-val"), WithGcePdName("attr-val"), WithGlusterfsEndpointsName("attr-val"), WithGlusterfsPath("attr-val"), WithK8sContainerName("attr-val"), WithK8sNamespaceName("attr-val"), WithK8sNodeName("attr-val"), WithK8sNodeUID("attr-val"), WithK8sPersistentvolumeclaimName("attr-val"), WithK8sPodName("attr-val"), WithK8sPodUID("attr-val"), WithK8sVolumeName("attr-val"), WithK8sVolumeType("attr-val"), WithPartition("attr-val"))
+			metrics := mb.Emit(WithAwsVolumeID("attr-val"), WithContainerID("attr-val"), WithFsType("attr-val"), WithGcePdName("attr-val"), WithGlusterfsEndpointsName("attr-val"), WithGlusterfsPath("attr-val"), WithK8sClusterName("attr-val"), WithK8sContainerName("attr-val"), WithK8sNamespaceName("attr-val"), WithK8sNodeName("attr-val"), WithK8sNodeUID("attr-val"), WithK8sPersistentvolumeclaimName("attr-val"), WithK8sPodName("attr-val"), WithK8sPodUID("attr-val"), WithK8sServiceName("attr-val"), WithK8sServiceAccountName("attr-val"), WithK8sVolumeName("attr-val"), WithK8sVolumeType("attr-val"), WithPartition("attr-val"))
 
 			if test.metricsSet == testMetricsSetNo {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
@@ -261,6 +261,10 @@ func TestMetricsBuilder(t *testing.T) {
 			assert.True(t, ok)
 			assert.EqualValues(t, "attr-val", attrVal.Str())
 			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("k8s.cluster.name")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
 			attrVal, ok = rm.Resource().Attributes().Get("k8s.container.name")
 			assert.True(t, ok)
 			assert.EqualValues(t, "attr-val", attrVal.Str())
@@ -286,6 +290,14 @@ func TestMetricsBuilder(t *testing.T) {
 			assert.EqualValues(t, "attr-val", attrVal.Str())
 			attrCount++
 			attrVal, ok = rm.Resource().Attributes().Get("k8s.pod.uid")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("k8s.service.name")
+			assert.True(t, ok)
+			assert.EqualValues(t, "attr-val", attrVal.Str())
+			attrCount++
+			attrVal, ok = rm.Resource().Attributes().Get("k8s.service_account.name")
 			assert.True(t, ok)
 			assert.EqualValues(t, "attr-val", attrVal.Str())
 			attrCount++
