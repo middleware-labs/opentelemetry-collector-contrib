@@ -4,9 +4,9 @@
 package collection // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/collection"
 
 import (
-	"fmt"
-	"reflect"
 	"time"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 
 	quotav1 "github.com/openshift/api/quota/v1"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -36,13 +36,15 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/resourcequota"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/statefulset"
-	//"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 )
 
 // TODO: Consider moving some of these constants to
 // https://go.opentelemetry.io/collector/blob/main/model/semconv/opentelemetry.go.
 
 // DataCollector emits metrics with CollectMetricData based on the Kubernetes API objects in the metadata store.
+
+const k8sType = "k8s"
+
 type DataCollector struct {
 	settings                 receiver.Settings
 	metadataStore            *metadata.Store
@@ -88,11 +90,9 @@ func (dc *DataCollector) CollectMetricData(currentTime time.Time) pmetric.Metric
 	dc.metadataStore.ForEach(gvk.ResourceQuota, func(o any) {
 		resourcequota.RecordMetrics(dc.metricsBuilder, o.(*corev1.ResourceQuota), ts)
 	})
-	//case *corev1.Service:
-	//rm = getMetricsForService(o)
-	/*dc.metadataStore.ForEach(gvk.Service, func(o any) {
-		service.RecordMetrics(dc.metricsBuilder, o.(*corev1.Service), ts)
-	})*/
+	dc.metadataStore.ForEach(gvk.Service, func(o any) {
+		service.RecordMetrics(dc.settings.Logger, dc.metricsBuilder, o.(*corev1.Service), ts)
+	})
 	dc.metadataStore.ForEach(gvk.Deployment, func(o any) {
 		deployment.RecordMetrics(dc.metricsBuilder, o.(*appsv1.Deployment), ts)
 	})
