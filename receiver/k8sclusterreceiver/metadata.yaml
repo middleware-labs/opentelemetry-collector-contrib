@@ -12,6 +12,59 @@ status:
 sem_conv_version: 1.18.0
 
 resource_attributes:
+
+  k8s.service.cluster_ip:
+    description: The cluster IP of the service
+    type: string
+    enabled: true
+
+  k8s.service.type:
+    description: The type of the service
+    type: string
+    enabled: true
+
+  k8s.service.uid:
+    description: The UID of the service
+    type: string
+    enabled: true
+
+  k8s.service.name:
+    description: The name of the service
+    type: string
+    enabled: true
+
+  k8s.service.namespace:
+    description: The namespace of the service
+    type: string
+    enabled: true
+
+  k8s.cluster.name:
+    description: The k8s cluster name.
+    type: string
+    enabled: true
+
+
+
+  k8s.namespace.uid:
+    description: The k8s namespace uid.
+    type: string
+    enabled: true
+
+  k8s.namespace.name:
+    description: The k8s namespace name.
+    type: string
+    enabled: true
+
+  k8s.node.uid:
+    description: The k8s node uid.
+    type: string
+    enabled: true
+
+  k8s.node.name:
+    description: The k8s node name.
+    type: string
+    enabled: true
+
   container.id:
     description: The container id.
     type: string
@@ -490,6 +543,13 @@ metrics:
     unit: ""
     stability:
       level: development
+    gauge:
+      value_type: int
+
+  k8s.service.port_count:
+    enabled: true
+    description: The number of ports in the service
+    unit: 1
     gauge:
       value_type: int
 
