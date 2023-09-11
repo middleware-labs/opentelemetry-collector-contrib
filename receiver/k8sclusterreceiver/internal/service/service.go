@@ -4,6 +4,7 @@
 package service // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 import (
 	"fmt"
+	"log"
 
 	resourcepb "github.com/census-instrumentation/opencensus-proto/gen-go/resource/v1"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -45,7 +46,7 @@ func GetPodServiceTags(pod *corev1.Pod, services cache.Store) map[string]string 
 }
 
 func RecordMetrics(logger *zap.Logger, mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
-
+	log.Println("svc.Spec.Ports====>", int64(len(svc.Spec.Ports)), svc.Spec.Ports)
 	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svc.Spec.Ports)))
 	rb := mb.NewResourceBuilder()
 
