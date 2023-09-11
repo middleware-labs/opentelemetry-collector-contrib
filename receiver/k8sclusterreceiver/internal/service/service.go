@@ -46,7 +46,7 @@ func GetPodServiceTags(pod *corev1.Pod, services cache.Store) map[string]string 
 }
 
 func RecordMetrics(logger *zap.Logger, mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
-	log.Println("svc.Spec.Ports====>", int64(len(svc.Spec.Ports)), svc.Spec.Ports)
+	log.Println("svc.Spec.Ports====>", int64(len(svc.Spec.Ports)), svc.Spec.ClusterIP, svc.Spec)
 	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svc.Spec.Ports)))
 	rb := mb.NewResourceBuilder()
 
