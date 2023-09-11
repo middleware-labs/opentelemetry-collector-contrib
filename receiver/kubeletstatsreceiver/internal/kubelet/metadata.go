@@ -146,9 +146,9 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 	uid := types.UID(podUID)
 	var service *corev1.Service
 	for _, pod := range m.PodsMetadata.Items {
-		log.Println("getServiceName---5")
+		log.Println("getServiceName---5: ", uid, pod.UID, pod.Namespace)
 		if pod.UID == uid {
-			log.Println("getServiceName---6")
+			log.Println("getServiceName---6: in....")
 			serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v_one.ListOptions{})
 			log.Println("serviceList, err:", serviceList, err)
 			if err != nil {
