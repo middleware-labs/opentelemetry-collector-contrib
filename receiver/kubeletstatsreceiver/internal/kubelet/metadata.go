@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -137,21 +138,27 @@ func (m *Metadata) getNodeUID(nodeName string) (string, error) {
 // getServiceName retrieves k8s.service.name from metadata for given pod uid,
 // returns an error if no service found in the metadata that matches the requirements.
 func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, error) {
+	log.Println("getServiceName---3")
 	if m.PodsMetadata == nil {
 		return "", errors.New("pods metadata were not fetched")
 	}
-
+	log.Println("getServiceName---4")
 	uid := types.UID(podUID)
 	var service *corev1.Service
 	for _, pod := range m.PodsMetadata.Items {
+		log.Println("getServiceName---5")
 		if pod.UID == uid {
+			log.Println("getServiceName---6")
 			serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v_one.ListOptions{})
+			log.Println("serviceList, err:", serviceList, err)
 			if err != nil {
 				return "", fmt.Errorf("failed to fetch service list for POD: %w", err)
 			}
+			log.Println("getServiceName---7")
 			for _, svc := range serviceList.Items {
 				if svc.Spec.Selector != nil {
 					if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
+						log.Println("getServiceName---8", svc)
 						service = &svc
 						return service.Name, nil
 					}
@@ -159,20 +166,22 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 			}
 		}
 	}
-
+	log.Println("getServiceName---9")
 	return "", nil
 }
 
 // getServiceAccountName retrieves k8s.service_account.name from metadata for given pod uid,
 // returns an error if no service account found in the metadata that matches the requirements.
 func (m *Metadata) getServiceAccountName(podUID string) (string, error) {
+	log.Println("getServiceAccountNameeeeeeeeeeeeeeee---1")
 	if m.PodsMetadata == nil {
 		return "", errors.New("pods metadata were not fetched")
 	}
-
+	log.Println("getServiceAccountNameeeeeeeeeeeeeeee---2")
 	uid := types.UID(podUID)
 	for _, pod := range m.PodsMetadata.Items {
 		if pod.UID == uid {
+			log.Println("getServiceAccountNameeeeeeeeeeeeeeee---3", pod.Spec.ServiceAccountName)
 			return pod.Spec.ServiceAccountName, nil
 		}
 	}
