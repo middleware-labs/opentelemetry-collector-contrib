@@ -96,7 +96,8 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	addFilesystemMetrics(a.mbs.PodMetricsBuilder, metadata.PodFilesystemMetrics, s.EphemeralStorage, currentTime)
 	addNetworkMetrics(a.mbs.PodMetricsBuilder, metadata.PodNetworkMetrics, s.Network, currentTime)
 	log.Println("Kubelet things---------------------->")
-	log.Println("getServiceName---0: ", s.PodRef.UID, s.PodRef.Name)
+	serviceName := a.getServiceName(s.PodRef.UID)
+	log.Println("getServiceName---0: ", s.PodRef.Name, serviceName)
 	rb := a.mbs.PodMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sPodUID(s.PodRef.UID)
 	rb.SetK8sPodName(s.PodRef.Name)
@@ -104,7 +105,7 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	rb.SetK8sPodUID(s.PodRef.UID)
 	rb.SetK8sPodName(s.PodRef.Name)
 	rb.SetK8sNamespaceName(s.PodRef.Namespace)
-	rb.SetK8sServiceName(a.getServiceName(s.PodRef.UID))
+	rb.SetK8sServiceName(serviceName)
 	rb.SetK8sServiceAccountName(a.getServiceAccountName(s.PodRef.UID))
 	rb.SetK8sClusterName("unknown")
 	a.m = append(a.m, a.mbs.PodMetricsBuilder.Emit(
