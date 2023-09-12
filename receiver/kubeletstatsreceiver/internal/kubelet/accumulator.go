@@ -120,7 +120,6 @@ func (a *metricDataAccumulator) getServiceName(podUID string) string {
 		AuthType: k8sconfig.AuthTypeServiceAccount,
 	})
 
-	log.Println("k8sAPIClient, err: ", k8sAPIClient, err)
 	if err != nil {
 		return ""
 	}

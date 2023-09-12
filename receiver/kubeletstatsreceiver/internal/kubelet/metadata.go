@@ -152,9 +152,11 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 			if err != nil {
 				return "", fmt.Errorf("failed to fetch service list for POD: %w", err)
 			}
-			log.Println("service Items:", serviceList.Items)
+			log.Println("service Items:", len(serviceList.Items), serviceList.Items)
 			for _, svc := range serviceList.Items {
+				log.Println("svc.Spec.Selector & pod.Labels==>", svc.Spec.Selector, pod.Labels)
 				if svc.Spec.Selector != nil {
+					log.Println("inn...Selector..", labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)))
 					if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 						log.Println("getServiceName---svc", svc)
 						service = &svc
