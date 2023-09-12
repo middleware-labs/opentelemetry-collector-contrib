@@ -12,7 +12,7 @@ var (
 	Namespace                   = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Namespace"}
 	ReplicationController       = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ReplicationController"}
 	ResourceQuota               = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ResourceQuota"}
-	Service                     = schema.GroupVersionKind{Group: "core", Version: "v1", Kind: "Service"}
+	Service                     = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Service"}
 	DaemonSet                   = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "DaemonSet"}
 	Deployment                  = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "Deployment"}
 	ReplicaSet                  = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "ReplicaSet"}

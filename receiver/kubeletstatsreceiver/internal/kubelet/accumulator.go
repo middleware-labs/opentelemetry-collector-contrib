@@ -96,7 +96,7 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	addFilesystemMetrics(a.mbs.PodMetricsBuilder, metadata.PodFilesystemMetrics, s.EphemeralStorage, currentTime)
 	addNetworkMetrics(a.mbs.PodMetricsBuilder, metadata.PodNetworkMetrics, s.Network, currentTime)
 	log.Println("Kubelet things---------------------->")
-	log.Println("getServiceName---0: ", s.PodRef.Name)
+	log.Println("getServiceName---0: ", s.PodRef.UID, s.PodRef.Name)
 	rb := a.mbs.PodMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sPodUID(s.PodRef.UID)
 	rb.SetK8sPodName(s.PodRef.Name)
@@ -115,7 +115,6 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 
 // getch k8s service name from metadata
 func (a *metricDataAccumulator) getServiceName(podUID string) string {
-	log.Println("getServiceName---1")
 	//k8sAPIClient, err := k8sconfig.MakeClient(k8sconfig.APIConfig{})
 	k8sAPIClient, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
 		AuthType: k8sconfig.AuthTypeServiceAccount,
@@ -125,9 +124,8 @@ func (a *metricDataAccumulator) getServiceName(podUID string) string {
 	if err != nil {
 		return ""
 	}
-	log.Println("getServiceName---2")
 	name, err := a.metadata.getServiceName(podUID, k8sAPIClient)
-	log.Println("name, err: ", name, err)
+	log.Println("final service name: ", name)
 	if err != nil {
 		log.Println(err.Error())
 		return ""
@@ -137,9 +135,9 @@ func (a *metricDataAccumulator) getServiceName(podUID string) string {
 
 // getch k8s service account name from metadata
 func (a *metricDataAccumulator) getServiceAccountName(podUID string) string {
-	log.Println("getServiceAccountNameeeeeeeeeeeeeeee---0")
+	//log.Println("getServiceAccountNameeeeeeeeeeeeeeee---0")
 	name, err := a.metadata.getServiceAccountName(podUID)
-	log.Println("name, err: ", name, err)
+	//log.Println("name, err: ", name, err)
 	if err != nil {
 		log.Println(err.Error())
 		return ""
