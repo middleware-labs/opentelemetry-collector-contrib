@@ -7,7 +7,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 
@@ -144,21 +143,14 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 	uid := types.UID(podUID)
 	var service *corev1.Service
 	for _, pod := range m.PodsMetadata.Items {
-		log.Println("getServiceName---pod array: ", uid, pod.UID, pod.Namespace)
 		if pod.UID == uid {
-			log.Println("getServiceName---matched: in....")
 			serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v_one.ListOptions{})
-			log.Println("service list:", serviceList)
 			if err != nil {
 				return "", fmt.Errorf("failed to fetch service list for POD: %w", err)
 			}
-			log.Println("service Items:", len(serviceList.Items), serviceList.Items)
 			for _, svc := range serviceList.Items {
-				log.Println("svc.Spec.Selector & pod.Labels==>", svc.Spec.Selector, pod.Labels)
 				if svc.Spec.Selector != nil {
-					log.Println("inn...Selector..", labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)))
 					if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
-						log.Println("getServiceName---svc", svc)
 						service = &svc
 						return service.Name, nil
 					}
@@ -166,22 +158,19 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 			}
 		}
 	}
-	log.Println("getServiceName---return value.")
 	return "", nil
 }
 
 // getServiceAccountName retrieves k8s.service_account.name from metadata for given pod uid,
 // returns an error if no service account found in the metadata that matches the requirements.
 func (m *Metadata) getServiceAccountName(podUID string) (string, error) {
-	//log.Println("getServiceAccountNameeeeeeeeeeeeeeee---1")
 	if m.PodsMetadata == nil {
 		return "", errors.New("pods metadata were not fetched")
 	}
-	//log.Println("getServiceAccountNameeeeeeeeeeeeeeee---2")
+
 	uid := types.UID(podUID)
 	for _, pod := range m.PodsMetadata.Items {
 		if pod.UID == uid {
-			//log.Println("getServiceAccountNameeeeeeeeeeeeeeee---3", pod.Spec.ServiceAccountName)
 			return pod.Spec.ServiceAccountName, nil
 		}
 	}

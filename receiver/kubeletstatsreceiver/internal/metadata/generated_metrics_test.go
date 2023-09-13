@@ -248,7 +248,6 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sPodUID("k8s.pod.uid-val")
 			rb.SetK8sServiceName("k8s.service.name-val")
 			rb.SetK8sServiceAccountName("k8s.service_account.name-val")
-			rb.SetK8sTestTestname("k8s.test.testname-val")
 			rb.SetK8sVolumeName("k8s.volume.name-val")
 			rb.SetK8sVolumeType("k8s.volume.type-val")
 			rb.SetPartition("partition-val")

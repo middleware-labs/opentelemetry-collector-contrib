@@ -4,7 +4,6 @@
 package collection // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/collection"
 
 import (
-	"log"
 	"time"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
@@ -84,7 +83,6 @@ func (dc *DataCollector) CollectMetricData(currentTime time.Time) pmetric.Metric
 	dc.metadataStore.ForEach(gvk.ReplicationController, func(o any) {
 		replicationcontroller.RecordMetrics(dc.metricsBuilder, o.(*corev1.ReplicationController), ts)
 	})
-	log.Println("K8s things---------------------------->")
 	dc.metadataStore.ForEach(gvk.ResourceQuota, func(o any) {
 		resourcequota.RecordMetrics(dc.metricsBuilder, o.(*corev1.ResourceQuota), ts)
 	})

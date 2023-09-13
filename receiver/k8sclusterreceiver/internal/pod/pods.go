@@ -7,7 +7,6 @@ import (
 	"context"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"k8s.io/apimachinery/pkg/labels"
-	"log"
 	"strings"
 	"time"
 
@@ -82,7 +81,6 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sPodUID(string(pod.UID))
 	rb.SetOpencensusResourcetype("k8s")
 	rb.SetK8sServiceName(getServiceNameForPod(pod))
-	log.Println("ServiceAccountName--------------->", pod.Spec.ServiceAccountName)
 	rb.SetK8sServiceAccountName(pod.Spec.ServiceAccountName)
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
@@ -98,26 +96,19 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
 		AuthType: k8sconfig.AuthTypeServiceAccount,
 	})
+
 	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
-	log.Println("K8s service list: ", serviceList, err)
 	if err != nil {
 		panic(err)
 	}
-	log.Println("serviceList.Items: ", serviceList.Items)
+
 	for _, svc := range serviceList.Items {
-		//svc := ser.(*corev1.Service)
-		log.Println("svc: ", svc)
-		log.Println("svc.Spec: ", svc.Spec)
-		log.Println("svc.Spec.Selector: ", svc.Spec.Selector)
-		log.Println("pod.Labels: ", pod.Labels)
+
 		if svc.Spec.Selector != nil {
-			log.Println("inn 1: ", labels.Set(pod.Labels))
-			log.Println("inn 11: ", labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)))
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 				var svcObject *corev1.Service
 				svcObject = &svc
 				serviceName = svcObject.Name
-				log.Println("inn 2: ", serviceName)
 				break
 			}
 		}

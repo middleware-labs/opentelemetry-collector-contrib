@@ -24,10 +24,6 @@ resource_attributes:
     description: "The name of the Pod"
     enabled: true
     type: string
-  k8s.test.testname:
-    description: "The name of the Service"
-    type: string
-    enabled: true
   k8s.service.name:
     description: "The name of the Service"
     type: string
@@ -39,6 +35,7 @@ resource_attributes:
   k8s.cluster.name:
     description: "The name of the Cluster"
     type: string
+    enabled: true
   k8s.namespace.name:
     description: "The name of the namespace that the pod is running in"
     enabled: true

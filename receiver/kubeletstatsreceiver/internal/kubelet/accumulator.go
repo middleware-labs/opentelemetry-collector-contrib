@@ -95,10 +95,10 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	addMemoryMetrics(a.mbs.PodMetricsBuilder, metadata.PodMemoryMetrics, s.Memory, currentTime)
 	addFilesystemMetrics(a.mbs.PodMetricsBuilder, metadata.PodFilesystemMetrics, s.EphemeralStorage, currentTime)
 	addNetworkMetrics(a.mbs.PodMetricsBuilder, metadata.PodNetworkMetrics, s.Network, currentTime)
-	log.Println("Kubelet things---------------------->")
+
 	serviceName := a.getServiceName(s.PodRef.UID)
 	serviceAccountName := a.getServiceAccountName(s.PodRef.UID)
-	log.Println("getServiceName---0: ", s.PodRef.Name, serviceName)
+
 	rb := a.mbs.PodMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sPodUID(s.PodRef.UID)
 	rb.SetK8sPodName(s.PodRef.Name)
@@ -106,8 +106,6 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	rb.SetK8sServiceName(serviceName)
 	rb.SetK8sServiceAccountName(serviceAccountName)
 	rb.SetK8sClusterName("unknown")
-	rb.SetK8sTestTestname("testName")
-	log.Println("Values: 1:", s.PodRef.Name, "2: ", s.PodRef.Namespace, "3: ", serviceName)
 	a.m = append(a.m, a.mbs.PodMetricsBuilder.Emit(
 		metadata.WithStartTimeOverride(pcommon.NewTimestampFromTime(s.StartTime.Time)),
 		metadata.WithResource(rb.Emit()),
@@ -116,16 +114,14 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 
 // getch k8s service name from metadata
 func (a *metricDataAccumulator) getServiceName(podUID string) string {
-	//k8sAPIClient, err := k8sconfig.MakeClient(k8sconfig.APIConfig{})
 	k8sAPIClient, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
 		AuthType: k8sconfig.AuthTypeServiceAccount,
 	})
-
 	if err != nil {
 		return ""
 	}
+
 	name, err := a.metadata.getServiceName(podUID, k8sAPIClient)
-	log.Println("final service name: ", name)
 	if err != nil {
 		log.Println(err.Error())
 		return ""
@@ -135,9 +131,7 @@ func (a *metricDataAccumulator) getServiceName(podUID string) string {
 
 // getch k8s service account name from metadata
 func (a *metricDataAccumulator) getServiceAccountName(podUID string) string {
-	//log.Println("getServiceAccountNameeeeeeeeeeeeeeee---0")
 	name, err := a.metadata.getServiceAccountName(podUID)
-	//log.Println("name, err: ", name, err)
 	if err != nil {
 		log.Println(err.Error())
 		return ""
