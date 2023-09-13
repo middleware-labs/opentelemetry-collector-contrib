@@ -7,7 +7,6 @@ import (
 	"context"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"k8s.io/apimachinery/pkg/labels"
-	k8s "k8s.io/client-go/kubernetes"
 	"log"
 	"strings"
 	"time"
@@ -74,10 +73,6 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 }
 
 func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
-	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
-		AuthType: k8sconfig.AuthTypeServiceAccount,
-	})
-
 	mb.RecordK8sPodPhaseDataPoint(ts, int64(phaseToInt(pod.Status.Phase)))
 	mb.RecordK8sPodStatusReasonDataPoint(ts, int64(reasonToInt(pod.Status.Reason)))
 	rb := mb.NewResourceBuilder()
@@ -86,7 +81,7 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sPodName(pod.Name)
 	rb.SetK8sPodUID(string(pod.UID))
 	rb.SetOpencensusResourcetype("k8s")
-	rb.SetK8sServiceName(getServiceNameForPod(client, pod))
+	rb.SetK8sServiceName(getServiceNameForPod(pod))
 	rb.SetK8sServiceAccountName(pod.Spec.ServiceAccountName)
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
@@ -96,9 +91,12 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	}
 }
 
-func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
+func getServiceNameForPod(pod *corev1.Pod) string {
 	var svcObject *corev1.Service
 
+	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
+		AuthType: k8sconfig.AuthTypeServiceAccount,
+	})
 	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
 	log.Println("K8s service list: ", serviceList, err)
 	if err != nil {

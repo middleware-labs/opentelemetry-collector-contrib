@@ -107,11 +107,10 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	rb.SetK8sServiceAccountName(serviceAccountName)
 	rb.SetK8sClusterName("unknown")
 	rb.SetK8sTestTestname("testName")
-	res := rb.Emit()
 	log.Println("Values: 1:", s.PodRef.Name, "2: ", s.PodRef.Namespace, "3: ", serviceName, "res: ", res)
 	a.m = append(a.m, a.mbs.PodMetricsBuilder.Emit(
 		metadata.WithStartTimeOverride(pcommon.NewTimestampFromTime(s.StartTime.Time)),
-		metadata.WithResource(res),
+		metadata.WithResource(rb.Emit()),
 	))
 }
 
