@@ -109,7 +109,8 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 		log.Println("svc.Spec.Selector: ", svc.Spec.Selector)
 		log.Println("pod.Labels: ", pod.Labels)
 		if svc.Spec.Selector != nil {
-			log.Println("inn 1")
+			log.Println("inn 1: ", labels.Set(pod.Labels))
+			log.Println("inn 11: ", labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)))
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 				svcObject = &svc
 				log.Println("inn 2: ", svcObject)
