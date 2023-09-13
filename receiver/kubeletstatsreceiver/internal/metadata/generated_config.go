@@ -286,13 +286,13 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sServiceName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sServiceAccountName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sTestTestname: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sVolumeName: ResourceAttributeConfig{
 			Enabled: true,

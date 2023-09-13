@@ -82,6 +82,7 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sPodUID(string(pod.UID))
 	rb.SetOpencensusResourcetype("k8s")
 	rb.SetK8sServiceName(getServiceNameForPod(pod))
+	log.Println("ServiceAccountName--------------->", pod.Spec.ServiceAccountName)
 	rb.SetK8sServiceAccountName(pod.Spec.ServiceAccountName)
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
@@ -104,6 +105,7 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 	}
 	log.Println("serviceList.Items: ", serviceList.Items)
 	for _, svc := range serviceList.Items {
+		//svc := ser.(*corev1.Service)
 		log.Println("svc: ", svc)
 		log.Println("svc.Spec: ", svc.Spec)
 		log.Println("svc.Spec.Selector: ", svc.Spec.Selector)
@@ -114,8 +116,8 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 				var svcObject *corev1.Service
 				svcObject = &svc
-				log.Println("inn 2: ", svcObject)
 				serviceName = svcObject.Name
+				log.Println("inn 2: ", serviceName)
 				break
 			}
 		}

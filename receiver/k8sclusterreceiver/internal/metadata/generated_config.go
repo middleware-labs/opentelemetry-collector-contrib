@@ -354,7 +354,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sServiceAccountName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sStatefulsetName: ResourceAttributeConfig{
 			Enabled: true,

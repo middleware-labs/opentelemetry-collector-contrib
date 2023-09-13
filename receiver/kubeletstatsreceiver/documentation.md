@@ -428,9 +428,9 @@ The time since the pod started
 | k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str | true |
 | k8s.pod.name | The name of the Pod | Any Str | true |
 | k8s.pod.uid | The UID of the Pod | Any Str | true |
-| k8s.service.name | The name of the Service | Any Str | false |
-| k8s.service_account.name | The name of the Service-account | Any Str | false |
-| k8s.test.testname | The name of the Service | Any Str | false |
+| k8s.service.name | The name of the Service | Any Str | true |
+| k8s.service_account.name | The name of the Service-account | Any Str | true |
+| k8s.test.testname | The name of the Service | Any Str | true |
 | k8s.volume.name | The name of the Volume | Any Str | true |
 | k8s.volume.type | The type of the Volume | Any Str | true |
 | partition | The partition in the Volume | Any Str | true |

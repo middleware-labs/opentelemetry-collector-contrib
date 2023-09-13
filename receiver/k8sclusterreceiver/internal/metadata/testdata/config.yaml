@@ -154,6 +154,8 @@ all_set:
       enabled: true
     k8s.service.uid:
       enabled: true
+    k8s.service_account.name:
+      enabled: true
     k8s.statefulset.name:
       enabled: true
     k8s.statefulset.uid:
