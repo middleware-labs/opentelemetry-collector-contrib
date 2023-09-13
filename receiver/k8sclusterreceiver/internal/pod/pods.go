@@ -104,7 +104,10 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 	}
 	log.Println("serviceList.Items: ", serviceList.Items)
 	for _, svc := range serviceList.Items {
-		log.Println("svc: ", svc, svc.Spec.Selector, pod.Labels)
+		log.Println("svc: ", svc)
+		log.Println("svc.Spec: ", svc.Spec)
+		log.Println("svc.Spec.Selector: ", svc.Spec.Selector)
+		log.Println("pod.Labels: ", pod.Labels)
 		if svc.Spec.Selector != nil {
 			log.Println("inn 1")
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
