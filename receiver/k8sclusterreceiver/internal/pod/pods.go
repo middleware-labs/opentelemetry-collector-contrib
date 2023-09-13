@@ -92,7 +92,7 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 }
 
 func getServiceNameForPod(pod *corev1.Pod) string {
-	var svcObject *corev1.Service
+	var serviceName string
 
 	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
 		AuthType: k8sconfig.AuthTypeServiceAccount,
@@ -109,15 +109,18 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 		log.Println("svc.Spec.Selector: ", svc.Spec.Selector)
 		log.Println("pod.Labels: ", pod.Labels)
 		if svc.Spec.Selector != nil {
-			log.Println("inn 1")
+			log.Println("inn 1: ", labels.Set(pod.Labels))
+			log.Println("inn 11: ", labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)))
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
+				var svcObject *corev1.Service
 				svcObject = &svc
 				log.Println("inn 2: ", svcObject)
+				serviceName = svcObject.Name
 				break
 			}
 		}
 	}
-	return svcObject.Name
+	return serviceName
 }
 
 func reasonToInt(reason string) int32 {
