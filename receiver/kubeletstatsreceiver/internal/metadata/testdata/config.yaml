@@ -124,6 +124,8 @@ all_set:
       enabled: true
     k8s.service_account.name:
       enabled: true
+    k8s.test.testname:
+      enabled: true
     k8s.volume.name:
       enabled: true
     k8s.volume.type:
@@ -254,6 +256,8 @@ none_set:
     k8s.service.name:
       enabled: false
     k8s.service_account.name:
+      enabled: false
+    k8s.test.testname:
       enabled: false
     k8s.volume.name:
       enabled: false

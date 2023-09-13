@@ -24,6 +24,9 @@ resource_attributes:
     description: "The name of the Pod"
     enabled: true
     type: string
+  k8s.test.testname:
+    description: "The name of the Service"
+    type: string
   k8s.service.name:
     description: "The name of the Service"
     type: string

@@ -133,6 +133,13 @@ func (rb *ResourceBuilder) SetK8sServiceAccountName(val string) {
 	}
 }
 
+// SetK8sTestTestname sets provided value as "k8s.test.testname" attribute.
+func (rb *ResourceBuilder) SetK8sTestTestname(val string) {
+	if rb.config.K8sTestTestname.Enabled {
+		rb.res.Attributes().PutStr("k8s.test.testname", val)
+	}
+}
+
 // SetK8sVolumeName sets provided value as "k8s.volume.name" attribute.
 func (rb *ResourceBuilder) SetK8sVolumeName(val string) {
 	if rb.config.K8sVolumeName.Enabled {

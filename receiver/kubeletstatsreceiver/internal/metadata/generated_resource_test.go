@@ -29,6 +29,7 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sPodUID("k8s.pod.uid-val")
 			rb.SetK8sServiceName("k8s.service.name-val")
 			rb.SetK8sServiceAccountName("k8s.service_account.name-val")
+			rb.SetK8sTestTestname("k8s.test.testname-val")
 			rb.SetK8sVolumeName("k8s.volume.name-val")
 			rb.SetK8sVolumeType("k8s.volume.type-val")
 			rb.SetPartition("partition-val")
@@ -40,7 +41,7 @@ func TestResourceBuilder(t *testing.T) {
 			case "default":
 				assert.Equal(t, 15, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 19, res.Attributes().Len())
+				assert.Equal(t, 20, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -127,6 +128,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.Equal(t, test == "all_set", ok)
 			if ok {
 				assert.EqualValues(t, "k8s.service_account.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.test.testname")
+			assert.Equal(t, test == "all_set", ok)
+			if ok {
+				assert.EqualValues(t, "k8s.test.testname-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.volume.name")
 			assert.True(t, ok)
