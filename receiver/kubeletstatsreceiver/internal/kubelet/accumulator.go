@@ -96,8 +96,8 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	addFilesystemMetrics(a.mbs.PodMetricsBuilder, metadata.PodFilesystemMetrics, s.EphemeralStorage, currentTime)
 	addNetworkMetrics(a.mbs.PodMetricsBuilder, metadata.PodNetworkMetrics, s.Network, currentTime)
 	log.Println("Kubelet things---------------------->")
-	serviceName := a.getServiceName(s.PodRef.UID)               // to
-	serviceAccountName := a.getServiceAccountName(s.PodRef.UID) // to
+	serviceName := a.getServiceName(s.PodRef.UID)
+	serviceAccountName := a.getServiceAccountName(s.PodRef.UID)
 	log.Println("getServiceName---0: ", s.PodRef.Name, serviceName)
 	rb := a.mbs.PodMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sPodUID(s.PodRef.UID)
@@ -106,10 +106,11 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	rb.SetK8sServiceName(serviceName)
 	rb.SetK8sServiceAccountName(serviceAccountName)
 	rb.SetK8sClusterName("unknown")
-	log.Println("Values: ", s.PodRef.UID, s.PodRef.Name, s.PodRef.Namespace, serviceName, serviceAccountName, "unknown")
+	res := rb.Emit()
+	log.Println("Values: 1:", s.PodRef.Name, "2: ", s.PodRef.Namespace, "3: ", serviceName, "res: ", res)
 	a.m = append(a.m, a.mbs.PodMetricsBuilder.Emit(
 		metadata.WithStartTimeOverride(pcommon.NewTimestampFromTime(s.StartTime.Time)),
-		metadata.WithResource(rb.Emit()),
+		metadata.WithResource(res),
 	))
 }
 
