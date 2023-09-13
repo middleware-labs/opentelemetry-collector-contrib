@@ -96,7 +96,7 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 }
 
 func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
-	var service *corev1.Service
+	var svcObject *corev1.Service
 
 	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
 	if err != nil {
@@ -106,12 +106,12 @@ func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
 	for _, svc := range serviceList.Items {
 		if svc.Spec.Selector != nil {
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
-				service = &svc
+				svcObject = &svc
 				break
 			}
 		}
 	}
-	return service.Name
+	return svcObject.Name
 }
 
 func reasonToInt(reason string) int32 {
