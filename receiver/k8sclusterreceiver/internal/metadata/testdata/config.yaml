@@ -319,6 +319,8 @@ none_set:
       enabled: false
     k8s.service.uid:
       enabled: false
+    k8s.service_account.name:
+      enabled: false
     k8s.statefulset.name:
       enabled: false
     k8s.statefulset.uid:
