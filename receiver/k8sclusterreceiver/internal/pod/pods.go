@@ -8,6 +8,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"k8s.io/apimachinery/pkg/labels"
 	k8s "k8s.io/client-go/kubernetes"
+	"log"
 	"strings"
 	"time"
 
@@ -99,14 +100,18 @@ func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
 	var svcObject *corev1.Service
 
 	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
+	log.Println("K8s service list: ", serviceList, err)
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("serviceList.Items: ", serviceList.Items)
 	for _, svc := range serviceList.Items {
+		log.Println("svc: ", svc, svc.Spec.Selector, pod.Labels)
 		if svc.Spec.Selector != nil {
+			log.Println("inn 1")
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 				svcObject = &svc
+				log.Println("inn 2: ", svcObject)
 				break
 			}
 		}
