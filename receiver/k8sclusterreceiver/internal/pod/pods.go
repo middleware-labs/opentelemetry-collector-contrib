@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"k8s.io/apimachinery/pkg/labels"
+	"log"
 	"strings"
 	"time"
 
@@ -81,6 +82,9 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sPodUID(string(pod.UID))
 	rb.SetOpencensusResourcetype("k8s")
 	rb.SetK8sServiceName(getServiceNameForPod(pod))
+	log.Println("POD Name: ", pod.Name)
+	log.Println("POD Spec: ", pod.Spec)
+	log.Println("POD ServiceAccountName: ", pod.Spec.ServiceAccountName)
 	rb.SetK8sServiceAccountName(pod.Spec.ServiceAccountName)
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
