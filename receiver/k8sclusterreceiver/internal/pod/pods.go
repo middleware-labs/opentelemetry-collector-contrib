@@ -84,8 +84,8 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sServiceName(getServiceNameForPod(pod))
 	log.Println("POD Name: ", pod.Name)
 	log.Println("POD Spec: ", pod.Spec)
-	log.Println("POD ServiceAccountName: ", pod.Spec.ServiceAccountName)
-	rb.SetK8sServiceAccountName(pod.Spec.ServiceAccountName)
+	log.Println("POD ServiceAccountName: ", pod.Spec.ServiceAccountName, " --- ", getServiceAccountNameForPod(pod))
+	rb.SetK8sServiceAccountName(getServiceAccountNameForPod(pod))
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
@@ -97,27 +97,48 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 func getServiceNameForPod(pod *corev1.Pod) string {
 	var serviceName string
 
-	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
+	client, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
 		AuthType: k8sconfig.AuthTypeServiceAccount,
 	})
+	if err != nil {
+		return ""
+	}
 
 	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
 	if err != nil {
-		panic(err)
+		return ""
 	}
 
 	for _, svc := range serviceList.Items {
-
 		if svc.Spec.Selector != nil {
 			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
-				var svcObject *corev1.Service
-				svcObject = &svc
-				serviceName = svcObject.Name
-				break
+				serviceName = svc.Name
+				return serviceName
 			}
 		}
 	}
-	return serviceName
+
+	return ""
+}
+
+func getServiceAccountNameForPod(pod *corev1.Pod) string {
+	var serviceAccountName string
+
+	client, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
+		AuthType: k8sconfig.AuthTypeServiceAccount,
+	})
+	if err != nil {
+		panic(err)
+		return ""
+	}
+
+	podDetails, err := client.CoreV1().Pods(pod.Namespace).Get(context.TODO(), pod.Name, v1.GetOptions{})
+	if err != nil {
+		return ""
+	}
+
+	serviceAccountName = podDetails.Spec.ServiceAccountName
+	return serviceAccountName
 }
 
 func reasonToInt(reason string) int32 {
