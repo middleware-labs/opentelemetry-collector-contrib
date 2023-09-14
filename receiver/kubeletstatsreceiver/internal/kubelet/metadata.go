@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -152,6 +153,7 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 				if svc.Spec.Selector != nil {
 					if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 						service = &svc
+						log.Println("1. Service name: ", service.Name)
 						return service.Name, nil
 					}
 				}
@@ -171,6 +173,7 @@ func (m *Metadata) getServiceAccountName(podUID string) (string, error) {
 	uid := types.UID(podUID)
 	for _, pod := range m.PodsMetadata.Items {
 		if pod.UID == uid {
+			log.Println("2. Service account name: ", pod.Spec.ServiceAccountName)
 			return pod.Spec.ServiceAccountName, nil
 		}
 	}

@@ -6,11 +6,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"log"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
 
@@ -47,12 +45,9 @@ func GetPodServiceTags(pod *corev1.Pod, services cache.Store) map[string]string 
 
 func RecordMetrics(mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
 	svcDetails := GetServiceDetails(svc)
-	log.Println("service: ", svcDetails)
-	log.Println("service.spec: ", svcDetails.Spec)
-
 	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svcDetails.Spec.Ports)))
-	rb := mb.NewResourceBuilder()
 
+	rb := mb.NewResourceBuilder()
 	rb.SetK8sServiceUID(string(svc.UID))
 	rb.SetK8sServiceName(svc.ObjectMeta.Name)
 	rb.SetK8sServiceNamespace(svc.ObjectMeta.Namespace)
@@ -71,7 +66,6 @@ func GetServiceDetails(svc *corev1.Service) *corev1.Service {
 	})
 
 	service, err := client.CoreV1().Services(svc.ObjectMeta.Namespace).Get(context.TODO(), svc.ObjectMeta.Name, v1.GetOptions{})
-	log.Println("err: ", err, service)
 	if err != nil {
 		panic(err)
 	} else {
