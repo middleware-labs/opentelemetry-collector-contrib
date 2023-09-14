@@ -3,13 +3,13 @@
 
 package service // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 import (
+	"context"
 	"fmt"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 
-	resourcepb "github.com/census-instrumentation/opencensus-proto/gen-go/resource/v1"
 	"go.opentelemetry.io/collector/pdata/pcommon"
-	conventions "go.opentelemetry.io/collector/semconv/v1.6.1"
-	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
@@ -45,10 +45,16 @@ func GetPodServiceTags(pod *corev1.Pod, services cache.Store) map[string]string 
 	return properties
 }
 
-func RecordMetrics(logger *zap.Logger, mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
-	log.Println("svc.Spec.Ports====>", int64(len(svc.Spec.Ports)), svc.Spec.ClusterIP, svc.Spec)
+func RecordMetrics(mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
+	log.Println("svc:", svc)
+	log.Println("svc.Spec.Ports====>", int64(len(svc.Spec.Ports)))
 	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svc.Spec.Ports)))
 	rb := mb.NewResourceBuilder()
+
+	//serviceDetails :=
+	serviceDetail := GetServiceDetails(svc)
+	log.Println("service: ", serviceDetail)
+	log.Println("service.spec: ", serviceDetail.Spec)
 
 	rb.SetK8sServiceClusterIP(svc.Spec.ClusterIP)
 	rb.SetK8sServiceName(svc.ObjectMeta.Name)
@@ -56,19 +62,25 @@ func RecordMetrics(logger *zap.Logger, mb *imetadata.MetricsBuilder, svc *corev1
 	rb.SetK8sServiceUID(string(svc.UID))
 	rb.SetK8sServiceType(string(svc.Spec.Type))
 	rb.SetK8sClusterName("unknown")
+	rb.SetK8sServiceClusterIP(svc.Spec.ClusterIP)
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
-func getResourceForService(svc *corev1.Service) *resourcepb.Resource {
-	return &resourcepb.Resource{
-		Type: "k8s",
-		Labels: map[string]string{
-			"k8s.service.uid":                     string(svc.UID),
-			conventions.AttributeServiceNamespace: svc.ObjectMeta.Namespace,
-			conventions.AttributeServiceName:      svc.ObjectMeta.Name,
-			"k8s.service.cluster_ip":              svc.Spec.ClusterIP,
-			"k8s.service.type":                    string(svc.Spec.Type),
-			"k8s.cluster.name":                    "unknown",
-		},
+func GetServiceDetails(svc *corev1.Service) *corev1.Service {
+	var svcObject *corev1.Service
+
+	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
+		AuthType: k8sconfig.AuthTypeServiceAccount,
+	})
+	log.Println("Namespace: ", svc.ObjectMeta.Namespace)
+	log.Println("Name: ", svc.ObjectMeta.Name)
+	service, err := client.CoreV1().Services(svc.ObjectMeta.Namespace).Get(context.TODO(), svc.ObjectMeta.Name, v1.GetOptions{})
+	log.Println("err: ", err, service)
+	if err != nil {
+		panic(err)
+	} else {
+		svcObject = service
 	}
+
+	return svcObject
 }
