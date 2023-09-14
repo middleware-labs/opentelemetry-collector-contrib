@@ -46,23 +46,20 @@ func GetPodServiceTags(pod *corev1.Pod, services cache.Store) map[string]string 
 }
 
 func RecordMetrics(mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
-	log.Println("svc:", svc)
-	log.Println("svc.Spec.Ports====>", int64(len(svc.Spec.Ports)))
-	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svc.Spec.Ports)))
+	svcDetails := GetServiceDetails(svc)
+	log.Println("service: ", svcDetails)
+	log.Println("service.spec: ", svcDetails.Spec)
+
+	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svcDetails.Spec.Ports)))
 	rb := mb.NewResourceBuilder()
 
-	//serviceDetails :=
-	serviceDetail := GetServiceDetails(svc)
-	log.Println("service: ", serviceDetail)
-	log.Println("service.spec: ", serviceDetail.Spec)
-
-	rb.SetK8sServiceClusterIP(svc.Spec.ClusterIP)
+	rb.SetK8sServiceUID(string(svc.UID))
 	rb.SetK8sServiceName(svc.ObjectMeta.Name)
 	rb.SetK8sServiceNamespace(svc.ObjectMeta.Namespace)
-	rb.SetK8sServiceUID(string(svc.UID))
-	rb.SetK8sServiceType(string(svc.Spec.Type))
+	rb.SetK8sServiceClusterIP(svcDetails.Spec.ClusterIP)
+	rb.SetK8sServiceType(string(svcDetails.Spec.Type))
+	rb.SetK8sServiceClusterIP(svcDetails.Spec.ClusterIP)
 	rb.SetK8sClusterName("unknown")
-	rb.SetK8sServiceClusterIP(svc.Spec.ClusterIP)
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
@@ -72,8 +69,7 @@ func GetServiceDetails(svc *corev1.Service) *corev1.Service {
 	client, _ := k8sconfig.MakeClient(k8sconfig.APIConfig{
 		AuthType: k8sconfig.AuthTypeServiceAccount,
 	})
-	log.Println("Namespace: ", svc.ObjectMeta.Namespace)
-	log.Println("Name: ", svc.ObjectMeta.Name)
+
 	service, err := client.CoreV1().Services(svc.ObjectMeta.Namespace).Get(context.TODO(), svc.ObjectMeta.Name, v1.GetOptions{})
 	log.Println("err: ", err, service)
 	if err != nil {
