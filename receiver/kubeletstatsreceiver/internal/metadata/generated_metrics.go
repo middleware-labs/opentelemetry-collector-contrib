@@ -3,7 +3,6 @@
 package metadata
 
 import (
-	"log"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
@@ -1347,11 +1346,9 @@ func (m *metricK8sPodCPUTime) init() {
 }
 
 func (m *metricK8sPodCPUTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
-	log.Println("k8s.pod.cpu.time: enabled.....", m.config.Enabled)
 	if !m.config.Enabled {
 		return
 	}
-	log.Println("k8s.pod.cpu.time: Val.....", start, ts, val)
 	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
