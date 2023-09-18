@@ -1850,7 +1850,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: false,
 		},
 		K8sClusterName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sContainerName: ResourceAttributeConfig{
 			Enabled: true,
@@ -1874,10 +1874,10 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sServiceName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sServiceAccountName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		K8sVolumeName: ResourceAttributeConfig{
 			Enabled: true,
