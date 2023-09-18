@@ -35,7 +35,7 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch tt {
 			case "default":
-				assert.Equal(t, 10, res.Attributes().Len())
+				assert.Equal(t, 18, res.Attributes().Len())
 			case "all_set":
 				assert.Equal(t, 16, res.Attributes().Len())
 			case "none_set":
@@ -69,6 +69,8 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.Equal(t, "glusterfs.endpoints.name-val", glusterfsEndpointsNameAttrVal.Str())
 			}
+			val, ok = res.Attributes().Get("k8s.cluster.name")
+			assert.True(t, ok)
 			glusterfsPathAttrVal, ok := res.Attributes().Get("glusterfs.path")
 			assert.Equal(t, tt == "all_set", ok)
 			if ok {
@@ -107,9 +109,19 @@ func TestResourceBuilder(t *testing.T) {
 			k8sPodUIDAttrVal, ok := res.Attributes().Get("k8s.pod.uid")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.pod.uid-val", k8sPodUIDAttrVal.Str())
+				assert.Equal(t, "k8s.pod.uid-val", val.Str())
 			}
-			k8sVolumeNameAttrVal, ok := res.Attributes().Get("k8s.volume.name")
+			val, ok = res.Attributes().Get("k8s.service.name")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.service.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.service_account.name")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.service_account.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.volume.name")
 			assert.True(t, ok)
 			if ok {
 				assert.Equal(t, "k8s.volume.name-val", k8sVolumeNameAttrVal.Str())
