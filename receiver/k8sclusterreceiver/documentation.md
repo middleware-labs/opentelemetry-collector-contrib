@@ -465,6 +465,7 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.service.namespace | The namespace of the service | Any Str | true |
 | k8s.service.type | The type of the service | Any Str | true |
 | k8s.service.uid | The UID of the service | Any Str | true |
+| k8s.service_account.name | The name of the Service-account | Any Str | true |
 | k8s.statefulset.name | The k8s statefulset name. | Any Str | true |
 | k8s.statefulset.uid | The k8s statefulset uid. | Any Str | true |
 | openshift.clusterquota.name | The k8s ClusterResourceQuota name. | Any Str | true |

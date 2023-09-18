@@ -213,7 +213,6 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 	if m.PodsMetadata == nil {
 		return "", errors.New("pods metadata were not fetched")
 	}
-
 	uid := types.UID(podUID)
 	var service *corev1.Service
 	for _, pod := range m.PodsMetadata.Items {
@@ -232,7 +231,6 @@ func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, 
 			}
 		}
 	}
-
 	return "", nil
 }
 
