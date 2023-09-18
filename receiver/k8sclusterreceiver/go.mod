@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
+	github.com/census-instrumentation/opencensus-proto v0.4.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.139.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.139.0
