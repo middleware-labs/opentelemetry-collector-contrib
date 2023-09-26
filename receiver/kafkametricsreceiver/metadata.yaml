@@ -9,6 +9,10 @@ status:
     active: [dmitryax]
 
 resource_attributes:
+  runtime.metrics.kafka:
+    type: string
+    description: Flag for kafka metrics
+    enabled: true
   kafka.cluster.alias:
     description: The alias name (string) of the cluster
     enabled: false
