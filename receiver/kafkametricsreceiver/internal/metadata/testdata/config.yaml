@@ -31,9 +31,11 @@ all_set:
       enabled: true
     kafka.topic.partitions:
       enabled: true
+  resource_attributes:
+    runtime.metrics.kafka:
+      enabled: true
     kafka.topic.replication_factor:
       enabled: true
-  resource_attributes:
     kafka.cluster.alias:
       enabled: true
 none_set:
@@ -72,6 +74,8 @@ none_set:
       enabled: false
   resource_attributes:
     kafka.cluster.alias:
+      enabled: false
+    runtime.metrics.kafka:
       enabled: false
 filter_set_include:
   resource_attributes:

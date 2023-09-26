@@ -138,6 +138,24 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	}
 }
 
+// ResourceAttributeConfig provides common config for a particular resource attribute.
+type ResourceAttributeConfig struct {
+	Enabled bool `mapstructure:"enabled"`
+}
+
+// ResourceAttributesConfig provides config for kafkametrics resource attributes.
+type ResourceAttributesConfig struct {
+	RuntimeMetricsKafka ResourceAttributeConfig `mapstructure:"runtime.metrics.kafka"`
+}
+
+func DefaultResourceAttributesConfig() ResourceAttributesConfig {
+	return ResourceAttributesConfig{
+		RuntimeMetricsKafka: ResourceAttributeConfig{
+			Enabled: true,
+		},
+	}
+}
+
 // MetricsBuilderConfig is a configuration for kafkametrics metrics builder.
 type MetricsBuilderConfig struct {
 	Metrics            MetricsConfig            `mapstructure:"metrics"`
