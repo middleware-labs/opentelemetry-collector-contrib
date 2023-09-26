@@ -110,6 +110,7 @@ func (s *topicScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	}
 
 	rb := s.mb.NewResourceBuilder()
+	rb.SetRuntimeMetricsKafka("true")
 	rb.SetKafkaClusterAlias(s.config.ClusterAlias)
 
 	return s.mb.Emit(metadata.WithResource(rb.Emit())), scrapeErrors.Combine()

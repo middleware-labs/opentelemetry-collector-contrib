@@ -9,31 +9,31 @@ import (
 )
 
 func TestResourceBuilder(t *testing.T) {
-	for _, tt := range []string{"default", "all_set", "none_set"} {
-		t.Run(tt, func(t *testing.T) {
-			cfg := loadResourceAttributesConfig(t, tt)
+	for _, test := range []string{"default", "all_set", "none_set"} {
+		t.Run(test, func(t *testing.T) {
+			cfg := loadResourceAttributesConfig(t, test)
 			rb := NewResourceBuilder(cfg)
-			rb.SetKafkaClusterAlias("kafka.cluster.alias-val")
+			rb.SetRuntimeMetricsKafka("runtime.metrics.kafka-val")
 
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
 
-			switch tt {
+			switch test {
 			case "default":
-				assert.Equal(t, 0, res.Attributes().Len())
+				assert.Equal(t, 1, res.Attributes().Len())
 			case "all_set":
 				assert.Equal(t, 1, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
 			default:
-				assert.Failf(t, "unexpected test case: %s", tt)
+				assert.Failf(t, "unexpected test case: %s", test)
 			}
 
-			val, ok := res.Attributes().Get("kafka.cluster.alias")
-			assert.Equal(t, tt == "all_set", ok)
+			val, ok := res.Attributes().Get("runtime.metrics.kafka")
+			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "kafka.cluster.alias-val", val.Str())
+				assert.EqualValues(t, "runtime.metrics.kafka-val", val.Str())
 			}
 		})
 	}
