@@ -39,6 +39,7 @@ func (acc *metricDataAccumulator) getMetricsData(containerStatsMap map[string]*C
 
 			containerMetrics := convertContainerMetrics(stats, logger, containerMetadata)
 			acc.accumulate(convertToOTLPMetrics(containerPrefix, containerMetrics, containerResource, timestamp))
+			acc.accumulate(convertStoppedContainerDataToOTMetrics(containerPrefix, containerResource, timestamp, 0))
 			aggregateTaskMetrics(&taskMetrics, containerMetrics)
 
 		} else if containerMetadata.FinishedAt != "" && containerMetadata.StartedAt != "" {
