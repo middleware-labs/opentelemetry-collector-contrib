@@ -550,6 +550,7 @@ The number of load balancer ingress points (external IPs/hostnames) assigned to 
 | k8s.namespace.name | The k8s namespace name. | Any Str | true | - |
 | k8s.namespace.uid | The k8s namespace uid. | Any Str | true | - |
 | k8s.node.name | The k8s node name. | Any Str | true | - |
+| k8s.node.start_time | The start time of the Node. | Any Str | true |
 | k8s.node.uid | The k8s node uid. | Any Str | true | - |
 | k8s.persistentvolume.name | The name of the PersistentVolume. | Any Str | true | - |
 | k8s.persistentvolume.reclaim_policy | The reclaim policy of the PersistentVolume. | Str: ``Delete``, ``Recycle``, ``Retain`` | false | - |
