@@ -19,6 +19,12 @@ resource_attributes:
     description: "The id of the AWS Volume"
     enabled: true
     type: string
+  k8s.node.start_time:
+    description: "The start time of the Node."
+    enabled: true
+    type: string
+  k8s.pod.uid:
+    description: "The UID of the Pod"
   container.id:
     description: "Container id used to identify container"
     enabled: true
