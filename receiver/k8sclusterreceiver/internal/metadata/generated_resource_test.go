@@ -33,6 +33,7 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
 			rb.SetK8sNamespaceUID("k8s.namespace.uid-val")
 			rb.SetK8sNodeName("k8s.node.name-val")
+			rb.SetK8sNodeStartTime("k8s.node.start_time-val")
 			rb.SetK8sNodeUID("k8s.node.uid-val")
 			rb.SetK8sPodName("k8s.pod.name-val")
 			rb.SetK8sPodQosClass("k8s.pod.qos_class-val")
@@ -59,9 +60,9 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch test {
 			case "default":
-				assert.Equal(t, 37, res.Attributes().Len())
+				assert.Equal(t, 38, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 37, res.Attributes().Len())
+				assert.Equal(t, 38, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -168,6 +169,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "k8s.node.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.node.start_time")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.node.start_time-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.node.uid")
 			assert.True(t, ok)

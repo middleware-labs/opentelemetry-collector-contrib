@@ -128,6 +128,8 @@ all_set:
       enabled: true
     k8s.node.name:
       enabled: true
+    k8s.node.start_time:
+      enabled: true
     k8s.node.uid:
       enabled: true
     k8s.persistentvolumeclaim.name:
@@ -209,7 +211,7 @@ none_set:
     k8s.node.uptime:
       enabled: false
     k8s.pod.cpu.time:
-      enabled: true
+      enabled: false
     k8s.pod.cpu.utilization:
       enabled: false
     k8s.pod.cpu_limit_utilization:
@@ -274,6 +276,8 @@ none_set:
     k8s.namespace.name:
       enabled: false
     k8s.node.name:
+      enabled: false
+    k8s.node.start_time:
       enabled: false
     k8s.node.uid:
       enabled: false
