@@ -13,8 +13,6 @@ all_set:
       enabled: true
     process.handles:
       enabled: true
-    process.memory.percent:
-      enabled: true
     process.memory.usage:
       enabled: true
     process.memory.utilization:
@@ -43,6 +41,8 @@ all_set:
     process.parent_pid:
       enabled: true
     process.pid:
+      enabled: true
+    process.started_on:
       enabled: true
 none_set:
   metrics:
@@ -58,8 +58,6 @@ none_set:
       enabled: false
     process.handles:
       enabled: false
-    process.memory.percent:
-      enabled: false
     process.memory.usage:
       enabled: false
     process.memory.utilization:
@@ -88,4 +86,6 @@ none_set:
     process.parent_pid:
       enabled: false
     process.pid:
+      enabled: false
+    process.started_on:
       enabled: false

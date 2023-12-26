@@ -3471,6 +3471,57 @@ func newMetricContainerPidsLimit(cfg MetricConfig) metricContainerPidsLimit {
 	return m
 }
 
+type metricContainerRestarts struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills container.restarts metric with initial data.
+func (m *metricContainerRestarts) init() {
+	m.data.SetName("container.restarts")
+	m.data.SetDescription("Number of restarts for the container.")
+	m.data.SetUnit("{restarts}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricContainerRestarts) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricContainerRestarts) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricContainerRestarts) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricContainerRestarts(cfg MetricConfig) metricContainerRestarts {
+	m := metricContainerRestarts{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricContainerStatus struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3644,6 +3695,7 @@ type MetricsBuilder struct {
 	metricContainerNetworkIoUsageTxPackets           metricContainerNetworkIoUsageTxPackets
 	metricContainerPidsCount                         metricContainerPidsCount
 	metricContainerPidsLimit                         metricContainerPidsLimit
+	metricContainerRestarts                          metricContainerRestarts
 	metricContainerStatus                            metricContainerStatus
 	metricContainerUptime                            metricContainerUptime
 }
@@ -3731,6 +3783,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSetting
 		metricContainerNetworkIoUsageTxPackets:           newMetricContainerNetworkIoUsageTxPackets(mbc.Metrics.ContainerNetworkIoUsageTxPackets),
 		metricContainerPidsCount:                         newMetricContainerPidsCount(mbc.Metrics.ContainerPidsCount),
 		metricContainerPidsLimit:                         newMetricContainerPidsLimit(mbc.Metrics.ContainerPidsLimit),
+		metricContainerRestarts:                          newMetricContainerRestarts(mbc.Metrics.ContainerRestarts),
 		metricContainerStatus:                            newMetricContainerStatus(mbc.Metrics.ContainerStatus),
 		metricContainerUptime:                            newMetricContainerUptime(mbc.Metrics.ContainerUptime),
 	}
@@ -3862,6 +3915,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricContainerNetworkIoUsageTxPackets.emit(ils.Metrics())
 	mb.metricContainerPidsCount.emit(ils.Metrics())
 	mb.metricContainerPidsLimit.emit(ils.Metrics())
+	mb.metricContainerRestarts.emit(ils.Metrics())
 	mb.metricContainerStatus.emit(ils.Metrics())
 	mb.metricContainerUptime.emit(ils.Metrics())
 
@@ -4217,6 +4271,11 @@ func (mb *MetricsBuilder) RecordContainerPidsCountDataPoint(ts pcommon.Timestamp
 // RecordContainerPidsLimitDataPoint adds a data point to container.pids.limit metric.
 func (mb *MetricsBuilder) RecordContainerPidsLimitDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricContainerPidsLimit.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordContainerRestartsDataPoint adds a data point to container.restarts metric.
+func (mb *MetricsBuilder) RecordContainerRestartsDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricContainerRestarts.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordContainerStatusDataPoint adds a data point to container.status metric.

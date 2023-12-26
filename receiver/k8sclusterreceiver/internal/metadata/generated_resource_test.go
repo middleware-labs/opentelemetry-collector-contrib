@@ -62,7 +62,7 @@ func TestResourceBuilder(t *testing.T) {
 			case "default":
 				assert.Equal(t, 38, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 38, res.Attributes().Len())
+				assert.Equal(t, 41, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return

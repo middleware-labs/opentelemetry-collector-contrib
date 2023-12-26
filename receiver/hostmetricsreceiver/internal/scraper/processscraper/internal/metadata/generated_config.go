@@ -31,7 +31,6 @@ type MetricsConfig struct {
 	ProcessDiskIo              MetricConfig `mapstructure:"process.disk.io"`
 	ProcessDiskOperations      MetricConfig `mapstructure:"process.disk.operations"`
 	ProcessHandles             MetricConfig `mapstructure:"process.handles"`
-	ProcessMemoryPercent       MetricConfig `mapstructure:"process.memory.percent"`
 	ProcessMemoryUsage         MetricConfig `mapstructure:"process.memory.usage"`
 	ProcessMemoryUtilization   MetricConfig `mapstructure:"process.memory.utilization"`
 	ProcessMemoryVirtual       MetricConfig `mapstructure:"process.memory.virtual"`
@@ -60,9 +59,6 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		ProcessHandles: MetricConfig{
 			Enabled: false,
-		},
-		ProcessMemoryPercent: MetricConfig{
-			Enabled: true,
 		},
 		ProcessMemoryUsage: MetricConfig{
 			Enabled: true,
@@ -115,8 +111,8 @@ type ResourceAttributesConfig struct {
 	ProcessExecutablePath ResourceAttributeConfig `mapstructure:"process.executable.path"`
 	ProcessOwner          ResourceAttributeConfig `mapstructure:"process.owner"`
 	ProcessParentPid      ResourceAttributeConfig `mapstructure:"process.parent_pid"`
-	ProcessStartedOn	  ResourceAttributeConfig `mapstructure:"process.started_on"`
 	ProcessPid            ResourceAttributeConfig `mapstructure:"process.pid"`
+	ProcessStartedOn      ResourceAttributeConfig `mapstructure:"process.started_on"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -139,11 +135,11 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		ProcessParentPid: ResourceAttributeConfig{
 			Enabled: true,
 		},
-		ProcessStartedOn: ResourceAttributeConfig{
-			Enabled: true,
-		},
 		ProcessPid: ResourceAttributeConfig{
 			Enabled: true,
+		},
+		ProcessStartedOn: ResourceAttributeConfig{
+			Enabled: false,
 		},
 	}
 }
