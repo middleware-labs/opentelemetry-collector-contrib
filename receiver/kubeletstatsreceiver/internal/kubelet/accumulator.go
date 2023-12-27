@@ -102,6 +102,7 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	rb := a.mbs.PodMetricsBuilder.NewResourceBuilder()
 	rb.SetK8sPodUID(s.PodRef.UID)
 	rb.SetK8sPodName(s.PodRef.Name)
+	rb.SetK8sPodStartTime(s.StartTime.Time.String())
 	rb.SetK8sNamespaceName(s.PodRef.Namespace)
 	rb.SetK8sServiceName(serviceName)
 	rb.SetK8sServiceAccountName(serviceAccountName)

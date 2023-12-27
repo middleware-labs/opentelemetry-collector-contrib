@@ -119,6 +119,13 @@ func (rb *ResourceBuilder) SetK8sPodName(val string) {
 	}
 }
 
+// SetK8sPodStartTime sets provided value as "k8s.pod.start_time" attribute.
+func (rb *ResourceBuilder) SetK8sPodStartTime(val string) {
+	if rb.config.K8sPodStartTime.Enabled {
+		rb.res.Attributes().PutStr("k8s.pod.start_time", val)
+	}
+}
+
 // SetK8sPodUID sets provided value as "k8s.pod.uid" attribute.
 func (rb *ResourceBuilder) SetK8sPodUID(val string) {
 	if rb.config.K8sPodUID.Enabled {

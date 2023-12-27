@@ -246,6 +246,7 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sNodeUID("k8s.node.uid-val")
 			rb.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
 			rb.SetK8sPodName("k8s.pod.name-val")
+			rb.SetK8sPodStartTime("k8s.pod.start_time-val")
 			rb.SetK8sPodUID("k8s.pod.uid-val")
 			rb.SetK8sServiceName("k8s.service.name-val")
 			rb.SetK8sServiceAccountName("k8s.service_account.name-val")

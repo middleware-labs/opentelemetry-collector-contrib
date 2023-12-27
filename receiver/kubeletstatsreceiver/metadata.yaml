@@ -29,6 +29,10 @@ resource_attributes:
     description: "The name of the Pod"
     enabled: true
     type: string
+  k8s.pod.start_time:
+    description: "The start time of the Pod."
+    enabled: true
+    type: string
   k8s.service.name:
     description: "The name of the Service"
     type: string

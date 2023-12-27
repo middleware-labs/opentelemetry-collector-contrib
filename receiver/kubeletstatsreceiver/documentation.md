@@ -428,6 +428,7 @@ The time since the pod started
 | k8s.node.uid | The UID of the Node | Any Str | true |
 | k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str | true |
 | k8s.pod.name | The name of the Pod | Any Str | true |
+| k8s.pod.start_time | The start time of the Pod. | Any Str | true |
 | k8s.pod.uid | The UID of the Pod | Any Str | true |
 | k8s.service.name | The name of the Service | Any Str | true |
 | k8s.service_account.name | The name of the Service-account | Any Str | true |

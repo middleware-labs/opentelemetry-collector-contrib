@@ -233,6 +233,7 @@ type ResourceAttributesConfig struct {
 	K8sNodeUID                   ResourceAttributeConfig `mapstructure:"k8s.node.uid"`
 	K8sPersistentvolumeclaimName ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.name"`
 	K8sPodName                   ResourceAttributeConfig `mapstructure:"k8s.pod.name"`
+	K8sPodStartTime              ResourceAttributeConfig `mapstructure:"k8s.pod.start_time"`
 	K8sPodUID                    ResourceAttributeConfig `mapstructure:"k8s.pod.uid"`
 	K8sServiceName               ResourceAttributeConfig `mapstructure:"k8s.service.name"`
 	K8sServiceAccountName        ResourceAttributeConfig `mapstructure:"k8s.service_account.name"`
@@ -283,6 +284,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sPodName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPodStartTime: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sPodUID: ResourceAttributeConfig{
