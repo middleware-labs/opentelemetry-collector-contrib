@@ -72,6 +72,8 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 }
 
 func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
+	jobInfo := getJobInfoForPod(pod)
+
 	mb.RecordK8sPodPhaseDataPoint(ts, int64(phaseToInt(pod.Status.Phase)))
 	mb.RecordK8sPodStatusReasonDataPoint(ts, int64(reasonToInt(pod.Status.Reason)))
 	rb := mb.NewResourceBuilder()
@@ -82,6 +84,8 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sPodStartTime(pod.GetCreationTimestamp().String())
 	rb.SetOpencensusResourcetype("k8s")
 	rb.SetK8sServiceName(getServiceNameForPod(pod))
+	rb.SetK8sJobName(jobInfo.Name)
+	rb.SetK8sJobUID(string(jobInfo.UID))
 	rb.SetK8sServiceAccountName(getServiceAccountNameForPod(pod))
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
@@ -116,6 +120,37 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 	}
 
 	return ""
+}
+
+type JobInfo struct {
+	Name string
+	UID  types.UID
+}
+
+func getJobInfoForPod(pod *corev1.Pod) JobInfo {
+	client, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
+		AuthType: k8sconfig.AuthTypeServiceAccount,
+	})
+	if err != nil {
+		return JobInfo{}
+	}
+
+	podSelector := labels.Set(pod.Labels)
+	jobList, err := client.BatchV1().Jobs(pod.Namespace).List(context.TODO(), v1.ListOptions{
+		LabelSelector: podSelector.AsSelector().String(),
+	})
+	if err != nil {
+		return JobInfo{}
+	}
+
+	if len(jobList.Items) > 0 {
+		return JobInfo{
+			Name: jobList.Items[0].Name,
+			UID:  jobList.Items[0].UID,
+		}
+	}
+
+	return JobInfo{}
 }
 
 func getServiceAccountNameForPod(pod *corev1.Pod) string {

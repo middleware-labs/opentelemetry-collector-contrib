@@ -37,6 +37,14 @@ resource_attributes:
     description: "The name of the Service"
     type: string
     enabled: true
+  k8s.job.uid:
+    description: "The UID of the Job"
+    type: string
+    enabled: true
+  k8s.job.name:
+    description: "The name of the Job"
+    type: string
+    enabled: true
   k8s.service_account.name:
     description: "The name of the Service-account"
     type: string
@@ -184,6 +192,13 @@ metrics:
     gauge:
       value_type: int
     attributes: []
+  k8s.node.filesystem.utilization:
+    enabled: true
+    description: "Node filesystem utilization"
+    unit: 1
+    gauge:
+      value_type: double
+    attributes: [ ]
   k8s.node.network.io:
     enabled: true
     description: "Node network IO"
@@ -289,6 +304,13 @@ metrics:
     unit: By
     gauge:
       value_type: int
+    attributes: []
+  k8s.pod.filesystem.utilization:
+    enabled: true
+    description: "Pod filesystem utilization"
+    unit: 1
+    gauge:
+      value_type: double
     attributes: []
   k8s.pod.network.io:
     enabled: true
@@ -396,6 +418,13 @@ metrics:
     gauge:
       value_type: int
     attributes: []
+  container.filesystem.utilization:
+    enabled: true
+    description: "Container filesystem utilization"
+    unit: 1
+    gauge:
+      value_type: double
+    attributes: [ ]
   container.uptime:
     enabled: false
     description: "The time since the container started"

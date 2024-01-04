@@ -11,6 +11,8 @@ all_set:
       enabled: true
     container.filesystem.usage:
       enabled: true
+    container.filesystem.utilization:
+      enabled: true
     container.memory.available:
       enabled: true
     container.memory.major_page_faults:
@@ -34,6 +36,8 @@ all_set:
     k8s.node.filesystem.capacity:
       enabled: true
     k8s.node.filesystem.usage:
+      enabled: true
+    k8s.node.filesystem.utilization:
       enabled: true
     k8s.node.memory.available:
       enabled: true
@@ -62,6 +66,8 @@ all_set:
     k8s.pod.filesystem.capacity:
       enabled: true
     k8s.pod.filesystem.usage:
+      enabled: true
+    k8s.pod.filesystem.utilization:
       enabled: true
     k8s.pod.memory.available:
       enabled: true
@@ -107,6 +113,10 @@ all_set:
     k8s.cluster.name:
       enabled: true
     k8s.container.name:
+      enabled: true
+    k8s.job.name:
+      enabled: true
+    k8s.job.uid:
       enabled: true
     k8s.namespace.name:
       enabled: true
@@ -146,6 +156,8 @@ none_set:
       enabled: false
     container.filesystem.usage:
       enabled: false
+    container.filesystem.utilization:
+      enabled: false
     container.memory.available:
       enabled: false
     container.memory.major_page_faults:
@@ -169,6 +181,8 @@ none_set:
     k8s.node.filesystem.capacity:
       enabled: false
     k8s.node.filesystem.usage:
+      enabled: false
+    k8s.node.filesystem.utilization:
       enabled: false
     k8s.node.memory.available:
       enabled: false
@@ -197,6 +211,8 @@ none_set:
     k8s.pod.filesystem.capacity:
       enabled: false
     k8s.pod.filesystem.usage:
+      enabled: false
+    k8s.pod.filesystem.utilization:
       enabled: false
     k8s.pod.memory.available:
       enabled: false
@@ -242,6 +258,10 @@ none_set:
     k8s.cluster.name:
       enabled: false
     k8s.container.name:
+      enabled: false
+    k8s.job.name:
+      enabled: false
+    k8s.job.uid:
       enabled: false
     k8s.namespace.name:
       enabled: false

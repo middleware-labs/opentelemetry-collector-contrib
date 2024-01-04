@@ -77,6 +77,20 @@ func (rb *ResourceBuilder) SetK8sContainerName(val string) {
 	}
 }
 
+// SetK8sJobName sets provided value as "k8s.job.name" attribute.
+func (rb *ResourceBuilder) SetK8sJobName(val string) {
+	if rb.config.K8sJobName.Enabled {
+		rb.res.Attributes().PutStr("k8s.job.name", val)
+	}
+}
+
+// SetK8sJobUID sets provided value as "k8s.job.uid" attribute.
+func (rb *ResourceBuilder) SetK8sJobUID(val string) {
+	if rb.config.K8sJobUID.Enabled {
+		rb.res.Attributes().PutStr("k8s.job.uid", val)
+	}
+}
+
 // SetK8sNamespaceName sets provided value as "k8s.namespace.name" attribute.
 func (rb *ResourceBuilder) SetK8sNamespaceName(val string) {
 	if rb.config.K8sNamespaceName.Enabled {

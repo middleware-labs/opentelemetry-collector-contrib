@@ -97,6 +97,7 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	addNetworkMetrics(a.mbs.PodMetricsBuilder, metadata.PodNetworkMetrics, s.Network, currentTime)
 
 	serviceName := a.getServiceName(s.PodRef.UID)
+	jobInfo := a.getJobInfo(s.PodRef.UID)
 	serviceAccountName := a.getServiceAccountName(s.PodRef.UID)
 
 	rb := a.mbs.PodMetricsBuilder.NewResourceBuilder()
@@ -105,6 +106,8 @@ func (a *metricDataAccumulator) podStats(s stats.PodStats) {
 	rb.SetK8sPodStartTime(s.StartTime.Time.String())
 	rb.SetK8sNamespaceName(s.PodRef.Namespace)
 	rb.SetK8sServiceName(serviceName)
+	rb.SetK8sJobUID(string(jobInfo.UID))
+	rb.SetK8sJobName(jobInfo.Name)
 	rb.SetK8sServiceAccountName(serviceAccountName)
 	rb.SetK8sClusterName("unknown")
 	a.m = append(a.m, a.mbs.PodMetricsBuilder.Emit(
@@ -128,6 +131,23 @@ func (a *metricDataAccumulator) getServiceName(podUID string) string {
 		return ""
 	}
 	return name
+}
+
+// getch k8s job uid from metadata
+func (a *metricDataAccumulator) getJobInfo(podUID string) JobInfo {
+	k8sAPIClient, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
+		AuthType: k8sconfig.AuthTypeServiceAccount,
+	})
+	if err != nil {
+		return JobInfo{}
+	}
+
+	jobInfo, err := a.metadata.getJobInfo(podUID, k8sAPIClient)
+	if err != nil {
+		log.Println(err.Error())
+		return JobInfo{}
+	}
+	return jobInfo
 }
 
 // getch k8s service account name from metadata

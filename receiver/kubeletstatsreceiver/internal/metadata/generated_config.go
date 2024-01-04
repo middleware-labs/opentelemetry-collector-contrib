@@ -30,6 +30,7 @@ type MetricsConfig struct {
 	ContainerFilesystemAvailable   MetricConfig `mapstructure:"container.filesystem.available"`
 	ContainerFilesystemCapacity    MetricConfig `mapstructure:"container.filesystem.capacity"`
 	ContainerFilesystemUsage       MetricConfig `mapstructure:"container.filesystem.usage"`
+	ContainerFilesystemUtilization MetricConfig `mapstructure:"container.filesystem.utilization"`
 	ContainerMemoryAvailable       MetricConfig `mapstructure:"container.memory.available"`
 	ContainerMemoryMajorPageFaults MetricConfig `mapstructure:"container.memory.major_page_faults"`
 	ContainerMemoryPageFaults      MetricConfig `mapstructure:"container.memory.page_faults"`
@@ -42,6 +43,7 @@ type MetricsConfig struct {
 	K8sNodeFilesystemAvailable     MetricConfig `mapstructure:"k8s.node.filesystem.available"`
 	K8sNodeFilesystemCapacity      MetricConfig `mapstructure:"k8s.node.filesystem.capacity"`
 	K8sNodeFilesystemUsage         MetricConfig `mapstructure:"k8s.node.filesystem.usage"`
+	K8sNodeFilesystemUtilization   MetricConfig `mapstructure:"k8s.node.filesystem.utilization"`
 	K8sNodeMemoryAvailable         MetricConfig `mapstructure:"k8s.node.memory.available"`
 	K8sNodeMemoryMajorPageFaults   MetricConfig `mapstructure:"k8s.node.memory.major_page_faults"`
 	K8sNodeMemoryPageFaults        MetricConfig `mapstructure:"k8s.node.memory.page_faults"`
@@ -56,6 +58,7 @@ type MetricsConfig struct {
 	K8sPodFilesystemAvailable      MetricConfig `mapstructure:"k8s.pod.filesystem.available"`
 	K8sPodFilesystemCapacity       MetricConfig `mapstructure:"k8s.pod.filesystem.capacity"`
 	K8sPodFilesystemUsage          MetricConfig `mapstructure:"k8s.pod.filesystem.usage"`
+	K8sPodFilesystemUtilization    MetricConfig `mapstructure:"k8s.pod.filesystem.utilization"`
 	K8sPodMemoryAvailable          MetricConfig `mapstructure:"k8s.pod.memory.available"`
 	K8sPodMemoryMajorPageFaults    MetricConfig `mapstructure:"k8s.pod.memory.major_page_faults"`
 	K8sPodMemoryPageFaults         MetricConfig `mapstructure:"k8s.pod.memory.page_faults"`
@@ -87,6 +90,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		ContainerFilesystemUsage: MetricConfig{
+			Enabled: true,
+		},
+		ContainerFilesystemUtilization: MetricConfig{
 			Enabled: true,
 		},
 		ContainerMemoryAvailable: MetricConfig{
@@ -123,6 +129,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		K8sNodeFilesystemUsage: MetricConfig{
+			Enabled: true,
+		},
+		K8sNodeFilesystemUtilization: MetricConfig{
 			Enabled: true,
 		},
 		K8sNodeMemoryAvailable: MetricConfig{
@@ -165,6 +174,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		K8sPodFilesystemUsage: MetricConfig{
+			Enabled: true,
+		},
+		K8sPodFilesystemUtilization: MetricConfig{
 			Enabled: true,
 		},
 		K8sPodMemoryAvailable: MetricConfig{
@@ -227,6 +239,8 @@ type ResourceAttributesConfig struct {
 	GlusterfsPath                ResourceAttributeConfig `mapstructure:"glusterfs.path"`
 	K8sClusterName               ResourceAttributeConfig `mapstructure:"k8s.cluster.name"`
 	K8sContainerName             ResourceAttributeConfig `mapstructure:"k8s.container.name"`
+	K8sJobName                   ResourceAttributeConfig `mapstructure:"k8s.job.name"`
+	K8sJobUID                    ResourceAttributeConfig `mapstructure:"k8s.job.uid"`
 	K8sNamespaceName             ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
 	K8sNodeName                  ResourceAttributeConfig `mapstructure:"k8s.node.name"`
 	K8sNodeStartTime             ResourceAttributeConfig `mapstructure:"k8s.node.start_time"`
@@ -266,6 +280,12 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sContainerName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sJobName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sJobUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sNamespaceName: ResourceAttributeConfig{
