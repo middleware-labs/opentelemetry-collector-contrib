@@ -136,7 +136,7 @@ func (m *Metadata) getNodeUID(nodeName string) (string, error) {
 
 // getServiceName retrieves k8s.service.name from metadata for given pod uid,
 // returns an error if no service found in the metadata that matches the requirements.
-func (m *Metadata) getServiceName(podUID string, client k8s.Interface) (string, error) {
+func (m *Metadata) getServiceName(client k8s.Interface, podUID string) (string, error) {
 	if m.PodsMetadata == nil {
 		return "", errors.New("pods metadata were not fetched")
 	}
@@ -168,7 +168,7 @@ type JobInfo struct {
 
 // getJobInfo retrieves k8s.job.name & k8s.job.uid from metadata for given pod uid,
 // returns an error if no job found in the metadata that matches the requirements.
-func (m *Metadata) getJobInfo(podUID string, client k8s.Interface) (JobInfo, error) {
+func (m *Metadata) getJobInfo(client k8s.Interface, podUID string) (JobInfo, error) {
 	if m.PodsMetadata == nil {
 		return JobInfo{}, errors.New("pods metadata were not fetched")
 	}
