@@ -17,40 +17,31 @@ func addCPUMetrics(
 	currentTime pcommon.Timestamp,
 	r resources,
 	nodeCPULimit float64,
-	calc *CPUUsageCalculator,
-	cpuUsageKey string,
 ) {
 	if s == nil {
 		return
 	}
-
-	var usageCores float64
-	var ok bool
-	if metadata.ReceiverKubeletstatsCPUUsageScrapeBasedFeatureGate.IsEnabled() {
-		usageCores, ok = calculateScrapeBasedCPUUsage(s, calc, cpuUsageKey)
-	} else if s.UsageNanoCores != nil {
-		usageCores, ok = float64(*s.UsageNanoCores)/1_000_000_000, true
-	}
-	if ok {
+	if s.UsageNanoCores != nil {
+		usageCores := float64(*s.UsageNanoCores) / 1_000_000_000
 		cpuMetrics.Usage(mb, currentTime, usageCores)
 		addCPUUtilizationMetrics(mb, cpuMetrics, usageCores, currentTime, r, nodeCPULimit)
+	    addCPUUsageMetric(mb, cpuMetrics, s, currentTime, r)
 	}
-
 	addCPUTimeMetric(mb, cpuMetrics.Time, s, currentTime)
 }
 
-// calculateScrapeBasedCPUUsage calculates CPU usage in cores as the rate of change of
-// the cumulative CPU time (UsageCoreNanoSeconds) between this scrape and the previous
-// one, instead of using the value reported directly by the kubelet (UsageNanoCores).
-// This is gated behind the kubeletstats.cpuUsageScrapeBased feature gate. It returns
-// ok=false when usage cannot be calculated this scrape (see CPUUsageCalculator).
-func calculateScrapeBasedCPUUsage(s *stats.CPUStats, calc *CPUUsageCalculator, cpuUsageKey string) (usageCores float64, ok bool) {
-	if s.UsageCoreNanoSeconds == nil || s.Time.IsZero() {
-		return 0, false
+func addCPUUsageMetric(mb *metadata.MetricsBuilder, cpuMetrics metadata.CPUMetrics, s *stats.CPUStats, currentTime pcommon.Timestamp, r resources) {
+	value := float64(*s.UsageNanoCores) / 1_000_000_000
+	cpuMetrics.Utilization(mb, currentTime, value)
+    if nodeCPULimit > 0 {
+		cpuMetrics.NodeUtilization(mb, currentTime, usageCores/nodeCPULimit)
 	}
-	cpuTimeSeconds := float64(*s.UsageCoreNanoSeconds) / 1_000_000_000
-	sampleTime := pcommon.NewTimestampFromTime(s.Time.Time)
-	return calc.calculateUsage(cpuUsageKey, cpuTimeSeconds, sampleTime)
+	if r.cpuLimit > 0 {
+		cpuMetrics.LimitUtilization(mb, currentTime, value/r.cpuLimit)
+	}
+	if r.cpuRequest > 0 {
+		cpuMetrics.RequestUtilization(mb, currentTime, value/r.cpuRequest)
+	}
 }
 
 func addCPUUtilizationMetrics(
