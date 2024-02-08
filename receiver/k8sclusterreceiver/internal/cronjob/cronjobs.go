@@ -22,6 +22,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, cj *batchv1.CronJob, ts pcommon.
 	e := metadata.NewK8sCronjobEntity(string(cj.UID))
 	e.SetK8sCronjobName(cj.Name)
 	e.SetK8sNamespaceName(cj.Namespace)
+	e.SetK8sCronjobStartTime(cj.GetCreationTimestamp().String())
 	eb := mb.ForK8sCronjob(e)
 	eb.RecordK8sCronjobActiveJobsDataPoint(ts, int64(len(cj.Status.Active)))
 	eb.Emit()
