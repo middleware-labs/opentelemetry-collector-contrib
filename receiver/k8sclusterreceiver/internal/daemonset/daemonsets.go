@@ -30,6 +30,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, ds *appsv1.DaemonSet, ts pcommon
 	e := metadata.NewK8sDaemonsetEntity(string(ds.UID))
 	e.SetK8sDaemonsetName(ds.Name)
 	e.SetK8sNamespaceName(ds.Namespace)
+	e.SetK8sDaemonsetStartTime(ds.GetCreationTimestamp().String())
 	eb := mb.ForK8sDaemonset(e)
 	eb.RecordK8sDaemonsetCurrentScheduledNodesDataPoint(ts, int64(ds.Status.CurrentNumberScheduled))
 	eb.RecordK8sDaemonsetDesiredScheduledNodesDataPoint(ts, int64(ds.Status.DesiredNumberScheduled))

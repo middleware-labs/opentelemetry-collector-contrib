@@ -41,6 +41,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, ss *appsv1.StatefulSet, ts pcomm
 	e := metadata.NewK8sStatefulsetEntity(string(ss.UID))
 	e.SetK8sStatefulsetName(ss.Name)
 	e.SetK8sNamespaceName(ss.Namespace)
+	e.SetK8sStatefulsetStartTime(ss.GetCreationTimestamp().String())
 	eb := mb.ForK8sStatefulset(e)
 	eb.RecordK8sStatefulsetDesiredPodsDataPoint(ts, int64(*ss.Spec.Replicas))
 	eb.RecordK8sStatefulsetReadyPodsDataPoint(ts, int64(ss.Status.ReadyReplicas))

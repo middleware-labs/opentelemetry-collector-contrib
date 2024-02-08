@@ -31,6 +31,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, dep *appsv1.Deployment, ts pcomm
 	e := metadata.NewK8sDeploymentEntity(string(dep.UID))
 	e.SetK8sDeploymentName(dep.Name)
 	e.SetK8sNamespaceName(dep.Namespace)
+	e.SetK8sDeploymentStartTime(dep.GetCreationTimestamp().String())
 	eb := mb.ForK8sDeployment(e)
 	eb.RecordK8sDeploymentDesiredDataPoint(ts, int64(*dep.Spec.Replicas))
 	eb.RecordK8sDeploymentAvailableDataPoint(ts, int64(dep.Status.AvailableReplicas))
