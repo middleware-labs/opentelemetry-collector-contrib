@@ -11,6 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
+	"k8s.io/apimachinery/pkg/labels"
+
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	conventions "go.opentelemetry.io/otel/semconv/v1.6.1"
 	"go.uber.org/zap"
@@ -86,6 +89,7 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sPodUID(string(pod.UID))
 	rb.SetK8sPodQosClass(string(pod.Status.QOSClass))
 	rb.SetK8sServiceName(getServiceNameForPod(pod))
+	rb.SetK8sPodStartTime(pod.GetCreationTimestamp().String())
 	rb.SetK8sServiceAccountName(getServiceAccountNameForPod(pod))
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
