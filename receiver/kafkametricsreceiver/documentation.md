@@ -170,6 +170,12 @@ Number of partitions in topic.
 | ---- | ----------- | ------ |
 | topic | The ID (integer) of a topic | Any Str |
 
+## Resource Attributes
+
+| Name | Description | Values | Enabled |
+| ---- | ----------- | ------ | ------- |
+| runtime.metrics.kafka | Flag for kafka metrics | Any Str | true |
+
 ## Optional Metrics
 
 The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
