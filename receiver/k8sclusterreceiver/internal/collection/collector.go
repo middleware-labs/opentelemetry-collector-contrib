@@ -81,6 +81,9 @@ func (dc *DataCollector) CollectMetricData(currentTime time.Time) pmetric.Metric
 		}
 		node.RecordMetrics(dc.metricsBuilder, o.(*corev1.Node), ts)
 	})
+	dc.metadataStore.ForEach(gvk.PersistentVolume, func(o any) {
+		persistentvolume.RecordMetrics(dc.metricsBuilder, o.(*corev1.PersistentVolume), ts)
+	})
 	dc.metadataStore.ForEach(gvk.Namespace, func(o any) {
 		namespace.RecordMetrics(dc.metricsBuilder, o.(*corev1.Namespace), ts)
 	})

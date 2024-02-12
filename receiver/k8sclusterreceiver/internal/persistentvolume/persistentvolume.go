@@ -5,6 +5,10 @@ package persistentvolume // import "github.com/open-telemetry/opentelemetry-coll
 
 import (
 	"fmt"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/maps"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	corev1 "k8s.io/api/core/v1"
 	"strings"
 	"time"
 
@@ -13,9 +17,14 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
+	imetadata "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
 )
 
 const (
+	// Keys for persistentvolume metadata.
+	AttributeK8SPersistentvolumeUID  = "k8s.persistentvolume.uid"
+	AttributeK8SPersistentvolumeName = "k8s.persistentvolume.name"
+	persistentvolumeCreationTime     = "persistentvolume.creation_timestamp"
 	k8sPVCreationTime = "k8s.persistentvolume.creation_timestamp"
 )
 
@@ -51,7 +60,11 @@ func Transform(pv *corev1.PersistentVolume) *corev1.PersistentVolume {
 			UID:       pv.Spec.ClaimRef.UID,
 		}
 	}
-	return newPV
+    newPv.Spec.Capacity = pv.Spec.Capacity
+    for _, c := range pv.Spec.AccessModes {
+        newPv.Spec.AccessModes = append(newPv.Spec.AccessModes, c)
+    }
+  	return newPV
 }
 
 func shouldSkipAnnotation(key string) bool {
@@ -65,6 +78,8 @@ func RecordMetrics(mb *metadata.MetricsBuilder, pv *corev1.PersistentVolume, ts 
 	if pv.Spec.StorageClassName != "" {
 		e.SetK8sStorageclassName(pv.Spec.StorageClassName)
 	}
+    e.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
+    e.SetK8sClusterName("unknown")
 	if pv.Spec.PersistentVolumeReclaimPolicy != "" {
 		e.SetK8sPersistentvolumeReclaimPolicy(string(pv.Spec.PersistentVolumeReclaimPolicy))
 	}

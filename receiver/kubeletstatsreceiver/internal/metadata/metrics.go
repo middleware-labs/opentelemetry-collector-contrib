@@ -11,8 +11,6 @@ type RecordIntDataPointFunc func(*MetricsBuilder, pcommon.Timestamp, int64)
 
 type RecordIntDataPointWithDirectionFunc func(*MetricsBuilder, pcommon.Timestamp, int64, string, AttributeDirection)
 
-type RecordIntDataPointWithFsTypeFunc func(*MetricsBuilder, pcommon.Timestamp, int64, AttributeFsType)
-
 type MetricsBuilders struct {
 	NodeMetricsBuilder      *MetricsBuilder
 	PodMetricsBuilder       *MetricsBuilder
@@ -105,39 +103,31 @@ var SystemContainerMemoryMetrics = MemoryMetrics{
 }
 
 type FilesystemMetrics struct {
-	Available  RecordIntDataPointFunc
-	Capacity   RecordIntDataPointFunc
-	Usage      RecordIntDataPointFunc
-	Inodes     RecordIntDataPointFunc
-	InodesFree RecordIntDataPointFunc
-}
-
-type EphemeralStorageMetrics struct {
-	Usage RecordIntDataPointWithFsTypeFunc
+	Available   RecordIntDataPointFunc
+	Capacity    RecordIntDataPointFunc
+	Usage       RecordIntDataPointFunc
+	Utilization RecordDoubleDataPointFunc
 }
 
 var NodeFilesystemMetrics = FilesystemMetrics{
-	Available:  (*MetricsBuilder).RecordK8sNodeFilesystemAvailableDataPoint,
-	Capacity:   (*MetricsBuilder).RecordK8sNodeFilesystemCapacityDataPoint,
-	Usage:      (*MetricsBuilder).RecordK8sNodeFilesystemUsageDataPoint,
-	Inodes:     (*MetricsBuilder).RecordK8sNodeFilesystemInodeCountDataPoint,
-	InodesFree: (*MetricsBuilder).RecordK8sNodeFilesystemInodeFreeDataPoint,
+	Available:   (*MetricsBuilder).RecordK8sNodeFilesystemAvailableDataPoint,
+	Capacity:    (*MetricsBuilder).RecordK8sNodeFilesystemCapacityDataPoint,
+	Usage:       (*MetricsBuilder).RecordK8sNodeFilesystemUsageDataPoint,
+	Utilization: (*MetricsBuilder).RecordK8sNodeFilesystemUtilizationDataPoint,
 }
 
 var PodFilesystemMetrics = FilesystemMetrics{
-	Available: (*MetricsBuilder).RecordK8sPodFilesystemAvailableDataPoint,
-	Capacity:  (*MetricsBuilder).RecordK8sPodFilesystemCapacityDataPoint,
-	Usage:     (*MetricsBuilder).RecordK8sPodFilesystemUsageDataPoint,
+	Available:   (*MetricsBuilder).RecordK8sPodFilesystemAvailableDataPoint,
+	Capacity:    (*MetricsBuilder).RecordK8sPodFilesystemCapacityDataPoint,
+	Usage:       (*MetricsBuilder).RecordK8sPodFilesystemUsageDataPoint,
+	Utilization: (*MetricsBuilder).RecordK8sPodFilesystemUtilizationDataPoint,
 }
 
 var ContainerFilesystemMetrics = FilesystemMetrics{
-	Available: (*MetricsBuilder).RecordContainerFilesystemAvailableDataPoint,
-	Capacity:  (*MetricsBuilder).RecordContainerFilesystemCapacityDataPoint,
-	Usage:     (*MetricsBuilder).RecordContainerFilesystemUsageDataPoint,
-}
-
-var ContainerEphemeralStorageMetrics = EphemeralStorageMetrics{
-	Usage: (*MetricsBuilder).RecordK8sContainerEphemeralStorageUsageDataPoint,
+	Available:   (*MetricsBuilder).RecordContainerFilesystemAvailableDataPoint,
+	Capacity:    (*MetricsBuilder).RecordContainerFilesystemCapacityDataPoint,
+	Usage:       (*MetricsBuilder).RecordContainerFilesystemUsageDataPoint,
+	Utilization: (*MetricsBuilder).RecordContainerFilesystemUtilizationDataPoint,
 }
 
 type NetworkMetrics struct {

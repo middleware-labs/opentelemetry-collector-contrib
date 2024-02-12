@@ -228,6 +228,14 @@ The current phase of namespaces (1 for active and 0 for terminating)
 | ---- | ----------- | ---------- | --------- |
 |  | Gauge | Int | Development |
 
+### k8s.persistentvolume.capacity
+
+The capacity of persistent volume.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
 ### k8s.pod.phase
 
 Current phase of the pod (1 - Pending, 2 - Running, 3 - Succeeded, 4 - Failed, 5 - Unknown)
@@ -802,3 +810,34 @@ An OpenShift cluster resource quota
 
 **Descriptive Attributes:**
 - `openshift.clusterquota.name`
+| k8s.node.uid | The k8s node uid. | Any Str | true |
+| k8s.persistentvolume.access_modes | The access modes of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.annotations | The annotations of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.finalizers | Finalizers of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.labels | Labels of the Persistent Volume | Any Str | true |
+| k8s.persistentvolume.name | The name of the Persistent Volume | Any Str | true |
+| k8s.persistentvolume.namespace | The namespace of the Persistent Volume | Any Str | true |
+| k8s.persistentvolume.phase | The phase of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.reclaim_policy | The reclaim policy of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.start_time | The start time of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.storage_class | The storage class of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.type | The type of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolume.uid | The UID of the Persistent Volume | Any Str | true |
+| k8s.persistentvolume.volume_mode | The volume mode of the Persistent Volume. | Any Str | true |
+| k8s.persistentvolumeclaim.name | The Name of the Persistent Volume Claim. | Any Str | true |
+| k8s.persistentvolumeclaim.uid | The UID of the Persistent Volume Claim. | Any Str | true |
+| k8s.pod.name | The k8s pod name. | Any Str | true |
+| k8s.pod.qos_class | The k8s pod qos class name. One of Guaranteed, Burstable, BestEffort. | Any Str | false |
+| k8s.pod.uid | The k8s pod uid. | Any Str | true |
+| k8s.replicaset.name | The k8s replicaset name | Any Str | true |
+| k8s.replicaset.uid | The k8s replicaset uid | Any Str | true |
+| k8s.replicationcontroller.name | The k8s replicationcontroller name. | Any Str | true |
+| k8s.replicationcontroller.uid | The k8s replicationcontroller uid. | Any Str | true |
+| k8s.resourcequota.name | The k8s resourcequota name. | Any Str | true |
+| k8s.resourcequota.uid | The k8s resourcequota uid. | Any Str | true |
+| k8s.statefulset.name | The k8s statefulset name. | Any Str | true |
+| k8s.statefulset.uid | The k8s statefulset uid. | Any Str | true |
+| openshift.clusterquota.name | The k8s ClusterResourceQuota name. | Any Str | true |
+| openshift.clusterquota.uid | The k8s ClusterResourceQuota uid. | Any Str | true |
+| os.description | The os description used by Kubernetes Node. | Any Str | false |
+| os.type | The os type used by Kubernetes Node. | Any Str | false |

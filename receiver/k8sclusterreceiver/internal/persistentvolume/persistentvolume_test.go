@@ -38,6 +38,11 @@ func TestTransform(t *testing.T) {
 			},
 		},
 		Spec: corev1.PersistentVolumeSpec{
+			StorageClassName: "standard",
+			MountOptions: []string{
+				"azureFile",
+				"nfs",
+			},
 			Capacity: corev1.ResourceList{
 				corev1.ResourceStorage: *resource.NewQuantity(100*1024*1024*1024, resource.BinarySI),
 			},
