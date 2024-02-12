@@ -5,14 +5,12 @@ package pod // import "github.com/open-telemetry/opentelemetry-collector-contrib
 
 import (
 	"context"
+	"fmt"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"k8s.io/apimachinery/pkg/labels"
-	"fmt"
+	k8s "k8s.io/client-go/kubernetes"
 	"strings"
 	"time"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
-	"k8s.io/apimachinery/pkg/labels"
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	conventions "go.opentelemetry.io/otel/semconv/v1.40.0"
@@ -100,15 +98,8 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	}
 }
 
-func getServiceNameForPod(pod *corev1.Pod) string {
+func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
 	var serviceName string
-
-	client, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
-		AuthType: k8sconfig.AuthTypeServiceAccount,
-	})
-	if err != nil {
-		return ""
-	}
 
 	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
 	if err != nil {
@@ -127,16 +118,32 @@ func getServiceNameForPod(pod *corev1.Pod) string {
 	return ""
 }
 
-func getServiceAccountNameForPod(pod *corev1.Pod) string {
-	var serviceAccountName string
+type JobInfo struct {
+	Name string
+	UID  types.UID
+}
 
-	client, err := k8sconfig.MakeClient(k8sconfig.APIConfig{
-		AuthType: k8sconfig.AuthTypeServiceAccount,
+func getJobInfoForPod(client k8s.Interface, pod *corev1.Pod) JobInfo {
+	podSelector := labels.Set(pod.Labels)
+	jobList, err := client.BatchV1().Jobs(pod.Namespace).List(context.TODO(), v1.ListOptions{
+		LabelSelector: podSelector.AsSelector().String(),
 	})
 	if err != nil {
-		panic(err)
-		return ""
+		return JobInfo{}
 	}
+
+	if len(jobList.Items) > 0 {
+		return JobInfo{
+			Name: jobList.Items[0].Name,
+			UID:  jobList.Items[0].UID,
+		}
+	}
+
+	return JobInfo{}
+}
+
+func getServiceAccountNameForPod(client k8s.Interface, pod *corev1.Pod) string {
+	var serviceAccountName string
 
 	podDetails, err := client.CoreV1().Pods(pod.Namespace).Get(context.TODO(), pod.Name, v1.GetOptions{})
 	if err != nil {

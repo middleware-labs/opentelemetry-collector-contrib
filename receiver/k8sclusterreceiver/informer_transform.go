@@ -30,6 +30,8 @@ func transformObject(object any) (any, error) {
 		return pod.Transform(o), nil
 	case *corev1.Node:
 		return node.Transform(o), nil
+	case *corev1.PersistentVolume:
+		return persistentvolume.Transform(o), nil
 	case *appsv1.ReplicaSet:
 		return replicaset.Transform(o), nil
 	case *batchv1.Job:
