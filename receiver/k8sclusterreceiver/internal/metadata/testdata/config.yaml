@@ -172,8 +172,6 @@ all_set:
       enabled: true
     k8s.ingress.annotations:
       enabled: true
-    k8s.ingress.class_name:
-      enabled: true
     k8s.ingress.labels:
       enabled: true
     k8s.ingress.name:
@@ -530,8 +528,6 @@ none_set:
     k8s.hpa.uid:
       enabled: false
     k8s.ingress.annotations:
-      enabled: false
-    k8s.ingress.class_name:
       enabled: false
     k8s.ingress.labels:
       enabled: false

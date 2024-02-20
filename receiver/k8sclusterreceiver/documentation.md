@@ -520,7 +520,6 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.hpa.name | The k8s hpa name. | Any Str | true |
 | k8s.hpa.uid | The k8s hpa uid. | Any Str | true |
 | k8s.ingress.annotations | Annotations of the Role. | Any Str | true |
-| k8s.ingress.class_name | Class Name of the Role. | Any Str | true |
 | k8s.ingress.labels | Labels of the Role. | Any Str | true |
 | k8s.ingress.name | The name of the Role. | Any Str | true |
 | k8s.ingress.namespace | The namespace of the Role. | Any Str | true |

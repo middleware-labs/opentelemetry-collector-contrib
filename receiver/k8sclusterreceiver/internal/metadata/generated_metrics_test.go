@@ -298,7 +298,6 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sHpaName("k8s.hpa.name-val")
 			rb.SetK8sHpaUID("k8s.hpa.uid-val")
 			rb.SetK8sIngressAnnotations("k8s.ingress.annotations-val")
-			rb.SetK8sIngressClassName("k8s.ingress.class_name-val")
 			rb.SetK8sIngressLabels("k8s.ingress.labels-val")
 			rb.SetK8sIngressName("k8s.ingress.name-val")
 			rb.SetK8sIngressNamespace("k8s.ingress.namespace-val")

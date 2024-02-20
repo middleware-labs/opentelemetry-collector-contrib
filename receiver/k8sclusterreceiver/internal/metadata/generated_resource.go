@@ -245,13 +245,6 @@ func (rb *ResourceBuilder) SetK8sIngressAnnotations(val string) {
 	}
 }
 
-// SetK8sIngressClassName sets provided value as "k8s.ingress.class_name" attribute.
-func (rb *ResourceBuilder) SetK8sIngressClassName(val string) {
-	if rb.config.K8sIngressClassName.Enabled {
-		rb.res.Attributes().PutStr("k8s.ingress.class_name", val)
-	}
-}
-
 // SetK8sIngressLabels sets provided value as "k8s.ingress.labels" attribute.
 func (rb *ResourceBuilder) SetK8sIngressLabels(val string) {
 	if rb.config.K8sIngressLabels.Enabled {

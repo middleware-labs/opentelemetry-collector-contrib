@@ -45,7 +45,6 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sHpaName("k8s.hpa.name-val")
 			rb.SetK8sHpaUID("k8s.hpa.uid-val")
 			rb.SetK8sIngressAnnotations("k8s.ingress.annotations-val")
-			rb.SetK8sIngressClassName("k8s.ingress.class_name-val")
 			rb.SetK8sIngressLabels("k8s.ingress.labels-val")
 			rb.SetK8sIngressName("k8s.ingress.name-val")
 			rb.SetK8sIngressNamespace("k8s.ingress.namespace-val")
@@ -144,9 +143,9 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch test {
 			case "default":
-				assert.Equal(t, 125, res.Attributes().Len())
+				assert.Equal(t, 124, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 125, res.Attributes().Len())
+				assert.Equal(t, 124, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -313,11 +312,6 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "k8s.ingress.annotations-val", val.Str())
-			}
-			val, ok = res.Attributes().Get("k8s.ingress.class_name")
-			assert.True(t, ok)
-			if ok {
-				assert.EqualValues(t, "k8s.ingress.class_name-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.ingress.labels")
 			assert.True(t, ok)

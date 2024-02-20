@@ -32,11 +32,6 @@ func Transform(r *netv1.Ingress) *netv1.Ingress {
 func RecordMetrics(mb *imetadata.MetricsBuilder, i *netv1.Ingress, ts pcommon.Timestamp) {
 	mb.RecordK8sIngressRuleCountDataPoint(ts, int64(len(i.Spec.Rules)))
 
-	var ingressClassName string
-	if i.Spec.IngressClassName != nil {
-		ingressClassName = *i.Spec.IngressClassName
-	}
-
 	rb := mb.NewResourceBuilder()
 	rb.SetK8sIngressUID(string(i.GetUID()))
 	rb.SetK8sIngressName(i.GetName())
@@ -46,7 +41,6 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, i *netv1.Ingress, ts pcommon.Ti
 	rb.SetK8sIngressAnnotations(mapToString(i.GetAnnotations(), "&"))
 	rb.SetK8sIngressStartTime(i.GetCreationTimestamp().String())
 	rb.SetK8sIngressType("Ingress")
-	rb.SetK8sIngressClassName(ingressClassName)
 	rb.SetK8sIngressRules(convertIngressRulesToString(i.Spec.Rules))
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }

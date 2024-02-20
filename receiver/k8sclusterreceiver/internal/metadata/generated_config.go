@@ -283,7 +283,6 @@ type ResourceAttributesConfig struct {
 	K8sHpaName                                    ResourceAttributeConfig `mapstructure:"k8s.hpa.name"`
 	K8sHpaUID                                     ResourceAttributeConfig `mapstructure:"k8s.hpa.uid"`
 	K8sIngressAnnotations                         ResourceAttributeConfig `mapstructure:"k8s.ingress.annotations"`
-	K8sIngressClassName                           ResourceAttributeConfig `mapstructure:"k8s.ingress.class_name"`
 	K8sIngressLabels                              ResourceAttributeConfig `mapstructure:"k8s.ingress.labels"`
 	K8sIngressName                                ResourceAttributeConfig `mapstructure:"k8s.ingress.name"`
 	K8sIngressNamespace                           ResourceAttributeConfig `mapstructure:"k8s.ingress.namespace"`
@@ -474,9 +473,6 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sIngressAnnotations: ResourceAttributeConfig{
-			Enabled: true,
-		},
-		K8sIngressClassName: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sIngressLabels: ResourceAttributeConfig{
