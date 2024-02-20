@@ -5,6 +5,10 @@ package persistentvolumeclaim // import "github.com/open-telemetry/opentelemetry
 
 import (
 	"fmt"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/maps"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	corev1 "k8s.io/api/core/v1"
 	"strings"
 	"time"
 
@@ -13,6 +17,7 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
+	imetadata "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
 )
 
 const (
@@ -63,6 +68,8 @@ func RecordMetrics(mb *metadata.MetricsBuilder, pvc *corev1.PersistentVolumeClai
 	if pvc.Spec.StorageClassName != nil && *pvc.Spec.StorageClassName != "" {
 		e.SetK8sStorageclassName(*pvc.Spec.StorageClassName)
 	}
+    e.SetK8sClusterName("unknown")
+    e.SetK8sPersistentvolumeclaimStartTime(pvc.GetCreationTimestamp().String())
 	eb := mb.ForK8sPersistentvolumeclaim(e)
 	for phaseStr, phaseAttr := range metadata.MapAttributeK8sPersistentvolumeclaimStatusPhase {
 		val := int64(0)
