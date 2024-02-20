@@ -40,6 +40,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/namespace"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/node"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/persistentvolume"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/persistentvolumeclaim"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/pod"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/replicaset"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/replicationcontroller"
@@ -118,6 +119,7 @@ func (rw *resourceWatcher) prepareSharedInformerFactory() error {
 		"Pod":                     {gvk.Pod},
 		"Node":                    {gvk.Node},
 		"PersistentVolume":        {gvk.PersistentVolume},
+		"PersistentVolumeClaim":   {gvk.PersistentVolumeClaim},
 		"Namespace":               {gvk.Namespace},
 		"ReplicationController":   {gvk.ReplicationController},
 		"ResourceQuota":           {gvk.ResourceQuota},
@@ -234,6 +236,8 @@ func (rw *resourceWatcher) setupInformerForKind(kind schema.GroupVersionKind, fa
 		}
 	case gvk.PersistentVolume:
 		rw.setupInformer(kind, factory.Core().V1().PersistentVolumes().Informer())
+	case gvk.PersistentVolumeClaim:
+		rw.setupInformer(kind, factory.Core().V1().PersistentVolumeClaims().Informer())
 	case gvk.Namespace:
 		if len(rw.config.Namespaces) == 0 && rw.config.Namespace == "" && len(factories) >= 1 {
 			// if no namespace is provided, the cluster wide informer factory, which is stored under the key "" is used to create the informer
@@ -369,6 +373,8 @@ func (rw *resourceWatcher) objMetadata(obj any) map[experimentalmetricmetadata.R
 		return node.GetMetadata(o)
 	case *corev1.PersistentVolume:
 		return persistentvolume.GetMetadata(o)
+	case *corev1.PersistentVolumeClaim:
+		return persistentvolumeclaim.GetMetadata(o)
 	case *corev1.ReplicationController:
 		return replicationcontroller.GetMetadata(o)
 	case *appsv1.Deployment:
