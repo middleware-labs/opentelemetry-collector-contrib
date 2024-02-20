@@ -82,7 +82,9 @@ func RecordMetrics(mb *metadata.MetricsBuilder, pv *corev1.PersistentVolume, ts 
     e.SetK8sClusterName("unknown")
 	if pv.Spec.PersistentVolumeReclaimPolicy != "" {
 		e.SetK8sPersistentvolumeReclaimPolicy(string(pv.Spec.PersistentVolumeReclaimPolicy))
+		e.SetK8sClusterName("unknown")
 	}
+    e.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
 	eb := mb.ForK8sPersistentvolume(e)
 	for phaseStr, phaseAttr := range metadata.MapAttributeK8sPersistentvolumeStatusPhase {
 		val := int64(0)
