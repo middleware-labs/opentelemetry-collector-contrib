@@ -18,6 +18,7 @@ var (
 	PersistentVolume        = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolume"}
 	PersistentVolumeClaim   = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolumeClaim"}
 	EndpointSlice           = schema.GroupVersionKind{Group: "discovery.k8s.io", Version: "v1", Kind: "EndpointSlice"}
+	ServiceAccount              = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ServiceAccount"}
 	DaemonSet                   = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "DaemonSet"}
 	Deployment                  = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "Deployment"}
 	ReplicaSet                  = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "ReplicaSet"}
@@ -28,4 +29,8 @@ var (
 	HorizontalPodAutoscaler     = schema.GroupVersionKind{Group: "autoscaling", Version: "v2", Kind: "HorizontalPodAutoscaler"}
 	HorizontalPodAutoscalerBeta = schema.GroupVersionKind{Group: "autoscaling", Version: "v2beta2", Kind: "HorizontalPodAutoscaler"}
 	ClusterResourceQuota        = schema.GroupVersionKind{Group: "quota", Version: "v1", Kind: "ClusterResourceQuota"}
+	Role                        = schema.GroupVersionKind{Group: "rbac.authorization.k8s.io", Version: "v1", Kind: "Role"}
+	RoleBinding                 = schema.GroupVersionKind{Group: "rbac.authorization.k8s.io", Version: "v1", Kind: "RoleBinding"}
+	ClusterRole                 = schema.GroupVersionKind{Group: "rbac.authorization.k8s.io", Version: "v1", Kind: "ClusterRole"}
+	ClusterRoleBinding          = schema.GroupVersionKind{Group: "rbac.authorization.k8s.io", Version: "v1", Kind: "ClusterRoleBinding"}
 )
