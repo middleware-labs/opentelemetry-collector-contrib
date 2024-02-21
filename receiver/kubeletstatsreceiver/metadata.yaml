@@ -254,7 +254,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: []
+    attributes: [ ]
   k8s.node.uptime:
     enabled: false
     description: "The time since the container started"
