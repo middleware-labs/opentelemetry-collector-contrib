@@ -180,6 +180,14 @@ Minimum number of replicas to which the autoscaler can scale up.
 | ---- | ----------- | ---------- | --------- |
 | {pod} | Gauge | Int | Development |
 
+### k8s.ingress.rule_count
+
+The rule count of ingress.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
 ### k8s.job.active_pods
 
 The number of actively running pods for a job
@@ -492,6 +500,14 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.hpa.scaletargetref.kind | The kind of the target resource to scale for the HorizontalPodAutoscaler. | Any Str | false |
 | k8s.hpa.scaletargetref.name | The name of the target resource to scale for the HorizontalPodAutoscaler. | Any Str | false |
 | k8s.hpa.uid | The k8s hpa uid. | Any Str | true |
+| k8s.ingress.annotations | Annotations of the Role. | Any Str | true |
+| k8s.ingress.labels | Labels of the Role. | Any Str | true |
+| k8s.ingress.name | The name of the Role. | Any Str | true |
+| k8s.ingress.namespace | The namespace of the Role. | Any Str | true |
+| k8s.ingress.rules | Rules of the Role. | Any Str | true |
+| k8s.ingress.start_time | The start time of the Role. | Any Str | true |
+| k8s.ingress.type | The type of the Role. | Any Str | true |
+| k8s.ingress.uid | The UID of the Role. | Any Str | true |
 | k8s.job.name | The k8s pod name. | Any Str | true |
 | k8s.job.uid | The k8s job uid. | Any Str | true |
 | k8s.kubelet.version | The version of Kubelet running on the node. | Any Str | false |
