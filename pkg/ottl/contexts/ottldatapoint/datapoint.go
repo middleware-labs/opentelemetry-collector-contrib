@@ -29,6 +29,10 @@ var (
 	_ zapcore.ObjectMarshaler              = (*TransformContext)(nil)
 )
 
+const (
+	contextName = "DataPoint"
+)
+
 type TransformContext struct {
 	dataPoint            any
 	metric               pmetric.Metric
