@@ -42,6 +42,10 @@ var (
 )
 
 // TransformContext represents a Datapoint and all its hierarchy.
+const (
+	contextName = "DataPoint"
+)
+
 type TransformContext struct {
 	resourceMetrics pmetric.ResourceMetrics
 	scopeMetrics    pmetric.ScopeMetrics

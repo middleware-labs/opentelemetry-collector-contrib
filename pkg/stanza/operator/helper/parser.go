@@ -20,6 +20,7 @@ func NewParserConfig(operatorID, operatorType string) ParserConfig {
 		TransformerConfig: NewTransformerConfig(operatorID, operatorType),
 		ParseFrom:         entry.NewBodyField(),
 		ParseTo:           entry.RootableField{Field: entry.NewAttributeField()},
+		Flatten:           true,
 	}
 }
 
@@ -33,6 +34,7 @@ type ParserConfig struct {
 	SeverityConfig    *SeverityConfig     `mapstructure:"severity,omitempty"`
 	TraceParser       *TraceParser        `mapstructure:"trace,omitempty"`
 	ScopeNameParser   *ScopeNameParser    `mapstructure:"scope_name,omitempty"`
+	Flatten           bool                `mapstructure:"flatten"`
 }
 
 // Build will build a parser operator.
@@ -51,6 +53,7 @@ func (c ParserConfig) Build(set component.TelemetrySettings) (ParserOperator, er
 		ParseFrom:           c.ParseFrom,
 		ParseTo:             c.ParseTo.Field,
 		BodyField:           c.BodyField,
+		Flatten:             c.Flatten,
 	}
 
 	if c.TimeParser != nil {
@@ -92,6 +95,7 @@ type ParserOperator struct {
 	SeverityParser  *SeverityParser
 	TraceParser     *TraceParser
 	ScopeNameParser *ScopeNameParser
+	Flatten         bool
 }
 
 func (p *ParserOperator) ProcessBatchWith(ctx context.Context, entries []*entry.Entry, parse ParseFunction) error {
