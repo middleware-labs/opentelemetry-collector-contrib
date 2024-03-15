@@ -372,10 +372,7 @@ func (g StandardPMapGetter[K]) Get(ctx context.Context, tCtx K) (pcommon.Map, er
 	case string:
 		var jsonData pcommon.Map
 		errUnmarshal := json.Unmarshal([]byte(val.(string)), &jsonData)
-		if errUnmarshal != nil {
-			return pcommon.Map{}, errUnmarshal
-		}
-		return jsonData, nil
+		return jsonData, errUnmarshal
 	default:
 		return pcommon.Map{}, TypeError(fmt.Sprintf("expected pcommon.Map but got %T", val))
 	}
