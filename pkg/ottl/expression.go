@@ -6,6 +6,7 @@ package ottl // import "github.com/open-telemetry/opentelemetry-collector-contri
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -368,6 +369,13 @@ func (g StandardPMapGetter[K]) Get(ctx context.Context, tCtx K) (pcommon.Map, er
 			return pcommon.Map{}, err
 		}
 		return m, nil
+	case string:
+		var jsonData pcommon.Map
+		errUnmarshal := json.Unmarshal([]byte(val.(string)), &jsonData)
+		if errUnmarshal != nil {
+			return pcommon.Map{}, errUnmarshal
+		}
+		return jsonData, nil
 	default:
 		return pcommon.Map{}, TypeError(fmt.Sprintf("expected pcommon.Map but got %T", val))
 	}
