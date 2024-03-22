@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -716,6 +717,10 @@ func (g StandardPMapGetter[K]) Get(ctx context.Context, tCtx K) (pcommon.Map, er
 			return pcommon.Map{}, err
 		}
 		return m, nil
+	case string:
+		var jsonData pcommon.Map
+		errUnmarshal := json.Unmarshal([]byte(val.(string)), &jsonData)
+		return jsonData, errUnmarshal
 	default:
 		return pcommon.Map{}, TypeError(fmt.Sprintf("expected pcommon.Map but got %T", val))
 	}
