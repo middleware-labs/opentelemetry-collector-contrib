@@ -97,7 +97,7 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.scrapeTableLockWaitEventStats(now, errs)
 
 	// collect InnodbStats
-	m.scrapeInnodbStats(now, errs)
+	m.scrapeInnodbStatus(now, errs)
 
 	// collect global status metrics.
 	m.scrapeGlobalStats(now, errs)
@@ -111,13 +111,12 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 	return m.mb.Emit(), errs.Combine()
 }
-func (m *mySQLScraper) scrapeInnodbStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+func (m *mySQLScraper) scrapeInnodbStatus(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	innodbStatus, err := m.sqlclient.getInnodbStatus()
 	if err != nil {
 		m.logger.Error("Failed to scrape InnoDB stats", zap.Error((err)))
 		errs.AddPartial(1, err)
 	}
-	m.logger.Debug("-----------------------------------------------------")
 
 	totalMemory, err := getInnodbTotalLargeMemoryAllocated(innodbStatus)
 	if err != nil {
