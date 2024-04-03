@@ -1725,6 +1725,55 @@ func newMetricMysqlIndexIoWaitTime(cfg MetricConfig) metricMysqlIndexIoWaitTime 
 	return m
 }
 
+type metricMysqlInnodbMemTotal struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.innodb.mem_total metric with initial data.
+func (m *metricMysqlInnodbMemTotal) init() {
+	m.data.SetName("mysql.innodb.mem_total")
+	m.data.SetDescription("Total memory used by InnoDB, as shown in the BUFFER POOL AND MEMORY section of SHOW ENGINE INNODB STATUS.")
+	m.data.SetUnit("By")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMysqlInnodbMemTotal) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlInnodbMemTotal) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlInnodbMemTotal) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlInnodbMemTotal(cfg MetricConfig) metricMysqlInnodbMemTotal {
+	m := metricMysqlInnodbMemTotal{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMysqlJoins struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3289,6 +3338,7 @@ type MetricsBuilder struct {
 	metricMysqlHandlers                metricMysqlHandlers
 	metricMysqlIndexIoWaitCount        metricMysqlIndexIoWaitCount
 	metricMysqlIndexIoWaitTime         metricMysqlIndexIoWaitTime
+	metricMysqlInnodbMemTotal          metricMysqlInnodbMemTotal
 	metricMysqlJoins                   metricMysqlJoins
 	metricMysqlLocks                   metricMysqlLocks
 	metricMysqlLogOperations           metricMysqlLogOperations
@@ -3350,6 +3400,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSetting
 		metricMysqlHandlers:                newMetricMysqlHandlers(mbc.Metrics.MysqlHandlers),
 		metricMysqlIndexIoWaitCount:        newMetricMysqlIndexIoWaitCount(mbc.Metrics.MysqlIndexIoWaitCount),
 		metricMysqlIndexIoWaitTime:         newMetricMysqlIndexIoWaitTime(mbc.Metrics.MysqlIndexIoWaitTime),
+		metricMysqlInnodbMemTotal:          newMetricMysqlInnodbMemTotal(mbc.Metrics.MysqlInnodbMemTotal),
 		metricMysqlJoins:                   newMetricMysqlJoins(mbc.Metrics.MysqlJoins),
 		metricMysqlLocks:                   newMetricMysqlLocks(mbc.Metrics.MysqlLocks),
 		metricMysqlLogOperations:           newMetricMysqlLogOperations(mbc.Metrics.MysqlLogOperations),
@@ -3454,6 +3505,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMysqlHandlers.emit(ils.Metrics())
 	mb.metricMysqlIndexIoWaitCount.emit(ils.Metrics())
 	mb.metricMysqlIndexIoWaitTime.emit(ils.Metrics())
+	mb.metricMysqlInnodbMemTotal.emit(ils.Metrics())
 	mb.metricMysqlJoins.emit(ils.Metrics())
 	mb.metricMysqlLocks.emit(ils.Metrics())
 	mb.metricMysqlLogOperations.emit(ils.Metrics())
@@ -3621,6 +3673,11 @@ func (mb *MetricsBuilder) RecordMysqlIndexIoWaitCountDataPoint(ts pcommon.Timest
 // RecordMysqlIndexIoWaitTimeDataPoint adds a data point to mysql.index.io.wait.time metric.
 func (mb *MetricsBuilder) RecordMysqlIndexIoWaitTimeDataPoint(ts pcommon.Timestamp, val int64, ioWaitsOperationsAttributeValue AttributeIoWaitsOperations, tableNameAttributeValue string, schemaAttributeValue string, indexNameAttributeValue string) {
 	mb.metricMysqlIndexIoWaitTime.recordDataPoint(mb.startTime, ts, val, ioWaitsOperationsAttributeValue.String(), tableNameAttributeValue, schemaAttributeValue, indexNameAttributeValue)
+}
+
+// RecordMysqlInnodbMemTotalDataPoint adds a data point to mysql.innodb.mem_total metric.
+func (mb *MetricsBuilder) RecordMysqlInnodbMemTotalDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricMysqlInnodbMemTotal.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMysqlJoinsDataPoint adds a data point to mysql.joins metric.

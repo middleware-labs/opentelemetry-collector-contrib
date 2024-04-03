@@ -106,6 +106,10 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordMysqlIndexIoWaitTimeDataPoint(ts, 1, AttributeIoWaitsOperationsDelete, "table_name-val", "schema-val", "index_name-val")
 
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMysqlInnodbMemTotalDataPoint(ts, 1)
+
 			allMetricsCount++
 			mb.RecordMysqlJoinsDataPoint(ts, "1", AttributeJoinKindFull)
 
@@ -479,6 +483,18 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("index")
 					assert.True(t, ok)
 					assert.EqualValues(t, "index_name-val", attrVal.Str())
+				case "mysql.innodb.mem_total":
+					assert.False(t, validatedMetrics["mysql.innodb.mem_total"], "Found a duplicate in the metrics slice: mysql.innodb.mem_total")
+					validatedMetrics["mysql.innodb.mem_total"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Total memory used by InnoDB, as shown in the BUFFER POOL AND MEMORY section of SHOW ENGINE INNODB STATUS.", ms.At(i).Description())
+					assert.Equal(t, "By", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "mysql.joins":
 					assert.False(t, validatedMetrics["mysql.joins"], "Found a duplicate in the metrics slice: mysql.joins")
 					validatedMetrics["mysql.joins"] = true

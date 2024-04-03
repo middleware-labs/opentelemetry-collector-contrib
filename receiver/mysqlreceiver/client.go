@@ -6,6 +6,8 @@ package mysqlreceiver // import "github.com/open-telemetry/opentelemetry-collect
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +20,7 @@ type client interface {
 	getVersion() (string, error)
 	getGlobalStats() (map[string]string, error)
 	getInnodbStats() (map[string]string, error)
+	getInnodbStatus() (string, error)
 	getTableIoWaitsStats() ([]TableIoWaitsStats, error)
 	getIndexIoWaitsStats() ([]IndexIoWaitsStats, error)
 	getStatementEventsStats() ([]StatementEventStats, error)
@@ -213,6 +216,38 @@ func (c *mySQLClient) getGlobalStats() (map[string]string, error) {
 func (c *mySQLClient) getInnodbStats() (map[string]string, error) {
 	query := "SELECT name, count FROM information_schema.innodb_metrics WHERE name LIKE '%buffer_pool_size%';"
 	return Query(*c, query)
+}
+
+func getInnodbTotalLargeMemoryAllocated(statusText string) (int, error) {
+	re := regexp.MustCompile(`Total large memory allocated (\d+)`)
+	matches := re.FindStringSubmatch(statusText)
+	if len(matches) < 2 {
+		return 0, fmt.Errorf("could not find 'Total large memory allocated' in the status output")
+	}
+	totalMemoryAllocated, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return 0, fmt.Errorf("failed to convert 'Total large memory allocated' value to int: %v", err)
+	}
+	return totalMemoryAllocated, nil
+}
+
+func (c *mySQLClient) getInnodbStatus() (string, error) {
+	/*
+		TODO: The query SHOW ENGINE INNODB STATS returns a huge block of text, eventually create a struct
+		like InnodbStatus for this and have some ways to parse this
+	*/
+	var (
+		typeVar string
+		name    string
+		status  string
+	)
+	query := "SHOW ENGINE INNODB STATUS;"
+	row := c.client.QueryRow(query)
+	err := row.Scan(&typeVar, &name, &status)
+	if err != nil {
+		return "", err
+	}
+	return status, nil
 }
 
 // getTableIoWaitsStats queries the db for table_io_waits metrics.

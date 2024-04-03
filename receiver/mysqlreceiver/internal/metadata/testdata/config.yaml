@@ -29,6 +29,8 @@ all_set:
       enabled: true
     mysql.index.io.wait.time:
       enabled: true
+    mysql.innodb.mem_total:
+      enabled: true
     mysql.joins:
       enabled: true
     mysql.locks:
@@ -119,6 +121,8 @@ none_set:
     mysql.index.io.wait.count:
       enabled: false
     mysql.index.io.wait.time:
+      enabled: false
+    mysql.innodb.mem_total:
       enabled: false
     mysql.joins:
       enabled: false

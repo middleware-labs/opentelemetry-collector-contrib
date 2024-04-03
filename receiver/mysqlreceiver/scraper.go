@@ -96,6 +96,9 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	// collect lock table events metrics
 	m.scrapeTableLockWaitEventStats(now, errs)
 
+	// collect InnodbStats
+	m.scrapeInnodbStats(now, errs)
+
 	// collect global status metrics.
 	m.scrapeGlobalStats(now, errs)
 
@@ -107,6 +110,21 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
 	return m.mb.Emit(), errs.Combine()
+}
+func (m *mySQLScraper) scrapeInnodbStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	innodbStatus, err := m.sqlclient.getInnodbStatus()
+	if err != nil {
+		m.logger.Error("Failed to scrape InnoDB stats", zap.Error((err)))
+		errs.AddPartial(1, err)
+	}
+	m.logger.Debug("-----------------------------------------------------")
+
+	totalMemory, err := getInnodbTotalLargeMemoryAllocated(innodbStatus)
+	if err != nil {
+		m.logger.Error("Failed to parse <Total large memory allocated> field in the Innodb status")
+		errs.Add(err)
+	}
+	m.mb.RecordMysqlInnodbMemTotalDataPoint(now, int64(totalMemory))
 }
 
 func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {

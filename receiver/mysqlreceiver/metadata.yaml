@@ -579,3 +579,9 @@ metrics:
       input_type: string
       monotonic: true
       aggregation_temporality: cumulative
+  mysql.innodb.mem_total:
+    enabled: true
+    description: Total memory used by InnoDB, as shown in the BUFFER POOL AND MEMORY section of SHOW ENGINE INNODB STATUS.
+    unit: By
+    gauge:
+      value_type: int

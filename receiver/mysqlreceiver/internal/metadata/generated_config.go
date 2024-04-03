@@ -39,6 +39,7 @@ type MetricsConfig struct {
 	MysqlHandlers                MetricConfig `mapstructure:"mysql.handlers"`
 	MysqlIndexIoWaitCount        MetricConfig `mapstructure:"mysql.index.io.wait.count"`
 	MysqlIndexIoWaitTime         MetricConfig `mapstructure:"mysql.index.io.wait.time"`
+	MysqlInnodbMemTotal          MetricConfig `mapstructure:"mysql.innodb.mem_total"`
 	MysqlJoins                   MetricConfig `mapstructure:"mysql.joins"`
 	MysqlLocks                   MetricConfig `mapstructure:"mysql.locks"`
 	MysqlLogOperations           MetricConfig `mapstructure:"mysql.log_operations"`
@@ -112,6 +113,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlIndexIoWaitTime: MetricConfig{
+			Enabled: true,
+		},
+		MysqlInnodbMemTotal: MetricConfig{
 			Enabled: true,
 		},
 		MysqlJoins: MetricConfig{

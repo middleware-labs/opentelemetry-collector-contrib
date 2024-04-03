@@ -146,6 +146,14 @@ The total time of I/O wait events for an index.
 | schema | The schema of the object. | Any Str |
 | index | The name of the index. | Any Str |
 
+### mysql.innodb.mem_total
+
+Total memory used by InnoDB, as shown in the BUFFER POOL AND MEMORY section of SHOW ENGINE INNODB STATUS.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
 ### mysql.locks
 
 The number of MySQL locks.
