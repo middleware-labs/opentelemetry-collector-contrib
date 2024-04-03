@@ -112,18 +112,12 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	return m.mb.Emit(), errs.Combine()
 }
 func (m *mySQLScraper) scrapeInnodbStatus(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	innodbStatus, err := m.sqlclient.getInnodbStatus()
+	totalLargeMemoryAllocated, err := m.sqlclient.getInnodbStatus()
 	if err != nil {
-		m.logger.Error("Failed to scrape InnoDB stats", zap.Error((err)))
-		errs.AddPartial(1, err)
-	}
-
-	totalMemory, err := getInnodbTotalLargeMemoryAllocated(innodbStatus)
-	if err != nil {
-		m.logger.Error("Failed to parse <Total large memory allocated> field in the Innodb status")
+		m.logger.Error("Failed to fetch in the Innodb status")
 		errs.Add(err)
 	}
-	m.mb.RecordMysqlInnodbMemTotalDataPoint(now, int64(totalMemory))
+	m.mb.RecordMysqlInnodbMemTotalDataPoint(now, int64(totalLargeMemoryAllocated))
 }
 
 func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {

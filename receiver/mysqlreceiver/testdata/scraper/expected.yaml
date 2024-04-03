@@ -580,6 +580,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: ns
+          - description: Total memory used by InnoDB, as shown in the BUFFER POOL AND MEMORY section of SHOW ENGINE INNODB STATUS.
+            name: mysql.innodb.mem_total
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
           - description: The number of joins that perform table scans.
             name: mysql.joins
             sum:

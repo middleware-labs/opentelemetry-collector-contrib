@@ -20,7 +20,7 @@ type client interface {
 	getVersion() (string, error)
 	getGlobalStats() (map[string]string, error)
 	getInnodbStats() (map[string]string, error)
-	getInnodbStatus() (string, error)
+	getInnodbStatus() (int64, error)
 	getTableIoWaitsStats() ([]TableIoWaitsStats, error)
 	getIndexIoWaitsStats() ([]IndexIoWaitsStats, error)
 	getStatementEventsStats() ([]StatementEventStats, error)
@@ -218,7 +218,7 @@ func (c *mySQLClient) getInnodbStats() (map[string]string, error) {
 	return Query(*c, query)
 }
 
-func getInnodbTotalLargeMemoryAllocated(statusText string) (int, error) {
+func ExtractInnodbTotalLargeMemoryAllocated(statusText string) (int64, error) {
 	re := regexp.MustCompile(`Total large memory allocated (\d+)`)
 	matches := re.FindStringSubmatch(statusText)
 	if len(matches) < 2 {
@@ -228,10 +228,10 @@ func getInnodbTotalLargeMemoryAllocated(statusText string) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed to convert 'Total large memory allocated' value to int: %v", err)
 	}
-	return totalMemoryAllocated, nil
+	return int64(totalMemoryAllocated), nil
 }
 
-func (c *mySQLClient) getInnodbStatus() (string, error) {
+func (c *mySQLClient) getInnodbStatus() (int64, error) {
 	/*
 		TODO: The query SHOW ENGINE INNODB STATS returns a huge block of text, eventually create a struct
 		like InnodbStatus for this and have some ways to parse this
@@ -245,9 +245,15 @@ func (c *mySQLClient) getInnodbStatus() (string, error) {
 	row := c.client.QueryRow(query)
 	err := row.Scan(&typeVar, &name, &status)
 	if err != nil {
-		return "", err
+		return -1, err
 	}
-	return status, nil
+
+	totalLargeMemoryAllocated, err := ExtractInnodbTotalLargeMemoryAllocated(status)
+	if err != nil {
+		return -1, err
+	}
+
+	return totalLargeMemoryAllocated, nil
 }
 
 // getTableIoWaitsStats queries the db for table_io_waits metrics.

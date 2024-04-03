@@ -39,6 +39,8 @@ func TestScrape(t *testing.T) {
 		cfg.MetricsBuilderConfig.Metrics.MysqlQueryCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlQuerySlowCount.Enabled = true
 
+		cfg.MetricsBuilderConfig.Metrics.MysqlInnodbMemTotal.Enabled = true
+
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitReadCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitReadTime.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitWriteCount.Enabled = true
@@ -62,6 +64,7 @@ func TestScrape(t *testing.T) {
 			statementEventsFile:         "statement_events",
 			tableLockWaitEventStatsFile: "table_lock_wait_event_stats",
 			replicaStatusFile:           "replica_stats",
+			innodbStatusFile:            "innodb_status",
 		}
 
 		scraper.renameCommands = true
@@ -90,6 +93,8 @@ func TestScrape(t *testing.T) {
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitWriteCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitWriteTime.Enabled = true
 
+		cfg.MetricsBuilderConfig.Metrics.MysqlInnodbMemTotal.Enabled = true
+
 		scraper := newMySQLScraper(receivertest.NewNopCreateSettings(), cfg)
 		scraper.sqlclient = &mockClient{
 			globalStatsFile:             "global_stats_partial",
@@ -99,6 +104,7 @@ func TestScrape(t *testing.T) {
 			statementEventsFile:         "statement_events_empty",
 			tableLockWaitEventStatsFile: "table_lock_wait_event_stats_empty",
 			replicaStatusFile:           "replica_stats_empty",
+			innodbStatusFile:            "innodb_status_empty",
 		}
 
 		actualMetrics, scrapeErr := scraper.scrape(context.Background())
@@ -130,6 +136,31 @@ type mockClient struct {
 	statementEventsFile         string
 	tableLockWaitEventStatsFile string
 	replicaStatusFile           string
+	innodbStatusFile            string
+}
+
+// getInnodbStatus implements client.
+func (c *mockClient) getInnodbStatus() (int64, error) {
+	innodbStatus, err := readFileToString(c.innodbStatusFile)
+	if err != nil {
+		return -1, err
+	}
+
+	totalLargeMemoryAllocate, err := ExtractInnodbTotalLargeMemoryAllocated(innodbStatus)
+	if err != nil {
+		return -1, err
+	}
+
+	return totalLargeMemoryAllocate, nil
+}
+
+func readFileToString(fname string) (string, error) {
+	content, err := os.ReadFile(filepath.Join("testdata", "scraper", fname+".txt"))
+	if err != nil {
+		return "", err
+	}
+
+	return string(content), nil
 }
 
 func readFile(fname string) (map[string]string, error) {
