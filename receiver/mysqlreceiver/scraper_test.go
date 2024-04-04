@@ -112,6 +112,7 @@ func TestScrape(t *testing.T) {
 
 		expectedFile := filepath.Join("testdata", "scraper", "expected_partial.yaml")
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+
 		require.NoError(t, err)
 		assert.NoError(t, pmetrictest.CompareMetrics(actualMetrics, expectedMetrics,
 			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(),

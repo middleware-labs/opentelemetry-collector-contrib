@@ -244,6 +244,7 @@ func (c *mySQLClient) getInnodbStatus() (int64, error) {
 	query := "SHOW ENGINE INNODB STATUS;"
 	row := c.client.QueryRow(query)
 	err := row.Scan(&typeVar, &name, &status)
+	// TODO: Suggest better value if there's an error for the metric.
 	if err != nil {
 		return -1, err
 	}

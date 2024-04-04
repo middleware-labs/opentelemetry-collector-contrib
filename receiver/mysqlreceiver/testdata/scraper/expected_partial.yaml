@@ -19,6 +19,15 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: "1"
+          - description: Total memory used by InnoDB, as shown in the BUFFER POOL AND MEMORY section of SHOW ENGINE INNODB STATUS.
+            name: mysql.innodb.mem_total
+            gauge:
+              dataPoints:
+                - asInt: "-1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: By
         scope:
           name: otelcol/mysqlreceiver
           version: latest
+        
