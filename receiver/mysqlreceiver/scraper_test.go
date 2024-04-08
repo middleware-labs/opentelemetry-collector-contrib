@@ -8,6 +8,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -122,7 +123,40 @@ func TestScrape(t *testing.T) {
 		require.True(t, errors.As(scrapeErr, &partialError), "returned error was not PartialScrapeError")
 		// 5 comes from 4 failed "must-have" metrics that aren't present,
 		// and the other failure comes from a row that fails to parse as a number
+		fmt.Println("Failed partial errors ", partialError.Failed)
 		require.Equal(t, partialError.Failed, 5, "Expected partial error count to be 5")
+	})
+
+	t.Run("scrape is getting corrupted value", func(t *testing.T) {
+		cfg := createDefaultConfig().(*Config)
+		cfg.Username = "otel"
+		cfg.Password = "otel"
+		cfg.NetAddr = confignet.NetAddr{Endpoint: "localhost:3306"}
+
+		cfg.MetricsBuilderConfig.Metrics.MysqlInnodbMemTotal.Enabled = true
+
+		scraper := newMySQLScraper(receivertest.NewNopCreateSettings(), cfg)
+		scraper.sqlclient = &mockClient{
+			innodbStatusFile: "innodb_status_corrupted",
+		}
+
+		actualMetrics, scrapeErr := scraper.scrape(context.Background())
+		require.Error(t, scrapeErr)
+		fmt.Print("actual error -----------", scrapeErr)
+
+		expectedFile := filepath.Join("testdata", "scraper", "expected_corrupted_innodb_mem-total.yaml")
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		fmt.Print("\nexpected error ---------", err)
+
+		require.NoError(t, err)
+		assert.NoError(t, pmetrictest.CompareMetrics(actualMetrics, expectedMetrics,
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(),
+			pmetrictest.IgnoreTimestamp(),
+		))
+
+		var corruptedError scrapererror.PartialScrapeError
+		require.True(t, errors.As(scrapeErr, &corruptedError), "returned error was not PartialScrapeError")
+		require.Equal(t, corruptedError.Failed, 98, "Expected corrupted error count to be 98")
 	})
 
 }
@@ -146,17 +180,25 @@ func (c *mockClient) getInnodbStatus() (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-
-	totalLargeMemoryAllocate, err := ExtractInnodbTotalLargeMemoryAllocated(innodbStatus)
+	fmt.Println("Scrapping mock file----------------------------------------------------")
+	totalLargeMemoryAllocated, err := ExtractInnodbTotalLargeMemoryAllocated(innodbStatus)
+	const systemTotalMemory int64 = 1 << 40 // 1 TB of memory.
 	if err != nil {
 		return -1, err
 	}
+	if totalLargeMemoryAllocated < 0 {
+		return -1, errors.New("invalid memory allocation: 'Total Large Memory Allocated' value is negative, which is not possible")
+	} else if totalLargeMemoryAllocated > systemTotalMemory {
+		return -1, fmt.Errorf("invalid memory allocation: 'Total Large Memory Allocated' value exceeds the system's total memory capacity of %d bytes", systemTotalMemory)
+	}
 
-	return totalLargeMemoryAllocate, nil
+	fmt.Println("Total Large mem allocated: ", totalLargeMemoryAllocated)
+	return totalLargeMemoryAllocated, nil
 }
 
 func readFileToString(fname string) (string, error) {
 	content, err := os.ReadFile(filepath.Join("testdata", "scraper", fname+".txt"))
+	fmt.Println("file being scrapped is :", fname)
 	if err != nil {
 		return "", err
 	}

@@ -5,6 +5,7 @@ package mysqlreceiver // import "github.com/open-telemetry/opentelemetry-collect
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -219,16 +220,26 @@ func (c *mySQLClient) getInnodbStats() (map[string]string, error) {
 }
 
 func ExtractInnodbTotalLargeMemoryAllocated(statusText string) (int64, error) {
-	re := regexp.MustCompile(`Total large memory allocated (\d+)`)
+	// fmt.Println(statusText)
+	re := regexp.MustCompile(`Total large memory allocated (-?\d+)`)
 	matches := re.FindStringSubmatch(statusText)
+	fmt.Println("matches: ", matches)
 	if len(matches) < 2 {
-		return 0, fmt.Errorf("could not find 'Total large memory allocated' in the status output")
+		return -1, fmt.Errorf("could not find 'Total large memory allocated' in the status output")
 	}
-	totalMemoryAllocated, err := strconv.Atoi(matches[1])
+	totalLargeMemoryAllocated, err := strconv.Atoi(matches[1])
 	if err != nil {
-		return 0, fmt.Errorf("failed to convert 'Total large memory allocated' value to int: %v", err)
+		return -1, fmt.Errorf("failed to convert 'Total large memory allocated' value to int: %v", err)
 	}
-	return int64(totalMemoryAllocated), nil
+	const systemTotalMemory int64 = 1 << 40 // 1 TB of memory.
+
+	if int64(totalLargeMemoryAllocated) < 0 {
+		return -1, errors.New("invalid memory allocation: 'Total Large Memory Allocated' value is negative, which is not possible")
+	} else if int64(totalLargeMemoryAllocated) > systemTotalMemory {
+		return -1, fmt.Errorf("invalid memory allocation: 'Total Large Memory Allocated' value exceeds the system's total memory capacity of %d bytes", systemTotalMemory)
+	}
+
+	return int64(totalLargeMemoryAllocated), nil
 }
 
 func (c *mySQLClient) getInnodbStatus() (int64, error) {

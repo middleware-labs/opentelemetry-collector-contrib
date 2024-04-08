@@ -118,6 +118,9 @@ func (m *mySQLScraper) scrapeInnodbStatus(now pcommon.Timestamp, errs *scraperer
 		errs.Add(err)
 	}
 	m.mb.RecordMysqlInnodbMemTotalDataPoint(now, int64(totalLargeMemoryAllocated))
+	// rb := m.mb.NewResourceBuilder()
+	// rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
+	// m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
 func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
