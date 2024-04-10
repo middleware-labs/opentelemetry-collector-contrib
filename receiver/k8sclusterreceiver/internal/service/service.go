@@ -5,6 +5,7 @@ package service // import "github.com/open-telemetry/opentelemetry-collector-con
 import (
 	"context"
 	"fmt"
+
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	corev1 "k8s.io/api/core/v1"
