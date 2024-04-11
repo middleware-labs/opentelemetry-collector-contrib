@@ -409,6 +409,7 @@ func TestTransform(t *testing.T) {
 					},
 				},
 			},
+			ServiceAccountName: "my-service-account",
 		},
 		Status: corev1.PodStatus{
 			Phase:     corev1.PodRunning,
@@ -458,6 +459,7 @@ func TestTransform(t *testing.T) {
 					},
 				},
 			},
+			ServiceAccountName: "my-service-account",
 		},
 		Status: corev1.PodStatus{
 			Phase: corev1.PodRunning,

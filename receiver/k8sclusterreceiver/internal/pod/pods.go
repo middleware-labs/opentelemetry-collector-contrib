@@ -65,6 +65,7 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 			},
 		})
 	}
+	newPod.Spec.ServiceAccountName = pod.Spec.ServiceAccountName
 	return newPod
 }
 
@@ -84,17 +85,16 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	rb.SetK8sNodeName(pod.Spec.NodeName)
 	rb.SetK8sPodName(pod.Name)
 	rb.SetK8sPodUID(string(pod.UID))
-	rb.SetK8sPodStartTime(pod.GetCreationTimestamp().String())
+	rb.SetK8sPodStartTime(pod.CreationTimestamp.String())
 	rb.SetOpencensusResourcetype("k8s")
 
-	svcName, ok := pod.Annotations[constants.MWK8sServiceName]
+	svcName, ok := pod.Labels[constants.MWK8sServiceName]
 	if ok {
 		rb.SetK8sServiceName(svcName)
 	}
 
 	rb.SetK8sJobName(jobName)
 	rb.SetK8sJobUID(string(jobUID))
-	rb.SetK8sPodStartTime(pod.GetCreationTimestamp().String())
 	rb.SetK8sServiceAccountName(pod.Spec.ServiceAccountName)
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
