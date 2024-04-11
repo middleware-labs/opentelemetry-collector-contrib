@@ -12,6 +12,38 @@ metrics:
     enabled: false
 ```
 
+### apache.bytes_served
+
+The total number of bytes served.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {byte} | Sum | Int | Cumulative | true |
+
+### apache.conns_async_closing
+
+The number of asynchronous closing connections.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connections} | Gauge | Int |
+
+### apache.conns_async_keep_alive
+
+The number of asynchronous keep alive connections.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connections} | Gauge | Int |
+
+### apache.conns_async_writing
+
+The number of asynchronous writes connections.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connections} | Gauge | Int |
+
 ### apache.cpu.load
 
 Current load of the CPU.

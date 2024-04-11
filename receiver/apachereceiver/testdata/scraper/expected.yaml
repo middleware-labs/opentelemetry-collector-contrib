@@ -214,6 +214,36 @@ resourceMetrics:
                         stringValue: idle
                   timeUnixNano: "1000000"
             unit: '{workers}'
+          - description: The number of asynchronous closing connections.
+            name: apache.conns_async_closing
+            gauge:
+              dataPoints:
+                - asInt: 0
+                  timeUnixNano: "1000000"
+            unit: '{connections}'
+          - description: The number of asynchronous keep alive connections.
+            name: apache.conns_async_keep_alive
+            gauge:
+              dataPoints:
+                - asInt: 1
+                  timeUnixNano: "1000000"
+            unit: '{connections}'
+          - description: The number of asynchronous writes connections.
+            name: apache.conns_async_writing
+            gauge:
+              dataPoints:
+                - asInt: 1
+                  timeUnixNano: "1000000"
+            unit: '{connections}'
+          - description: The total number of bytes served.
+            name: apache.bytes_served
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: 222230
+                  timeUnixNano: "1000000"
+              isMonotonic: true
+            unit: '{byte}'
         scope:
           name: otelcol/apachereceiver
           version: latest

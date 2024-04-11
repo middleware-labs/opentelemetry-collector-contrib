@@ -124,6 +124,14 @@ func (r *apacheScraper) scrape(context.Context) (pmetric.Metrics, error) {
 			for state, score := range scoreboardMap {
 				r.mb.RecordApacheScoreboardDataPoint(now, score, state)
 			}
+		case "ConnsAsyncClosing":
+			addPartialIfError(errs, r.mb.RecordApacheConnsAsyncClosingDataPoint(now, metricValue))
+		case "ConnsAsyncKeepAlive":
+			addPartialIfError(errs, r.mb.RecordApacheConnsAsyncKeepAliveDataPoint(now, metricValue))
+		case "ConnsAsyncWriting":
+			addPartialIfError(errs, r.mb.RecordApacheConnsAsyncWritingDataPoint(now, metricValue))
+		case "BytesPerSec":
+			addPartialIfError(errs, r.mb.RecordApacheBytesServedDataPoint(now, metricValue))
 		}
 	}
 

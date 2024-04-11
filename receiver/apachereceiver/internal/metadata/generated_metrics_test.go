@@ -56,6 +56,22 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordApacheBytesServedDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheConnsAsyncClosingDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheConnsAsyncKeepAliveDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheConnsAsyncWritingDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordApacheCPULoadDataPoint(ts, "1")
 
 			defaultMetricsCount++
@@ -127,6 +143,56 @@ func TestMetricsBuilder(t *testing.T) {
 			validatedMetrics := make(map[string]bool)
 			for i := 0; i < ms.Len(); i++ {
 				switch ms.At(i).Name() {
+				case "apache.bytes_served":
+					assert.False(t, validatedMetrics["apache.bytes_served"], "Found a duplicate in the metrics slice: apache.bytes_served")
+					validatedMetrics["apache.bytes_served"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "The total number of bytes served.", ms.At(i).Description())
+					assert.Equal(t, "{byte}", ms.At(i).Unit())
+					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "apache.conns_async_closing":
+					assert.False(t, validatedMetrics["apache.conns_async_closing"], "Found a duplicate in the metrics slice: apache.conns_async_closing")
+					validatedMetrics["apache.conns_async_closing"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of asynchronous closing connections.", ms.At(i).Description())
+					assert.Equal(t, "{connections}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "apache.conns_async_keep_alive":
+					assert.False(t, validatedMetrics["apache.conns_async_keep_alive"], "Found a duplicate in the metrics slice: apache.conns_async_keep_alive")
+					validatedMetrics["apache.conns_async_keep_alive"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of asynchronous keep alive connections.", ms.At(i).Description())
+					assert.Equal(t, "{connections}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "apache.conns_async_writing":
+					assert.False(t, validatedMetrics["apache.conns_async_writing"], "Found a duplicate in the metrics slice: apache.conns_async_writing")
+					validatedMetrics["apache.conns_async_writing"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of asynchronous writes connections.", ms.At(i).Description())
+					assert.Equal(t, "{connections}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "apache.cpu.load":
 					assert.False(t, validatedMetrics["apache.cpu.load"], "Found a duplicate in the metrics slice: apache.cpu.load")
 					validatedMetrics["apache.cpu.load"] = true
