@@ -140,7 +140,9 @@ func toTraces(payload *pb.TracerPayload, req *http.Request) ptrace.Traces {
 		rs.SetSchemaUrl(semconv.SchemaURL)
 		sharedAttributes.CopyTo(rs.Resource().Attributes())
 		rs.Resource().Attributes().PutStr(semconv.AttributeServiceName, service)
-
+		if mwAPIKey := req.Header.Get("dd-api-key"); mwAPIKey != "" {
+			rs.Resource().Attributes().PutStr("mw.account_key", mwAPIKey)
+		}
 		in := rs.ScopeSpans().AppendEmpty()
 		in.Scope().SetName("Datadog")
 		in.Scope().SetVersion(payload.TracerVersion)
