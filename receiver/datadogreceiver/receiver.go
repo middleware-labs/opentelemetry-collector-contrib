@@ -48,6 +48,7 @@ func newDataDogReceiver(config *Config, nextConsumer consumer.Traces, params rec
 
 func (ddr *datadogReceiver) Start(_ context.Context, host component.Host) error {
 	ddmux := http.NewServeMux()
+	ddmux.HandleFunc("/v0.2/traces", ddr.handleTraces)
 	ddmux.HandleFunc("/v0.3/traces", ddr.handleTraces)
 	ddmux.HandleFunc("/v0.4/traces", ddr.handleTraces)
 	ddmux.HandleFunc("/v0.5/traces", ddr.handleTraces)
