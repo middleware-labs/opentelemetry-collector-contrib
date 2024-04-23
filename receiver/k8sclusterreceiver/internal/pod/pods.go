@@ -74,13 +74,26 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 			},
 		})
 	}
+	newPod.Spec.ServiceAccountName = pod.Spec.ServiceAccountName
 	return newPod
 }
 
 func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
+	var jobName, jobUID string
+    ownerReference := utils.FindOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
+    if ownerReference != nil && ownerReference.Kind == constants.K8sKindJob {
+        jobName = ownerReference.Name
+        jobUID = string(ownerReference.UID)
+    }
+
+    jobInfo := getJobInfoForPod(client, pod)
+
 	e := metadata.NewK8sPodEntity(string(pod.UID))
 	e.SetK8sPodName(pod.Name)
 	e.SetK8sPodQosClass(string(pod.Status.QOSClass))
+	e.SetK8sJobName(jobInfo.Name)
+    e.SetK8sJobUID(string(jobInfo.UID))
+    e.SetK8sClusterName("unknown")
 	e.SetK8sNamespaceName(pod.Namespace)
 	e.SetK8sNodeName(pod.Spec.NodeName)
 	e.SetK8sClusterName("unknown")
@@ -96,62 +109,6 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 		c := pod.Spec.Containers[i]
 		container.RecordSpecMetrics(logger, mb, c, pod, ts)
 	}
-}
-
-func getServiceNameForPod(client k8s.Interface, pod *corev1.Pod) string {
-	var serviceName string
-
-	serviceList, err := client.CoreV1().Services(pod.Namespace).List(context.TODO(), v1.ListOptions{})
-	if err != nil {
-		return ""
-	}
-
-	for _, svc := range serviceList.Items {
-		if svc.Spec.Selector != nil {
-			if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
-				serviceName = svc.Name
-				return serviceName
-			}
-		}
-	}
-
-	return ""
-}
-
-type JobInfo struct {
-	Name string
-	UID  types.UID
-}
-
-func getJobInfoForPod(client k8s.Interface, pod *corev1.Pod) JobInfo {
-	podSelector := labels.Set(pod.Labels)
-	jobList, err := client.BatchV1().Jobs(pod.Namespace).List(context.TODO(), v1.ListOptions{
-		LabelSelector: podSelector.AsSelector().String(),
-	})
-	if err != nil {
-		return JobInfo{}
-	}
-
-	if len(jobList.Items) > 0 {
-		return JobInfo{
-			Name: jobList.Items[0].Name,
-			UID:  jobList.Items[0].UID,
-		}
-	}
-
-	return JobInfo{}
-}
-
-func getServiceAccountNameForPod(client k8s.Interface, pod *corev1.Pod) string {
-	var serviceAccountName string
-
-	podDetails, err := client.CoreV1().Pods(pod.Namespace).Get(context.TODO(), pod.Name, v1.GetOptions{})
-	if err != nil {
-		return ""
-	}
-
-	serviceAccountName = podDetails.Spec.ServiceAccountName
-	return serviceAccountName
 }
 
 func reasonToInt(reason string) int32 {
