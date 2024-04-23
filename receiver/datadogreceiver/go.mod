@@ -3,33 +3,20 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datado
 go 1.22.0
 
 require (
-	github.com/DataDog/agent-payload/v5 v5.0.136
-	github.com/DataDog/datadog-agent/pkg/obfuscate v0.59.0
-	github.com/DataDog/datadog-agent/pkg/proto v0.59.0
-	github.com/DataDog/datadog-agent/pkg/trace v0.59.0
-	github.com/DataDog/datadog-api-client-go/v2 v2.31.0
-	github.com/DataDog/sketches-go v1.4.6
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.115.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/exp/metrics v0.115.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent v0.115.0
-	github.com/stretchr/testify v1.10.0
-	github.com/tinylib/msgp v1.2.4
-	github.com/vmihailenco/msgpack/v5 v5.4.1
-	go.opentelemetry.io/collector/component v0.115.0
-	go.opentelemetry.io/collector/component/componentstatus v0.115.0
-	go.opentelemetry.io/collector/component/componenttest v0.115.0
-	go.opentelemetry.io/collector/config/confighttp v0.115.0
-	go.opentelemetry.io/collector/confmap v1.21.0
-	go.opentelemetry.io/collector/consumer v1.21.0
-	go.opentelemetry.io/collector/consumer/consumererror v0.115.0
-	go.opentelemetry.io/collector/consumer/consumertest v0.115.0
-	go.opentelemetry.io/collector/pdata v1.21.0
-	go.opentelemetry.io/collector/receiver v0.115.0
-	go.opentelemetry.io/collector/receiver/receivertest v0.115.0
-	go.opentelemetry.io/collector/semconv v0.115.0
+	github.com/DataDog/datadog-agent/pkg/proto v0.48.0-beta.1
+	github.com/gogo/protobuf v1.3.2
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent v0.84.0
+	github.com/stretchr/testify v1.8.4
+	github.com/tinylib/msgp v1.1.8
+	github.com/vmihailenco/msgpack/v4 v4.3.12
+	go.opentelemetry.io/collector v0.84.0
+	go.opentelemetry.io/collector/component v0.84.0
+	go.opentelemetry.io/collector/config/confighttp v0.84.0
+	go.opentelemetry.io/collector/consumer v0.84.0
+	go.opentelemetry.io/collector/pdata v1.0.0-rcv0014
+	go.opentelemetry.io/collector/receiver v0.84.0
+	go.opentelemetry.io/collector/semconv v0.84.0
 	go.uber.org/multierr v1.11.0
-	go.uber.org/zap v1.27.0
-	google.golang.org/protobuf v1.35.2
 )
 
 require (
@@ -50,11 +37,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
-	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
-	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
