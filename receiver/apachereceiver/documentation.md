@@ -12,13 +12,13 @@ metrics:
     enabled: false
 ```
 
-### apache.bytes_served
+### apache.bytes_per_sec
 
-The total number of bytes served.
+Served bytes per second
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| {byte} | Sum | Int | Cumulative | true |
+| {bytes/second} | Sum | Int | Cumulative | true |
 
 ### apache.conns_async_closing
 
@@ -99,6 +99,14 @@ The average server load during the last 5 minutes.
 | ---- | ----------- | ---------- |
 | % | Gauge | Double |
 
+### apache.max_workers
+
+The maximum number of workers apache web server can start.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {thread} | Gauge | Int |
+
 ### apache.request.time
 
 Total time spent on handling requests.
@@ -114,6 +122,14 @@ The number of requests serviced by the HTTP server per second.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {requests} | Sum | Int | Cumulative | true |
+
+### apache.requests_per_sec
+
+Incoming requests per second
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {request/second} | Sum | Int | Cumulative | true |
 
 ### apache.scoreboard
 

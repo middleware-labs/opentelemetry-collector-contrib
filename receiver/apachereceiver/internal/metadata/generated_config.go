@@ -25,7 +25,7 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for apache metrics.
 type MetricsConfig struct {
-	ApacheBytesServed         MetricConfig `mapstructure:"apache.bytes_served"`
+	ApacheBytesPerSec         MetricConfig `mapstructure:"apache.bytes_per_sec"`
 	ApacheConnsAsyncClosing   MetricConfig `mapstructure:"apache.conns_async_closing"`
 	ApacheConnsAsyncKeepAlive MetricConfig `mapstructure:"apache.conns_async_keep_alive"`
 	ApacheConnsAsyncWriting   MetricConfig `mapstructure:"apache.conns_async_writing"`
@@ -35,8 +35,10 @@ type MetricsConfig struct {
 	ApacheLoad1               MetricConfig `mapstructure:"apache.load.1"`
 	ApacheLoad15              MetricConfig `mapstructure:"apache.load.15"`
 	ApacheLoad5               MetricConfig `mapstructure:"apache.load.5"`
+	ApacheMaxWorkers          MetricConfig `mapstructure:"apache.max_workers"`
 	ApacheRequestTime         MetricConfig `mapstructure:"apache.request.time"`
 	ApacheRequests            MetricConfig `mapstructure:"apache.requests"`
+	ApacheRequestsPerSec      MetricConfig `mapstructure:"apache.requests_per_sec"`
 	ApacheScoreboard          MetricConfig `mapstructure:"apache.scoreboard"`
 	ApacheTraffic             MetricConfig `mapstructure:"apache.traffic"`
 	ApacheUptime              MetricConfig `mapstructure:"apache.uptime"`
@@ -45,7 +47,7 @@ type MetricsConfig struct {
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
-		ApacheBytesServed: MetricConfig{
+		ApacheBytesPerSec: MetricConfig{
 			Enabled: true,
 		},
 		ApacheConnsAsyncClosing: MetricConfig{
@@ -75,10 +77,16 @@ func DefaultMetricsConfig() MetricsConfig {
 		ApacheLoad5: MetricConfig{
 			Enabled: true,
 		},
+		ApacheMaxWorkers: MetricConfig{
+			Enabled: true,
+		},
 		ApacheRequestTime: MetricConfig{
 			Enabled: true,
 		},
 		ApacheRequests: MetricConfig{
+			Enabled: true,
+		},
+		ApacheRequestsPerSec: MetricConfig{
 			Enabled: true,
 		},
 		ApacheScoreboard: MetricConfig{

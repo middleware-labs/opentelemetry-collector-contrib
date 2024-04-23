@@ -235,15 +235,31 @@ resourceMetrics:
                 - asInt: 1
                   timeUnixNano: "1000000"
             unit: '{connections}'
-          - description: The total number of bytes served.
-            name: apache.bytes_served
+          - description: Served bytes per second
+            name: apache.bytes_per_sec
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: 222230
+                - asInt: "21411840"
                   timeUnixNano: "1000000"
               isMonotonic: true
-            unit: '{byte}'
+            unit: "{bytes/second}"
+          - description: Incoming requests per second
+            name: apache.requests_per_sec
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "14169"
+                  timeUnixNano: "1000000"
+              isMonotonic: true
+            unit: "{request/second}"
+          - description: The maximum number of workers apache web server can start.
+            name: apache.max_workers
+            gauge:
+              dataPoints:
+                - asInt: 400
+                  timeUnixNano: "1000000"
+            unit: "{thread}"
         scope:
           name: otelcol/apachereceiver
           version: latest

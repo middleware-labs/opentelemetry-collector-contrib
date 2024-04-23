@@ -197,10 +197,28 @@ metrics:
       value_type: int
       input_type: string
     attributes: []
-  apache.bytes_served:
+  apache.max_workers:
     enabled: true
-    description: The total number of bytes served.
-    unit: "{byte}"
+    description: The maximum number of workers apache web server can start.
+    unit: "{thread}"
+    gauge:
+      value_type: int
+      input_type: ""
+    attributes: []
+  apache.bytes_per_sec:
+    enabled: true
+    description: Served bytes per second
+    unit: "{bytes/second}"
+    sum:
+      value_type: int
+      input_type: ""
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: []
+  apache.requests_per_sec:
+    enabled: true
+    description: Incoming requests per second
+    unit: "{request/second}"
     sum:
       value_type: int
       input_type: string

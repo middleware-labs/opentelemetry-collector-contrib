@@ -26,7 +26,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					ApacheBytesServed:         MetricConfig{Enabled: true},
+					ApacheBytesPerSec:         MetricConfig{Enabled: true},
 					ApacheConnsAsyncClosing:   MetricConfig{Enabled: true},
 					ApacheConnsAsyncKeepAlive: MetricConfig{Enabled: true},
 					ApacheConnsAsyncWriting:   MetricConfig{Enabled: true},
@@ -36,8 +36,10 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					ApacheLoad1:               MetricConfig{Enabled: true},
 					ApacheLoad15:              MetricConfig{Enabled: true},
 					ApacheLoad5:               MetricConfig{Enabled: true},
+					ApacheMaxWorkers:          MetricConfig{Enabled: true},
 					ApacheRequestTime:         MetricConfig{Enabled: true},
 					ApacheRequests:            MetricConfig{Enabled: true},
+					ApacheRequestsPerSec:      MetricConfig{Enabled: true},
 					ApacheScoreboard:          MetricConfig{Enabled: true},
 					ApacheTraffic:             MetricConfig{Enabled: true},
 					ApacheUptime:              MetricConfig{Enabled: true},
@@ -53,7 +55,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					ApacheBytesServed:         MetricConfig{Enabled: false},
+					ApacheBytesPerSec:         MetricConfig{Enabled: false},
 					ApacheConnsAsyncClosing:   MetricConfig{Enabled: false},
 					ApacheConnsAsyncKeepAlive: MetricConfig{Enabled: false},
 					ApacheConnsAsyncWriting:   MetricConfig{Enabled: false},
@@ -63,8 +65,10 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					ApacheLoad1:               MetricConfig{Enabled: false},
 					ApacheLoad15:              MetricConfig{Enabled: false},
 					ApacheLoad5:               MetricConfig{Enabled: false},
+					ApacheMaxWorkers:          MetricConfig{Enabled: false},
 					ApacheRequestTime:         MetricConfig{Enabled: false},
 					ApacheRequests:            MetricConfig{Enabled: false},
+					ApacheRequestsPerSec:      MetricConfig{Enabled: false},
 					ApacheScoreboard:          MetricConfig{Enabled: false},
 					ApacheTraffic:             MetricConfig{Enabled: false},
 					ApacheUptime:              MetricConfig{Enabled: false},
