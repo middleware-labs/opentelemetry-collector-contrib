@@ -145,6 +145,7 @@ func readAndCloseBody(resp http.ResponseWriter, req *http.Request) ([]byte, bool
 }
 
 func (ddr *datadogReceiver) handleV2Traces(w http.ResponseWriter, req *http.Request) {
+	fmt.Println("handleV2Traces")
 	body, err := readAndCloseBody(w, req)
 	if !err {
 		http.Error(w, "Unable to unmarshal reqs", http.StatusBadRequest)
