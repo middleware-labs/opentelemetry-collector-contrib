@@ -4,7 +4,6 @@
 package pod
 
 import (
-	"context"
 	"fmt"
 	"maps"
 	"path/filepath"
@@ -24,7 +23,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/kubernetes/fake"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden"
@@ -449,6 +447,7 @@ func TestTransform(t *testing.T) {
 					},
 				},
 			},
+			ServiceAccountName: "my-service-account",
 		},
 		Status: corev1.PodStatus{
 			Phase:     corev1.PodRunning,
@@ -514,6 +513,7 @@ func TestTransform(t *testing.T) {
 					},
 				},
 			},
+			ServiceAccountName: "my-service-account",
 		},
 		Status: corev1.PodStatus{
 			Phase:  corev1.PodRunning,
