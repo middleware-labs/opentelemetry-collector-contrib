@@ -28,8 +28,8 @@ func NewFactory() receiver.Factory {
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		ServerConfig: confighttp.ServerConfig{
-			Endpoint: "localhost:8126",
+		HTTPServerSettings: confighttp.HTTPServerSettings{
+			Endpoint: "localhost:8120",
 		},
 		ReadTimeout:      60 * time.Second,
 		TraceIDCacheSize: 100,
