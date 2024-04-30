@@ -196,7 +196,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		MongodbDatabaseName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		ServerAddress: ResourceAttributeConfig{
 			Enabled: true,
