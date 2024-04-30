@@ -640,7 +640,14 @@ func (s *mongodbScraper) collectAdminDatabase(ctx context.Context, now pcommon.T
 		return
 	}
 	s.recordAdminStats(now, serverStatus, errs)
-	s.mb.EmitForResource()
+
+	rb := s.mb.NewResourceBuilder()
+	rb.SetDatabase("N/A")
+	rb.SetMongodbDatabaseName("N/A")
+
+	s.mb.EmitForResource(
+		metadata.WithResource(rb.Emit()),
+	)
 }
 
 func (s *mongodbScraper) collectTopStats(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
@@ -650,6 +657,14 @@ func (s *mongodbScraper) collectTopStats(ctx context.Context, now pcommon.Timest
 		return
 	}
 	s.recordOperationTime(now, topStats, errs)
+
+	rb := s.mb.NewResourceBuilder()
+	rb.SetDatabase("N/A")
+	rb.SetMongodbDatabaseName("N/A")
+
+	s.mb.EmitForResource(
+		metadata.WithResource(rb.Emit()),
+	)
 }
 
 // replicationUnavailableCodes are the server error codes returned when the deployment does not
@@ -810,6 +825,22 @@ func (s *mongodbScraper) collectIndexStats(ctx context.Context, now pcommon.Time
 		return
 	}
 	s.recordIndexStats(now, indexStats, databaseName, collectionName, errs)
+
+	rb := s.mb.NewResourceBuilder()
+	rb.SetDatabase("N/A")
+	rb.SetMongodbDatabaseName("N/A")
+
+	s.mb.EmitForResource(
+		metadata.WithResource(rb.Emit()),
+	)
+
+	if s.removeDatabaseAttr {
+		rb := s.mb.NewResourceBuilder()
+		rb.SetDatabase(databaseName)
+		s.mb.EmitForResource(metadata.WithResource(rb.Emit()))
+	} else {
+		s.mb.EmitForResource()
+	}
 }
 
 func (s *mongodbScraper) recordDBStats(now pcommon.Timestamp, doc bson.M, dbName string, errs *scrapererror.ScrapeErrors) {
