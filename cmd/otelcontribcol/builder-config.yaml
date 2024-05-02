@@ -148,6 +148,7 @@ receivers:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/collectdreceiver v0.115.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/couchdbreceiver v0.115.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogreceiver v0.115.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadoglogreceiver v0.84.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/dockerstatsreceiver v0.115.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/elasticsearchreceiver v0.115.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/expvarreceiver v0.115.0
@@ -440,6 +441,7 @@ replaces:
   - github.com/open-telemetry/opentelemetry-collector-contrib/extension/jaegerremotesampling => ../../extension/jaegerremotesampling
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/sshcheckreceiver => ../../receiver/sshcheckreceiver
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogreceiver => ../../receiver/datadogreceiver
+  - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadoglogreceiver => ../../receiver/datadoglogreceiver
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/chronyreceiver => ../../receiver/chronyreceiver
   - github.com/open-telemetry/opentelemetry-collector-contrib/extension/observer/ecstaskobserver => ../../extension/observer/ecstaskobserver
   - github.com/open-telemetry/opentelemetry-collector-contrib/receiver/lokireceiver => ../../receiver/lokireceiver
