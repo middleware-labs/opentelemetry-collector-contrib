@@ -41,11 +41,41 @@ type MetricsConfig struct {
 	ApacheTraffic            MetricConfig `mapstructure:"apache.traffic"`
 	ApacheUptime             MetricConfig `mapstructure:"apache.uptime"`
 	ApacheWorkers            MetricConfig `mapstructure:"apache.workers"`
+	ApacheBytesPerSec         MetricConfig `mapstructure:"apache.bytes_per_sec"`
+	ApacheConnsAsyncClosing   MetricConfig `mapstructure:"apache.conns_async_closing"`
+	ApacheConnsAsyncKeepAlive MetricConfig `mapstructure:"apache.conns_async_keep_alive"`
+	ApacheConnsAsyncWriting   MetricConfig `mapstructure:"apache.conns_async_writing"`
+	ApacheCPULoad             MetricConfig `mapstructure:"apache.cpu.load"`
+	ApacheCPUTime             MetricConfig `mapstructure:"apache.cpu.time"`
+	ApacheCurrentConnections  MetricConfig `mapstructure:"apache.current_connections"`
+	ApacheLoad1               MetricConfig `mapstructure:"apache.load.1"`
+	ApacheLoad15              MetricConfig `mapstructure:"apache.load.15"`
+	ApacheLoad5               MetricConfig `mapstructure:"apache.load.5"`
+	ApacheMaxWorkers          MetricConfig `mapstructure:"apache.max_workers"`
+	ApacheRequestTime         MetricConfig `mapstructure:"apache.request.time"`
+	ApacheRequests            MetricConfig `mapstructure:"apache.requests"`
+	ApacheRequestsPerSec      MetricConfig `mapstructure:"apache.requests_per_sec"`
+	ApacheScoreboard          MetricConfig `mapstructure:"apache.scoreboard"`
+	ApacheTraffic             MetricConfig `mapstructure:"apache.traffic"`
+	ApacheUptime              MetricConfig `mapstructure:"apache.uptime"`
+	ApacheWorkers             MetricConfig `mapstructure:"apache.workers"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
 		ApacheConnectionsAsync: MetricConfig{
+			Enabled: true,
+		},
+		ApacheBytesPerSec: MetricConfig{
+			Enabled: true,
+		},
+		ApacheConnsAsyncClosing: MetricConfig{
+			Enabled: true,
+		},
+		ApacheConnsAsyncKeepAlive: MetricConfig{
+			Enabled: true,
+		},
+		ApacheConnsAsyncWriting: MetricConfig{
 			Enabled: true,
 		},
 		ApacheCPULoad: MetricConfig{
@@ -66,10 +96,16 @@ func DefaultMetricsConfig() MetricsConfig {
 		ApacheLoad5: MetricConfig{
 			Enabled: true,
 		},
+		ApacheMaxWorkers: MetricConfig{
+			Enabled: true,
+		},
 		ApacheRequestTime: MetricConfig{
 			Enabled: true,
 		},
 		ApacheRequests: MetricConfig{
+			Enabled: true,
+		},
+		ApacheRequestsPerSec: MetricConfig{
 			Enabled: true,
 		},
 		ApacheScoreboard: MetricConfig{
