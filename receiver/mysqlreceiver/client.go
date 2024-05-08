@@ -206,7 +206,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 
 	// TODO: Suggest better value if there's an error for the metric.
 	if mysqlErr != nil {
-		err := fmt.Errorf("error querying the mysql db for innodb status")
+		err := fmt.Errorf("error querying the mysql db for innodb status %v", mysqlErr)
 		return nil, err, 0
 	}
 
@@ -216,9 +216,8 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	metrics, errs := innodbParser.ParseStatus()
 
 	total_errs := 0
-	for key, val := range errs {
+	for key := range errs {
 		if errs[key][0] != nil {
-			fmt.Println(val)
 			total_errs += 1
 		}
 	}

@@ -6,7 +6,6 @@ package mysqlreceiver // import "github.com/open-telemetry/opentelemetry-collect
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -123,8 +122,6 @@ func (m *mySQLScraper) scrapeInnodbStatusStats(now pcommon.Timestamp, errs *scra
 			m.logger.Error("failed to parse some metrics. ", zap.Error(err))
 		}
 	}
-
-	fmt.Println(innodbStatusStats)
 
 	for k, v := range innodbStatusStats {
 		strVal := strconv.FormatInt(v, 10)
