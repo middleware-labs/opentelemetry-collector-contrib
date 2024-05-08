@@ -221,13 +221,14 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
 		}
 	}
 
+	var parserErrs error
+	parserErrs = nil
 	if total_errs > 0 {
 		errorString := flattenErrorMap(errs)
-		err := fmt.Errorf(errorString)
-		return nil, err
+		parserErrs = fmt.Errorf(errorString)
 	}
 
-	return metrics, nil
+	return metrics, parserErrs
 }
 
 func (c *mySQLClient) Connect() error {
