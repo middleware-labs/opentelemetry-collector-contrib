@@ -188,6 +188,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
 	/*
 		TODO: The NewInnodbStatusParser should be able to be created with the mySQLClient.
 	*/
+
 	innodbParser, err := parser.NewInnodbStatusParser()
 	if err != nil {
 		err := fmt.Errorf("could not create parser for innodb stats, %s", err)
@@ -219,8 +220,10 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
 			total_errs += 1
 		}
 	}
+
 	if total_errs > 0 {
-		err := fmt.Errorf("%d errors in parsing metrics", total_errs)
+		errorString := flattenErrorMap(errs)
+		err := fmt.Errorf(errorString)
 		return nil, err
 	}
 
@@ -573,4 +576,16 @@ func (c *mySQLClient) Close() error {
 		return c.client.Close()
 	}
 	return nil
+}
+
+func flattenErrorMap(errs map[string][]error) string {
+	var errorMessages []string
+	for key, errors := range errs {
+		for _, err := range errors {
+			errorMessage := fmt.Sprintf("%s: %s", key, err.Error())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+	}
+	result := strings.Join(errorMessages, "\n")
+	return result
 }
