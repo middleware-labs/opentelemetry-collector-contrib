@@ -113,11 +113,13 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 }
 
 func (m *mySQLScraper) scrapeInnodbStatusStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	innodbStatusStats, err := m.sqlclient.getInnodbStatusStats()
-	if err != nil {
+	innodbStatusStats, err, nfailedMetrics := m.sqlclient.getInnodbStatusStats()
+	if err != nil && nfailedMetrics == 0 {
 		m.logger.Error("Failed to fetch innodb status stats", zap.Error(err))
 		errs.AddPartial(1, err)
 		return
+	} else if err != nil && nfailedMetrics > 0 {
+		m.logger.Error("failed to parse some metrics. ", zap.Error(err))
 	}
 
 	fmt.Println(innodbStatusStats)

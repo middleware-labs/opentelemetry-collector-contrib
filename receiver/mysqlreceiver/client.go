@@ -19,7 +19,7 @@ type client interface {
 	getVersion() (string, error)
 	getGlobalStats() (map[string]string, error)
 	getInnodbStats() (map[string]string, error)
-	getInnodbStatusStats() (map[string]int64, error)
+	getInnodbStatusStats() (map[string]int64, error, int)
 	getTableIoWaitsStats() ([]TableIoWaitsStats, error)
 	getIndexIoWaitsStats() ([]IndexIoWaitsStats, error)
 	getStatementEventsStats() ([]StatementEventStats, error)
@@ -184,7 +184,7 @@ func newMySQLClient(conf *Config) client {
 	}
 }
 
-func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
+func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	/*
 		TODO: The NewInnodbStatusParser should be able to be created with the mySQLClient.
 	*/
@@ -192,7 +192,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
 	innodbParser, err := parser.NewInnodbStatusParser()
 	if err != nil {
 		err := fmt.Errorf("could not create parser for innodb stats, %s", err)
-		return nil, err
+		return nil, err, 0
 	}
 	var (
 		typeVar string
@@ -207,10 +207,12 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
 	// TODO: Suggest better value if there's an error for the metric.
 	if mysqlErr != nil {
 		err := fmt.Errorf("error querying the mysql db for innodb status")
-		return nil, err
+		return nil, err, 0
 	}
 
 	innodbParser.SetInnodbStatusFromString(status)
+	//Some metrics fail to get parserd, then they are recorded into errs as a value with key as
+	//the metric name. We don't want to panic if there are a few errors but we do want to record them.
 	metrics, errs := innodbParser.ParseStatus()
 
 	total_errs := 0
@@ -228,7 +230,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error) {
 		parserErrs = fmt.Errorf(errorString)
 	}
 
-	return metrics, parserErrs
+	return metrics, parserErrs, total_errs
 }
 
 func (c *mySQLClient) Connect() error {

@@ -295,8 +295,9 @@ func (c *mockClient) getVersion() (string, error) {
 	return "8.0.27", nil
 }
 
-func (c *mockClient) getInnodbStatusStats() (map[string]int64, error) {
-	return readFileInts(c.innodbStatusFile)
+func (c *mockClient) getInnodbStatusStats() (map[string]int64, error, int) {
+	metrics, error := readFileInts(c.innodbStatusFile)
+	return metrics, error, 0
 }
 
 func (c *mockClient) getGlobalStats() (map[string]string, error) {
