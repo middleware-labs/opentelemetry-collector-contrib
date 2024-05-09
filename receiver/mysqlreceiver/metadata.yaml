@@ -514,7 +514,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: []
   mysql.statement_event.count:
-    enabled: false
+    enabled: true
     description: Summary of current and recent statement events.
     unit: 1
     sum:
@@ -528,7 +528,7 @@ metrics:
     unit: ns
     sum:
       value_type: int
-      monotonic: false
+      monotonic: true
       aggregation_temporality: cumulative
     attributes: [schema, digest, digest_text]
   mysql.mysqlx_worker_threads:

@@ -166,7 +166,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlStatementEventCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlStatementEventWaitTime: MetricConfig{
 			Enabled: false,
