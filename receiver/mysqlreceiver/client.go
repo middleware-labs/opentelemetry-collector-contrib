@@ -285,11 +285,7 @@ func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
 		int64(c.statementEventsTimeLimit.Seconds()),
 		c.statementEventsLimit)
 
-	fmt.Println(c.statementEventsDigestTextLimit)
-	fmt.Println(int64(c.statementEventsTimeLimit.Seconds()))
-	fmt.Println(c.statementEventsLimit)
 	rows, err := c.client.Query(query)
-	fmt.Println(rows)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
