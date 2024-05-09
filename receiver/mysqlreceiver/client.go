@@ -185,10 +185,26 @@ func newMySQLClient(conf *Config) client {
 }
 
 func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
-	/*
-		TODO: The NewInnodbStatusParser should be able to be created with the mySQLClient.
-	*/
 
+	/*
+		RETURNS:
+			map[string]int64 :
+				A map with metric names as the key and metric value as the
+				value.
+
+			error:
+				Error encountered, there are two types of error here.
+					1. Error that should cause panic:
+						- Could not create the parser
+						- error querying the mysql db for innodb status
+					2. Errors that should not cause a panic:
+						- Errors while parsing a metric. If one metric fails
+						to get parsed causing an panic would stop other metrics from
+						being recorded.
+			int:
+				The number metrics that are fail being parsed.
+
+	*/
 	innodbParser, err := parser.NewInnodbStatusParser()
 	if err != nil {
 		err := fmt.Errorf("could not create parser for innodb stats, %s", err)
