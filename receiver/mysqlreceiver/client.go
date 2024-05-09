@@ -304,7 +304,6 @@ func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
 		}
 		stats = append(stats, s)
 	}
-	fmt.Println(stats)
 	return stats, nil
 }
 
