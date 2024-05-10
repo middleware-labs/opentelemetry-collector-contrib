@@ -169,7 +169,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlStatementEventWaitTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlTableIoWaitCount: MetricConfig{
 			Enabled: true,
