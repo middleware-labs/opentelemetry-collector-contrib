@@ -528,7 +528,7 @@ metrics:
     unit: ns
     sum:
       value_type: int
-      monotonic: true
+      monotonic: false
       aggregation_temporality: cumulative
     attributes: [schema, digest, digest_text]
   mysql.mysqlx_worker_threads:
