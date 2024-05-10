@@ -23,6 +23,7 @@ type client interface {
 	getStatementEventsStats() ([]StatementEventStats, error)
 	getTableLockWaitEventStats() ([]tableLockWaitEventStats, error)
 	getReplicaStatusStats() ([]ReplicaStatusStats, error)
+	getCurrentUser() (string, error)
 	Close() error
 }
 
@@ -189,6 +190,16 @@ func (c *mySQLClient) Connect() error {
 	}
 	c.client = clientDB
 	return nil
+}
+
+func (c *mySQLClient) getCurrentUser() (string, error) {
+	query := "SELECT USER();"
+	var user string
+	err := c.client.QueryRow(query).Scan(&user)
+	if err != nil {
+		return "", err
+	}
+	return user, nil
 }
 
 // getVersion queries the db for the version.

@@ -6,6 +6,7 @@ package mysqlreceiver // import "github.com/open-telemetry/opentelemetry-collect
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -87,6 +88,13 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 		addPartialIfError(errs, m.mb.RecordMysqlBufferPoolLimitDataPoint(now, v))
 	}
 
+	user, err := m.sqlclient.getCurrentUser()
+
+	if err != nil {
+		fmt.Println("no user found ------------------------------- ")
+	}
+
+	fmt.Println("------------------------------USER : ", user)
 	// collect io_waits metrics.
 	m.scrapeTableIoWaitsStats(now, errs)
 	m.scrapeIndexIoWaitsStats(now, errs)
