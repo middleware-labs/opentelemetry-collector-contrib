@@ -11,7 +11,7 @@ import (
 )
 
 // defaultBufferSize is the default size of the buffer.
-const defaultBufferSize = 16384
+const defaultBufferSize = 65536
 
 // bytesPerWChar is the number bytes in a Windows wide character.
 const bytesPerWChar = 2
