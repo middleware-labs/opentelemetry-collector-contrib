@@ -45,6 +45,7 @@ func (s *mongodbScraper) start(ctx context.Context, _ component.Host) error {
 		return fmt.Errorf("create mongo client: %w", err)
 	}
 	s.client = c
+	fmt.Println("-------------------------------Starting scrapping")
 	return nil
 }
 

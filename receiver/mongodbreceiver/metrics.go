@@ -9,6 +9,7 @@ import (
 	"reflect"
 
 	"github.com/hashicorp/go-version"
+	"github.com/k0kubun/pp"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/receiver/scrapererror"
@@ -87,6 +88,7 @@ func (s *mongodbScraper) recordStorageSize(now pcommon.Timestamp, doc bson.M, db
 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, dbName, err))
 		return
 	}
+	pp.Println(doc)
 	s.mb.RecordMongodbStorageSizeDataPoint(now, val, dbName)
 }
 
@@ -520,6 +522,7 @@ func (s *mongodbScraper) recordOperationTime(now pcommon.Timestamp, doc bson.M, 
 
 func aggregateOperationTimeValues(document bson.M, collectionPathNames []string, operationMap map[string]metadata.AttributeOperation) (map[string]int64, error) {
 	operationTotals := map[string]int64{}
+	fmt.Println(document)
 	for _, collectionPathName := range collectionPathNames {
 		for operationName := range operationMap {
 			value, err := getOperationTimeValues(document, collectionPathName, operationName)

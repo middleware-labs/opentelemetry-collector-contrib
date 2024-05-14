@@ -12,6 +12,58 @@ metrics:
     enabled: false
 ```
 
+### mongodb.operation.count
+
+The number of operations executed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {operations} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
+
+### mongodb.operation.latency.time
+
+The latency of operations.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| us | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| operation | The MongoDB operation with regards to latency | Str: ``read``, ``write``, ``command`` |
+
+### mongodb.operation.time
+
+The total time spent performing operations.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ms | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
+
+## Optional Metrics
+
+The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
+
+```yaml
+metrics:
+  <metric_name>:
+    enabled: true
+```
+
 ### mongodb.cache.operations
 
 The number of cache operations of the instance.
@@ -130,6 +182,16 @@ The time the global lock has been held.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | ms | Sum | Int | Cumulative | true |
 
+### mongodb.health
+
+The health status of the server.
+
+A value of '1' indicates healthy. A value of '0' indicates unhealthy.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
 ### mongodb.index.access.count
 
 The number of times an index has been accessed.
@@ -172,131 +234,6 @@ Sum of the space allocated to all indexes in the database, including free index 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | database | The name of a database. | Any Str |
-
-### mongodb.memory.usage
-
-The amount of memory used.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| By | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| type | The type of memory used. | Str: ``resident``, ``virtual`` |
-
-### mongodb.network.io.receive
-
-The number of bytes received.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| By | Sum | Int | Cumulative | false |
-
-### mongodb.network.io.transmit
-
-The number of by transmitted.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| By | Sum | Int | Cumulative | false |
-
-### mongodb.network.request.count
-
-The number of requests received by the server.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {requests} | Sum | Int | Cumulative | false |
-
-### mongodb.object.count
-
-The number of objects.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {objects} | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-
-### mongodb.operation.count
-
-The number of operations executed.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {operations} | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
-
-### mongodb.operation.time
-
-The total time spent performing operations.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| ms | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
-
-### mongodb.session.count
-
-The total number of active sessions.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {sessions} | Sum | Int | Cumulative | false |
-
-### mongodb.storage.size
-
-The total amount of storage allocated to this collection.
-
-If collection data is compressed it reflects the compressed size.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| By | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-
-## Optional Metrics
-
-The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
-
-```yaml
-metrics:
-  <metric_name>:
-    enabled: true
-```
-
-### mongodb.health
-
-The health status of the server.
-
-A value of '1' indicates healthy. A value of '0' indicates unhealthy.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
 
 ### mongodb.lock.acquire.count
 
@@ -362,19 +299,58 @@ Number of times the lock acquisitions encountered deadlocks.
 | lock_type | The Resource over which the Lock controls access | Str: ``parallel_batch_write_mode``, ``replication_state_transition``, ``global``, ``database``, ``collection``, ``mutex``, ``metadata``, ``oplog`` |
 | lock_mode | The mode of Lock which denotes the degree of access | Str: ``shared``, ``exclusive``, ``intent_shared``, ``intent_exclusive`` |
 
-### mongodb.operation.latency.time
+### mongodb.memory.usage
 
-The latency of operations.
+The amount of memory used.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| us | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | false |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| operation | The MongoDB operation with regards to latency | Str: ``read``, ``write``, ``command`` |
+| database | The name of a database. | Any Str |
+| type | The type of memory used. | Str: ``resident``, ``virtual`` |
+
+### mongodb.network.io.receive
+
+The number of bytes received.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | false |
+
+### mongodb.network.io.transmit
+
+The number of by transmitted.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | false |
+
+### mongodb.network.request.count
+
+The number of requests received by the server.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {requests} | Sum | Int | Cumulative | false |
+
+### mongodb.object.count
+
+The number of objects.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {objects} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| database | The name of a database. | Any Str |
 
 ### mongodb.operation.repl.count
 
@@ -390,6 +366,30 @@ The number of replicated operations executed.
 | ---- | ----------- | ------ |
 | operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
 
+### mongodb.session.count
+
+The total number of active sessions.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {sessions} | Sum | Int | Cumulative | false |
+
+### mongodb.storage.size
+
+The total amount of storage allocated to this collection.
+
+If collection data is compressed it reflects the compressed size.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| database | The name of a database. | Any Str |
+
 ### mongodb.uptime
 
 The amount of time that the server has been running.
@@ -402,5 +402,5 @@ The amount of time that the server has been running.
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
-| database | The name of a database. | Any Str | true |
-| mongodb.database.name | The name of a database (redundant). | Any Str | true |
+| database | The name of a database. | Any Str | false |
+| mongodb.database.name | The name of a database (redundant). | Any Str | false |

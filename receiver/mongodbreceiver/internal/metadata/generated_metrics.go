@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+	"fmt"
 	"go.opentelemetry.io/collector/receiver"
 )
 
@@ -2141,6 +2142,7 @@ func (mb *MetricsBuilder) RecordMongodbObjectCountDataPoint(ts pcommon.Timestamp
 
 // RecordMongodbOperationCountDataPoint adds a data point to mongodb.operation.count metric.
 func (mb *MetricsBuilder) RecordMongodbOperationCountDataPoint(ts pcommon.Timestamp, val int64, operationAttributeValue AttributeOperation) {
+	fmt.Println("----------------------------------------------------------", val)
 	mb.metricMongodbOperationCount.recordDataPoint(mb.startTime, ts, val, operationAttributeValue.String())
 }
 

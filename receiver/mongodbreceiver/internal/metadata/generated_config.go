@@ -60,46 +60,46 @@ type MetricsConfig struct {
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
 		MongodbCacheOperations: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbCollectionCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbConnectionCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbCursorCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbCursorTimeoutCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbDataSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbDatabaseCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbDocumentOperationCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbExtentCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbGlobalLockTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbHealth: MetricConfig{
 			Enabled: false,
 		},
 		MongodbIndexAccessCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbIndexCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbIndexSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbLockAcquireCount: MetricConfig{
 			Enabled: false,
@@ -114,25 +114,25 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		MongodbMemoryUsage: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbNetworkIoReceive: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbNetworkIoTransmit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbNetworkRequestCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbObjectCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbOperationCount: MetricConfig{
 			Enabled: true,
 		},
 		MongodbOperationLatencyTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MongodbOperationReplCount: MetricConfig{
 			Enabled: false,
@@ -141,10 +141,10 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MongodbSessionCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbStorageSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbUptime: MetricConfig{
 			Enabled: false,
@@ -166,10 +166,10 @@ type ResourceAttributesConfig struct {
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
 		Database: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		MongodbDatabaseName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 }

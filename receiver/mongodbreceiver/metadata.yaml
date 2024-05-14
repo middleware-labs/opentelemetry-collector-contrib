@@ -11,11 +11,11 @@ status:
 resource_attributes:
   database:
     description: The name of a database.
-    enabled: true
+    enabled: false
     type: string
   mongodb.database.name:
     description: The name of a database (redundant).
-    enabled: true
+    enabled: false
     type: string
 
 attributes:
@@ -89,7 +89,7 @@ metrics:
   mongodb.cache.operations:
     description: The number of cache operations of the instance.
     unit: "{operations}"
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -98,7 +98,7 @@ metrics:
   mongodb.collection.count:
     description: The number of collections.
     unit: "{collections}"
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -107,7 +107,7 @@ metrics:
   mongodb.data.size:
     description: The size of the collection. Data compression does not affect this value.
     unit: By
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -116,7 +116,7 @@ metrics:
   mongodb.connection.count:
     description: The number of connections.
     unit: "{connections}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -125,7 +125,7 @@ metrics:
   mongodb.extent.count:
     description: The number of extents.
     unit: "{extents}"
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -134,7 +134,7 @@ metrics:
   mongodb.global_lock.time:
     description: The time the global lock has been held.
     unit: ms
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -143,7 +143,7 @@ metrics:
   mongodb.index.count:
     description: The number of indexes.
     unit: "{indexes}"
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -152,7 +152,7 @@ metrics:
   mongodb.index.size:
     description: Sum of the space allocated to all indexes in the database, including free index space.
     unit: By
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -161,7 +161,7 @@ metrics:
   mongodb.memory.usage:
     description: The amount of memory used.
     unit: By
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -170,7 +170,7 @@ metrics:
   mongodb.object.count:
     description: The number of objects.
     unit: "{objects}"
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -179,7 +179,7 @@ metrics:
   mongodb.operation.latency.time:
     description: The latency of operations.
     unit: us
-    enabled: false
+    enabled: true
     gauge:
       value_type: int
     attributes: [ operation_latency ]
@@ -205,7 +205,7 @@ metrics:
     description: The total amount of storage allocated to this collection.
     extended_documentation: If collection data is compressed it reflects the compressed size.
     unit: By
-    enabled: true
+    enabled: false
     sum:
       aggregation_temporality: cumulative
       value_type: int
@@ -214,7 +214,7 @@ metrics:
   mongodb.database.count:
     description: The number of existing databases.
     unit: "{databases}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -223,7 +223,7 @@ metrics:
   mongodb.index.access.count:
     description: The number of times an index has been accessed.
     unit: "{accesses}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -232,7 +232,7 @@ metrics:
   mongodb.document.operation.count:
     description: The number of document operations executed.
     unit: "{documents}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -241,7 +241,7 @@ metrics:
   mongodb.network.io.receive:
     description: The number of bytes received.
     unit: By
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -250,7 +250,7 @@ metrics:
   mongodb.network.io.transmit:
     description: The number of by transmitted.
     unit: By
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -259,7 +259,7 @@ metrics:
   mongodb.network.request.count:
     description: The number of requests received by the server.
     unit: "{requests}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -277,7 +277,7 @@ metrics:
   mongodb.session.count:
     description: The total number of active sessions.
     unit: "{sessions}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -286,7 +286,7 @@ metrics:
   mongodb.cursor.count:
     description: The number of open cursors maintained for clients.
     unit: "{cursors}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative
@@ -295,7 +295,7 @@ metrics:
   mongodb.cursor.timeout.count:
     description: The number of cursors that have timed out.
     unit: "{cursors}"
-    enabled: true
+    enabled: false
     sum:
       value_type: int
       aggregation_temporality: cumulative

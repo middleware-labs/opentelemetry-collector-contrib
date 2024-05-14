@@ -21,7 +21,7 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch test {
 			case "default":
-				assert.Equal(t, 2, res.Attributes().Len())
+				assert.Equal(t, 0, res.Attributes().Len())
 			case "all_set":
 				assert.Equal(t, 2, res.Attributes().Len())
 			case "none_set":
@@ -32,12 +32,12 @@ func TestResourceBuilder(t *testing.T) {
 			}
 
 			val, ok := res.Attributes().Get("database")
-			assert.True(t, ok)
+			assert.Equal(t, test == "all_set", ok)
 			if ok {
 				assert.EqualValues(t, "database-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("mongodb.database.name")
-			assert.True(t, ok)
+			assert.Equal(t, test == "all_set", ok)
 			if ok {
 				assert.EqualValues(t, "mongodb.database.name-val", val.Str())
 			}
