@@ -132,11 +132,12 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectWalAge(ctx, now, listClient, &errs)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
-	
+	p.collectQueryPerfStats(ctx, now, listClient, &errs)
+
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
-	
+
 	return p.mb.Emit(), errs.combine()
 }
 
@@ -175,6 +176,24 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName(db)
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
+}
+
+func (p *postgreSQLScraper) collectQueryPerfStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	queryStats, err := client.getQueryStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range queryStats {
+		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
+		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryId)
+	}
 }
 
 func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Timestamp, dbClient client, db string, errs *errsMux) (numTables int64) {

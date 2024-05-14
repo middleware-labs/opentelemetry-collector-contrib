@@ -74,6 +74,12 @@ attributes:
     description: The operation which is responsible for the lag.
     type: string
     enum: [flush, replay, write]
+  query_text:
+    description: Text of a representative statement
+    type: string
+  query_id:
+    description: Hash code to identify identical normalized queries.
+    type: string
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -281,3 +287,23 @@ metrics:
       value_type: int
     extended_documentation: |
       This metric requires WAL to be enabled with at least one replica.
+
+  postgresql.query.count:
+    enabled: true
+    description: Number of times the statement was executed 
+    unit: 1
+    sum:
+      value_type: int
+      monotonic: false
+      aggregation_temporality: cumulative
+    attributes: [query_text, query_id]
+
+  postgresql.query.total_exec_time :
+    enabled: true
+    description: The total wait time of the summarized timed events.
+    unit: ms
+    sum:
+      value_type: int
+      monotonic: false
+      aggregation_temporality: cumulative
+    attributes: [query_text, query_id]

@@ -154,6 +154,36 @@ The number of db row operations.
 | ---- | ----------- | ------ |
 | operation | The database operation. | Str: ``ins``, ``upd``, ``del``, ``hot_upd`` |
 
+### postgresql.query.count
+
+Number of times the statement was executed
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_text | Text of a representative statement | Any Str |
+| query_id | Hash code to identify identical normalized queries. | Any Str |
+
+### postgresql.query.total_exec_time
+
+The total wait time of the summarized timed events.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ms | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_text | Text of a representative statement | Any Str |
+| query_id | Hash code to identify identical normalized queries. | Any Str |
+
 ### postgresql.replication.data_delay
 
 The amount of data delayed in replication.

@@ -115,6 +115,14 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordPostgresqlQueryCountDataPoint(ts, 1, "query_text-val", "query_id-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlQueryTotalExecTimeDataPoint(ts, 1, "query_text-val", "query_id-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordPostgresqlReplicationDataDelayDataPoint(ts, 1, "replication_client-val")
 
 			defaultMetricsCount++
@@ -398,6 +406,46 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("operation")
 					assert.True(t, ok)
 					assert.EqualValues(t, "ins", attrVal.Str())
+				case "postgresql.query.count":
+					assert.False(t, validatedMetrics["postgresql.query.count"], "Found a duplicate in the metrics slice: postgresql.query.count")
+					validatedMetrics["postgresql.query.count"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Number of times the statement was executed", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_text")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_text-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+				case "postgresql.query.total_exec_time":
+					assert.False(t, validatedMetrics["postgresql.query.total_exec_time"], "Found a duplicate in the metrics slice: postgresql.query.total_exec_time")
+					validatedMetrics["postgresql.query.total_exec_time"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "The total wait time of the summarized timed events.", ms.At(i).Description())
+					assert.Equal(t, "ms", ms.At(i).Unit())
+					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_text")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_text-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
 				case "postgresql.replication.data_delay":
 					assert.False(t, validatedMetrics["postgresql.replication.data_delay"], "Found a duplicate in the metrics slice: postgresql.replication.data_delay")
 					validatedMetrics["postgresql.replication.data_delay"] = true

@@ -46,6 +46,7 @@ type client interface {
 	getMaxConnections(ctx context.Context) (int64, error)
 	getIndexStats(ctx context.Context, database string) (map[indexIdentifer]indexStat, error)
 	listDatabases(ctx context.Context) ([]string, error)
+	getQueryStats(ctx context.Context) ([]queryStats, error)
 }
 
 type postgreSQLClient struct {
@@ -505,6 +506,45 @@ func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, e
 
 	age := int64(currentInstanceTime.Sub(lastArchivedWal).Seconds())
 	return age, nil
+}
+
+type queryStats struct {
+	queryId       string
+	queryText     string
+	queryCount    int64
+	queryExecTime int64
+}
+
+func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
+	query := `SELECT
+		queryid,
+		query,
+		calls,
+		total_exec_time	
+		FROM pg_stat_statements;
+	`
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
+	}
+	defer rows.Close()
+	var qs []queryStats
+	var errors error
+	for rows.Next() {
+		var queryId, queryText string
+		var queryCount, queryExecTime int64
+		err = rows.Scan(&queryId, &queryText, queryCount, queryExecTime)
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+		qs = append(qs, queryStats{
+			queryId:       queryId,
+			queryText:     query,
+			queryCount:    queryCount,
+			queryExecTime: queryExecTime,
+		})
+	}
+	return qs, errors
 }
 
 func (c *postgreSQLClient) listDatabases(ctx context.Context) ([]string, error) {
