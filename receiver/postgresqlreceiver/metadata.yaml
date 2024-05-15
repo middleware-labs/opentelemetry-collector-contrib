@@ -300,8 +300,8 @@ metrics:
 
   postgresql.query.total_exec_time :
     enabled: true
-    description: The total wait time of the summarized timed events.
-    unit: ms
+    description: The total wait time of the summarized timed events in nanaoseconds.
+    unit: ns
     sum:
       value_type: int
       monotonic: false

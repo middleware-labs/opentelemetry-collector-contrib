@@ -523,6 +523,7 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		total_exec_time	
 		FROM pg_stat_statements;
 	`
+
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
@@ -532,16 +533,18 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 	var errors error
 	for rows.Next() {
 		var queryId, queryText string
-		var queryCount, queryExecTime int64
-		err = rows.Scan(&queryId, &queryText, queryCount, queryExecTime)
+		var queryCount int64
+		var queryExecTime float64
+		err = rows.Scan(&queryId, &queryText, &queryCount, &queryExecTime)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 		}
+		queryExectimeNS := int64(queryExecTime * 1000000)
 		qs = append(qs, queryStats{
 			queryId:       queryId,
-			queryText:     query,
+			queryText:     queryText,
 			queryCount:    queryCount,
-			queryExecTime: queryExecTime,
+			queryExecTime: queryExectimeNS,
 		})
 	}
 	return qs, errors

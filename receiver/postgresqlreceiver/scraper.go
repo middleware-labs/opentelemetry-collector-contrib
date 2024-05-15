@@ -192,7 +192,7 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 
 	for _, s := range queryStats {
 		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
-		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryId)
+		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, int64(s.queryExecTime), s.queryText, s.queryId)
 	}
 }
 
