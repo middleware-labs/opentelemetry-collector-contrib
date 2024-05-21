@@ -25,36 +25,273 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for postgresql metrics.
 type MetricsConfig struct {
-	PostgresqlBackends                 MetricConfig `mapstructure:"postgresql.backends"`
-	PostgresqlBgwriterBuffersAllocated MetricConfig `mapstructure:"postgresql.bgwriter.buffers.allocated"`
-	PostgresqlBgwriterBuffersWrites    MetricConfig `mapstructure:"postgresql.bgwriter.buffers.writes"`
-	PostgresqlBgwriterCheckpointCount  MetricConfig `mapstructure:"postgresql.bgwriter.checkpoint.count"`
-	PostgresqlBgwriterDuration         MetricConfig `mapstructure:"postgresql.bgwriter.duration"`
-	PostgresqlBgwriterMaxwritten       MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten"`
-	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
-	PostgresqlCommits                  MetricConfig `mapstructure:"postgresql.commits"`
-	PostgresqlConnectionMax            MetricConfig `mapstructure:"postgresql.connection.max"`
-	PostgresqlDatabaseCount            MetricConfig `mapstructure:"postgresql.database.count"`
-	PostgresqlDbSize                   MetricConfig `mapstructure:"postgresql.db_size"`
-	PostgresqlDeadlocks                MetricConfig `mapstructure:"postgresql.deadlocks"`
-	PostgresqlIndexScans               MetricConfig `mapstructure:"postgresql.index.scans"`
-	PostgresqlIndexSize                MetricConfig `mapstructure:"postgresql.index.size"`
-	PostgresqlOperations               MetricConfig `mapstructure:"postgresql.operations"`
-	PostgresqlReplicationDataDelay     MetricConfig `mapstructure:"postgresql.replication.data_delay"`
-	PostgresqlRollbacks                MetricConfig `mapstructure:"postgresql.rollbacks"`
-	PostgresqlRows                     MetricConfig `mapstructure:"postgresql.rows"`
-	PostgresqlSequentialScans          MetricConfig `mapstructure:"postgresql.sequential_scans"`
-	PostgresqlTableCount               MetricConfig `mapstructure:"postgresql.table.count"`
-	PostgresqlTableSize                MetricConfig `mapstructure:"postgresql.table.size"`
-	PostgresqlTableVacuumCount         MetricConfig `mapstructure:"postgresql.table.vacuum.count"`
-	PostgresqlTempFiles                MetricConfig `mapstructure:"postgresql.temp_files"`
-	PostgresqlWalAge                   MetricConfig `mapstructure:"postgresql.wal.age"`
-	PostgresqlWalLag                   MetricConfig `mapstructure:"postgresql.wal.lag"`
+	PostgresqlActiveQueries                           MetricConfig `mapstructure:"postgresql.active_queries"`
+	PostgresqlActiveWaitingQueries                    MetricConfig `mapstructure:"postgresql.active_waiting_queries"`
+	PostgresqlActivityBackendXidAge                   MetricConfig `mapstructure:"postgresql.activity.backend_xid_age"`
+	PostgresqlActivityBackendXminAge                  MetricConfig `mapstructure:"postgresql.activity.backend_xmin_age"`
+	PostgresqlActivityXactStartAge                    MetricConfig `mapstructure:"postgresql.activity.xact_start_age"`
+	PostgresqlAnalyzeChildTablesDone                  MetricConfig `mapstructure:"postgresql.analyze.child_tables_done"`
+	PostgresqlAnalyzeChildTablesTotal                 MetricConfig `mapstructure:"postgresql.analyze.child_tables_total"`
+	PostgresqlAnalyzeExtStatsComputed                 MetricConfig `mapstructure:"postgresql.analyze.ext_stats_computed"`
+	PostgresqlAnalyzeExtStatsTotal                    MetricConfig `mapstructure:"postgresql.analyze.ext_stats_total"`
+	PostgresqlAnalyzeSampleBlksScanned                MetricConfig `mapstructure:"postgresql.analyze.sample_blks_scanned"`
+	PostgresqlAnalyzeSampleBlksTotal                  MetricConfig `mapstructure:"postgresql.analyze.sample_blks_total"`
+	PostgresqlAnalyzed                                MetricConfig `mapstructure:"postgresql.analyzed"`
+	PostgresqlAutoanalyzed                            MetricConfig `mapstructure:"postgresql.autoanalyzed"`
+	PostgresqlAutovacuumed                            MetricConfig `mapstructure:"postgresql.autovacuumed"`
+	PostgresqlBackends                                MetricConfig `mapstructure:"postgresql.backends"`
+	PostgresqlBeforeXidWraparound                     MetricConfig `mapstructure:"postgresql.before_xid_wraparound"`
+	PostgresqlBgwriterBuffersAllocated                MetricConfig `mapstructure:"postgresql.bgwriter.buffers.allocated"`
+	PostgresqlBgwriterBuffersWrites                   MetricConfig `mapstructure:"postgresql.bgwriter.buffers.writes"`
+	PostgresqlBgwriterBuffersAlloc                    MetricConfig `mapstructure:"postgresql.bgwriter.buffers_alloc"`
+	PostgresqlBgwriterBuffersBackend                  MetricConfig `mapstructure:"postgresql.bgwriter.buffers_backend"`
+	PostgresqlBgwriterBuffersBackendFsync             MetricConfig `mapstructure:"postgresql.bgwriter.buffers_backend_fsync"`
+	PostgresqlBgwriterBuffersCheckpoint               MetricConfig `mapstructure:"postgresql.bgwriter.buffers_checkpoint"`
+	PostgresqlBgwriterBuffersClean                    MetricConfig `mapstructure:"postgresql.bgwriter.buffers_clean"`
+	PostgresqlBgwriterCheckpointCount                 MetricConfig `mapstructure:"postgresql.bgwriter.checkpoint.count"`
+	PostgresqlBgwriterCheckpointsRequested            MetricConfig `mapstructure:"postgresql.bgwriter.checkpoints_requested"`
+	PostgresqlBgwriterCheckpointsTimed                MetricConfig `mapstructure:"postgresql.bgwriter.checkpoints_timed"`
+	PostgresqlBgwriterDuration                        MetricConfig `mapstructure:"postgresql.bgwriter.duration"`
+	PostgresqlBgwriterMaxwritten                      MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten"`
+	PostgresqlBgwriterMaxwrittenClean                 MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten_clean"`
+	PostgresqlBgwriterSyncTime                        MetricConfig `mapstructure:"postgresql.bgwriter.sync_time"`
+	PostgresqlBgwriterWriteTime                       MetricConfig `mapstructure:"postgresql.bgwriter.write_time"`
+	PostgresqlBlocksRead                              MetricConfig `mapstructure:"postgresql.blocks_read"`
+	PostgresqlBufferHit                               MetricConfig `mapstructure:"postgresql.buffer_hit"`
+	PostgresqlChecksumsChecksumFailures               MetricConfig `mapstructure:"postgresql.checksums.checksum_failures"`
+	PostgresqlChecksumsEnabled                        MetricConfig `mapstructure:"postgresql.checksums.enabled"`
+	PostgresqlClusterVacuumHeapBlksScanned            MetricConfig `mapstructure:"postgresql.cluster_vacuum.heap_blks_scanned"`
+	PostgresqlClusterVacuumHeapBlksTotal              MetricConfig `mapstructure:"postgresql.cluster_vacuum.heap_blks_total"`
+	PostgresqlClusterVacuumHeapTuplesScanned          MetricConfig `mapstructure:"postgresql.cluster_vacuum.heap_tuples_scanned"`
+	PostgresqlClusterVacuumHeapTuplesWritten          MetricConfig `mapstructure:"postgresql.cluster_vacuum.heap_tuples_written"`
+	PostgresqlClusterVacuumIndexRebuildCount          MetricConfig `mapstructure:"postgresql.cluster_vacuum.index_rebuild_count"`
+	PostgresqlCommits                                 MetricConfig `mapstructure:"postgresql.commits"`
+	PostgresqlConflictsBufferpin                      MetricConfig `mapstructure:"postgresql.conflicts.bufferpin"`
+	PostgresqlConflictsDeadlock                       MetricConfig `mapstructure:"postgresql.conflicts.deadlock"`
+	PostgresqlConflictsLock                           MetricConfig `mapstructure:"postgresql.conflicts.lock"`
+	PostgresqlConflictsSnapshot                       MetricConfig `mapstructure:"postgresql.conflicts.snapshot"`
+	PostgresqlConflictsTablespace                     MetricConfig `mapstructure:"postgresql.conflicts.tablespace"`
+	PostgresqlConnectionMax                           MetricConfig `mapstructure:"postgresql.connection.max"`
+	PostgresqlConnections                             MetricConfig `mapstructure:"postgresql.connections"`
+	PostgresqlControlCheckpointDelay                  MetricConfig `mapstructure:"postgresql.control.checkpoint_delay"`
+	PostgresqlControlTimelineID                       MetricConfig `mapstructure:"postgresql.control.timeline_id"`
+	PostgresqlCreateIndexBlocksDone                   MetricConfig `mapstructure:"postgresql.create_index.blocks_done"`
+	PostgresqlCreateIndexBlocksTotal                  MetricConfig `mapstructure:"postgresql.create_index.blocks_total"`
+	PostgresqlCreateIndexLockersDone                  MetricConfig `mapstructure:"postgresql.create_index.lockers_done"`
+	PostgresqlCreateIndexLockersTotal                 MetricConfig `mapstructure:"postgresql.create_index.lockers_total"`
+	PostgresqlCreateIndexPartitionsDone               MetricConfig `mapstructure:"postgresql.create_index.partitions_done"`
+	PostgresqlCreateIndexPartitionsTotal              MetricConfig `mapstructure:"postgresql.create_index.partitions_total"`
+	PostgresqlCreateIndexTuplesDone                   MetricConfig `mapstructure:"postgresql.create_index.tuples_done"`
+	PostgresqlCreateIndexTuplesTotal                  MetricConfig `mapstructure:"postgresql.create_index.tuples_total"`
+	PostgresqlDatabaseCount                           MetricConfig `mapstructure:"postgresql.database.count"`
+	PostgresqlDatabaseSize                            MetricConfig `mapstructure:"postgresql.database_size"`
+	PostgresqlDbCount                                 MetricConfig `mapstructure:"postgresql.db.count"`
+	PostgresqlDbSize                                  MetricConfig `mapstructure:"postgresql.db_size"`
+	PostgresqlDeadRows                                MetricConfig `mapstructure:"postgresql.dead_rows"`
+	PostgresqlDeadlocks                               MetricConfig `mapstructure:"postgresql.deadlocks"`
+	PostgresqlDeadlocksCount                          MetricConfig `mapstructure:"postgresql.deadlocks.count"`
+	PostgresqlDiskRead                                MetricConfig `mapstructure:"postgresql.disk_read"`
+	PostgresqlFunctionCalls                           MetricConfig `mapstructure:"postgresql.function.calls"`
+	PostgresqlFunctionSelfTime                        MetricConfig `mapstructure:"postgresql.function.self_time"`
+	PostgresqlFunctionTotalTime                       MetricConfig `mapstructure:"postgresql.function.total_time"`
+	PostgresqlHeapBlocksHit                           MetricConfig `mapstructure:"postgresql.heap_blocks_hit"`
+	PostgresqlHeapBlocksRead                          MetricConfig `mapstructure:"postgresql.heap_blocks_read"`
+	PostgresqlIndexScans                              MetricConfig `mapstructure:"postgresql.index.scans"`
+	PostgresqlIndexSize                               MetricConfig `mapstructure:"postgresql.index.size"`
+	PostgresqlIndexBloat                              MetricConfig `mapstructure:"postgresql.index_bloat"`
+	PostgresqlIndexBlocksHit                          MetricConfig `mapstructure:"postgresql.index_blocks_hit"`
+	PostgresqlIndexBlocksRead                         MetricConfig `mapstructure:"postgresql.index_blocks_read"`
+	PostgresqlIndexRelRowsFetched                     MetricConfig `mapstructure:"postgresql.index_rel_rows_fetched"`
+	PostgresqlIndexRelScans                           MetricConfig `mapstructure:"postgresql.index_rel_scans"`
+	PostgresqlIndexRowsFetched                        MetricConfig `mapstructure:"postgresql.index_rows_fetched"`
+	PostgresqlIndexRowsRead                           MetricConfig `mapstructure:"postgresql.index_rows_read"`
+	PostgresqlIndividualIndexSize                     MetricConfig `mapstructure:"postgresql.individual_index_size"`
+	PostgresqlIoEvictions                             MetricConfig `mapstructure:"postgresql.io.evictions"`
+	PostgresqlIoExtendTime                            MetricConfig `mapstructure:"postgresql.io.extend_time"`
+	PostgresqlIoExtends                               MetricConfig `mapstructure:"postgresql.io.extends"`
+	PostgresqlIoFsyncTime                             MetricConfig `mapstructure:"postgresql.io.fsync_time"`
+	PostgresqlIoFsyncs                                MetricConfig `mapstructure:"postgresql.io.fsyncs"`
+	PostgresqlIoHits                                  MetricConfig `mapstructure:"postgresql.io.hits"`
+	PostgresqlIoReadTime                              MetricConfig `mapstructure:"postgresql.io.read_time"`
+	PostgresqlIoReads                                 MetricConfig `mapstructure:"postgresql.io.reads"`
+	PostgresqlIoWriteTime                             MetricConfig `mapstructure:"postgresql.io.write_time"`
+	PostgresqlIoWrites                                MetricConfig `mapstructure:"postgresql.io.writes"`
+	PostgresqlLastAnalyzeAge                          MetricConfig `mapstructure:"postgresql.last_analyze_age"`
+	PostgresqlLastAutoanalyzeAge                      MetricConfig `mapstructure:"postgresql.last_autoanalyze_age"`
+	PostgresqlLastAutovacuumAge                       MetricConfig `mapstructure:"postgresql.last_autovacuum_age"`
+	PostgresqlLastVacuumAge                           MetricConfig `mapstructure:"postgresql.last_vacuum_age"`
+	PostgresqlLiveRows                                MetricConfig `mapstructure:"postgresql.live_rows"`
+	PostgresqlLocks                                   MetricConfig `mapstructure:"postgresql.locks"`
+	PostgresqlMaxConnections                          MetricConfig `mapstructure:"postgresql.max_connections"`
+	PostgresqlOperations                              MetricConfig `mapstructure:"postgresql.operations"`
+	PostgresqlPercentUsageConnections                 MetricConfig `mapstructure:"postgresql.percent_usage_connections"`
+	PostgresqlPgStatStatementsDealloc                 MetricConfig `mapstructure:"postgresql.pg_stat_statements.dealloc"`
+	PostgresqlQueriesBlkReadTime                      MetricConfig `mapstructure:"postgresql.queries.blk_read_time"`
+	PostgresqlQueriesBlkWriteTime                     MetricConfig `mapstructure:"postgresql.queries.blk_write_time"`
+	PostgresqlQueriesCount                            MetricConfig `mapstructure:"postgresql.queries.count"`
+	PostgresqlQueriesDurationMax                      MetricConfig `mapstructure:"postgresql.queries.duration.max"`
+	PostgresqlQueriesDurationSum                      MetricConfig `mapstructure:"postgresql.queries.duration.sum"`
+	PostgresqlQueriesLocalBlksDirtied                 MetricConfig `mapstructure:"postgresql.queries.local_blks_dirtied"`
+	PostgresqlQueriesLocalBlksHit                     MetricConfig `mapstructure:"postgresql.queries.local_blks_hit"`
+	PostgresqlQueriesLocalBlksRead                    MetricConfig `mapstructure:"postgresql.queries.local_blks_read"`
+	PostgresqlQueriesLocalBlksWritten                 MetricConfig `mapstructure:"postgresql.queries.local_blks_written"`
+	PostgresqlQueriesRows                             MetricConfig `mapstructure:"postgresql.queries.rows"`
+	PostgresqlQueriesSharedBlksDirtied                MetricConfig `mapstructure:"postgresql.queries.shared_blks_dirtied"`
+	PostgresqlQueriesSharedBlksHit                    MetricConfig `mapstructure:"postgresql.queries.shared_blks_hit"`
+	PostgresqlQueriesSharedBlksRead                   MetricConfig `mapstructure:"postgresql.queries.shared_blks_read"`
+	PostgresqlQueriesSharedBlksWritten                MetricConfig `mapstructure:"postgresql.queries.shared_blks_written"`
+	PostgresqlQueriesTempBlksRead                     MetricConfig `mapstructure:"postgresql.queries.temp_blks_read"`
+	PostgresqlQueriesTempBlksWritten                  MetricConfig `mapstructure:"postgresql.queries.temp_blks_written"`
+	PostgresqlQueriesTime                             MetricConfig `mapstructure:"postgresql.queries.time"`
+	PostgresqlRelationAllVisible                      MetricConfig `mapstructure:"postgresql.relation.all_visible"`
+	PostgresqlRelationPages                           MetricConfig `mapstructure:"postgresql.relation.pages"`
+	PostgresqlRelationTuples                          MetricConfig `mapstructure:"postgresql.relation.tuples"`
+	PostgresqlRelationSize                            MetricConfig `mapstructure:"postgresql.relation_size"`
+	PostgresqlReplicationBackendXminAge               MetricConfig `mapstructure:"postgresql.replication.backend_xmin_age"`
+	PostgresqlReplicationDataDelay                    MetricConfig `mapstructure:"postgresql.replication.data_delay"`
+	PostgresqlReplicationWalFlushLag                  MetricConfig `mapstructure:"postgresql.replication.wal_flush_lag"`
+	PostgresqlReplicationWalReplayLag                 MetricConfig `mapstructure:"postgresql.replication.wal_replay_lag"`
+	PostgresqlReplicationWalWriteLag                  MetricConfig `mapstructure:"postgresql.replication.wal_write_lag"`
+	PostgresqlReplicationDelay                        MetricConfig `mapstructure:"postgresql.replication_delay"`
+	PostgresqlReplicationDelayBytes                   MetricConfig `mapstructure:"postgresql.replication_delay_bytes"`
+	PostgresqlReplicationSlotConfirmedFlushDelayBytes MetricConfig `mapstructure:"postgresql.replication_slot.confirmed_flush_delay_bytes"`
+	PostgresqlReplicationSlotRestartDelayBytes        MetricConfig `mapstructure:"postgresql.replication_slot.restart_delay_bytes"`
+	PostgresqlReplicationSlotSpillBytes               MetricConfig `mapstructure:"postgresql.replication_slot.spill_bytes"`
+	PostgresqlReplicationSlotSpillCount               MetricConfig `mapstructure:"postgresql.replication_slot.spill_count"`
+	PostgresqlReplicationSlotSpillTxns                MetricConfig `mapstructure:"postgresql.replication_slot.spill_txns"`
+	PostgresqlReplicationSlotStreamBytes              MetricConfig `mapstructure:"postgresql.replication_slot.stream_bytes"`
+	PostgresqlReplicationSlotStreamCount              MetricConfig `mapstructure:"postgresql.replication_slot.stream_count"`
+	PostgresqlReplicationSlotStreamTxns               MetricConfig `mapstructure:"postgresql.replication_slot.stream_txns"`
+	PostgresqlReplicationSlotTotalBytes               MetricConfig `mapstructure:"postgresql.replication_slot.total_bytes"`
+	PostgresqlReplicationSlotTotalTxns                MetricConfig `mapstructure:"postgresql.replication_slot.total_txns"`
+	PostgresqlReplicationSlotXminAge                  MetricConfig `mapstructure:"postgresql.replication_slot.xmin_age"`
+	PostgresqlRollbacks                               MetricConfig `mapstructure:"postgresql.rollbacks"`
+	PostgresqlRows                                    MetricConfig `mapstructure:"postgresql.rows"`
+	PostgresqlRowsDeleted                             MetricConfig `mapstructure:"postgresql.rows_deleted"`
+	PostgresqlRowsFetched                             MetricConfig `mapstructure:"postgresql.rows_fetched"`
+	PostgresqlRowsHotUpdated                          MetricConfig `mapstructure:"postgresql.rows_hot_updated"`
+	PostgresqlRowsInserted                            MetricConfig `mapstructure:"postgresql.rows_inserted"`
+	PostgresqlRowsReturned                            MetricConfig `mapstructure:"postgresql.rows_returned"`
+	PostgresqlRowsUpdated                             MetricConfig `mapstructure:"postgresql.rows_updated"`
+	PostgresqlRunning                                 MetricConfig `mapstructure:"postgresql.running"`
+	PostgresqlSeqRowsRead                             MetricConfig `mapstructure:"postgresql.seq_rows_read"`
+	PostgresqlSeqScans                                MetricConfig `mapstructure:"postgresql.seq_scans"`
+	PostgresqlSequentialScans                         MetricConfig `mapstructure:"postgresql.sequential_scans"`
+	PostgresqlSessionsAbandoned                       MetricConfig `mapstructure:"postgresql.sessions.abandoned"`
+	PostgresqlSessionsActiveTime                      MetricConfig `mapstructure:"postgresql.sessions.active_time"`
+	PostgresqlSessionsCount                           MetricConfig `mapstructure:"postgresql.sessions.count"`
+	PostgresqlSessionsFatal                           MetricConfig `mapstructure:"postgresql.sessions.fatal"`
+	PostgresqlSessionsIdleInTransactionTime           MetricConfig `mapstructure:"postgresql.sessions.idle_in_transaction_time"`
+	PostgresqlSessionsKilled                          MetricConfig `mapstructure:"postgresql.sessions.killed"`
+	PostgresqlSessionsSessionTime                     MetricConfig `mapstructure:"postgresql.sessions.session_time"`
+	PostgresqlSlruBlksExists                          MetricConfig `mapstructure:"postgresql.slru.blks_exists"`
+	PostgresqlSlruBlksHit                             MetricConfig `mapstructure:"postgresql.slru.blks_hit"`
+	PostgresqlSlruBlksRead                            MetricConfig `mapstructure:"postgresql.slru.blks_read"`
+	PostgresqlSlruBlksWritten                         MetricConfig `mapstructure:"postgresql.slru.blks_written"`
+	PostgresqlSlruBlksZeroed                          MetricConfig `mapstructure:"postgresql.slru.blks_zeroed"`
+	PostgresqlSlruFlushes                             MetricConfig `mapstructure:"postgresql.slru.flushes"`
+	PostgresqlSlruTruncates                           MetricConfig `mapstructure:"postgresql.slru.truncates"`
+	PostgresqlSnapshotXipCount                        MetricConfig `mapstructure:"postgresql.snapshot.xip_count"`
+	PostgresqlSnapshotXmax                            MetricConfig `mapstructure:"postgresql.snapshot.xmax"`
+	PostgresqlSnapshotXmin                            MetricConfig `mapstructure:"postgresql.snapshot.xmin"`
+	PostgresqlSubscriptionApplyError                  MetricConfig `mapstructure:"postgresql.subscription.apply_error"`
+	PostgresqlSubscriptionLastMsgReceiptAge           MetricConfig `mapstructure:"postgresql.subscription.last_msg_receipt_age"`
+	PostgresqlSubscriptionLastMsgSendAge              MetricConfig `mapstructure:"postgresql.subscription.last_msg_send_age"`
+	PostgresqlSubscriptionLatestEndAge                MetricConfig `mapstructure:"postgresql.subscription.latest_end_age"`
+	PostgresqlSubscriptionState                       MetricConfig `mapstructure:"postgresql.subscription.state"`
+	PostgresqlSubscriptionSyncError                   MetricConfig `mapstructure:"postgresql.subscription.sync_error"`
+	PostgresqlTableCount                              MetricConfig `mapstructure:"postgresql.table.count"`
+	PostgresqlTableSize                               MetricConfig `mapstructure:"postgresql.table.size"`
+	PostgresqlTableVacuumCount                        MetricConfig `mapstructure:"postgresql.table.vacuum.count"`
+	PostgresqlTableBloat                              MetricConfig `mapstructure:"postgresql.table_bloat"`
+	PostgresqlTempBytes                               MetricConfig `mapstructure:"postgresql.temp_bytes"`
+	PostgresqlTempFiles                               MetricConfig `mapstructure:"postgresql.temp_files"`
+	PostgresqlToastBlocksHit                          MetricConfig `mapstructure:"postgresql.toast_blocks_hit"`
+	PostgresqlToastBlocksRead                         MetricConfig `mapstructure:"postgresql.toast_blocks_read"`
+	PostgresqlToastIndexBlocksHit                     MetricConfig `mapstructure:"postgresql.toast_index_blocks_hit"`
+	PostgresqlToastIndexBlocksRead                    MetricConfig `mapstructure:"postgresql.toast_index_blocks_read"`
+	PostgresqlToastSize                               MetricConfig `mapstructure:"postgresql.toast_size"`
+	PostgresqlTotalSize                               MetricConfig `mapstructure:"postgresql.total_size"`
+	PostgresqlTransactionsDurationMax                 MetricConfig `mapstructure:"postgresql.transactions.duration.max"`
+	PostgresqlTransactionsDurationSum                 MetricConfig `mapstructure:"postgresql.transactions.duration.sum"`
+	PostgresqlTransactionsIdleInTransaction           MetricConfig `mapstructure:"postgresql.transactions.idle_in_transaction"`
+	PostgresqlTransactionsOpen                        MetricConfig `mapstructure:"postgresql.transactions.open"`
+	PostgresqlUptime                                  MetricConfig `mapstructure:"postgresql.uptime"`
+	PostgresqlVacuumHeapBlksScanned                   MetricConfig `mapstructure:"postgresql.vacuum.heap_blks_scanned"`
+	PostgresqlVacuumHeapBlksTotal                     MetricConfig `mapstructure:"postgresql.vacuum.heap_blks_total"`
+	PostgresqlVacuumHeapBlksVacuumed                  MetricConfig `mapstructure:"postgresql.vacuum.heap_blks_vacuumed"`
+	PostgresqlVacuumIndexVacuumCount                  MetricConfig `mapstructure:"postgresql.vacuum.index_vacuum_count"`
+	PostgresqlVacuumMaxDeadTuples                     MetricConfig `mapstructure:"postgresql.vacuum.max_dead_tuples"`
+	PostgresqlVacuumNumDeadTuples                     MetricConfig `mapstructure:"postgresql.vacuum.num_dead_tuples"`
+	PostgresqlVacuumed                                MetricConfig `mapstructure:"postgresql.vacuumed"`
+	PostgresqlWaitingQueries                          MetricConfig `mapstructure:"postgresql.waiting_queries"`
+	PostgresqlWalBuffersFull                          MetricConfig `mapstructure:"postgresql.wal.buffers_full"`
+	PostgresqlWalBytes                                MetricConfig `mapstructure:"postgresql.wal.bytes"`
+	PostgresqlWalFullPageImages                       MetricConfig `mapstructure:"postgresql.wal.full_page_images"`
+	PostgresqlWalLag                                  MetricConfig `mapstructure:"postgresql.wal.lag"`
+	PostgresqlWalRecords                              MetricConfig `mapstructure:"postgresql.wal.records"`
+	PostgresqlWalSync                                 MetricConfig `mapstructure:"postgresql.wal.sync"`
+	PostgresqlWalSyncTime                             MetricConfig `mapstructure:"postgresql.wal.sync_time"`
+	PostgresqlWalWrite                                MetricConfig `mapstructure:"postgresql.wal.write"`
+	PostgresqlWalWriteTime                            MetricConfig `mapstructure:"postgresql.wal.write_time"`
+	PostgresqlWalAge                                  MetricConfig `mapstructure:"postgresql.wal_age"`
+	PostgresqlWalCount                                MetricConfig `mapstructure:"postgresql.wal_count"`
+	PostgresqlWalReceiverConnected                    MetricConfig `mapstructure:"postgresql.wal_receiver.connected"`
+	PostgresqlWalReceiverLastMsgReceiptAge            MetricConfig `mapstructure:"postgresql.wal_receiver.last_msg_receipt_age"`
+	PostgresqlWalReceiverLastMsgSendAge               MetricConfig `mapstructure:"postgresql.wal_receiver.last_msg_send_age"`
+	PostgresqlWalReceiverLatestEndAge                 MetricConfig `mapstructure:"postgresql.wal_receiver.latest_end_age"`
+	PostgresqlWalReceiverReceivedTimeline             MetricConfig `mapstructure:"postgresql.wal_receiver.received_timeline"`
+	PostgresqlWalSize                                 MetricConfig `mapstructure:"postgresql.wal_size"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
+		PostgresqlActiveQueries: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlActiveWaitingQueries: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlActivityBackendXidAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlActivityBackendXminAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlActivityXactStartAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzeChildTablesDone: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzeChildTablesTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzeExtStatsComputed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzeExtStatsTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzeSampleBlksScanned: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzeSampleBlksTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAnalyzed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAutoanalyzed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAutovacuumed: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlBackends: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBeforeXidWraparound: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlBgwriterBuffersAllocated: MetricConfig{
@@ -63,7 +300,28 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlBgwriterBuffersWrites: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlBgwriterBuffersAlloc: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterBuffersBackend: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterBuffersBackendFsync: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterBuffersCheckpoint: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterBuffersClean: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlBgwriterCheckpointCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterCheckpointsRequested: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterCheckpointsTimed: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlBgwriterDuration: MetricConfig{
@@ -72,23 +330,134 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlBgwriterMaxwritten: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlBgwriterMaxwrittenClean: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterSyncTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBgwriterWriteTime: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlBlocksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlBufferHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlChecksumsChecksumFailures: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlChecksumsEnabled: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlClusterVacuumHeapBlksScanned: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlClusterVacuumHeapBlksTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlClusterVacuumHeapTuplesScanned: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlClusterVacuumHeapTuplesWritten: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlClusterVacuumIndexRebuildCount: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlCommits: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlConflictsBufferpin: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlConflictsDeadlock: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlConflictsLock: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlConflictsSnapshot: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlConflictsTablespace: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlConnectionMax: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlConnections: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlControlCheckpointDelay: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlControlTimelineID: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexBlocksDone: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexBlocksTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexLockersDone: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexLockersTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexPartitionsDone: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexPartitionsTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexTuplesDone: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlCreateIndexTuplesTotal: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlDatabaseCount: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlDatabaseSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlDbCount: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlDbSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlDeadRows: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlDeadlocks: MetricConfig{
 			Enabled: false,
+		},
+		PostgresqlDeadlocksCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlDiskRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlFunctionCalls: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlFunctionSelfTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlFunctionTotalTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlHeapBlocksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlHeapBlocksRead: MetricConfig{
+			Enabled: true,
 		},
 		PostgresqlIndexScans: MetricConfig{
 			Enabled: true,
@@ -96,10 +465,205 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlIndexSize: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlIndexBloat: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexBlocksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexBlocksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexRelRowsFetched: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexRelScans: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexRowsFetched: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexRowsRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndividualIndexSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoEvictions: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoExtendTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoExtends: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoFsyncTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoFsyncs: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoHits: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoReadTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoReads: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoWriteTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIoWrites: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlLastAnalyzeAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlLastAutoanalyzeAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlLastAutovacuumAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlLastVacuumAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlLiveRows: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlLocks: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlMaxConnections: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlOperations: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlPercentUsageConnections: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlPgStatStatementsDealloc: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesBlkReadTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesBlkWriteTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesDurationMax: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesDurationSum: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesLocalBlksDirtied: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesLocalBlksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesLocalBlksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesLocalBlksWritten: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesRows: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesSharedBlksDirtied: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesSharedBlksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesSharedBlksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesSharedBlksWritten: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesTempBlksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesTempBlksWritten: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueriesTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRelationAllVisible: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRelationPages: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRelationTuples: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRelationSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationBackendXminAge: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlReplicationDataDelay: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationWalFlushLag: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationWalReplayLag: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationWalWriteLag: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationDelay: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationDelayBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotConfirmedFlushDelayBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotRestartDelayBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotSpillBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotSpillCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotSpillTxns: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotStreamBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotStreamCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotStreamTxns: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotTotalBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotTotalTxns: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlReplicationSlotXminAge: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlRollbacks: MetricConfig{
@@ -108,8 +672,104 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlRows: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlRowsDeleted: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsFetched: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsHotUpdated: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsInserted: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsReturned: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsUpdated: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRunning: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSeqRowsRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSeqScans: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlSequentialScans: MetricConfig{
 			Enabled: false,
+		},
+		PostgresqlSessionsAbandoned: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSessionsActiveTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSessionsCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSessionsFatal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSessionsIdleInTransactionTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSessionsKilled: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSessionsSessionTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruBlksExists: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruBlksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruBlksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruBlksWritten: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruBlksZeroed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruFlushes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSlruTruncates: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSnapshotXipCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSnapshotXmax: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSnapshotXmin: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSubscriptionApplyError: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSubscriptionLastMsgReceiptAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSubscriptionLastMsgSendAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSubscriptionLatestEndAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSubscriptionState: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlSubscriptionSyncError: MetricConfig{
+			Enabled: true,
 		},
 		PostgresqlTableCount: MetricConfig{
 			Enabled: true,
@@ -120,13 +780,121 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlTableVacuumCount: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlTableBloat: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTempBytes: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlTempFiles: MetricConfig{
 			Enabled: false,
+		},
+		PostgresqlToastBlocksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlToastBlocksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlToastIndexBlocksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlToastIndexBlocksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlToastSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTotalSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTransactionsDurationMax: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTransactionsDurationSum: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTransactionsIdleInTransaction: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTransactionsOpen: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlUptime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumHeapBlksScanned: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumHeapBlksTotal: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumHeapBlksVacuumed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumIndexVacuumCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumMaxDeadTuples: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumNumDeadTuples: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlVacuumed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWaitingQueries: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalBuffersFull: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalBytes: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalFullPageImages: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalLag: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalRecords: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalSync: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalSyncTime: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalWrite: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalWriteTime: MetricConfig{
+			Enabled: true,
 		},
 		PostgresqlWalAge: MetricConfig{
 			Enabled: true,
 		},
-		PostgresqlWalLag: MetricConfig{
+		PostgresqlWalCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalReceiverConnected: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalReceiverLastMsgReceiptAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalReceiverLastMsgSendAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalReceiverLatestEndAge: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalReceiverReceivedTimeline: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalSize: MetricConfig{
 			Enabled: true,
 		},
 	}

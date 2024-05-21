@@ -1,43 +1,355 @@
 default:
 all_set:
   metrics:
+    postgresql.active_queries:
+      enabled: true
+    postgresql.active_waiting_queries:
+      enabled: true
+    postgresql.activity.backend_xid_age:
+      enabled: true
+    postgresql.activity.backend_xmin_age:
+      enabled: true
+    postgresql.activity.xact_start_age:
+      enabled: true
+    postgresql.analyze.child_tables_done:
+      enabled: true
+    postgresql.analyze.child_tables_total:
+      enabled: true
+    postgresql.analyze.ext_stats_computed:
+      enabled: true
+    postgresql.analyze.ext_stats_total:
+      enabled: true
+    postgresql.analyze.sample_blks_scanned:
+      enabled: true
+    postgresql.analyze.sample_blks_total:
+      enabled: true
+    postgresql.analyzed:
+      enabled: true
+    postgresql.autoanalyzed:
+      enabled: true
+    postgresql.autovacuumed:
+      enabled: true
     postgresql.backends:
+      enabled: true
+    postgresql.before_xid_wraparound:
       enabled: true
     postgresql.bgwriter.buffers.allocated:
       enabled: true
     postgresql.bgwriter.buffers.writes:
       enabled: true
+    postgresql.bgwriter.buffers_alloc:
+      enabled: true
+    postgresql.bgwriter.buffers_backend:
+      enabled: true
+    postgresql.bgwriter.buffers_backend_fsync:
+      enabled: true
+    postgresql.bgwriter.buffers_checkpoint:
+      enabled: true
+    postgresql.bgwriter.buffers_clean:
+      enabled: true
     postgresql.bgwriter.checkpoint.count:
+      enabled: true
+    postgresql.bgwriter.checkpoints_requested:
+      enabled: true
+    postgresql.bgwriter.checkpoints_timed:
       enabled: true
     postgresql.bgwriter.duration:
       enabled: true
     postgresql.bgwriter.maxwritten:
       enabled: true
+    postgresql.bgwriter.maxwritten_clean:
+      enabled: true
+    postgresql.bgwriter.sync_time:
+      enabled: true
+    postgresql.bgwriter.write_time:
+      enabled: true
     postgresql.blocks_read:
+      enabled: true
+    postgresql.buffer_hit:
+      enabled: true
+    postgresql.checksums.checksum_failures:
+      enabled: true
+    postgresql.checksums.enabled:
+      enabled: true
+    postgresql.cluster_vacuum.heap_blks_scanned:
+      enabled: true
+    postgresql.cluster_vacuum.heap_blks_total:
+      enabled: true
+    postgresql.cluster_vacuum.heap_tuples_scanned:
+      enabled: true
+    postgresql.cluster_vacuum.heap_tuples_written:
+      enabled: true
+    postgresql.cluster_vacuum.index_rebuild_count:
       enabled: true
     postgresql.commits:
       enabled: true
+    postgresql.conflicts.bufferpin:
+      enabled: true
+    postgresql.conflicts.deadlock:
+      enabled: true
+    postgresql.conflicts.lock:
+      enabled: true
+    postgresql.conflicts.snapshot:
+      enabled: true
+    postgresql.conflicts.tablespace:
+      enabled: true
     postgresql.connection.max:
+      enabled: true
+    postgresql.connections:
+      enabled: true
+    postgresql.control.checkpoint_delay:
+      enabled: true
+    postgresql.control.timeline_id:
+      enabled: true
+    postgresql.create_index.blocks_done:
+      enabled: true
+    postgresql.create_index.blocks_total:
+      enabled: true
+    postgresql.create_index.lockers_done:
+      enabled: true
+    postgresql.create_index.lockers_total:
+      enabled: true
+    postgresql.create_index.partitions_done:
+      enabled: true
+    postgresql.create_index.partitions_total:
+      enabled: true
+    postgresql.create_index.tuples_done:
+      enabled: true
+    postgresql.create_index.tuples_total:
       enabled: true
     postgresql.database.count:
       enabled: true
+    postgresql.database_size:
+      enabled: true
+    postgresql.db.count:
+      enabled: true
     postgresql.db_size:
       enabled: true
+    postgresql.dead_rows:
+      enabled: true
     postgresql.deadlocks:
+      enabled: true
+    postgresql.deadlocks.count:
+      enabled: true
+    postgresql.disk_read:
+      enabled: true
+    postgresql.function.calls:
+      enabled: true
+    postgresql.function.self_time:
+      enabled: true
+    postgresql.function.total_time:
+      enabled: true
+    postgresql.heap_blocks_hit:
+      enabled: true
+    postgresql.heap_blocks_read:
       enabled: true
     postgresql.index.scans:
       enabled: true
     postgresql.index.size:
       enabled: true
+    postgresql.index_bloat:
+      enabled: true
+    postgresql.index_blocks_hit:
+      enabled: true
+    postgresql.index_blocks_read:
+      enabled: true
+    postgresql.index_rel_rows_fetched:
+      enabled: true
+    postgresql.index_rel_scans:
+      enabled: true
+    postgresql.index_rows_fetched:
+      enabled: true
+    postgresql.index_rows_read:
+      enabled: true
+    postgresql.individual_index_size:
+      enabled: true
+    postgresql.io.evictions:
+      enabled: true
+    postgresql.io.extend_time:
+      enabled: true
+    postgresql.io.extends:
+      enabled: true
+    postgresql.io.fsync_time:
+      enabled: true
+    postgresql.io.fsyncs:
+      enabled: true
+    postgresql.io.hits:
+      enabled: true
+    postgresql.io.read_time:
+      enabled: true
+    postgresql.io.reads:
+      enabled: true
+    postgresql.io.write_time:
+      enabled: true
+    postgresql.io.writes:
+      enabled: true
+    postgresql.last_analyze_age:
+      enabled: true
+    postgresql.last_autoanalyze_age:
+      enabled: true
+    postgresql.last_autovacuum_age:
+      enabled: true
+    postgresql.last_vacuum_age:
+      enabled: true
+    postgresql.live_rows:
+      enabled: true
+    postgresql.locks:
+      enabled: true
+    postgresql.max_connections:
+      enabled: true
     postgresql.operations:
       enabled: true
+    postgresql.percent_usage_connections:
+      enabled: true
+    postgresql.pg_stat_statements.dealloc:
+      enabled: true
+    postgresql.queries.blk_read_time:
+      enabled: true
+    postgresql.queries.blk_write_time:
+      enabled: true
+    postgresql.queries.count:
+      enabled: true
+    postgresql.queries.duration.max:
+      enabled: true
+    postgresql.queries.duration.sum:
+      enabled: true
+    postgresql.queries.local_blks_dirtied:
+      enabled: true
+    postgresql.queries.local_blks_hit:
+      enabled: true
+    postgresql.queries.local_blks_read:
+      enabled: true
+    postgresql.queries.local_blks_written:
+      enabled: true
+    postgresql.queries.rows:
+      enabled: true
+    postgresql.queries.shared_blks_dirtied:
+      enabled: true
+    postgresql.queries.shared_blks_hit:
+      enabled: true
+    postgresql.queries.shared_blks_read:
+      enabled: true
+    postgresql.queries.shared_blks_written:
+      enabled: true
+    postgresql.queries.temp_blks_read:
+      enabled: true
+    postgresql.queries.temp_blks_written:
+      enabled: true
+    postgresql.queries.time:
+      enabled: true
+    postgresql.relation.all_visible:
+      enabled: true
+    postgresql.relation.pages:
+      enabled: true
+    postgresql.relation.tuples:
+      enabled: true
+    postgresql.relation_size:
+      enabled: true
+    postgresql.replication.backend_xmin_age:
+      enabled: true
     postgresql.replication.data_delay:
+      enabled: true
+    postgresql.replication.wal_flush_lag:
+      enabled: true
+    postgresql.replication.wal_replay_lag:
+      enabled: true
+    postgresql.replication.wal_write_lag:
+      enabled: true
+    postgresql.replication_delay:
+      enabled: true
+    postgresql.replication_delay_bytes:
+      enabled: true
+    postgresql.replication_slot.confirmed_flush_delay_bytes:
+      enabled: true
+    postgresql.replication_slot.restart_delay_bytes:
+      enabled: true
+    postgresql.replication_slot.spill_bytes:
+      enabled: true
+    postgresql.replication_slot.spill_count:
+      enabled: true
+    postgresql.replication_slot.spill_txns:
+      enabled: true
+    postgresql.replication_slot.stream_bytes:
+      enabled: true
+    postgresql.replication_slot.stream_count:
+      enabled: true
+    postgresql.replication_slot.stream_txns:
+      enabled: true
+    postgresql.replication_slot.total_bytes:
+      enabled: true
+    postgresql.replication_slot.total_txns:
+      enabled: true
+    postgresql.replication_slot.xmin_age:
       enabled: true
     postgresql.rollbacks:
       enabled: true
     postgresql.rows:
       enabled: true
+    postgresql.rows_deleted:
+      enabled: true
+    postgresql.rows_fetched:
+      enabled: true
+    postgresql.rows_hot_updated:
+      enabled: true
+    postgresql.rows_inserted:
+      enabled: true
+    postgresql.rows_returned:
+      enabled: true
+    postgresql.rows_updated:
+      enabled: true
+    postgresql.running:
+      enabled: true
+    postgresql.seq_rows_read:
+      enabled: true
+    postgresql.seq_scans:
+      enabled: true
     postgresql.sequential_scans:
+      enabled: true
+    postgresql.sessions.abandoned:
+      enabled: true
+    postgresql.sessions.active_time:
+      enabled: true
+    postgresql.sessions.count:
+      enabled: true
+    postgresql.sessions.fatal:
+      enabled: true
+    postgresql.sessions.idle_in_transaction_time:
+      enabled: true
+    postgresql.sessions.killed:
+      enabled: true
+    postgresql.sessions.session_time:
+      enabled: true
+    postgresql.slru.blks_exists:
+      enabled: true
+    postgresql.slru.blks_hit:
+      enabled: true
+    postgresql.slru.blks_read:
+      enabled: true
+    postgresql.slru.blks_written:
+      enabled: true
+    postgresql.slru.blks_zeroed:
+      enabled: true
+    postgresql.slru.flushes:
+      enabled: true
+    postgresql.slru.truncates:
+      enabled: true
+    postgresql.snapshot.xip_count:
+      enabled: true
+    postgresql.snapshot.xmax:
+      enabled: true
+    postgresql.snapshot.xmin:
+      enabled: true
+    postgresql.subscription.apply_error:
+      enabled: true
+    postgresql.subscription.last_msg_receipt_age:
+      enabled: true
+    postgresql.subscription.last_msg_send_age:
+      enabled: true
+    postgresql.subscription.latest_end_age:
+      enabled: true
+    postgresql.subscription.state:
+      enabled: true
+    postgresql.subscription.sync_error:
       enabled: true
     postgresql.table.count:
       enabled: true
@@ -45,11 +357,83 @@ all_set:
       enabled: true
     postgresql.table.vacuum.count:
       enabled: true
+    postgresql.table_bloat:
+      enabled: true
+    postgresql.temp_bytes:
+      enabled: true
     postgresql.temp_files:
       enabled: true
-    postgresql.wal.age:
+    postgresql.toast_blocks_hit:
+      enabled: true
+    postgresql.toast_blocks_read:
+      enabled: true
+    postgresql.toast_index_blocks_hit:
+      enabled: true
+    postgresql.toast_index_blocks_read:
+      enabled: true
+    postgresql.toast_size:
+      enabled: true
+    postgresql.total_size:
+      enabled: true
+    postgresql.transactions.duration.max:
+      enabled: true
+    postgresql.transactions.duration.sum:
+      enabled: true
+    postgresql.transactions.idle_in_transaction:
+      enabled: true
+    postgresql.transactions.open:
+      enabled: true
+    postgresql.uptime:
+      enabled: true
+    postgresql.vacuum.heap_blks_scanned:
+      enabled: true
+    postgresql.vacuum.heap_blks_total:
+      enabled: true
+    postgresql.vacuum.heap_blks_vacuumed:
+      enabled: true
+    postgresql.vacuum.index_vacuum_count:
+      enabled: true
+    postgresql.vacuum.max_dead_tuples:
+      enabled: true
+    postgresql.vacuum.num_dead_tuples:
+      enabled: true
+    postgresql.vacuumed:
+      enabled: true
+    postgresql.waiting_queries:
+      enabled: true
+    postgresql.wal.buffers_full:
+      enabled: true
+    postgresql.wal.bytes:
+      enabled: true
+    postgresql.wal.full_page_images:
       enabled: true
     postgresql.wal.lag:
+      enabled: true
+    postgresql.wal.records:
+      enabled: true
+    postgresql.wal.sync:
+      enabled: true
+    postgresql.wal.sync_time:
+      enabled: true
+    postgresql.wal.write:
+      enabled: true
+    postgresql.wal.write_time:
+      enabled: true
+    postgresql.wal_age:
+      enabled: true
+    postgresql.wal_count:
+      enabled: true
+    postgresql.wal_receiver.connected:
+      enabled: true
+    postgresql.wal_receiver.last_msg_receipt_age:
+      enabled: true
+    postgresql.wal_receiver.last_msg_send_age:
+      enabled: true
+    postgresql.wal_receiver.latest_end_age:
+      enabled: true
+    postgresql.wal_receiver.received_timeline:
+      enabled: true
+    postgresql.wal_size:
       enabled: true
   resource_attributes:
     postgresql.database.name:
@@ -60,43 +444,355 @@ all_set:
       enabled: true
 none_set:
   metrics:
+    postgresql.active_queries:
+      enabled: false
+    postgresql.active_waiting_queries:
+      enabled: false
+    postgresql.activity.backend_xid_age:
+      enabled: false
+    postgresql.activity.backend_xmin_age:
+      enabled: false
+    postgresql.activity.xact_start_age:
+      enabled: false
+    postgresql.analyze.child_tables_done:
+      enabled: false
+    postgresql.analyze.child_tables_total:
+      enabled: false
+    postgresql.analyze.ext_stats_computed:
+      enabled: false
+    postgresql.analyze.ext_stats_total:
+      enabled: false
+    postgresql.analyze.sample_blks_scanned:
+      enabled: false
+    postgresql.analyze.sample_blks_total:
+      enabled: false
+    postgresql.analyzed:
+      enabled: false
+    postgresql.autoanalyzed:
+      enabled: false
+    postgresql.autovacuumed:
+      enabled: false
     postgresql.backends:
+      enabled: false
+    postgresql.before_xid_wraparound:
       enabled: false
     postgresql.bgwriter.buffers.allocated:
       enabled: false
     postgresql.bgwriter.buffers.writes:
       enabled: false
+    postgresql.bgwriter.buffers_alloc:
+      enabled: false
+    postgresql.bgwriter.buffers_backend:
+      enabled: false
+    postgresql.bgwriter.buffers_backend_fsync:
+      enabled: false
+    postgresql.bgwriter.buffers_checkpoint:
+      enabled: false
+    postgresql.bgwriter.buffers_clean:
+      enabled: false
     postgresql.bgwriter.checkpoint.count:
+      enabled: false
+    postgresql.bgwriter.checkpoints_requested:
+      enabled: false
+    postgresql.bgwriter.checkpoints_timed:
       enabled: false
     postgresql.bgwriter.duration:
       enabled: false
     postgresql.bgwriter.maxwritten:
       enabled: false
+    postgresql.bgwriter.maxwritten_clean:
+      enabled: false
+    postgresql.bgwriter.sync_time:
+      enabled: false
+    postgresql.bgwriter.write_time:
+      enabled: false
     postgresql.blocks_read:
+      enabled: false
+    postgresql.buffer_hit:
+      enabled: false
+    postgresql.checksums.checksum_failures:
+      enabled: false
+    postgresql.checksums.enabled:
+      enabled: false
+    postgresql.cluster_vacuum.heap_blks_scanned:
+      enabled: false
+    postgresql.cluster_vacuum.heap_blks_total:
+      enabled: false
+    postgresql.cluster_vacuum.heap_tuples_scanned:
+      enabled: false
+    postgresql.cluster_vacuum.heap_tuples_written:
+      enabled: false
+    postgresql.cluster_vacuum.index_rebuild_count:
       enabled: false
     postgresql.commits:
       enabled: false
+    postgresql.conflicts.bufferpin:
+      enabled: false
+    postgresql.conflicts.deadlock:
+      enabled: false
+    postgresql.conflicts.lock:
+      enabled: false
+    postgresql.conflicts.snapshot:
+      enabled: false
+    postgresql.conflicts.tablespace:
+      enabled: false
     postgresql.connection.max:
+      enabled: false
+    postgresql.connections:
+      enabled: false
+    postgresql.control.checkpoint_delay:
+      enabled: false
+    postgresql.control.timeline_id:
+      enabled: false
+    postgresql.create_index.blocks_done:
+      enabled: false
+    postgresql.create_index.blocks_total:
+      enabled: false
+    postgresql.create_index.lockers_done:
+      enabled: false
+    postgresql.create_index.lockers_total:
+      enabled: false
+    postgresql.create_index.partitions_done:
+      enabled: false
+    postgresql.create_index.partitions_total:
+      enabled: false
+    postgresql.create_index.tuples_done:
+      enabled: false
+    postgresql.create_index.tuples_total:
       enabled: false
     postgresql.database.count:
       enabled: false
+    postgresql.database_size:
+      enabled: false
+    postgresql.db.count:
+      enabled: false
     postgresql.db_size:
       enabled: false
+    postgresql.dead_rows:
+      enabled: false
     postgresql.deadlocks:
+      enabled: false
+    postgresql.deadlocks.count:
+      enabled: false
+    postgresql.disk_read:
+      enabled: false
+    postgresql.function.calls:
+      enabled: false
+    postgresql.function.self_time:
+      enabled: false
+    postgresql.function.total_time:
+      enabled: false
+    postgresql.heap_blocks_hit:
+      enabled: false
+    postgresql.heap_blocks_read:
       enabled: false
     postgresql.index.scans:
       enabled: false
     postgresql.index.size:
       enabled: false
+    postgresql.index_bloat:
+      enabled: false
+    postgresql.index_blocks_hit:
+      enabled: false
+    postgresql.index_blocks_read:
+      enabled: false
+    postgresql.index_rel_rows_fetched:
+      enabled: false
+    postgresql.index_rel_scans:
+      enabled: false
+    postgresql.index_rows_fetched:
+      enabled: false
+    postgresql.index_rows_read:
+      enabled: false
+    postgresql.individual_index_size:
+      enabled: false
+    postgresql.io.evictions:
+      enabled: false
+    postgresql.io.extend_time:
+      enabled: false
+    postgresql.io.extends:
+      enabled: false
+    postgresql.io.fsync_time:
+      enabled: false
+    postgresql.io.fsyncs:
+      enabled: false
+    postgresql.io.hits:
+      enabled: false
+    postgresql.io.read_time:
+      enabled: false
+    postgresql.io.reads:
+      enabled: false
+    postgresql.io.write_time:
+      enabled: false
+    postgresql.io.writes:
+      enabled: false
+    postgresql.last_analyze_age:
+      enabled: false
+    postgresql.last_autoanalyze_age:
+      enabled: false
+    postgresql.last_autovacuum_age:
+      enabled: false
+    postgresql.last_vacuum_age:
+      enabled: false
+    postgresql.live_rows:
+      enabled: false
+    postgresql.locks:
+      enabled: false
+    postgresql.max_connections:
+      enabled: false
     postgresql.operations:
       enabled: false
+    postgresql.percent_usage_connections:
+      enabled: false
+    postgresql.pg_stat_statements.dealloc:
+      enabled: false
+    postgresql.queries.blk_read_time:
+      enabled: false
+    postgresql.queries.blk_write_time:
+      enabled: false
+    postgresql.queries.count:
+      enabled: false
+    postgresql.queries.duration.max:
+      enabled: false
+    postgresql.queries.duration.sum:
+      enabled: false
+    postgresql.queries.local_blks_dirtied:
+      enabled: false
+    postgresql.queries.local_blks_hit:
+      enabled: false
+    postgresql.queries.local_blks_read:
+      enabled: false
+    postgresql.queries.local_blks_written:
+      enabled: false
+    postgresql.queries.rows:
+      enabled: false
+    postgresql.queries.shared_blks_dirtied:
+      enabled: false
+    postgresql.queries.shared_blks_hit:
+      enabled: false
+    postgresql.queries.shared_blks_read:
+      enabled: false
+    postgresql.queries.shared_blks_written:
+      enabled: false
+    postgresql.queries.temp_blks_read:
+      enabled: false
+    postgresql.queries.temp_blks_written:
+      enabled: false
+    postgresql.queries.time:
+      enabled: false
+    postgresql.relation.all_visible:
+      enabled: false
+    postgresql.relation.pages:
+      enabled: false
+    postgresql.relation.tuples:
+      enabled: false
+    postgresql.relation_size:
+      enabled: false
+    postgresql.replication.backend_xmin_age:
+      enabled: false
     postgresql.replication.data_delay:
+      enabled: false
+    postgresql.replication.wal_flush_lag:
+      enabled: false
+    postgresql.replication.wal_replay_lag:
+      enabled: false
+    postgresql.replication.wal_write_lag:
+      enabled: false
+    postgresql.replication_delay:
+      enabled: false
+    postgresql.replication_delay_bytes:
+      enabled: false
+    postgresql.replication_slot.confirmed_flush_delay_bytes:
+      enabled: false
+    postgresql.replication_slot.restart_delay_bytes:
+      enabled: false
+    postgresql.replication_slot.spill_bytes:
+      enabled: false
+    postgresql.replication_slot.spill_count:
+      enabled: false
+    postgresql.replication_slot.spill_txns:
+      enabled: false
+    postgresql.replication_slot.stream_bytes:
+      enabled: false
+    postgresql.replication_slot.stream_count:
+      enabled: false
+    postgresql.replication_slot.stream_txns:
+      enabled: false
+    postgresql.replication_slot.total_bytes:
+      enabled: false
+    postgresql.replication_slot.total_txns:
+      enabled: false
+    postgresql.replication_slot.xmin_age:
       enabled: false
     postgresql.rollbacks:
       enabled: false
     postgresql.rows:
       enabled: false
+    postgresql.rows_deleted:
+      enabled: false
+    postgresql.rows_fetched:
+      enabled: false
+    postgresql.rows_hot_updated:
+      enabled: false
+    postgresql.rows_inserted:
+      enabled: false
+    postgresql.rows_returned:
+      enabled: false
+    postgresql.rows_updated:
+      enabled: false
+    postgresql.running:
+      enabled: false
+    postgresql.seq_rows_read:
+      enabled: false
+    postgresql.seq_scans:
+      enabled: false
     postgresql.sequential_scans:
+      enabled: false
+    postgresql.sessions.abandoned:
+      enabled: false
+    postgresql.sessions.active_time:
+      enabled: false
+    postgresql.sessions.count:
+      enabled: false
+    postgresql.sessions.fatal:
+      enabled: false
+    postgresql.sessions.idle_in_transaction_time:
+      enabled: false
+    postgresql.sessions.killed:
+      enabled: false
+    postgresql.sessions.session_time:
+      enabled: false
+    postgresql.slru.blks_exists:
+      enabled: false
+    postgresql.slru.blks_hit:
+      enabled: false
+    postgresql.slru.blks_read:
+      enabled: false
+    postgresql.slru.blks_written:
+      enabled: false
+    postgresql.slru.blks_zeroed:
+      enabled: false
+    postgresql.slru.flushes:
+      enabled: false
+    postgresql.slru.truncates:
+      enabled: false
+    postgresql.snapshot.xip_count:
+      enabled: false
+    postgresql.snapshot.xmax:
+      enabled: false
+    postgresql.snapshot.xmin:
+      enabled: false
+    postgresql.subscription.apply_error:
+      enabled: false
+    postgresql.subscription.last_msg_receipt_age:
+      enabled: false
+    postgresql.subscription.last_msg_send_age:
+      enabled: false
+    postgresql.subscription.latest_end_age:
+      enabled: false
+    postgresql.subscription.state:
+      enabled: false
+    postgresql.subscription.sync_error:
       enabled: false
     postgresql.table.count:
       enabled: false
@@ -104,11 +800,83 @@ none_set:
       enabled: false
     postgresql.table.vacuum.count:
       enabled: false
+    postgresql.table_bloat:
+      enabled: false
+    postgresql.temp_bytes:
+      enabled: false
     postgresql.temp_files:
       enabled: false
-    postgresql.wal.age:
+    postgresql.toast_blocks_hit:
+      enabled: false
+    postgresql.toast_blocks_read:
+      enabled: false
+    postgresql.toast_index_blocks_hit:
+      enabled: false
+    postgresql.toast_index_blocks_read:
+      enabled: false
+    postgresql.toast_size:
+      enabled: false
+    postgresql.total_size:
+      enabled: false
+    postgresql.transactions.duration.max:
+      enabled: false
+    postgresql.transactions.duration.sum:
+      enabled: false
+    postgresql.transactions.idle_in_transaction:
+      enabled: false
+    postgresql.transactions.open:
+      enabled: false
+    postgresql.uptime:
+      enabled: false
+    postgresql.vacuum.heap_blks_scanned:
+      enabled: false
+    postgresql.vacuum.heap_blks_total:
+      enabled: false
+    postgresql.vacuum.heap_blks_vacuumed:
+      enabled: false
+    postgresql.vacuum.index_vacuum_count:
+      enabled: false
+    postgresql.vacuum.max_dead_tuples:
+      enabled: false
+    postgresql.vacuum.num_dead_tuples:
+      enabled: false
+    postgresql.vacuumed:
+      enabled: false
+    postgresql.waiting_queries:
+      enabled: false
+    postgresql.wal.buffers_full:
+      enabled: false
+    postgresql.wal.bytes:
+      enabled: false
+    postgresql.wal.full_page_images:
       enabled: false
     postgresql.wal.lag:
+      enabled: false
+    postgresql.wal.records:
+      enabled: false
+    postgresql.wal.sync:
+      enabled: false
+    postgresql.wal.sync_time:
+      enabled: false
+    postgresql.wal.write:
+      enabled: false
+    postgresql.wal.write_time:
+      enabled: false
+    postgresql.wal_age:
+      enabled: false
+    postgresql.wal_count:
+      enabled: false
+    postgresql.wal_receiver.connected:
+      enabled: false
+    postgresql.wal_receiver.last_msg_receipt_age:
+      enabled: false
+    postgresql.wal_receiver.last_msg_send_age:
+      enabled: false
+    postgresql.wal_receiver.latest_end_age:
+      enabled: false
+    postgresql.wal_receiver.received_timeline:
+      enabled: false
+    postgresql.wal_size:
       enabled: false
   resource_attributes:
     postgresql.database.name:

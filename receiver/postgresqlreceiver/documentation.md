@@ -12,6 +12,118 @@ metrics:
     enabled: false
 ```
 
+### postgresql.active_queries
+
+Enabled with `collect_activity_metrics`. The number of active queries in this database. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.active_waiting_queries
+
+Enabled with `collect_activity_metrics`. The number of waiting queries in this database in state active. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.activity.backend_xid_age
+
+The age of the oldest backend's xid relative to latest stable xid. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction} | Gauge | Int |
+
+### postgresql.activity.backend_xmin_age
+
+The age of the oldest backend's xmin horizon relative to latest stable xid. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction} | Gauge | Int |
+
+### postgresql.activity.xact_start_age
+
+The age of the oldest active transactions. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.analyze.child_tables_done
+
+Number of child tables scanned. This counter only advances when the phase is acquiring inherited sample rows. This metric is tagged with db, table, child_relation, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.analyze.child_tables_total
+
+Number of child tables. This metric is tagged with db, table, child_relation, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.analyze.ext_stats_computed
+
+Number of extended statistics computed. This counter only advances when the phase is computing extended statistics. This metric is tagged with db, table, child_relation, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.analyze.ext_stats_total
+
+Number of extended statistics. This metric is tagged with db, table, child_relation, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.analyze.sample_blks_scanned
+
+Number of heap blocks scanned. This metric is tagged with db, table, child_relation, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.analyze.sample_blks_total
+
+Total number of heap blocks that will be sampled. This metric is tagged with db, table, child_relation, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.analyzed
+
+Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.autoanalyzed
+
+Enabled with `relations`. The number of times this table has been analyzed by the autovacuum daemon. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.autovacuumed
+
+Enabled with `relations`. The number of times this table has been vacuumed by the autovacuum daemon. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
 ### postgresql.backends
 
 The number of backends.
@@ -19,6 +131,14 @@ The number of backends.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | false |
+
+### postgresql.before_xid_wraparound
+
+The number of transactions that can occur until a transaction wraparound.  This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction} | Gauge | Int |
 
 ### postgresql.bgwriter.buffers.allocated
 
@@ -42,6 +162,46 @@ Number of buffers written.
 | ---- | ----------- | ------ |
 | source | The source of a buffer write. | Str: ``backend``, ``backend_fsync``, ``checkpoints``, ``bgwriter`` |
 
+### postgresql.bgwriter.buffers_alloc
+
+The number of buffers allocated
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.buffers_backend
+
+The number of buffers written directly by a backend.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {buffer} | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.buffers_backend_fsync
+
+The of times a backend had to execute its own fsync call instead of the background writer.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.buffers_checkpoint
+
+The number of buffers written during checkpoints.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.buffers_clean
+
+The number of buffers written by the background writer.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
 ### postgresql.bgwriter.checkpoint.count
 
 The number of checkpoints performed.
@@ -55,6 +215,22 @@ The number of checkpoints performed.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | type | The type of checkpoint state. | Str: ``requested``, ``scheduled`` |
+
+### postgresql.bgwriter.checkpoints_requested
+
+The number of requested checkpoints that were performed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.checkpoints_timed
+
+The number of scheduled checkpoints that were performed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
 
 ### postgresql.bgwriter.duration
 
@@ -78,6 +254,30 @@ Number of times the background writer stopped a cleaning scan because it had wri
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
 
+### postgresql.bgwriter.maxwritten_clean
+
+The number of times the background writer stopped a cleaning scan due to writing too many buffers.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.sync_time
+
+The total amount of checkpoint processing time spent synchronizing files to disk.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.bgwriter.write_time
+
+The total amount of checkpoint processing time spent writing files to disk.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
 ### postgresql.blocks_read
 
 The number of blocks read.
@@ -92,13 +292,117 @@ The number of blocks read.
 | ---- | ----------- | ------ |
 | source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` |
 
-### postgresql.commits
+### postgresql.buffer_hit
 
-The number of commits.
+The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
+
+### postgresql.checksums.checksum_failures
+
+The number of checksum failures in this database. This metric is tagged with db.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
+
+### postgresql.checksums.enabled
+
+Whether database checksums are enabled. Value is always 1 and tagged with enabled:true or enabled:false. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.cluster_vacuum.heap_blks_scanned
+
+Number of heap blocks scanned. This counter only advances when the phase is seq scanning heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.cluster_vacuum.heap_blks_total
+
+Total number of heap blocks in the table. This number is reported as of the beginning of seq scanning heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.cluster_vacuum.heap_tuples_scanned
+
+Number of heap tuples scanned. This counter only advances when the phase is seq scanning heap, index scanning heap or writing new heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.cluster_vacuum.heap_tuples_written
+
+Number of heap tuples written. This counter only advances when the phase is seq scanning heap, index scanning heap or writing new heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.cluster_vacuum.index_rebuild_count
+
+Number of indexes rebuilt. This counter only advances when the phase is rebuilding index. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.commits
+
+The number of transactions that have been committed in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction}/s | Gauge | Int |
+
+### postgresql.conflicts.bufferpin
+
+Number of queries in this database that have been canceled due to pinned buffers. Buffer pin conflicts will occur when the walreceiver process tries to apply a buffer cleanup like HOT chain pruning. This require a complete lock of the buffer and any query pinning the buffer will conflict with the cleaning. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+### postgresql.conflicts.deadlock
+
+Number of queries in this database that have been canceled due to deadlocks. Deadlock conflicts will happen when the walreceiver tries to apply a buffer like HOT chain pruning. If the conflict takes more than deadlock_timeout seconds, a deadlock check will be triggered and conflicting queries will be canceled until the buffer is unpinned. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+### postgresql.conflicts.lock
+
+Number of queries in this database that have been canceled due to lock timeouts. This will occur when the walreceiver process tries to apply a change requiring an ACCESS EXCLUSIVE lock while a query on the replica is reading the table. The conflicting query will be killed after waiting up to max_standby_streaming_delay seconds. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+### postgresql.conflicts.snapshot
+
+Number of queries in this database that have been canceled due to old snapshots. Snapshot conflict will occur when a VACUUM is replayed, removing tuples currently read on a standby. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+### postgresql.conflicts.tablespace
+
+Number of queries in this database that have been canceled due to dropped tablespaces. This will occur when a temp_tablespace is dropped while being used on a standby. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
 
 ### postgresql.connection.max
 
@@ -108,6 +412,94 @@ Configured maximum number of client connections allowed
 | ---- | ----------- | ---------- |
 | {connections} | Gauge | Int |
 
+### postgresql.connections
+
+The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connection} | Gauge | Int |
+
+### postgresql.control.checkpoint_delay
+
+The time since the last checkpoint.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.control.timeline_id
+
+The current timeline id.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.blocks_done
+
+Number of blocks already processed in the current phase. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.blocks_total
+
+Total number of blocks to be processed in the current phase. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.lockers_done
+
+Number of lockers already waited for. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.lockers_total
+
+Total number of lockers to wait for, when applicable. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.partitions_done
+
+When creating an index on a partitioned table, this column is set to the number of partitions on which the index has been created. This field is 0 during a REINDEX. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.partitions_total
+
+When creating an index on a partitioned table, this column is set to the total number of partitions on which the index is to be created. This field is 0 during a REINDEX. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.tuples_done
+
+Number of tuples already processed in the current phase. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.create_index.tuples_total
+
+Total number of tuples to be processed in the current phase. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, index, command, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
 ### postgresql.database.count
 
 Number of user databases.
@@ -116,6 +508,22 @@ Number of user databases.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {databases} | Sum | Int | Cumulative | false |
 
+### postgresql.database_size
+
+The disk space used by this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.db.count
+
+The number of available databases.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {item} | Gauge | Int |
+
 ### postgresql.db_size
 
 The database disk usage.
@@ -123,6 +531,70 @@ The database disk usage.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | By | Sum | Int | Cumulative | false |
+
+### postgresql.dead_rows
+
+Enabled with `relations`. The estimated number of dead rows. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row} | Gauge | Int |
+
+### postgresql.deadlocks.count
+
+The number of deadlocks detected in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {lock} | Sum | Int | Cumulative | true |
+
+### postgresql.disk_read
+
+The number of disk blocks read in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+### postgresql.function.calls
+
+Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.function.self_time
+
+Enabled with `collect_function_metrics`. Total time spent in this function itself, not including other functions called by it. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.function.total_time
+
+Enabled with `collect_function_metrics`. Total time spent in this function and all other functions called by it. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.heap_blocks_hit
+
+Enabled with `relations`. The number of buffer hits in this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
+
+### postgresql.heap_blocks_read
+
+Enabled with `relations`. The number of disk blocks read from this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
 
 ### postgresql.index.scans
 
@@ -140,6 +612,206 @@ The size of the index on disk.
 | ---- | ----------- | ---------- |
 | By | Gauge | Int |
 
+### postgresql.index_bloat
+
+Enabled with `collect_bloat_metrics`. The estimated percentage of index bloat. This metric is tagged with db, schema, table, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {percent} | Gauge | Int |
+
+### postgresql.index_blocks_hit
+
+Enabled with `relations`. The number of buffer hits in all indexes on this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
+
+### postgresql.index_blocks_read
+
+Enabled with `relations`. The number of disk blocks read from all indexes on this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+### postgresql.index_rel_rows_fetched
+
+Enabled with `relations`. The number of live rows fetched by index scans. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.index_rel_scans
+
+Enabled with `relations`. The overall number of index scans initiated on this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {scan}/s | Gauge | Int |
+
+### postgresql.index_rows_fetched
+
+Enabled with `relations`. The number of live rows fetched by index scans. This metric is tagged with db, schema, table, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.index_rows_read
+
+Enabled with `relations`. The number of index entries returned by scans on this index. This metric is tagged with db, schema, table, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.individual_index_size
+
+The disk space used by a specified index. This metric is tagged with db, schema, table, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.io.evictions
+
+The number of times a block has been written out from a shared or local buffer in order to make it available for another use. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.io.extend_time
+
+The time spent in extend operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.io.extends
+
+The number of relation extend operations. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.io.fsync_time
+
+The time spent in fsync operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.io.fsyncs
+
+The number of fsync calls. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.io.hits
+
+The number of times a desired block was found in a shared buffer. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.io.read_time
+
+The time spent in read operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.io.reads
+
+The number of read operations. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.io.write_time
+
+The time spent in write operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.io.writes
+
+The number of write operations. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.last_analyze_age
+
+Last time at which this table was manually analyzed. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.last_autoanalyze_age
+
+Last time at which this table was analyzed by the autovacuum daemon. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.last_autovacuum_age
+
+Last time at which this table was vacuumed by the autovacuum daemon. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.last_vacuum_age
+
+Last time at which this table was manually vacuumed (not counting VACUUM FULL). This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.live_rows
+
+Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row} | Gauge | Int |
+
+### postgresql.locks
+
+Enabled with `relations`. The number of locks active for this database. This metric is tagged with db, lock_mode, lock_type, schema, table, granted.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {lock} | Gauge | Int |
+
+### postgresql.max_connections
+
+The maximum number of client connections allowed to this database.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connection} | Gauge | Int |
+
 ### postgresql.operations
 
 The number of db row operations.
@@ -153,6 +825,198 @@ The number of db row operations.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | operation | The database operation. | Str: ``ins``, ``upd``, ``del``, ``hot_upd`` |
+
+### postgresql.percent_usage_connections
+
+The number of connections to this database as a fraction of the maximum number of allowed connections.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {fraction} | Gauge | Int |
+
+### postgresql.pg_stat_statements.dealloc
+
+The number of times pg_stat_statements had to evict least executed queries because pg_stat_statements.max was reached.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.queries.blk_read_time
+
+Total time spent reading blocks per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ns | Sum | Int | Cumulative | false |
+
+### postgresql.queries.blk_write_time
+
+Total time spent writing blocks per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ns | Sum | Int | Cumulative | false |
+
+### postgresql.queries.count
+
+The total query execution count per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.duration.max
+
+The age of the longest running query per user, db and app. (DBM only)
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Int |
+
+### postgresql.queries.duration.sum
+
+The sum of the age of all running queries per user, db and app. (DBM only)
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Int |
+
+### postgresql.queries.local_blks_dirtied
+
+Total number of local blocks dirtied per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.local_blks_hit
+
+Total number of local block cache hits per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.local_blks_read
+
+Total number of local blocks read per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.local_blks_written
+
+Total number of local blocks written per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.rows
+
+The total number of rows retrieved or affected per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.shared_blks_dirtied
+
+Total number of shared blocks dirtied per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.shared_blks_hit
+
+Total number of shared block cache hits per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.shared_blks_read
+
+Total number of shared blocks read per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.shared_blks_written
+
+Total number of shared blocks written per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.temp_blks_read
+
+Total number of temp blocks read per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.temp_blks_written
+
+Total number of temp blocks written per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+### postgresql.queries.time
+
+The total query execution time per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ns | Sum | Int | Cumulative | false |
+
+### postgresql.relation.all_visible
+
+Number of pages that are marked as all visible in the table's visibility map. This is only an estimation used by the planner and is updated by VACUUM or ANALYZE. This metric is tagged with db, schema, table, partition_of
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.relation.pages
+
+Size of a table in pages (1 page == 8KB by default). This is only an estimation used by the planner and is updated by VACUUM or ANALYZE. This metric is tagged with db, schema, table, partition_of.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.relation.tuples
+
+Number of live rows in the table. This is only an estimation used by the planner and is updated by VACUUM or ANALYZE. If the table has never been vacuumed or analyze, -1 will be reported. This metric is tagged with db, schema, table, partition_of
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.relation_size
+
+The disk space used by the specified table. TOAST data, indexes, free space map and visibility map are not included. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.replication.backend_xmin_age
+
+The age of the standby server's xmin horizon (relative to latest stable xid) reported by hot_standby_feedback.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
 
 ### postgresql.replication.data_delay
 
@@ -168,13 +1032,141 @@ The amount of data delayed in replication.
 | ---- | ----------- | ------ |
 | replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str |
 
-### postgresql.rollbacks
+### postgresql.replication.wal_flush_lag
 
-The number of rollbacks.
+Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written and flushed it (but not yet applied it). This can be used to gauge the delay that synchronous_commit level on incurred while committing if this server was configured as a synchronous standby. Only available with postgresql 10 and newer.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.replication.wal_replay_lag
+
+Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written, flushed and applied it. This can be used to gauge the delay that synchronous_commit level remote_apply incurred while committing if this server was configured as a synchronous standby. Only available with postgresql 10 and newer.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.replication.wal_write_lag
+
+Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written it (but not yet flushed it or applied it). This can be used to gauge the delay that synchronous_commit level remote_write incurred while committing if this server was configured as a synchronous standby. Only available with postgresql 10 and newer.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.replication_delay
+
+The current replication delay in seconds. Only available with postgresql 9.1 and newer
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.replication_delay_bytes
+
+The current replication delay in bytes. Only available with postgresql 9.2 and newer
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.replication_slot.confirmed_flush_delay_bytes
+
+The delay in bytes between the current WAL position and last position this slot's consumer confirmed. This is only available for logical replication slots. This metric is tagged with slot_name, slot_type, slot_persistence, slot_state.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.replication_slot.restart_delay_bytes
+
+The amount of WAL bytes that the consumer of this slot may require and won't be automatically removed during checkpoints unless it exceeds max_slot_wal_keep_size parameter. Nothing is reported if there's no WAL reservation for this slot. This metric is tagged with slot_name, slot_type, slot_persistence, slot_state.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.replication_slot.spill_bytes
+
+Amount of decoded transaction data spilled to disk while performing decoding of changes from WAL for this slot. This and other spill counters can be used to gauge the I/O occurred during logical decoding and allow tuning logical_decoding_work_mem. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.spill_count
+
+Number of times transactions were spilled to disk while decoding changes from WAL for this slot. This counter is incremented each time a transaction is spilled, and the same transaction may be spilled multiple times. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.spill_txns
+
+Number of transactions spilled to disk once the memory used by logical decoding to decode changes from WAL has exceeded logical_decoding_work_mem. The counter gets incremented for both top-level transactions and subtransactions. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {transaction} | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.stream_bytes
+
+Amount of transaction data decoded for streaming in-progress transactions to the decoding output plugin while decoding changes from WAL for this slot. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.stream_count
+
+Number of times in-progress transactions were streamed to the decoding output plugin while decoding changes from WAL for this slot. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.stream_txns
+
+Number of in-progress transactions streamed to the decoding output plugin after the memory used by logical decoding to decode changes from WAL for this slot has exceeded logical_decoding_work_mem. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {transaction} | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.total_bytes
+
+Amount of transaction data decoded for sending transactions to the decoding output plugin while decoding changes from WAL for this slot. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.total_txns
+
+Number of decoded transactions sent to the decoding output plugin for this slot. Extracted from pg_stat_replication_slots. Only available with PostgreSQL 14 and newer. This metric is tagged with slot_name, slot_type, slot_state.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {transaction} | Sum | Int | Cumulative | true |
+
+### postgresql.replication_slot.xmin_age
+
+The age of the oldest transaction that this slot needs the database to retain. Only physical replication slot will have a xmin. Orphaned replication slot (no consumer or consumer is not connected) will prevent the xmin horizon from progressing. This metric is tagged with slot_name, slot_type, slot_persistence, slot_state.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction} | Gauge | Int |
+
+### postgresql.rollbacks
+
+The number of transactions that have been rolled back in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction}/s | Gauge | Int |
 
 ### postgresql.rows
 
@@ -189,6 +1181,262 @@ The number of rows in the database.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | state | The tuple (row) state. | Str: ``dead``, ``live`` |
+
+### postgresql.rows_deleted
+
+Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.rows_fetched
+
+The number of rows fetched by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.rows_hot_updated
+
+Enabled with `relations`. The number of rows HOT updated, meaning no separate index update was needed. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.rows_inserted
+
+Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.rows_returned
+
+The number of rows returned by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.rows_updated
+
+Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.running
+
+The number of instances running.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.seq_rows_read
+
+Enabled with `relations`. The number of live rows fetched by sequential scans. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+### postgresql.seq_scans
+
+Enabled with `relations`. The number of sequential scans initiated on this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {scan}/s | Gauge | Int |
+
+### postgresql.sessions.abandoned
+
+Number of database sessions to this database that were terminated because connection to the client was lost. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+### postgresql.sessions.active_time
+
+Time spent executing SQL statements in this database, in milliseconds (this corresponds to the states active and fastpath function call in pg_stat_activity). This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.sessions.count
+
+Total number of sessions established to this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+### postgresql.sessions.fatal
+
+Number of database sessions to this database that were terminated by fatal errors. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+### postgresql.sessions.idle_in_transaction_time
+
+Time spent idling while in a transaction in this database, in milliseconds (this corresponds to the states idle in transaction and idle in transaction (aborted) in pg_stat_activity). This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.sessions.killed
+
+Number of database sessions to this database that were terminated by operator intervention. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+### postgresql.sessions.session_time
+
+Time spent by database sessions in this database, in milliseconds (note that statistics are only updated when the state of a session changes, so if sessions have been idle for a long time, this idle time won't be included). This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.slru.blks_exists
+
+Number of blocks checked for existence for SLRU (simple least-recently-used) cache. Only CommitTs and MultiXactOffset caches are checking if blocks are already present on disk. This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | true |
+
+### postgresql.slru.blks_hit
+
+Number of times disk blocks were found already in the SLRU (simple least-recently-used), so that a read was not necessary (this only includes hits in the SLRU, not the operating system's file system cache). This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | true |
+
+### postgresql.slru.blks_read
+
+Number of disk blocks read for SLRU (simple least-recently-used) cache. SLRU caches are created with a fixed number of pages. When all pages are used, the least recently used block is dumped on disk to create space. Access to the evicted block will require data to be read from the disk and loaded back in an SLRU cache page, increasing the block read count. This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | true |
+
+### postgresql.slru.blks_written
+
+Number of disk blocks written for SLRU (simple least-recently-used) cache. SLRU caches are created with a fixed number of pages. When all pages are used, the least recently used block is dumped on disk to create space. A block eviction doesn't necessarily generate disk write as the block could have been written in a previous eviction. This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | true |
+
+### postgresql.slru.blks_zeroed
+
+Number of blocks zeroed during initializations of SLRU (simple least-recently-used) cache. SLRU caches are created with a fixed number of pages. For Subtrans, Xact and CommitTs caches, the global transactionId is used to get the page number. Thus, it will increase with the transaction throughput. This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | true |
+
+### postgresql.slru.flushes
+
+Number of flush of dirty data for SLRU (simple least-recently-used) cache. CommitTs, MultiXact, Subtrans, Xact caches flush will happen during checkpoint. MultiXact cache flush may happen during vacuum. This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.slru.truncates
+
+Number of truncates for SLRU (simple least-recently-used) cache. For CommitTs, Xact and MultiXact, truncates will happen when the frozenID progresses. For Subtrans, a truncate can occur during restartpoint and a checkpoint. This metric is tagged with slru_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.snapshot.xip_count
+
+Report the number of active transactions based on pg_snapshot_xip(pg_current_snapshot()).
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.snapshot.xmax
+
+Report the next transaction ID that will be assigned based on pg_snapshot_xmax(pg_current_snapshot()).
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.snapshot.xmin
+
+Report the lowest transaction ID still active based on pg_snapshot_xmin(pg_current_snapshot()). All transaction IDs less than xmin are either committed and visible, or rolled back and dead.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.subscription.apply_error
+
+Number of errors that occurred while applying changes. Extracted from pg_stat_subscription_stats. Only available on PostgreSQL 15 or higher. This metric is tagged with subscription_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.subscription.last_msg_receipt_age
+
+Age of receipt time of the last message received from origin WAL sender. Extracted from pg_stat_subscription. Only available on PostgreSQL 12 or higher. This metric is tagged with subscription_name.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.subscription.last_msg_send_age
+
+Age of last message received from origin WAL sender. Extracted from pg_stat_subscription. Only available on PostgreSQL 12 or higher. This metric is tagged with subscription_name.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.subscription.latest_end_age
+
+Age of last write-ahead log location reported to origin WAL sender. Extracted from pg_stat_subscription. Only available on PostgreSQL 12 or higher. This metric is tagged with subscription_name.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.subscription.state
+
+State of a subscription per relation and subscription. Extracted from pg_subscription_rel. Only available on PostgreSQL 14 or higher. This metric is tagged with subscription_name, relation, state.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.subscription.sync_error
+
+Number of errors that occurred during the initial table synchronization. Extracted from pg_stat_subscription_stats. Only available on PostgreSQL 15 or higher. This metric is tagged with subscription_name.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
 
 ### postgresql.table.count
 
@@ -214,16 +1462,197 @@ Number of times a table has manually been vacuumed.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {vacuums} | Sum | Int | Cumulative | true |
 
-### postgresql.wal.age
+### postgresql.table_bloat
 
-Age of the oldest WAL file.
-
-This metric requires WAL to be enabled with at least one replica.
-
+Enabled with `collect_bloat_metrics`. The estimated percentage of table bloat. This metric is tagged with db, schema, table.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| s | Gauge | Int |
+| {percent} | Gauge | Int |
+
+### postgresql.temp_bytes
+
+The amount of data written to temporary files by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.toast_blocks_hit
+
+Enabled with `relations`. The number of buffer hits in this table's TOAST table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
+
+### postgresql.toast_blocks_read
+
+Enabled with `relations`. The number of disk blocks read from this table's TOAST table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+### postgresql.toast_index_blocks_hit
+
+Enabled with `relations`. The number of buffer hits in this table's TOAST table index. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+### postgresql.toast_index_blocks_read
+
+Enabled with `relations`. The number of disk blocks read from this table's TOAST table index. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+### postgresql.toast_size
+
+The total disk space used by the toast table attached to the specified table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.total_size
+
+Enabled with `relations`. The total disk space used by the table, including indexes and TOAST data. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+### postgresql.transactions.duration.max
+
+The age of the longest running transaction per user, db and app. (DBM only)
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Int |
+
+### postgresql.transactions.duration.sum
+
+The sum of the age of all running transactions per user, db and app. (DBM only)
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Int |
+
+### postgresql.transactions.idle_in_transaction
+
+Enabled with `collect_activity_metrics`. The number of 'idle in transaction' transactions in this database. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction} | Gauge | Int |
+
+### postgresql.transactions.open
+
+Enabled with `collect_activity_metrics`. The number of open transactions in this database. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction} | Gauge | Int |
+
+### postgresql.uptime
+
+The uptime of the server in seconds.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.vacuum.heap_blks_scanned
+
+Number of heap blocks scanned. Because the visibility map is used to optimize scans, some blocks will be skipped without inspection; skipped blocks are included in this total, so that this number will eventually become equal to heap_blks_total when the vacuum is complete. This counter only advances when the phase is scanning heap. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.vacuum.heap_blks_total
+
+Total number of heap blocks in the table. This number is reported as of the beginning of the scan; blocks added later will not be (and need not be) visited by this VACUUM. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.vacuum.heap_blks_vacuumed
+
+Number of heap blocks vacuumed. Unless the table has no indexes, this counter only advances when the phase is vacuuming heap. Blocks that contain no dead tuples are skipped, so the counter may sometimes skip forward in large increments. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.vacuum.index_vacuum_count
+
+Number of completed index vacuum cycles. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+### postgresql.vacuum.max_dead_tuples
+
+Number of dead tuples that we can store before needing to perform an index vacuum cycle, based on maintenance_work_mem. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.vacuum.num_dead_tuples
+
+Number of dead tuples collected since the last index vacuum cycle. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.vacuumed
+
+Enabled with `relations`. The number of times this table has been manually vacuumed. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+### postgresql.waiting_queries
+
+Enabled with `collect_activity_metrics`. The number of waiting queries in this database. This metric (by default) is tagged with db, app, user.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.wal.buffers_full
+
+Number of times WAL data was written to disk because WAL buffers became full. WAL changes are stored in WAL buffers first. If the buffer is full, WAL insertions will be blocked until buffer is flushed. The size of this buffer is set by wal_buffers configuration. By default, it will use 3% of the shared_buffers value.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.wal.bytes
+
+Total amount of WAL generated in bytes.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+### postgresql.wal.full_page_images
+
+Total number of WAL full page images generated. Full page write will happen when a block is modified for the first time after a checkpoint.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {page} | Sum | Int | Cumulative | true |
 
 ### postgresql.wal.lag
 
@@ -242,6 +1671,110 @@ This metric requires WAL to be enabled with at least one replica.
 | ---- | ----------- | ------ |
 | operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` |
 | replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str |
+
+### postgresql.wal.records
+
+Total number of WAL records generated.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {record} | Sum | Int | Cumulative | true |
+
+### postgresql.wal.sync
+
+Number of times WAL files were synced to disk.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### postgresql.wal.sync_time
+
+Total amount of time spent syncing WAL files to disk, in milliseconds (if track_wal_io_timing is enabled, fsync is on, and wal_sync_method is either fdatasync, fsync or fsync_writethrough, otherwise zero).
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.wal.write
+
+Number of times WAL buffers were written out to disk.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {write} | Sum | Int | Cumulative | true |
+
+### postgresql.wal.write_time
+
+Total amount of time spent writing WAL buffers to disk, in milliseconds (if track_wal_io_timing is enabled, otherwise zero).
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+### postgresql.wal_age
+
+Enabled with `collect_wal_metrics`. The age in seconds of the oldest WAL file.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.wal_count
+
+The number WAL files on disk.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.wal_receiver.connected
+
+The status of the WAL receiver. This metric will be set to 1 with a 'status:disconnected' tag if the instance doesn't have a running WAL receiver. Otherwise it will use status value from pg_stat_wal_receiver. This metric is tagged with status.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.wal_receiver.last_msg_receipt_age
+
+Time since the reception of the last message from the WAL sender. This metric is tagged with status.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.wal_receiver.last_msg_send_age
+
+The age of the latest message's send time received from the WAL sender. This metric is tagged with status.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.wal_receiver.latest_end_age
+
+Time since the reception of the last message from the WAL sender with an WAL location update. This metric is tagged with status.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.wal_receiver.received_timeline
+
+Timeline number of last write-ahead log location received and flushed to disk, the initial value of this field being the timeline number of the first log location used when WAL receiver is started. This metric is tagged with status.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+### postgresql.wal_size
+
+The sum of all WAL files on disk.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
 
 ## Optional Metrics
 
