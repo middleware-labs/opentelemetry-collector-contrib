@@ -56,508 +56,387 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlActiveQueriesDataPoint(ts, 1)
+			mb.RecordPostgresqlActiveQueriesDataPoint(ts, 1, "query_statement-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlActiveWaitingQueriesDataPoint(ts, 1)
+			mb.RecordPostgresqlActiveWaitingQueriesDataPoint(ts, 1, "query_statement-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlActivityBackendXidAgeDataPoint(ts, 1)
+			mb.RecordPostgresqlActivityBackendXidAgeDataPoint(ts, 1, "query_statement-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlActivityBackendXminAgeDataPoint(ts, 1)
+			mb.RecordPostgresqlActivityBackendXminAgeDataPoint(ts, 1, "query_statement-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlActivityXactStartAgeDataPoint(ts, 1)
+			mb.RecordPostgresqlActivityXactStartAgeDataPoint(ts, 1, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeChildTablesDoneDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeChildTablesTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeExtStatsComputedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeExtStatsTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeSampleBlksScannedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeSampleBlksTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAutoanalyzedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAutovacuumedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBackendsDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBeforeXidWraparoundDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersAllocatedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersWritesDataPoint(ts, 1, AttributeBgBufferSourceBackend)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersAllocDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersBackendDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersBackendFsyncDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersCheckpointDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersCleanDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterCheckpointCountDataPoint(ts, 1, AttributeBgCheckpointTypeRequested)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterCheckpointsRequestedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterCheckpointsTimedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterDurationDataPoint(ts, 1, AttributeBgDurationTypeSync)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterMaxwrittenDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterMaxwrittenCleanDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterSyncTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterWriteTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBlocksReadDataPoint(ts, 1, AttributeSourceHeapRead)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBufferHitDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlChecksumsEnabledDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapBlksScannedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapBlksTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapTuplesScannedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapTuplesWrittenDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCommitsDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConflictsBufferpinDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConflictsDeadlockDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConflictsLockDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConflictsSnapshotDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConflictsTablespaceDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConnectionMaxDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConnectionsDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlControlCheckpointDelayDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlControlTimelineIDDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexBlocksDoneDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexBlocksTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexLockersDoneDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexLockersTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexPartitionsDoneDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexPartitionsTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexTuplesDoneDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCreateIndexTuplesTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDatabaseCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDatabaseSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDbCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDbSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDeadRowsDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlDeadlocksDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDeadlocksCountDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDiskReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionCallsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionSelfTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionTotalTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlHeapBlocksHitDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlHeapBlocksReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexScansDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBloatDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBlocksHitDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBlocksReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexRelRowsFetchedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexRelScansDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexRowsFetchedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexRowsReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndividualIndexSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoEvictionsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoExtendTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoExtendsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoFsyncTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoFsyncsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoHitsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoReadTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoReadsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoWriteTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoWritesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLastAnalyzeAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLastAutoanalyzeAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLastAutovacuumAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLastVacuumAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLiveRowsDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLocksDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlMaxConnectionsDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlOperationsDataPoint(ts, 1, AttributeOperationIns)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlPercentUsageConnectionsDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlPgStatStatementsDeallocDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesBlkReadTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesBlkWriteTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesCountDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesDurationMaxDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesDurationSumDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksHitDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksReadDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksWrittenDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesRowsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksHitDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksReadDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksWrittenDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesTempBlksReadDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesTempBlksWrittenDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRelationAllVisibleDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRelationPagesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRelationTuplesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRelationSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationBackendXminAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationDataDelayDataPoint(ts, 1, "replication_client-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationWalFlushLagDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationWalReplayLagDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationWalWriteLagDataPoint(ts, 1)
 
@@ -565,357 +444,270 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationDelayDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationDelayBytesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotConfirmedFlushDelayBytesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotRestartDelayBytesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotSpillBytesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotSpillCountDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotSpillTxnsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotStreamBytesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotStreamCountDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotStreamTxnsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotTotalBytesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotTotalTxnsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationSlotXminAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRollbacksDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDataPoint(ts, 1, AttributeStateDead)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDeletedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsFetchedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsHotUpdatedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsInsertedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsReturnedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsUpdatedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRunningDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSeqRowsReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSeqScansDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlSequentialScansDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsAbandonedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsActiveTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsCountDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsFatalDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsKilledDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsSessionTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruBlksExistsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruBlksHitDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruBlksReadDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruBlksWrittenDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruBlksZeroedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruFlushesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSlruTruncatesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSnapshotXipCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSnapshotXmaxDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSnapshotXminDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSubscriptionApplyErrorDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSubscriptionLastMsgReceiptAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSubscriptionLastMsgSendAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSubscriptionLatestEndAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSubscriptionStateDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSubscriptionSyncErrorDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableVacuumCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableBloatDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTempBytesDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlTempFilesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastBlocksHitDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastBlocksReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastIndexBlocksHitDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastIndexBlocksReadDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTotalSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTransactionsDurationMaxDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTransactionsDurationSumDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTransactionsIdleInTransactionDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTransactionsOpenDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlUptimeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumHeapBlksScannedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumHeapBlksTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumHeapBlksVacuumedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumIndexVacuumCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumMaxDeadTuplesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumNumDeadTuplesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumedDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWaitingQueriesDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalBuffersFullDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalBytesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalFullPageImagesDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalLagDataPoint(ts, 1, AttributeWalOperationLagFlush, "replication_client-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalRecordsDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalSyncDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalSyncTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalWriteDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalWriteTimeDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalReceiverConnectedDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalReceiverLastMsgReceiptAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalReceiverLastMsgSendAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalReceiverLatestEndAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalReceiverReceivedTimelineDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalSizeDataPoint(ts, 1)
 
@@ -957,6 +749,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.active_waiting_queries":
 					assert.False(t, validatedMetrics["postgresql.active_waiting_queries"], "Found a duplicate in the metrics slice: postgresql.active_waiting_queries")
 					validatedMetrics["postgresql.active_waiting_queries"] = true
@@ -969,6 +764,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.activity.backend_xid_age":
 					assert.False(t, validatedMetrics["postgresql.activity.backend_xid_age"], "Found a duplicate in the metrics slice: postgresql.activity.backend_xid_age")
 					validatedMetrics["postgresql.activity.backend_xid_age"] = true
@@ -981,6 +779,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.activity.backend_xmin_age":
 					assert.False(t, validatedMetrics["postgresql.activity.backend_xmin_age"], "Found a duplicate in the metrics slice: postgresql.activity.backend_xmin_age")
 					validatedMetrics["postgresql.activity.backend_xmin_age"] = true
@@ -993,18 +794,24 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.activity.xact_start_age":
 					assert.False(t, validatedMetrics["postgresql.activity.xact_start_age"], "Found a duplicate in the metrics slice: postgresql.activity.xact_start_age")
 					validatedMetrics["postgresql.activity.xact_start_age"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "The age of the oldest active transactions. This metric (by default) is tagged with db, app, user.", ms.At(i).Description())
-					assert.Equal(t, "{second}", ms.At(i).Unit())
+					assert.Equal(t, "s", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.analyze.child_tables_done":
 					assert.False(t, validatedMetrics["postgresql.analyze.child_tables_done"], "Found a duplicate in the metrics slice: postgresql.analyze.child_tables_done")
 					validatedMetrics["postgresql.analyze.child_tables_done"] = true

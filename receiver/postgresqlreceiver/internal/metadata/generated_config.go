@@ -262,640 +262,640 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		PostgresqlAnalyzeChildTablesDone: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAnalyzeChildTablesTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAnalyzeExtStatsComputed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAnalyzeExtStatsTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAnalyzeSampleBlksScanned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAnalyzeSampleBlksTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAnalyzed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAutoanalyzed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAutovacuumed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBackends: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBeforeXidWraparound: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersAllocated: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersWrites: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersAlloc: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersBackend: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersBackendFsync: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersCheckpoint: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersClean: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterCheckpointCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterCheckpointsRequested: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterCheckpointsTimed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterDuration: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterMaxwritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterMaxwrittenClean: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterSyncTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterWriteTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBufferHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlChecksumsChecksumFailures: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlChecksumsEnabled: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapBlksScanned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapBlksTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapTuplesScanned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapTuplesWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumIndexRebuildCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCommits: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsBufferpin: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsDeadlock: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsLock: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsSnapshot: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsTablespace: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConnectionMax: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConnections: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlControlCheckpointDelay: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlControlTimelineID: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexBlocksDone: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexBlocksTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexLockersDone: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexLockersTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexPartitionsDone: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexPartitionsTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexTuplesDone: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCreateIndexTuplesTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDatabaseCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDatabaseSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDbCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDbSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDeadRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDeadlocks: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlDeadlocksCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDiskRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlFunctionCalls: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlFunctionSelfTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlFunctionTotalTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlHeapBlocksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlHeapBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexScans: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexBloat: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexBlocksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexRelRowsFetched: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexRelScans: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexRowsFetched: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexRowsRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndividualIndexSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoEvictions: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoExtendTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoExtends: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoFsyncTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoFsyncs: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoHits: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoReadTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoReads: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoWriteTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoWrites: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLastAnalyzeAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLastAutoanalyzeAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLastAutovacuumAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLastVacuumAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLiveRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLocks: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlMaxConnections: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlOperations: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlPercentUsageConnections: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlPgStatStatementsDealloc: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesBlkReadTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesBlkWriteTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesDurationMax: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesDurationSum: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksDirtied: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksDirtied: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesTempBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesTempBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRelationAllVisible: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRelationPages: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRelationTuples: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRelationSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationBackendXminAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationDataDelay: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationWalFlushLag: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationWalReplayLag: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationWalWriteLag: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationDelay: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlReplicationDelayBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotConfirmedFlushDelayBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotRestartDelayBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotSpillBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotSpillCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotSpillTxns: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotStreamBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotStreamCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotStreamTxns: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotTotalBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotTotalTxns: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationSlotXminAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRollbacks: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsDeleted: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsFetched: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsHotUpdated: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsInserted: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsReturned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsUpdated: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRunning: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSeqRowsRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSeqScans: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSequentialScans: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlSessionsAbandoned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsActiveTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsFatal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsIdleInTransactionTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsKilled: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsSessionTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruBlksExists: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruBlksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruBlksZeroed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruFlushes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruTruncates: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSnapshotXipCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSnapshotXmax: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSnapshotXmin: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSubscriptionApplyError: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSubscriptionLastMsgReceiptAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSubscriptionLastMsgSendAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSubscriptionLatestEndAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSubscriptionState: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSubscriptionSyncError: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableVacuumCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableBloat: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTempBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTempFiles: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlToastBlocksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlToastBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlToastIndexBlocksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlToastIndexBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlToastSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTotalSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTransactionsDurationMax: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTransactionsDurationSum: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTransactionsIdleInTransaction: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTransactionsOpen: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlUptime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumHeapBlksScanned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumHeapBlksTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumHeapBlksVacuumed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumIndexVacuumCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumMaxDeadTuples: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumNumDeadTuples: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlVacuumed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWaitingQueries: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalBuffersFull: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalBytes: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalFullPageImages: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalLag: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalRecords: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalSync: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalSyncTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalWrite: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalWriteTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalReceiverConnected: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalReceiverLastMsgReceiptAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalReceiverLastMsgSendAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalReceiverLatestEndAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalReceiverReceivedTimeline: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 }
@@ -915,13 +915,13 @@ type ResourceAttributesConfig struct {
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
 		PostgresqlDatabaseName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 }

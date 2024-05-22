@@ -46,6 +46,7 @@ type client interface {
 	getMaxConnections(ctx context.Context) (int64, error)
 	getIndexStats(ctx context.Context, database string) (map[indexIdentifer]indexStat, error)
 	listDatabases(ctx context.Context) ([]string, error)
+	getActivityStats(ctx context.Context) ([]queryActivityStats, error)
 }
 
 type postgreSQLClient struct {
@@ -484,6 +485,65 @@ func (c *postgreSQLClient) getReplicationStats(ctx context.Context) ([]replicati
 	}
 
 	return rs, errors
+}
+
+type queryActivityStats struct {
+	activeQueries        int64
+	activeWaitingQueries int64
+	backendXidAge        int64
+	backendXminAge       int64
+	xactStartAge         float64
+	queryStatment        string
+}
+
+func (c *postgreSQLClient) getActivityStats(ctx context.Context) ([]queryActivityStats, error) {
+	query := `SELECT
+	query,
+    COUNT(*) FILTER (WHERE state = 'active') OVER () AS active_queries,
+    COUNT(*) FILTER (WHERE state = 'active' AND wait_event IS NOT NULL) OVER () AS active_waiting_queries,
+    MAX(age(backend_xid)) OVER () AS backend_xid_age,
+    MAX(age(backend_xmin)) OVER () AS backend_xmin_age,
+    MAX(EXTRACT(EPOCH FROM (clock_timestamp() - xact_start))) OVER () AS xact_start_age
+	FROM pg_stat_activity
+	WHERE backend_type = 'client backend' AND query !~* '^vacuum ';	
+	`
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_activity: %w", err)
+	}
+
+	defer rows.Close()
+
+	var as []queryActivityStats
+	var errors error
+	for rows.Next() {
+		var activeQueries, activeWaitingQueries int64
+		var backendXidAge, backendXminAge sql.NullInt64
+		var xactStartAge float64
+		var queryStatment string
+		err = rows.Scan(
+			&queryStatment,
+			&activeQueries,
+			&activeWaitingQueries,
+			&backendXidAge,
+			&backendXminAge,
+			&xactStartAge,
+		)
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+
+		as = append(as, queryActivityStats{
+			queryStatment:        queryStatment,
+			activeQueries:        activeQueries,
+			activeWaitingQueries: activeWaitingQueries,
+			backendXidAge:        backendXidAge.Int64,
+			backendXminAge:       backendXminAge.Int64,
+			xactStartAge:         xactStartAge,
+		})
+	}
+
+	return as, errors
 }
 
 func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, error) {

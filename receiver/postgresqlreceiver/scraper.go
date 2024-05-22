@@ -132,11 +132,12 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectWalAge(ctx, now, listClient, &errs)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
-	
+	p.collectActivityStats(ctx, now, listClient, &errs)
+
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
-	
+
 	return p.mb.Emit(), errs.combine()
 }
 
@@ -308,6 +309,27 @@ func (p *postgreSQLScraper) collectReplicationStats(
 		if rs.flushLag >= 0 {
 			p.mb.RecordPostgresqlWalLagDataPoint(now, rs.flushLag, metadata.AttributeWalOperationLagFlush, rs.clientAddr)
 		}
+	}
+}
+
+func (p *postgreSQLScraper) collectActivityStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	as, err := client.getActivityStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range as {
+		p.mb.RecordPostgresqlActiveQueriesDataPoint(now, s.activeQueries, s.queryStatment)
+		p.mb.RecordPostgresqlActiveWaitingQueriesDataPoint(now, s.activeQueries, s.queryStatment)
+		p.mb.RecordPostgresqlActivityBackendXidAgeDataPoint(now, s.backendXidAge, s.queryStatment)
+		p.mb.RecordPostgresqlActivityBackendXminAgeDataPoint(now, s.backendXminAge, s.queryStatment)
+		p.mb.RecordPostgresqlActivityXactStartAgeDataPoint(now, s.xactStartAge, s.queryStatment)
 	}
 }
 

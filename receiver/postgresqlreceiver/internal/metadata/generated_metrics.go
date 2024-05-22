@@ -251,9 +251,10 @@ func (m *metricPostgresqlActiveQueries) init() {
 	m.data.SetDescription("Enabled with `collect_activity_metrics`. The number of active queries in this database. This metric (by default) is tagged with db, app, user.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlActiveQueries) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlActiveQueries) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -261,6 +262,7 @@ func (m *metricPostgresqlActiveQueries) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -300,9 +302,10 @@ func (m *metricPostgresqlActiveWaitingQueries) init() {
 	m.data.SetDescription("Enabled with `collect_activity_metrics`. The number of waiting queries in this database in state active. This metric (by default) is tagged with db, app, user.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlActiveWaitingQueries) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlActiveWaitingQueries) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -310,6 +313,7 @@ func (m *metricPostgresqlActiveWaitingQueries) recordDataPoint(start pcommon.Tim
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -349,9 +353,10 @@ func (m *metricPostgresqlActivityBackendXidAge) init() {
 	m.data.SetDescription("The age of the oldest backend's xid relative to latest stable xid. This metric (by default) is tagged with db, app, user.")
 	m.data.SetUnit("{transaction}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlActivityBackendXidAge) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlActivityBackendXidAge) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -359,6 +364,7 @@ func (m *metricPostgresqlActivityBackendXidAge) recordDataPoint(start pcommon.Ti
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -398,9 +404,10 @@ func (m *metricPostgresqlActivityBackendXminAge) init() {
 	m.data.SetDescription("The age of the oldest backend's xmin horizon relative to latest stable xid. This metric (by default) is tagged with db, app, user.")
 	m.data.SetUnit("{transaction}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlActivityBackendXminAge) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlActivityBackendXminAge) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -408,6 +415,7 @@ func (m *metricPostgresqlActivityBackendXminAge) recordDataPoint(start pcommon.T
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -445,18 +453,20 @@ type metricPostgresqlActivityXactStartAge struct {
 func (m *metricPostgresqlActivityXactStartAge) init() {
 	m.data.SetName("postgresql.activity.xact_start_age")
 	m.data.SetDescription("The age of the oldest active transactions. This metric (by default) is tagged with db, app, user.")
-	m.data.SetUnit("{second}")
+	m.data.SetUnit("s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlActivityXactStartAge) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlActivityXactStartAge) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Gauge().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -11850,28 +11860,28 @@ func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
 }
 
 // RecordPostgresqlActiveQueriesDataPoint adds a data point to postgresql.active_queries metric.
-func (mb *MetricsBuilder) RecordPostgresqlActiveQueriesDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlActiveQueries.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlActiveQueriesDataPoint(ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
+	mb.metricPostgresqlActiveQueries.recordDataPoint(mb.startTime, ts, val, queryStatementAttributeValue)
 }
 
 // RecordPostgresqlActiveWaitingQueriesDataPoint adds a data point to postgresql.active_waiting_queries metric.
-func (mb *MetricsBuilder) RecordPostgresqlActiveWaitingQueriesDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlActiveWaitingQueries.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlActiveWaitingQueriesDataPoint(ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
+	mb.metricPostgresqlActiveWaitingQueries.recordDataPoint(mb.startTime, ts, val, queryStatementAttributeValue)
 }
 
 // RecordPostgresqlActivityBackendXidAgeDataPoint adds a data point to postgresql.activity.backend_xid_age metric.
-func (mb *MetricsBuilder) RecordPostgresqlActivityBackendXidAgeDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlActivityBackendXidAge.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlActivityBackendXidAgeDataPoint(ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
+	mb.metricPostgresqlActivityBackendXidAge.recordDataPoint(mb.startTime, ts, val, queryStatementAttributeValue)
 }
 
 // RecordPostgresqlActivityBackendXminAgeDataPoint adds a data point to postgresql.activity.backend_xmin_age metric.
-func (mb *MetricsBuilder) RecordPostgresqlActivityBackendXminAgeDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlActivityBackendXminAge.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlActivityBackendXminAgeDataPoint(ts pcommon.Timestamp, val int64, queryStatementAttributeValue string) {
+	mb.metricPostgresqlActivityBackendXminAge.recordDataPoint(mb.startTime, ts, val, queryStatementAttributeValue)
 }
 
 // RecordPostgresqlActivityXactStartAgeDataPoint adds a data point to postgresql.activity.xact_start_age metric.
-func (mb *MetricsBuilder) RecordPostgresqlActivityXactStartAgeDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlActivityXactStartAge.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlActivityXactStartAgeDataPoint(ts pcommon.Timestamp, val float64, queryStatementAttributeValue string) {
+	mb.metricPostgresqlActivityXactStartAge.recordDataPoint(mb.startTime, ts, val, queryStatementAttributeValue)
 }
 
 // RecordPostgresqlAnalyzeChildTablesDoneDataPoint adds a data point to postgresql.analyze.child_tables_done metric.

@@ -20,6 +20,12 @@ Enabled with `collect_activity_metrics`. The number of active queries in this da
 | ---- | ----------- | ---------- |
 | 1 | Gauge | Int |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_statement | the query statement | Any Str |
+
 ### postgresql.active_waiting_queries
 
 Enabled with `collect_activity_metrics`. The number of waiting queries in this database in state active. This metric (by default) is tagged with db, app, user.
@@ -27,6 +33,12 @@ Enabled with `collect_activity_metrics`. The number of waiting queries in this d
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_statement | the query statement | Any Str |
 
 ### postgresql.activity.backend_xid_age
 
@@ -36,6 +48,12 @@ The age of the oldest backend's xid relative to latest stable xid. This metric (
 | ---- | ----------- | ---------- |
 | {transaction} | Gauge | Int |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_statement | the query statement | Any Str |
+
 ### postgresql.activity.backend_xmin_age
 
 The age of the oldest backend's xmin horizon relative to latest stable xid. This metric (by default) is tagged with db, app, user.
@@ -44,13 +62,43 @@ The age of the oldest backend's xmin horizon relative to latest stable xid. This
 | ---- | ----------- | ---------- |
 | {transaction} | Gauge | Int |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_statement | the query statement | Any Str |
+
 ### postgresql.activity.xact_start_age
 
 The age of the oldest active transactions. This metric (by default) is tagged with db, app, user.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
+| s | Gauge | Double |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_statement | the query statement | Any Str |
+
+### postgresql.replication_delay
+
+The current replication delay in seconds. Only available with postgresql 9.1 and newer
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
 | {second} | Gauge | Int |
+
+## Optional Metrics
+
+The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
+
+```yaml
+metrics:
+  <metric_name>:
+    enabled: true
+```
 
 ### postgresql.analyze.child_tables_done
 
@@ -539,6 +587,14 @@ Enabled with `relations`. The estimated number of dead rows. This metric is tagg
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {row} | Gauge | Int |
+
+### postgresql.deadlocks
+
+The number of deadlocks.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {deadlock} | Sum | Int | Cumulative | true |
 
 ### postgresql.deadlocks.count
 
@@ -1056,14 +1112,6 @@ Time elapsed between flushing recent WAL locally and receiving notification that
 | ---- | ----------- | ---------- |
 | {second} | Gauge | Int |
 
-### postgresql.replication_delay
-
-The current replication delay in seconds. Only available with postgresql 9.1 and newer
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {second} | Gauge | Int |
-
 ### postgresql.replication_delay_bytes
 
 The current replication delay in bytes. Only available with postgresql 9.2 and newer
@@ -1253,6 +1301,14 @@ Enabled with `relations`. The number of sequential scans initiated on this table
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {scan}/s | Gauge | Int |
+
+### postgresql.sequential_scans
+
+The number of sequential scans.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {sequential_scan} | Sum | Int | Cumulative | true |
 
 ### postgresql.sessions.abandoned
 
@@ -1477,6 +1533,14 @@ The amount of data written to temporary files by queries in this database. This 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | By | Gauge | Int |
+
+### postgresql.temp_files
+
+The number of temp files.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {temp_file} | Sum | Int | Cumulative | true |
 
 ### postgresql.toast_blocks_hit
 
@@ -1776,44 +1840,10 @@ The sum of all WAL files on disk.
 | ---- | ----------- | ---------- |
 | By | Gauge | Int |
 
-## Optional Metrics
-
-The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
-
-```yaml
-metrics:
-  <metric_name>:
-    enabled: true
-```
-
-### postgresql.deadlocks
-
-The number of deadlocks.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {deadlock} | Sum | Int | Cumulative | true |
-
-### postgresql.sequential_scans
-
-The number of sequential scans.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {sequential_scan} | Sum | Int | Cumulative | true |
-
-### postgresql.temp_files
-
-The number of temp files.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {temp_file} | Sum | Int | Cumulative | true |
-
 ## Resource Attributes
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
-| postgresql.database.name | The name of the database. | Any Str | true |
-| postgresql.index.name | The name of the index on a table. | Any Str | true |
-| postgresql.table.name | The schema name followed by the table name. | Any Str | true |
+| postgresql.database.name | The name of the database. | Any Str | false |
+| postgresql.index.name | The name of the index on a table. | Any Str | false |
+| postgresql.table.name | The schema name followed by the table name. | Any Str | false |
