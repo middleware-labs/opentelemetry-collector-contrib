@@ -448,6 +448,7 @@ func TestMetricsBuilder(t *testing.T) {
 				assert.Equal(t, 2, mb.metricMysqlSorts.data.Sum().DataPoints().Len())
 			}
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventCountDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val", AttributeEventStateErrors)
 			if tt.name == "reaggregate_set" {
@@ -457,6 +458,7 @@ func TestMetricsBuilder(t *testing.T) {
 				assert.Equal(t, 2, mb.metricMysqlStatementEventCount.data.Sum().DataPoints().Len())
 			}
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventWaitTimeDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val")
 			if tt.name == "reaggregate_set" {
