@@ -12,7 +12,7 @@ metrics:
     enabled: false
 ```
 
-### postgresql.connections
+### postgresql.connection.count
 
 The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
 

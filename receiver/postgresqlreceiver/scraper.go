@@ -296,7 +296,7 @@ func (p *postgreSQLScraper) collectActiveConnections(
 		errs.addPartial(err)
 		return
 	}
-	p.mb.RecordPostgresqlConnectionsDataPoint(now, ac)
+	p.mb.RecordPostgresqlConnectionCountDataPoint(now, ac)
 }
 
 func (p *postgreSQLScraper) collectReplicationStats(

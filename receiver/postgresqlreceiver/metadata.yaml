@@ -281,7 +281,7 @@ metrics:
       value_type: int
     extended_documentation: |
       This metric requires WAL to be enabled with at least one replica.
-  postgresql.connections:
+  postgresql.connection.count:
     enabled: true
     description: The number of active connections to this database. If DBM is enabled,
       this metric is tagged with state, app, db and user

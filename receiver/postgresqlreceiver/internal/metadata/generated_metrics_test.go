@@ -78,12 +78,12 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlCommitsDataPoint(ts, 1)
 
-			allMetricsCount++
-			mb.RecordPostgresqlConnectionMaxDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConnectionsDataPoint(ts, 1)
+			mb.RecordPostgresqlConnectionCountDataPoint(ts, 1)
+
+			allMetricsCount++
+			mb.RecordPostgresqlConnectionMaxDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlDatabaseCountDataPoint(ts, 1)
@@ -283,6 +283,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.connection.count":
+					assert.False(t, validatedMetrics["postgresql.connection.count"], "Found a duplicate in the metrics slice: postgresql.connection.count")
+					validatedMetrics["postgresql.connection.count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user", ms.At(i).Description())
+					assert.Equal(t, "{connection}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.connection.max":
 					assert.False(t, validatedMetrics["postgresql.connection.max"], "Found a duplicate in the metrics slice: postgresql.connection.max")
 					validatedMetrics["postgresql.connection.max"] = true
@@ -290,18 +302,6 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "Configured maximum number of client connections allowed", ms.At(i).Description())
 					assert.Equal(t, "{connections}", ms.At(i).Unit())
-					dp := ms.At(i).Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-				case "postgresql.connections":
-					assert.False(t, validatedMetrics["postgresql.connections"], "Found a duplicate in the metrics slice: postgresql.connections")
-					validatedMetrics["postgresql.connections"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
-					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user", ms.At(i).Description())
-					assert.Equal(t, "{connection}", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())

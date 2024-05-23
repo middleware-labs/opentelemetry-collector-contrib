@@ -33,8 +33,8 @@ type MetricsConfig struct {
 	PostgresqlBgwriterMaxwritten       MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten"`
 	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
 	PostgresqlCommits                  MetricConfig `mapstructure:"postgresql.commits"`
+	PostgresqlConnectionCount          MetricConfig `mapstructure:"postgresql.connection.count"`
 	PostgresqlConnectionMax            MetricConfig `mapstructure:"postgresql.connection.max"`
-	PostgresqlConnections              MetricConfig `mapstructure:"postgresql.connections"`
 	PostgresqlDatabaseCount            MetricConfig `mapstructure:"postgresql.database.count"`
 	PostgresqlDbSize                   MetricConfig `mapstructure:"postgresql.db_size"`
 	PostgresqlDeadlocks                MetricConfig `mapstructure:"postgresql.deadlocks"`
@@ -79,11 +79,11 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlCommits: MetricConfig{
 			Enabled: false,
 		},
+		PostgresqlConnectionCount: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlConnectionMax: MetricConfig{
 			Enabled: false,
-		},
-		PostgresqlConnections: MetricConfig{
-			Enabled: true,
 		},
 		PostgresqlDatabaseCount: MetricConfig{
 			Enabled: false,
