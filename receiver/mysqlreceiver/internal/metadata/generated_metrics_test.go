@@ -181,9 +181,11 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordMysqlSortsDataPoint(ts, "1", AttributeSortsMergePasses)
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventCountDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val", AttributeEventStateErrors)
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventWaitTimeDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val")
 
