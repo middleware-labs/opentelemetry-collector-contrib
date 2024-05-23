@@ -75,8 +75,17 @@ attributes:
     type: string
     enum: [flush, replay, write]
   query_statement:
-    description: the query statement
+    description: the query statement.
     type: string
+  userid:
+    description: id of the user that executed this query.
+    type: int
+  dbid:
+    description: id of the database.
+    type: int
+  queryid:
+    description: id of the query.
+    type: int
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -626,7 +635,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.blk_read_time:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total time spent reading blocks per query_signature, db, and user.
       (DBM only)
     unit: ns
@@ -636,6 +650,11 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.blk_write_time:
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
     enabled: false
     description: Total time spent writing blocks per query_signature, db, and user.
       (DBM only)
@@ -646,7 +665,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.count:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: The total query execution count per query_signature, db, and user.
       (DBM only)
     unit: '{query}'
@@ -656,7 +680,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.local_blks_dirtied:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of local blocks dirtied per query_signature, db, and user.
       (DBM only)
     unit: '{block}'
@@ -666,7 +695,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.local_blks_hit:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of local block cache hits per query_signature, db, and
       user. (DBM only)
     unit: '{block}'
@@ -676,7 +710,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.local_blks_read:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of local blocks read per query_signature, db, and user.
       (DBM only)
     unit: '{block}'
@@ -686,7 +725,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.local_blks_written:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of local blocks written per query_signature, db, and user.
       (DBM only)
     unit: '{block}'
@@ -696,7 +740,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.rows:
-    enabled: false
+    enabled: true 
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
     description: The total number of rows retrieved or affected per query_signature,
       db, and user. (DBM only)
     unit: '{row}'
@@ -706,7 +755,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.shared_blks_dirtied:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of shared blocks dirtied per query_signature, db, and
       user. (DBM only)
     unit: '{block}'
@@ -716,7 +770,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.shared_blks_hit:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of shared block cache hits per query_signature, db, and
       user. (DBM only)
     unit: '{block}'
@@ -726,7 +785,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.shared_blks_read:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of shared blocks read per query_signature, db, and user.
       (DBM only)
     unit: '{block}'
@@ -736,7 +800,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.shared_blks_written:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of shared blocks written per query_signature, db, and
       user. (DBM only)
     unit: '{block}'
@@ -746,7 +815,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.temp_blks_read:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of temp blocks read per query_signature, db, and user.
       (DBM only)
     unit: '{block}'
@@ -756,7 +830,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.temp_blks_written:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: Total number of temp blocks written per query_signature, db, and user.
       (DBM only)
     unit: '{block}'
@@ -766,7 +845,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.queries.time:
-    enabled: false
+    attributes:
+      - userid
+      - dbid
+      - queryid
+      - query_statement
+    enabled: true 
     description: The total query execution time per query_signature, db, and user. (DBM
       only)
     unit: ns
@@ -1148,7 +1232,7 @@ metrics:
   postgresql.active_queries:
     attributes:
       - query_statement 
-    enabled: true
+    enabled: false
     description: Enabled with `collect_activity_metrics`. The number of active queries
       in this database. This metric (by default) is tagged with db, app, user.
     unit: "1"
@@ -1157,7 +1241,7 @@ metrics:
   postgresql.active_waiting_queries:
     attributes:
       - query_statement 
-    enabled: true
+    enabled: false
     description: Enabled with `collect_activity_metrics`. The number of waiting queries
       in this database in state active. This metric (by default) is tagged with db,
       app, user.
@@ -1167,7 +1251,7 @@ metrics:
   postgresql.activity.backend_xid_age:
     attributes:
       - query_statement 
-    enabled: true
+    enabled: false
     description: The age of the oldest backend's xid relative to latest stable xid.
       This metric (by default) is tagged with db, app, user.
     unit: '{transaction}'
@@ -1176,7 +1260,7 @@ metrics:
   postgresql.activity.backend_xmin_age:
     attributes:
       - query_statement 
-    enabled: true
+    enabled: false
     description: The age of the oldest backend's xmin horizon relative to latest stable
       xid. This metric (by default) is tagged with db, app, user.
     unit: '{transaction}'
@@ -1185,7 +1269,7 @@ metrics:
   postgresql.activity.xact_start_age:
     attributes:
       - query_statement 
-    enabled: true 
+    enabled: false 
     description: The age of the oldest active transactions. This metric (by default)
       is tagged with db, app, user.
     unit: s
@@ -1534,18 +1618,18 @@ metrics:
     gauge:
       value_type: int
   postgresql.queries.duration.max:
-    enabled: false
+    enabled: true
     description: The age of the longest running query per user, db and app. (DBM only)
     unit: ns
     gauge:
-      value_type: int
+      value_type: double
   postgresql.queries.duration.sum:
-    enabled: false
+    enabled: true
     description: The sum of the age of all running queries per user, db and app. (DBM
       only)
     unit: ns
     gauge:
-      value_type: int
+      value_type: double
   postgresql.relation.all_visible:
     enabled: false
     description: Number of pages that are marked as all visible in the table's visibility
@@ -1617,7 +1701,7 @@ metrics:
     gauge:
       value_type: int
   postgresql.replication_delay:
-    enabled: true
+    enabled: false
     description: The current replication delay in seconds. Only available with postgresql
       9.1 and newer
     unit: '{second}'

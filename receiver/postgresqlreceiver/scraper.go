@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
+	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
@@ -133,6 +135,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectActivityStats(ctx, now, listClient, &errs)
+	p.collectQueryStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -330,6 +333,57 @@ func (p *postgreSQLScraper) collectActivityStats(
 		p.mb.RecordPostgresqlActivityBackendXidAgeDataPoint(now, s.backendXidAge, s.queryStatment)
 		p.mb.RecordPostgresqlActivityBackendXminAgeDataPoint(now, s.backendXminAge, s.queryStatment)
 		p.mb.RecordPostgresqlActivityXactStartAgeDataPoint(now, s.xactStartAge, s.queryStatment)
+	}
+}
+
+func (p *postgreSQLScraper) collectQueryStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	qs, err := client.getQueryStats(ctx)
+	if err != nil {
+		pp.Println(err.Error())
+		errs.addPartial(err)
+		return
+	}
+	for _, s := range qs {
+		blkReadTime := strconv.FormatFloat(s.blkReadTime, 'f', -1, 64)
+		blkWriteTime := strconv.FormatFloat(s.blkWriteTime, 'f', -1, 64)
+		count := strconv.FormatInt(s.count, 10)
+
+		// durationMax := strconv.FormatInt(s.durationMax, 10)
+		// durationSum := strconv.FormatInt(s.durationSum, 10)
+		localBlksDirtied := strconv.FormatInt(s.localBlksDirtied, 10)
+		localBlksHit := strconv.FormatInt(s.localBlksHit, 10)
+		localBlksRead := strconv.FormatInt(s.localBlksRead, 10)
+		localBlksWritten := strconv.FormatInt(s.localBlksWritten, 10)
+		rows := strconv.FormatInt(s.rows, 10)
+		sharedBlksDirtied := strconv.FormatInt(s.sharedBlksDirtied, 10)
+		sharedBlksHit := strconv.FormatInt(s.sharedBlksHit, 10)
+		sharedBlksRead := strconv.FormatInt(s.sharedBlksRead, 10)
+		sharedBlksWritten := strconv.FormatInt(s.sharedBlksWritten, 10)
+		tempBlksRead := strconv.FormatInt(s.tempBlksRead, 10)
+		tempBlksWritten := strconv.FormatInt(s.tempBlksWritten, 10)
+		time := strconv.FormatFloat(s.time, 'f', -1, 64)
+		p.mb.RecordPostgresqlQueriesBlkReadTimeDataPoint(now, blkReadTime, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesBlkWriteTimeDataPoint(now, blkWriteTime, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesCountDataPoint(now, count, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesDurationMaxDataPoint(now, s.durationMax) // Add here
+		p.mb.RecordPostgresqlQueriesDurationSumDataPoint(now, s.durationSum)
+		p.mb.RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(now, localBlksDirtied, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesLocalBlksHitDataPoint(now, localBlksHit, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesLocalBlksReadDataPoint(now, localBlksRead, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesLocalBlksWrittenDataPoint(now, localBlksWritten, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesRowsDataPoint(now, rows, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(now, sharedBlksDirtied, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesLocalBlksHitDataPoint(now, sharedBlksHit, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesSharedBlksReadDataPoint(now, sharedBlksRead, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesSharedBlksWrittenDataPoint(now, sharedBlksWritten, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesTempBlksReadDataPoint(now, tempBlksRead, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesTempBlksWrittenDataPoint(now, tempBlksWritten, s.userid, s.dbid, s.queryid, s.query)
+		p.mb.RecordPostgresqlQueriesTimeDataPoint(now, time, s.userid, s.dbid, s.queryid, s.query)
 	}
 }
 

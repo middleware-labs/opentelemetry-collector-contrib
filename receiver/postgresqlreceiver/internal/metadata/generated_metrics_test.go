@@ -54,23 +54,18 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount := 0
 			allMetricsCount := 0
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlActiveQueriesDataPoint(ts, 1, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlActiveWaitingQueriesDataPoint(ts, 1, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlActivityBackendXidAgeDataPoint(ts, 1, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlActivityBackendXminAgeDataPoint(ts, 1, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlActivityXactStartAgeDataPoint(ts, 1, "query_statement-val")
 
@@ -362,56 +357,72 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlPgStatStatementsDeallocDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesBlkReadTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesBlkReadTimeDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesBlkWriteTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesBlkWriteTimeDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesCountDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesCountDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesDurationMaxDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesDurationSumDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesLocalBlksHitDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesLocalBlksHitDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesLocalBlksReadDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesLocalBlksReadDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesLocalBlksWrittenDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesLocalBlksWrittenDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesRowsDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesRowsDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesSharedBlksHitDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesSharedBlksHitDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesSharedBlksReadDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesSharedBlksReadDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesSharedBlksWrittenDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesSharedBlksWrittenDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesTempBlksReadDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesTempBlksReadDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesTempBlksWrittenDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesTempBlksWrittenDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlQueriesTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlQueriesTimeDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlRelationAllVisibleDataPoint(ts, 1)
@@ -440,7 +451,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationWalWriteLagDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationDelayDataPoint(ts, 1)
 
@@ -2087,6 +2097,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.blk_write_time":
 					assert.False(t, validatedMetrics["postgresql.queries.blk_write_time"], "Found a duplicate in the metrics slice: postgresql.queries.blk_write_time")
 					validatedMetrics["postgresql.queries.blk_write_time"] = true
@@ -2101,6 +2123,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.count":
 					assert.False(t, validatedMetrics["postgresql.queries.count"], "Found a duplicate in the metrics slice: postgresql.queries.count")
 					validatedMetrics["postgresql.queries.count"] = true
@@ -2115,6 +2149,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.duration.max":
 					assert.False(t, validatedMetrics["postgresql.queries.duration.max"], "Found a duplicate in the metrics slice: postgresql.queries.duration.max")
 					validatedMetrics["postgresql.queries.duration.max"] = true
@@ -2125,8 +2171,8 @@ func TestMetricsBuilder(t *testing.T) {
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
 				case "postgresql.queries.duration.sum":
 					assert.False(t, validatedMetrics["postgresql.queries.duration.sum"], "Found a duplicate in the metrics slice: postgresql.queries.duration.sum")
 					validatedMetrics["postgresql.queries.duration.sum"] = true
@@ -2137,8 +2183,8 @@ func TestMetricsBuilder(t *testing.T) {
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
 				case "postgresql.queries.local_blks_dirtied":
 					assert.False(t, validatedMetrics["postgresql.queries.local_blks_dirtied"], "Found a duplicate in the metrics slice: postgresql.queries.local_blks_dirtied")
 					validatedMetrics["postgresql.queries.local_blks_dirtied"] = true
@@ -2153,6 +2199,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.local_blks_hit":
 					assert.False(t, validatedMetrics["postgresql.queries.local_blks_hit"], "Found a duplicate in the metrics slice: postgresql.queries.local_blks_hit")
 					validatedMetrics["postgresql.queries.local_blks_hit"] = true
@@ -2167,6 +2225,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.local_blks_read":
 					assert.False(t, validatedMetrics["postgresql.queries.local_blks_read"], "Found a duplicate in the metrics slice: postgresql.queries.local_blks_read")
 					validatedMetrics["postgresql.queries.local_blks_read"] = true
@@ -2181,6 +2251,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.local_blks_written":
 					assert.False(t, validatedMetrics["postgresql.queries.local_blks_written"], "Found a duplicate in the metrics slice: postgresql.queries.local_blks_written")
 					validatedMetrics["postgresql.queries.local_blks_written"] = true
@@ -2195,6 +2277,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.rows":
 					assert.False(t, validatedMetrics["postgresql.queries.rows"], "Found a duplicate in the metrics slice: postgresql.queries.rows")
 					validatedMetrics["postgresql.queries.rows"] = true
@@ -2209,6 +2303,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.shared_blks_dirtied":
 					assert.False(t, validatedMetrics["postgresql.queries.shared_blks_dirtied"], "Found a duplicate in the metrics slice: postgresql.queries.shared_blks_dirtied")
 					validatedMetrics["postgresql.queries.shared_blks_dirtied"] = true
@@ -2223,6 +2329,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.shared_blks_hit":
 					assert.False(t, validatedMetrics["postgresql.queries.shared_blks_hit"], "Found a duplicate in the metrics slice: postgresql.queries.shared_blks_hit")
 					validatedMetrics["postgresql.queries.shared_blks_hit"] = true
@@ -2237,6 +2355,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.shared_blks_read":
 					assert.False(t, validatedMetrics["postgresql.queries.shared_blks_read"], "Found a duplicate in the metrics slice: postgresql.queries.shared_blks_read")
 					validatedMetrics["postgresql.queries.shared_blks_read"] = true
@@ -2251,6 +2381,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.shared_blks_written":
 					assert.False(t, validatedMetrics["postgresql.queries.shared_blks_written"], "Found a duplicate in the metrics slice: postgresql.queries.shared_blks_written")
 					validatedMetrics["postgresql.queries.shared_blks_written"] = true
@@ -2265,6 +2407,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.temp_blks_read":
 					assert.False(t, validatedMetrics["postgresql.queries.temp_blks_read"], "Found a duplicate in the metrics slice: postgresql.queries.temp_blks_read")
 					validatedMetrics["postgresql.queries.temp_blks_read"] = true
@@ -2279,6 +2433,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.temp_blks_written":
 					assert.False(t, validatedMetrics["postgresql.queries.temp_blks_written"], "Found a duplicate in the metrics slice: postgresql.queries.temp_blks_written")
 					validatedMetrics["postgresql.queries.temp_blks_written"] = true
@@ -2293,6 +2459,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.queries.time":
 					assert.False(t, validatedMetrics["postgresql.queries.time"], "Found a duplicate in the metrics slice: postgresql.queries.time")
 					validatedMetrics["postgresql.queries.time"] = true
@@ -2307,6 +2485,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("userid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 6, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("queryid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 7, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("query_statement")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_statement-val", attrVal.Str())
 				case "postgresql.relation.all_visible":
 					assert.False(t, validatedMetrics["postgresql.relation.all_visible"], "Found a duplicate in the metrics slice: postgresql.relation.all_visible")
 					validatedMetrics["postgresql.relation.all_visible"] = true

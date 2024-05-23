@@ -12,6 +12,270 @@ metrics:
     enabled: false
 ```
 
+### postgresql.queries.blk_read_time
+
+Total time spent reading blocks per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ns | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.count
+
+The total query execution count per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.duration.max
+
+The age of the longest running query per user, db and app. (DBM only)
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Double |
+
+### postgresql.queries.duration.sum
+
+The sum of the age of all running queries per user, db and app. (DBM only)
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Double |
+
+### postgresql.queries.local_blks_dirtied
+
+Total number of local blocks dirtied per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.local_blks_hit
+
+Total number of local block cache hits per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.local_blks_read
+
+Total number of local blocks read per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.local_blks_written
+
+Total number of local blocks written per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.rows
+
+The total number of rows retrieved or affected per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.shared_blks_dirtied
+
+Total number of shared blocks dirtied per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.shared_blks_hit
+
+Total number of shared block cache hits per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.shared_blks_read
+
+Total number of shared blocks read per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.shared_blks_written
+
+Total number of shared blocks written per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.temp_blks_read
+
+Total number of temp blocks read per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.temp_blks_written
+
+Total number of temp blocks written per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {block} | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+### postgresql.queries.time
+
+The total query execution time per query_signature, db, and user. (DBM only)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| ns | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
+
+## Optional Metrics
+
+The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
+
+```yaml
+metrics:
+  <metric_name>:
+    enabled: true
+```
+
 ### postgresql.active_queries
 
 Enabled with `collect_activity_metrics`. The number of active queries in this database. This metric (by default) is tagged with db, app, user.
@@ -24,7 +288,7 @@ Enabled with `collect_activity_metrics`. The number of active queries in this da
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| query_statement | the query statement | Any Str |
+| query_statement | the query statement. | Any Str |
 
 ### postgresql.active_waiting_queries
 
@@ -38,7 +302,7 @@ Enabled with `collect_activity_metrics`. The number of waiting queries in this d
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| query_statement | the query statement | Any Str |
+| query_statement | the query statement. | Any Str |
 
 ### postgresql.activity.backend_xid_age
 
@@ -52,7 +316,7 @@ The age of the oldest backend's xid relative to latest stable xid. This metric (
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| query_statement | the query statement | Any Str |
+| query_statement | the query statement. | Any Str |
 
 ### postgresql.activity.backend_xmin_age
 
@@ -66,7 +330,7 @@ The age of the oldest backend's xmin horizon relative to latest stable xid. This
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| query_statement | the query statement | Any Str |
+| query_statement | the query statement. | Any Str |
 
 ### postgresql.activity.xact_start_age
 
@@ -80,25 +344,7 @@ The age of the oldest active transactions. This metric (by default) is tagged wi
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| query_statement | the query statement | Any Str |
-
-### postgresql.replication_delay
-
-The current replication delay in seconds. Only available with postgresql 9.1 and newer
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {second} | Gauge | Int |
-
-## Optional Metrics
-
-The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
-
-```yaml
-metrics:
-  <metric_name>:
-    enabled: true
-```
+| query_statement | the query statement. | Any Str |
 
 ### postgresql.analyze.child_tables_done
 
@@ -898,14 +1144,6 @@ The number of times pg_stat_statements had to evict least executed queries becau
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | false |
 
-### postgresql.queries.blk_read_time
-
-Total time spent reading blocks per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | false |
-
 ### postgresql.queries.blk_write_time
 
 Total time spent writing blocks per query_signature, db, and user. (DBM only)
@@ -914,125 +1152,14 @@ Total time spent writing blocks per query_signature, db, and user. (DBM only)
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | ns | Sum | Int | Cumulative | false |
 
-### postgresql.queries.count
+#### Attributes
 
-The total query execution count per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.duration.max
-
-The age of the longest running query per user, db and app. (DBM only)
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ns | Gauge | Int |
-
-### postgresql.queries.duration.sum
-
-The sum of the age of all running queries per user, db and app. (DBM only)
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ns | Gauge | Int |
-
-### postgresql.queries.local_blks_dirtied
-
-Total number of local blocks dirtied per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.local_blks_hit
-
-Total number of local block cache hits per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.local_blks_read
-
-Total number of local blocks read per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.local_blks_written
-
-Total number of local blocks written per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.rows
-
-The total number of rows retrieved or affected per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.shared_blks_dirtied
-
-Total number of shared blocks dirtied per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.shared_blks_hit
-
-Total number of shared block cache hits per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.shared_blks_read
-
-Total number of shared blocks read per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.shared_blks_written
-
-Total number of shared blocks written per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.temp_blks_read
-
-Total number of temp blocks read per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.temp_blks_written
-
-Total number of temp blocks written per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {block} | Sum | Int | Cumulative | false |
-
-### postgresql.queries.time
-
-The total query execution time per query_signature, db, and user. (DBM only)
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | false |
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| userid | id of the user that executed this query. | Any Int |
+| dbid | id of the database. | Any Int |
+| queryid | id of the query. | Any Int |
+| query_statement | the query statement. | Any Str |
 
 ### postgresql.relation.all_visible
 
@@ -1107,6 +1234,14 @@ Time elapsed between flushing recent WAL locally and receiving notification that
 ### postgresql.replication.wal_write_lag
 
 Time elapsed between flushing recent WAL locally and receiving notification that this standby server has written it (but not yet flushed it or applied it). This can be used to gauge the delay that synchronous_commit level remote_write incurred while committing if this server was configured as a synchronous standby. Only available with postgresql 10 and newer.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {second} | Gauge | Int |
+
+### postgresql.replication_delay
+
+The current replication delay in seconds. Only available with postgresql 9.1 and newer
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |

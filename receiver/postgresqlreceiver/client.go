@@ -47,6 +47,7 @@ type client interface {
 	getIndexStats(ctx context.Context, database string) (map[indexIdentifer]indexStat, error)
 	listDatabases(ctx context.Context) ([]string, error)
 	getActivityStats(ctx context.Context) ([]queryActivityStats, error)
+	getQueryStats(ctx context.Context) ([]queryStats, error)
 }
 
 type postgreSQLClient struct {
@@ -544,6 +545,142 @@ func (c *postgreSQLClient) getActivityStats(ctx context.Context) ([]queryActivit
 	}
 
 	return as, errors
+}
+
+type queryStats struct {
+	userid            int64
+	dbid              int64
+	queryid           int64
+	query             string
+	blkReadTime       float64
+	blkWriteTime      float64
+	count             int64
+	durationMax       float64
+	durationSum       float64
+	localBlksDirtied  int64
+	localBlksHit      int64
+	localBlksRead     int64
+	localBlksWritten  int64
+	rows              int64
+	sharedBlksDirtied int64
+	sharedBlksHit     int64
+	sharedBlksRead    int64
+	sharedBlksWritten int64
+	tempBlksRead      int64
+	tempBlksWritten   int64
+	time              float64
+}
+
+func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
+	query := `SELECT
+    userid,
+    dbid,
+    queryid,
+    query,
+    SUM(blk_read_time) AS blk_read_time,
+    SUM(blk_write_time) AS blk_write_time,
+    MAX(calls) AS query_count,
+    MAX(total_exec_time) AS max_query_duration,
+    SUM(total_exec_time) AS sum_query_duration,
+    SUM(local_blks_dirtied) AS local_blks_dirtied,
+    SUM(local_blks_hit) AS local_blks_hit,
+    SUM(local_blks_read) AS local_blks_read,
+    SUM(local_blks_written) AS local_blks_written,
+    SUM(rows) AS total_rows,
+    SUM(shared_blks_dirtied) AS shared_blks_dirtied,
+    SUM(shared_blks_hit) AS shared_blks_hit,
+    SUM(shared_blks_read) AS shared_blks_read,
+    SUM(shared_blks_written) AS shared_blks_written,
+    SUM(temp_blks_read) AS temp_blks_read,
+    SUM(temp_blks_written) AS temp_blks_written,
+    SUM(total_exec_time) AS total_query_time
+	FROM pg_stat_statements
+	GROUP BY userid, dbid, queryid, query;
+	`
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
+	}
+
+	var errors error
+	var qs []queryStats
+
+	for rows.Next() {
+		var (
+			userid            int64
+			dbid              int64
+			queryid           int64
+			querytext         string
+			blkReadTime       float64
+			blkWriteTime      float64
+			count             int64
+			durationMax       float64
+			durationSum       float64
+			localBlksDirtied  int64
+			localBlksHit      int64
+			localBlksRead     int64
+			localBlksWritten  int64
+			rowsCount         int64
+			sharedBlksDirtied int64
+			sharedBlksHit     int64
+			sharedBlksRead    int64
+			sharedBlksWritten int64
+			tempBlksRead      int64
+			tempBlksWritten   int64
+			time              float64
+		)
+
+		err := rows.Scan(
+			&userid,
+			&dbid,
+			&queryid,
+			&querytext,
+			&blkReadTime,
+			&blkWriteTime,
+			&count,
+			&durationMax,
+			&durationSum,
+			&localBlksDirtied,
+			&localBlksHit,
+			&localBlksRead,
+			&localBlksWritten,
+			&rowsCount,
+			&sharedBlksDirtied,
+			&sharedBlksHit,
+			&sharedBlksRead,
+			&sharedBlksWritten,
+			&tempBlksRead,
+			&tempBlksWritten,
+			&time,
+		)
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+		qs = append(qs, queryStats{
+			userid:            userid,
+			dbid:              dbid,
+			queryid:           queryid,
+			query:             querytext,
+			blkReadTime:       blkReadTime,
+			blkWriteTime:      blkWriteTime,
+			count:             count,
+			durationMax:       durationMax,
+			durationSum:       durationSum,
+			localBlksDirtied:  localBlksDirtied,
+			localBlksHit:      localBlksHit,
+			localBlksRead:     localBlksRead,
+			localBlksWritten:  localBlksWritten,
+			rows:              rowsCount,
+			sharedBlksDirtied: sharedBlksDirtied,
+			sharedBlksHit:     sharedBlksHit,
+			sharedBlksRead:    sharedBlksRead,
+			sharedBlksWritten: sharedBlksWritten,
+			tempBlksRead:      tempBlksRead,
+			tempBlksWritten:   tempBlksWritten,
+			time:              time,
+		})
+	}
+	return qs, errors
 }
 
 func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, error) {

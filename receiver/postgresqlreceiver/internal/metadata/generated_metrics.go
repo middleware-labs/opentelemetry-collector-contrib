@@ -5316,9 +5316,10 @@ func (m *metricPostgresqlQueriesBlkReadTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesBlkReadTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesBlkReadTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5326,6 +5327,10 @@ func (m *metricPostgresqlQueriesBlkReadTime) recordDataPoint(start pcommon.Times
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5367,9 +5372,10 @@ func (m *metricPostgresqlQueriesBlkWriteTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesBlkWriteTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesBlkWriteTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5377,6 +5383,10 @@ func (m *metricPostgresqlQueriesBlkWriteTime) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5418,9 +5428,10 @@ func (m *metricPostgresqlQueriesCount) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5428,6 +5439,10 @@ func (m *metricPostgresqlQueriesCount) recordDataPoint(start pcommon.Timestamp, 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5469,14 +5484,14 @@ func (m *metricPostgresqlQueriesDurationMax) init() {
 	m.data.SetEmptyGauge()
 }
 
-func (m *metricPostgresqlQueriesDurationMax) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesDurationMax) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Gauge().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5518,14 +5533,14 @@ func (m *metricPostgresqlQueriesDurationSum) init() {
 	m.data.SetEmptyGauge()
 }
 
-func (m *metricPostgresqlQueriesDurationSum) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesDurationSum) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Gauge().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5567,9 +5582,10 @@ func (m *metricPostgresqlQueriesLocalBlksDirtied) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesLocalBlksDirtied) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesLocalBlksDirtied) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5577,6 +5593,10 @@ func (m *metricPostgresqlQueriesLocalBlksDirtied) recordDataPoint(start pcommon.
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5618,9 +5638,10 @@ func (m *metricPostgresqlQueriesLocalBlksHit) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesLocalBlksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesLocalBlksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5628,6 +5649,10 @@ func (m *metricPostgresqlQueriesLocalBlksHit) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5669,9 +5694,10 @@ func (m *metricPostgresqlQueriesLocalBlksRead) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesLocalBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesLocalBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5679,6 +5705,10 @@ func (m *metricPostgresqlQueriesLocalBlksRead) recordDataPoint(start pcommon.Tim
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5720,9 +5750,10 @@ func (m *metricPostgresqlQueriesLocalBlksWritten) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesLocalBlksWritten) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesLocalBlksWritten) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5730,6 +5761,10 @@ func (m *metricPostgresqlQueriesLocalBlksWritten) recordDataPoint(start pcommon.
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5771,9 +5806,10 @@ func (m *metricPostgresqlQueriesRows) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5781,6 +5817,10 @@ func (m *metricPostgresqlQueriesRows) recordDataPoint(start pcommon.Timestamp, t
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5822,9 +5862,10 @@ func (m *metricPostgresqlQueriesSharedBlksDirtied) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesSharedBlksDirtied) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesSharedBlksDirtied) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5832,6 +5873,10 @@ func (m *metricPostgresqlQueriesSharedBlksDirtied) recordDataPoint(start pcommon
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5873,9 +5918,10 @@ func (m *metricPostgresqlQueriesSharedBlksHit) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesSharedBlksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesSharedBlksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5883,6 +5929,10 @@ func (m *metricPostgresqlQueriesSharedBlksHit) recordDataPoint(start pcommon.Tim
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5924,9 +5974,10 @@ func (m *metricPostgresqlQueriesSharedBlksRead) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesSharedBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesSharedBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5934,6 +5985,10 @@ func (m *metricPostgresqlQueriesSharedBlksRead) recordDataPoint(start pcommon.Ti
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5975,9 +6030,10 @@ func (m *metricPostgresqlQueriesSharedBlksWritten) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesSharedBlksWritten) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesSharedBlksWritten) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5985,6 +6041,10 @@ func (m *metricPostgresqlQueriesSharedBlksWritten) recordDataPoint(start pcommon
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -6026,9 +6086,10 @@ func (m *metricPostgresqlQueriesTempBlksRead) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesTempBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesTempBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -6036,6 +6097,10 @@ func (m *metricPostgresqlQueriesTempBlksRead) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -6077,9 +6142,10 @@ func (m *metricPostgresqlQueriesTempBlksWritten) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesTempBlksWritten) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesTempBlksWritten) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -6087,6 +6153,10 @@ func (m *metricPostgresqlQueriesTempBlksWritten) recordDataPoint(start pcommon.T
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -6128,9 +6198,10 @@ func (m *metricPostgresqlQueriesTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlQueriesTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlQueriesTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -6138,6 +6209,10 @@ func (m *metricPostgresqlQueriesTime) recordDataPoint(start pcommon.Timestamp, t
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("userid", useridAttributeValue)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutInt("queryid", queryidAttributeValue)
+	dp.Attributes().PutStr("query_statement", queryStatementAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12540,162 +12615,162 @@ func (mb *MetricsBuilder) RecordPostgresqlPgStatStatementsDeallocDataPoint(ts pc
 }
 
 // RecordPostgresqlQueriesBlkReadTimeDataPoint adds a data point to postgresql.queries.blk_read_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesBlkReadTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesBlkReadTimeDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesBlkReadTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesBlkReadTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesBlkReadTime.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesBlkWriteTimeDataPoint adds a data point to postgresql.queries.blk_write_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesBlkWriteTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesBlkWriteTimeDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesBlkWriteTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesBlkWriteTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesBlkWriteTime.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesCountDataPoint adds a data point to postgresql.queries.count metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesCountDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesCountDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesCount, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesCount.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesCount.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesDurationMaxDataPoint adds a data point to postgresql.queries.duration.max metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesDurationMaxDataPoint(ts pcommon.Timestamp, val int64) {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesDurationMaxDataPoint(ts pcommon.Timestamp, val float64) {
 	mb.metricPostgresqlQueriesDurationMax.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlQueriesDurationSumDataPoint adds a data point to postgresql.queries.duration.sum metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesDurationSumDataPoint(ts pcommon.Timestamp, val int64) {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesDurationSumDataPoint(ts pcommon.Timestamp, val float64) {
 	mb.metricPostgresqlQueriesDurationSum.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlQueriesLocalBlksDirtiedDataPoint adds a data point to postgresql.queries.local_blks_dirtied metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesLocalBlksDirtied, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesLocalBlksDirtied.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesLocalBlksDirtied.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesLocalBlksHitDataPoint adds a data point to postgresql.queries.local_blks_hit metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksHitDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksHitDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesLocalBlksHit, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesLocalBlksHit.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesLocalBlksHit.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesLocalBlksReadDataPoint adds a data point to postgresql.queries.local_blks_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksReadDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksReadDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesLocalBlksRead, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesLocalBlksRead.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesLocalBlksRead.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesLocalBlksWrittenDataPoint adds a data point to postgresql.queries.local_blks_written metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksWrittenDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesLocalBlksWrittenDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesLocalBlksWritten, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesLocalBlksWritten.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesLocalBlksWritten.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesRowsDataPoint adds a data point to postgresql.queries.rows metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesRowsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesRowsDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesRows, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesRows.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesRows.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesSharedBlksDirtiedDataPoint adds a data point to postgresql.queries.shared_blks_dirtied metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesSharedBlksDirtied, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesSharedBlksDirtied.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesSharedBlksDirtied.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesSharedBlksHitDataPoint adds a data point to postgresql.queries.shared_blks_hit metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksHitDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksHitDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesSharedBlksHit, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesSharedBlksHit.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesSharedBlksHit.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesSharedBlksReadDataPoint adds a data point to postgresql.queries.shared_blks_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksReadDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksReadDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesSharedBlksRead, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesSharedBlksRead.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesSharedBlksRead.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesSharedBlksWrittenDataPoint adds a data point to postgresql.queries.shared_blks_written metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksWrittenDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesSharedBlksWrittenDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesSharedBlksWritten, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesSharedBlksWritten.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesSharedBlksWritten.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesTempBlksReadDataPoint adds a data point to postgresql.queries.temp_blks_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesTempBlksReadDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesTempBlksReadDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesTempBlksRead, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesTempBlksRead.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesTempBlksRead.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesTempBlksWrittenDataPoint adds a data point to postgresql.queries.temp_blks_written metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesTempBlksWrittenDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesTempBlksWrittenDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesTempBlksWritten, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesTempBlksWritten.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesTempBlksWritten.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlQueriesTimeDataPoint adds a data point to postgresql.queries.time metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueriesTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlQueriesTimeDataPoint(ts pcommon.Timestamp, inputVal string, useridAttributeValue int64, dbidAttributeValue int64, queryidAttributeValue int64, queryStatementAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlQueriesTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlQueriesTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlQueriesTime.recordDataPoint(mb.startTime, ts, val, useridAttributeValue, dbidAttributeValue, queryidAttributeValue, queryStatementAttributeValue)
 	return nil
 }
 
