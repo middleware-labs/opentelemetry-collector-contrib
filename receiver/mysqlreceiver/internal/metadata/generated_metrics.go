@@ -4002,7 +4002,7 @@ func (m *metricMysqlStatementEventWaitTime) init() {
 	m.data.SetDescription("The total wait time of the summarized timed events.")
 	m.data.SetUnit("ns")
 	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(false)
+	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]

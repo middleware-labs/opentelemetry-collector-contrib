@@ -301,12 +301,14 @@ func TestMetricsBuilder(t *testing.T) {
 				mb.RecordMysqlSortsDataPoint(ts, "3", AttributeSortsRange)
 			}
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventCountDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val", AttributeEventStateErrors)
 			if tt.name == "reaggregate_set" {
 				mb.RecordMysqlStatementEventCountDataPoint(ts, 3, "schema-val-2", "digest-val-2", "digest_text-val-2", AttributeEventStateWarnings)
 			}
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventWaitTimeDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val")
 			if tt.name == "reaggregate_set" {
