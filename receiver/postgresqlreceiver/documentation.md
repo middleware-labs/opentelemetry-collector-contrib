@@ -12,6 +12,24 @@ metrics:
     enabled: false
 ```
 
+### postgresql.connections
+
+The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connection} | Gauge | Int |
+
+## Optional Metrics
+
+The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
+
+```yaml
+metrics:
+  <metric_name>:
+    enabled: true
+```
+
 ### postgresql.backends
 
 The number of backends.
@@ -124,6 +142,14 @@ The database disk usage.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | By | Sum | Int | Cumulative | false |
 
+### postgresql.deadlocks
+
+The number of deadlocks.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {deadlock} | Sum | Int | Cumulative | true |
+
 ### postgresql.index.scans
 
 The number of index scans on a table.
@@ -190,6 +216,14 @@ The number of rows in the database.
 | ---- | ----------- | ------ |
 | state | The tuple (row) state. | Str: ``dead``, ``live`` |
 
+### postgresql.sequential_scans
+
+The number of sequential scans.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {sequential_scan} | Sum | Int | Cumulative | true |
+
 ### postgresql.table.count
 
 Number of user tables in a database.
@@ -213,6 +247,14 @@ Number of times a table has manually been vacuumed.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {vacuums} | Sum | Int | Cumulative | true |
+
+### postgresql.temp_files
+
+The number of temp files.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {temp_file} | Sum | Int | Cumulative | true |
 
 ### postgresql.wal.age
 
@@ -243,44 +285,10 @@ This metric requires WAL to be enabled with at least one replica.
 | operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` |
 | replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str |
 
-## Optional Metrics
-
-The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
-
-```yaml
-metrics:
-  <metric_name>:
-    enabled: true
-```
-
-### postgresql.deadlocks
-
-The number of deadlocks.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {deadlock} | Sum | Int | Cumulative | true |
-
-### postgresql.sequential_scans
-
-The number of sequential scans.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {sequential_scan} | Sum | Int | Cumulative | true |
-
-### postgresql.temp_files
-
-The number of temp files.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {temp_file} | Sum | Int | Cumulative | true |
-
 ## Resource Attributes
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
-| postgresql.database.name | The name of the database. | Any Str | true |
-| postgresql.index.name | The name of the index on a table. | Any Str | true |
-| postgresql.table.name | The schema name followed by the table name. | Any Str | true |
+| postgresql.database.name | The name of the database. | Any Str | false |
+| postgresql.index.name | The name of the index on a table. | Any Str | false |
+| postgresql.table.name | The schema name followed by the table name. | Any Str | false |

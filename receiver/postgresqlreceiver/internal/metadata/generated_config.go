@@ -34,6 +34,7 @@ type MetricsConfig struct {
 	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
 	PostgresqlCommits                  MetricConfig `mapstructure:"postgresql.commits"`
 	PostgresqlConnectionMax            MetricConfig `mapstructure:"postgresql.connection.max"`
+	PostgresqlConnections              MetricConfig `mapstructure:"postgresql.connections"`
 	PostgresqlDatabaseCount            MetricConfig `mapstructure:"postgresql.database.count"`
 	PostgresqlDbSize                   MetricConfig `mapstructure:"postgresql.db_size"`
 	PostgresqlDeadlocks                MetricConfig `mapstructure:"postgresql.deadlocks"`
@@ -55,79 +56,82 @@ type MetricsConfig struct {
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
 		PostgresqlBackends: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersAllocated: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterBuffersWrites: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterCheckpointCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterDuration: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBgwriterMaxwritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCommits: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConnectionMax: MetricConfig{
+			Enabled: false,
+		},
+		PostgresqlConnections: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlDatabaseCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDbSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDeadlocks: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlIndexScans: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlOperations: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlReplicationDataDelay: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRollbacks: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSequentialScans: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlTableCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableSize: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableVacuumCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTempFiles: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlWalAge: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlWalLag: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 }
@@ -147,13 +151,13 @@ type ResourceAttributesConfig struct {
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
 		PostgresqlDatabaseName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTableName: ResourceAttributeConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 	}
 }
