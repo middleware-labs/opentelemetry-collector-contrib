@@ -180,10 +180,10 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlStatementEventCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlStatementEventWaitTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlTableAverageRowLength: MetricConfig{
 			Enabled: false,
