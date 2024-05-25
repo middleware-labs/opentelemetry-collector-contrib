@@ -12,24 +12,6 @@ metrics:
     enabled: false
 ```
 
-### postgresql.connection.count
-
-The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
-
-## Optional Metrics
-
-The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
-
-```yaml
-metrics:
-  <metric_name>:
-    enabled: true
-```
-
 ### postgresql.backends
 
 The number of backends.
@@ -118,6 +100,14 @@ The number of commits.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
 
+### postgresql.connection.count
+
+The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connection} | Gauge | Int |
+
 ### postgresql.connection.max
 
 Configured maximum number of client connections allowed
@@ -141,14 +131,6 @@ The database disk usage.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | By | Sum | Int | Cumulative | false |
-
-### postgresql.deadlocks
-
-The number of deadlocks.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {deadlock} | Sum | Int | Cumulative | true |
 
 ### postgresql.index.scans
 
@@ -216,14 +198,6 @@ The number of rows in the database.
 | ---- | ----------- | ------ |
 | state | The tuple (row) state. | Str: ``dead``, ``live`` |
 
-### postgresql.sequential_scans
-
-The number of sequential scans.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {sequential_scan} | Sum | Int | Cumulative | true |
-
 ### postgresql.table.count
 
 Number of user tables in a database.
@@ -248,14 +222,6 @@ Number of times a table has manually been vacuumed.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {vacuums} | Sum | Int | Cumulative | true |
 
-### postgresql.temp_files
-
-The number of temp files.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {temp_file} | Sum | Int | Cumulative | true |
-
 ### postgresql.wal.age
 
 Age of the oldest WAL file.
@@ -271,7 +237,7 @@ This metric requires WAL to be enabled with at least one replica.
 
 Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
 
-This metric requires WAL to be enabled with at least one replica.
+This metric requires WAL to be enabled with at least one replica. 
 
 
 | Unit | Metric Type | Value Type |
@@ -284,6 +250,40 @@ This metric requires WAL to be enabled with at least one replica.
 | ---- | ----------- | ------ |
 | operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` |
 | replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str |
+
+## Optional Metrics
+
+The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
+
+```yaml
+metrics:
+  <metric_name>:
+    enabled: true
+```
+
+### postgresql.deadlocks
+
+The number of deadlocks.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {deadlock} | Sum | Int | Cumulative | true |
+
+### postgresql.sequential_scans
+
+The number of sequential scans.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {sequential_scan} | Sum | Int | Cumulative | true |
+
+### postgresql.temp_files
+
+The number of temp files.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {temp_file} | Sum | Int | Cumulative | true |
 
 ## Resource Attributes
 
