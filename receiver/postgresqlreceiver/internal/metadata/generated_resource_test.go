@@ -22,7 +22,7 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch test {
 			case "default":
-				assert.Equal(t, 0, res.Attributes().Len())
+				assert.Equal(t, 1, res.Attributes().Len())
 			case "all_set":
 				assert.Equal(t, 3, res.Attributes().Len())
 			case "none_set":
@@ -33,7 +33,7 @@ func TestResourceBuilder(t *testing.T) {
 			}
 
 			val, ok := res.Attributes().Get("postgresql.database.name")
-			assert.Equal(t, test == "all_set", ok)
+			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "postgresql.database.name-val", val.Str())
 			}

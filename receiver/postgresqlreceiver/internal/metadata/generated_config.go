@@ -151,7 +151,7 @@ type ResourceAttributesConfig struct {
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
 		PostgresqlDatabaseName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIndexName: ResourceAttributeConfig{
 			Enabled: false,
