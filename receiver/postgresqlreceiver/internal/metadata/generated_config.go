@@ -38,6 +38,7 @@ type MetricsConfig struct {
 	PostgresqlBlksRead                 MetricConfig `mapstructure:"postgresql.blks_read"`
 	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
 	PostgresqlCommits                  MetricConfig `mapstructure:"postgresql.commits"`
+	PostgresqlConnectionCount          MetricConfig `mapstructure:"postgresql.connection.count"`
 	PostgresqlConnectionMax            MetricConfig `mapstructure:"postgresql.connection.max"`
 	PostgresqlDatabaseCount            MetricConfig `mapstructure:"postgresql.database.count"`
 	PostgresqlDatabaseLocks            MetricConfig `mapstructure:"postgresql.database.locks"`
@@ -94,6 +95,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		PostgresqlCommits: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlConnectionCount: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlConnectionMax: MetricConfig{
