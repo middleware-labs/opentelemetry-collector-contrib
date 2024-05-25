@@ -48,6 +48,7 @@ type client interface {
 	listDatabases(ctx context.Context) ([]string, error)
 	getActivityStats(ctx context.Context) ([]queryActivityStats, error)
 	getQueryStats(ctx context.Context) ([]queryStats, error)
+	getIOStats(ctx context.Context) ([]IOStats, error)
 }
 
 type postgreSQLClient struct {
@@ -602,6 +603,8 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
 	}
 
+	defer rows.Close()
+
 	var errors error
 	var qs []queryStats
 
@@ -655,6 +658,7 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		)
 		if err != nil {
 			errors = multierr.Append(errors, err)
+			continue
 		}
 		qs = append(qs, queryStats{
 			userid:            userid,
@@ -723,6 +727,124 @@ func (c *postgreSQLClient) listDatabases(ctx context.Context) ([]string, error) 
 		databases = append(databases, database)
 	}
 	return databases, nil
+}
+
+type IOStats struct {
+	backendType string
+	evictions   int64
+	extend_time float64
+	extends     int64
+	fsync_time  float64
+	fsyncs      int64
+	hits        int64
+	read_time   float64
+	reads       int64
+	write_time  float64
+	writes      int64
+}
+
+func (c *postgreSQLClient) getIOStats(ctx context.Context) ([]IOStats, error) {
+	query := `SELECT backend_type,
+		evictions,
+		extend_time,
+		extends,
+		fsync_time,
+		fsyncs,
+		hits,
+		read_time,
+		reads,
+		write_time,
+		writes
+	FROM pg_stat_io
+	LIMIT 200;
+	`
+	majorVersion, err := c.getVersion(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if majorVersion < 16 {
+		return nil, fmt.Errorf("PostgreSQL version %d is less than 16", majorVersion)
+	}
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_io:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var errors error
+	var ioS []IOStats
+
+	for rows.Next() {
+		var (
+			backend_type sql.NullString
+			evictions    sql.NullInt64
+			extend_time  sql.NullFloat64
+			extends      sql.NullInt64
+			fsync_time   sql.NullFloat64
+			fsyncs       sql.NullInt64
+			hits         sql.NullInt64
+			read_time    sql.NullFloat64
+			reads        sql.NullInt64
+			write_time   sql.NullFloat64
+			writes       sql.NullInt64
+		)
+		err := rows.Scan(
+			&backend_type,
+			&evictions,
+			&extend_time,
+			&extends,
+			&fsync_time,
+			&fsyncs,
+			&hits,
+			&read_time,
+			&reads,
+			&write_time,
+			&writes,
+		)
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+
+		ioS = append(ioS, IOStats{
+			backendType: backend_type.String,
+			evictions:   evictions.Int64,
+			extend_time: extend_time.Float64,
+			extends:     extends.Int64,
+			fsync_time:  fsync_time.Float64,
+			fsyncs:      fsyncs.Int64,
+			hits:        hits.Int64,
+			read_time:   read_time.Float64,
+			reads:       reads.Int64,
+			write_time:  write_time.Float64,
+			writes:      writes.Int64,
+		})
+	}
+	return ioS, errors
+}
+
+func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {
+	var version string
+	err := c.client.QueryRowContext(ctx, "SHOW server_version").Scan(&version)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get PostgreSQL version: %w", err)
+	}
+
+	// Parse the major version number from the version string
+	parts := strings.Split(version, ".")
+	if len(parts) < 1 {
+		return 0, fmt.Errorf("invalid PostgreSQL version string: %s", version)
+	}
+
+	var majorVersion int
+	_, err = fmt.Sscanf(parts[0], "%d", &majorVersion)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse PostgreSQL major version: %w", err)
+	}
+
+	return majorVersion, nil
 }
 
 func filterQueryByDatabases(baseQuery string, databases []string, groupBy bool) string {

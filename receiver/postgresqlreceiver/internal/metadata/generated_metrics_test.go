@@ -297,33 +297,43 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlIndividualIndexSizeDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoEvictionsDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoExtendTimeDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoExtendsDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoFsyncTimeDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoFsyncsDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoHitsDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoReadTimeDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoReadsDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoWriteTimeDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoWritesDataPoint(ts, "1")
 
@@ -357,70 +367,54 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlPgStatStatementsDeallocDataPoint(ts, "1")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesBlkReadTimeDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesBlkWriteTimeDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesCountDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesDurationMaxDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesDurationSumDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksDirtiedDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksHitDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksReadDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesLocalBlksWrittenDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesRowsDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksDirtiedDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksHitDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksReadDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesSharedBlksWrittenDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesTempBlksReadDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesTempBlksWrittenDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueriesTimeDataPoint(ts, "1", 6, 4, 7, "query_statement-val")
 

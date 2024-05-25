@@ -136,6 +136,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectActivityStats(ctx, now, listClient, &errs)
 	p.collectQueryStats(ctx, now, listClient, &errs)
+	p.collectIOStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -385,6 +386,46 @@ func (p *postgreSQLScraper) collectQueryStats(
 		p.mb.RecordPostgresqlQueriesTempBlksWrittenDataPoint(now, tempBlksWritten, s.userid, s.dbid, s.queryid, s.query)
 		p.mb.RecordPostgresqlQueriesTimeDataPoint(now, time, s.userid, s.dbid, s.queryid, s.query)
 	}
+}
+
+func (p *postgreSQLScraper) collectIOStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	iostats, err := client.getIOStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range iostats {
+		evictions := strconv.FormatInt(s.evictions, 10)
+		extend_time := strconv.FormatFloat(s.extend_time, 'f', -1, 64)
+		extends := strconv.FormatInt(s.extends, 10)
+		fsyncs := strconv.FormatInt(s.fsyncs, 10)
+		fsync_time := strconv.FormatFloat(s.fsync_time, 'f', -1, 64)
+		hits := strconv.FormatInt(s.hits, 10)
+		read_time := strconv.FormatFloat(s.read_time, 'f', -1, 64)
+		reads := strconv.FormatInt(s.reads, 10)
+		write_time := strconv.FormatFloat(s.write_time, 'f', -1, 64)
+		writes := strconv.FormatInt(s.writes, 10)
+
+		p.mb.RecordPostgresqlIoEvictionsDataPoint(now, evictions)
+		p.mb.RecordPostgresqlIoExtendTimeDataPoint(now, extend_time)
+		p.mb.RecordPostgresqlIoExtendsDataPoint(now, extends)
+		p.mb.RecordPostgresqlIoFsyncsDataPoint(now, fsyncs)
+		p.mb.RecordPostgresqlIoFsyncTimeDataPoint(now, fsync_time)
+		p.mb.RecordPostgresqlIoHitsDataPoint(now, hits)
+		p.mb.RecordPostgresqlIoReadTimeDataPoint(now, read_time)
+		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads)
+		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time)
+		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes)
+
+	}
+
 }
 
 func (p *postgreSQLScraper) collectWalAge(

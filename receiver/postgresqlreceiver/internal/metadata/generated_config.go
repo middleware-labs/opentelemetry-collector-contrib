@@ -490,34 +490,34 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlIoEvictions: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoExtendTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoExtends: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoFsyncTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoFsyncs: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoHits: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoReadTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoReads: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoWriteTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIoWrites: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlLastAnalyzeAge: MetricConfig{
 			Enabled: false,
@@ -550,55 +550,55 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlQueriesBlkReadTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesBlkWriteTime: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlQueriesCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesDurationMax: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesDurationSum: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksDirtied: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesLocalBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksDirtied: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesSharedBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesTempBlksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesTempBlksWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlQueriesTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRelationAllVisible: MetricConfig{
 			Enabled: false,
