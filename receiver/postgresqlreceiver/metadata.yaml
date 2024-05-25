@@ -86,6 +86,9 @@ attributes:
   queryid:
     description: id of the query.
     type: int
+  backend_type:
+    description: backend type for IO stats
+    type: string
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -271,7 +274,7 @@ metrics:
       This metric requires WAL to be enabled with at least one replica.
 
   postgresql.analyzed:
-    enabled: false
+    enabled: false 
     description: Enabled with `relations`. The number of times this table has been manually
       analyzed. This metric is tagged with db, schema, table.
     unit: "1"
@@ -517,6 +520,8 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.io.evictions:
+    attributes:
+      - backend_type
     enabled: true 
     description: The number of times a block has been written out from a shared or local
       buffer in order to make it available for another use. This metric is tagged with
@@ -529,6 +534,8 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.extend_time:
+    attributes:
+      - backend_type
     enabled: true 
     description: The time spent in extend operations (if track_io_timing is enabled,
       otherwise zero). This metric is tagged with backend_type, context, object. Only
@@ -540,6 +547,8 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.extends:
+    attributes:
+      - backend_type
     enabled: true 
     description: The number of relation extend operations. This metric is tagged with
       backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM
@@ -551,17 +560,21 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.fsync_time:
+    attributes:
+      - backend_type
     enabled: true 
     description: The time spent in fsync operations (if track_io_timing is enabled,
       otherwise zero). This metric is tagged with backend_type, context, object. Only
       available with PostgreSQL 16 and newer. (DBM only)
-    unit: '{millisecond}'
+    unit: ms
     sum:
-      value_type: int
+      value_type: double
       input_type: string
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.fsyncs:
+    attributes:
+      - backend_type
     enabled: true 
     description: The number of fsync calls. This metric is tagged with backend_type,
       context, object. Only available with PostgreSQL 16 and newer. (DBM only)
@@ -572,6 +585,8 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.hits:
+    attributes:
+      - backend_type
     enabled: true 
     description: The number of times a desired block was found in a shared buffer. This
       metric is tagged with backend_type, context, object. Only available with PostgreSQL
@@ -583,17 +598,21 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.read_time:
+    attributes:
+      - backend_type
     enabled: true 
     description: The time spent in read operations (if track_io_timing is enabled, otherwise
       zero). This metric is tagged with backend_type, context, object. Only available
       with PostgreSQL 16 and newer. (DBM only)
-    unit: '{millisecond}'
+    unit: ms
     sum:
-      value_type: int
+      value_type: double
       input_type: string
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.reads:
+    attributes:
+      - backend_type
     enabled: true 
     description: The number of read operations. This metric is tagged with backend_type,
       context, object. Only available with PostgreSQL 16 and newer. (DBM only)
@@ -604,17 +623,21 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.write_time:
+    attributes:
+      - backend_type
     enabled: true 
     description: The time spent in write operations (if track_io_timing is enabled,
       otherwise zero). This metric is tagged with backend_type, context, object. Only
       available with PostgreSQL 16 and newer. (DBM only)
-    unit: '{millisecond}'
+    unit: ms
     sum:
-      value_type: int
+      value_type: double
       input_type: string
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.io.writes:
+    attributes:
+      - backend_type
     enabled: true 
     description: The number of write operations. This metric is tagged with backend_type,
       context, object. Only available with PostgreSQL 16 and newer. (DBM only)

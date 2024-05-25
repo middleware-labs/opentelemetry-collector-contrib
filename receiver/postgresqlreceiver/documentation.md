@@ -20,6 +20,12 @@ The number of times a block has been written out from a shared or local buffer i
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {millisecond} | Sum | Int | Cumulative | true |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
+
 ### postgresql.io.extend_time
 
 The time spent in extend operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
@@ -27,6 +33,12 @@ The time spent in extend operations (if track_io_timing is enabled, otherwise ze
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {millisecond} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
 
 ### postgresql.io.extends
 
@@ -36,13 +48,25 @@ The number of relation extend operations. This metric is tagged with backend_typ
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
+
 ### postgresql.io.fsync_time
 
 The time spent in fsync operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| {millisecond} | Sum | Int | Cumulative | true |
+| ms | Sum | Double | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
 
 ### postgresql.io.fsyncs
 
@@ -52,6 +76,12 @@ The number of fsync calls. This metric is tagged with backend_type, context, obj
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
+
 ### postgresql.io.hits
 
 The number of times a desired block was found in a shared buffer. This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
@@ -60,13 +90,25 @@ The number of times a desired block was found in a shared buffer. This metric is
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {millisecond} | Sum | Int | Cumulative | true |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
+
 ### postgresql.io.read_time
 
 The time spent in read operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| {millisecond} | Sum | Int | Cumulative | true |
+| ms | Sum | Double | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
 
 ### postgresql.io.reads
 
@@ -76,13 +118,25 @@ The number of read operations. This metric is tagged with backend_type, context,
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
 
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
+
 ### postgresql.io.write_time
 
 The time spent in write operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| {millisecond} | Sum | Int | Cumulative | true |
+| ms | Sum | Double | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
 
 ### postgresql.io.writes
 
@@ -91,6 +145,12 @@ The number of write operations. This metric is tagged with backend_type, context
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| backend_type | backend type for IO stats | Any Str |
 
 ## Optional Metrics
 

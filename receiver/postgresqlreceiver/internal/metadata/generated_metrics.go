@@ -4310,9 +4310,10 @@ func (m *metricPostgresqlIoEvictions) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoEvictions) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoEvictions) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4320,6 +4321,7 @@ func (m *metricPostgresqlIoEvictions) recordDataPoint(start pcommon.Timestamp, t
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4361,9 +4363,10 @@ func (m *metricPostgresqlIoExtendTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoExtendTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoExtendTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4371,6 +4374,7 @@ func (m *metricPostgresqlIoExtendTime) recordDataPoint(start pcommon.Timestamp, 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4412,9 +4416,10 @@ func (m *metricPostgresqlIoExtends) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoExtends) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoExtends) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4422,6 +4427,7 @@ func (m *metricPostgresqlIoExtends) recordDataPoint(start pcommon.Timestamp, ts 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4459,20 +4465,22 @@ type metricPostgresqlIoFsyncTime struct {
 func (m *metricPostgresqlIoFsyncTime) init() {
 	m.data.SetName("postgresql.io.fsync_time")
 	m.data.SetDescription("The time spent in fsync operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)")
-	m.data.SetUnit("{millisecond}")
+	m.data.SetUnit("ms")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoFsyncTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoFsyncTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4514,9 +4522,10 @@ func (m *metricPostgresqlIoFsyncs) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoFsyncs) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoFsyncs) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4524,6 +4533,7 @@ func (m *metricPostgresqlIoFsyncs) recordDataPoint(start pcommon.Timestamp, ts p
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4565,9 +4575,10 @@ func (m *metricPostgresqlIoHits) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoHits) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoHits) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4575,6 +4586,7 @@ func (m *metricPostgresqlIoHits) recordDataPoint(start pcommon.Timestamp, ts pco
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4612,20 +4624,22 @@ type metricPostgresqlIoReadTime struct {
 func (m *metricPostgresqlIoReadTime) init() {
 	m.data.SetName("postgresql.io.read_time")
 	m.data.SetDescription("The time spent in read operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)")
-	m.data.SetUnit("{millisecond}")
+	m.data.SetUnit("ms")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoReadTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoReadTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4667,9 +4681,10 @@ func (m *metricPostgresqlIoReads) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoReads) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoReads) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4677,6 +4692,7 @@ func (m *metricPostgresqlIoReads) recordDataPoint(start pcommon.Timestamp, ts pc
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4714,20 +4730,22 @@ type metricPostgresqlIoWriteTime struct {
 func (m *metricPostgresqlIoWriteTime) init() {
 	m.data.SetName("postgresql.io.write_time")
 	m.data.SetDescription("The time spent in write operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)")
-	m.data.SetUnit("{millisecond}")
+	m.data.SetUnit("ms")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoWriteTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoWriteTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4769,9 +4787,10 @@ func (m *metricPostgresqlIoWrites) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIoWrites) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIoWrites) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, backendTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4779,6 +4798,7 @@ func (m *metricPostgresqlIoWrites) recordDataPoint(start pcommon.Timestamp, ts p
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("backend_type", backendTypeAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12460,102 +12480,102 @@ func (mb *MetricsBuilder) RecordPostgresqlIndividualIndexSizeDataPoint(ts pcommo
 }
 
 // RecordPostgresqlIoEvictionsDataPoint adds a data point to postgresql.io.evictions metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoEvictionsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoEvictionsDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoEvictions, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoEvictions.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoEvictions.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoExtendTimeDataPoint adds a data point to postgresql.io.extend_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoExtendTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoExtendTimeDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoExtendTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoExtendTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoExtendTime.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoExtendsDataPoint adds a data point to postgresql.io.extends metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoExtendsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoExtendsDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoExtends, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoExtends.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoExtends.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoFsyncTimeDataPoint adds a data point to postgresql.io.fsync_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoFsyncTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
-	val, err := strconv.ParseInt(inputVal, 10, 64)
+func (mb *MetricsBuilder) RecordPostgresqlIoFsyncTimeDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
+	val, err := strconv.ParseFloat(inputVal, 64)
 	if err != nil {
-		return fmt.Errorf("failed to parse int64 for PostgresqlIoFsyncTime, value was %s: %w", inputVal, err)
+		return fmt.Errorf("failed to parse float64 for PostgresqlIoFsyncTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoFsyncTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoFsyncTime.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoFsyncsDataPoint adds a data point to postgresql.io.fsyncs metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoFsyncsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoFsyncsDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoFsyncs, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoFsyncs.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoFsyncs.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoHitsDataPoint adds a data point to postgresql.io.hits metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoHitsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoHitsDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoHits, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoHits.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoHits.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoReadTimeDataPoint adds a data point to postgresql.io.read_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoReadTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
-	val, err := strconv.ParseInt(inputVal, 10, 64)
+func (mb *MetricsBuilder) RecordPostgresqlIoReadTimeDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
+	val, err := strconv.ParseFloat(inputVal, 64)
 	if err != nil {
-		return fmt.Errorf("failed to parse int64 for PostgresqlIoReadTime, value was %s: %w", inputVal, err)
+		return fmt.Errorf("failed to parse float64 for PostgresqlIoReadTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoReadTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoReadTime.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoReadsDataPoint adds a data point to postgresql.io.reads metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoReadsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoReadsDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoReads, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoReads.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoReads.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoWriteTimeDataPoint adds a data point to postgresql.io.write_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoWriteTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
-	val, err := strconv.ParseInt(inputVal, 10, 64)
+func (mb *MetricsBuilder) RecordPostgresqlIoWriteTimeDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
+	val, err := strconv.ParseFloat(inputVal, 64)
 	if err != nil {
-		return fmt.Errorf("failed to parse int64 for PostgresqlIoWriteTime, value was %s: %w", inputVal, err)
+		return fmt.Errorf("failed to parse float64 for PostgresqlIoWriteTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoWriteTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoWriteTime.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlIoWritesDataPoint adds a data point to postgresql.io.writes metric.
-func (mb *MetricsBuilder) RecordPostgresqlIoWritesDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlIoWritesDataPoint(ts pcommon.Timestamp, inputVal string, backendTypeAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlIoWrites, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlIoWrites.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlIoWrites.recordDataPoint(mb.startTime, ts, val, backendTypeAttributeValue)
 	return nil
 }
 

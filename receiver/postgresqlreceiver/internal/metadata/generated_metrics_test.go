@@ -299,43 +299,43 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoEvictionsDataPoint(ts, "1")
+			mb.RecordPostgresqlIoEvictionsDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoExtendTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlIoExtendTimeDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoExtendsDataPoint(ts, "1")
+			mb.RecordPostgresqlIoExtendsDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoFsyncTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlIoFsyncTimeDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoFsyncsDataPoint(ts, "1")
+			mb.RecordPostgresqlIoFsyncsDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoHitsDataPoint(ts, "1")
+			mb.RecordPostgresqlIoHitsDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoReadTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlIoReadTimeDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoReadsDataPoint(ts, "1")
+			mb.RecordPostgresqlIoReadsDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoWriteTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlIoWriteTimeDataPoint(ts, "1", "backend_type-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIoWritesDataPoint(ts, "1")
+			mb.RecordPostgresqlIoWritesDataPoint(ts, "1", "backend_type-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlLastAnalyzeAgeDataPoint(ts, 1)
@@ -1824,6 +1824,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.extend_time":
 					assert.False(t, validatedMetrics["postgresql.io.extend_time"], "Found a duplicate in the metrics slice: postgresql.io.extend_time")
 					validatedMetrics["postgresql.io.extend_time"] = true
@@ -1838,6 +1841,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.extends":
 					assert.False(t, validatedMetrics["postgresql.io.extends"], "Found a duplicate in the metrics slice: postgresql.io.extends")
 					validatedMetrics["postgresql.io.extends"] = true
@@ -1852,20 +1858,26 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.fsync_time":
 					assert.False(t, validatedMetrics["postgresql.io.fsync_time"], "Found a duplicate in the metrics slice: postgresql.io.fsync_time")
 					validatedMetrics["postgresql.io.fsync_time"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
 					assert.Equal(t, "The time spent in fsync operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)", ms.At(i).Description())
-					assert.Equal(t, "{millisecond}", ms.At(i).Unit())
+					assert.Equal(t, "ms", ms.At(i).Unit())
 					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
 					dp := ms.At(i).Sum().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.fsyncs":
 					assert.False(t, validatedMetrics["postgresql.io.fsyncs"], "Found a duplicate in the metrics slice: postgresql.io.fsyncs")
 					validatedMetrics["postgresql.io.fsyncs"] = true
@@ -1880,6 +1892,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.hits":
 					assert.False(t, validatedMetrics["postgresql.io.hits"], "Found a duplicate in the metrics slice: postgresql.io.hits")
 					validatedMetrics["postgresql.io.hits"] = true
@@ -1894,20 +1909,26 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.read_time":
 					assert.False(t, validatedMetrics["postgresql.io.read_time"], "Found a duplicate in the metrics slice: postgresql.io.read_time")
 					validatedMetrics["postgresql.io.read_time"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
 					assert.Equal(t, "The time spent in read operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)", ms.At(i).Description())
-					assert.Equal(t, "{millisecond}", ms.At(i).Unit())
+					assert.Equal(t, "ms", ms.At(i).Unit())
 					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
 					dp := ms.At(i).Sum().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.reads":
 					assert.False(t, validatedMetrics["postgresql.io.reads"], "Found a duplicate in the metrics slice: postgresql.io.reads")
 					validatedMetrics["postgresql.io.reads"] = true
@@ -1922,20 +1943,26 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.write_time":
 					assert.False(t, validatedMetrics["postgresql.io.write_time"], "Found a duplicate in the metrics slice: postgresql.io.write_time")
 					validatedMetrics["postgresql.io.write_time"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
 					assert.Equal(t, "The time spent in write operations (if track_io_timing is enabled, otherwise zero). This metric is tagged with backend_type, context, object. Only available with PostgreSQL 16 and newer. (DBM only)", ms.At(i).Description())
-					assert.Equal(t, "{millisecond}", ms.At(i).Unit())
+					assert.Equal(t, "ms", ms.At(i).Unit())
 					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
 					dp := ms.At(i).Sum().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.io.writes":
 					assert.False(t, validatedMetrics["postgresql.io.writes"], "Found a duplicate in the metrics slice: postgresql.io.writes")
 					validatedMetrics["postgresql.io.writes"] = true
@@ -1950,6 +1977,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("backend_type")
+					assert.True(t, ok)
+					assert.EqualValues(t, "backend_type-val", attrVal.Str())
 				case "postgresql.last_analyze_age":
 					assert.False(t, validatedMetrics["postgresql.last_analyze_age"], "Found a duplicate in the metrics slice: postgresql.last_analyze_age")
 					validatedMetrics["postgresql.last_analyze_age"] = true

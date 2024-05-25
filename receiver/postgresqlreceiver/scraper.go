@@ -413,16 +413,16 @@ func (p *postgreSQLScraper) collectIOStats(
 		write_time := strconv.FormatFloat(s.write_time, 'f', -1, 64)
 		writes := strconv.FormatInt(s.writes, 10)
 
-		p.mb.RecordPostgresqlIoEvictionsDataPoint(now, evictions)
-		p.mb.RecordPostgresqlIoExtendTimeDataPoint(now, extend_time)
-		p.mb.RecordPostgresqlIoExtendsDataPoint(now, extends)
-		p.mb.RecordPostgresqlIoFsyncsDataPoint(now, fsyncs)
-		p.mb.RecordPostgresqlIoFsyncTimeDataPoint(now, fsync_time)
-		p.mb.RecordPostgresqlIoHitsDataPoint(now, hits)
-		p.mb.RecordPostgresqlIoReadTimeDataPoint(now, read_time)
-		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads)
-		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time)
-		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes)
+		p.mb.RecordPostgresqlIoEvictionsDataPoint(now, evictions, s.backendType)
+		p.mb.RecordPostgresqlIoExtendTimeDataPoint(now, extend_time, s.backendType)
+		p.mb.RecordPostgresqlIoExtendsDataPoint(now, extends, s.backendType)
+		p.mb.RecordPostgresqlIoFsyncsDataPoint(now, fsyncs, s.backendType)
+		p.mb.RecordPostgresqlIoFsyncTimeDataPoint(now, fsync_time, s.backendType)
+		p.mb.RecordPostgresqlIoHitsDataPoint(now, hits, s.backendType)
+		p.mb.RecordPostgresqlIoReadTimeDataPoint(now, read_time, s.backendType)
+		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads, s.backendType)
+		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time, s.backendType)
+		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes, s.backendType)
 
 	}
 
