@@ -154,10 +154,10 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		PostgresqlIndexName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlTableName: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 }

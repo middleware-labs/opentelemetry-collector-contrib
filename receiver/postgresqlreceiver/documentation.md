@@ -290,5 +290,5 @@ The number of temp files.
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
 | postgresql.database.name | The name of the database. | Any Str | true |
-| postgresql.index.name | The name of the index on a table. | Any Str | false |
-| postgresql.table.name | The schema name followed by the table name. | Any Str | false |
+| postgresql.index.name | The name of the index on a table. | Any Str | true |
+| postgresql.table.name | The schema name followed by the table name. | Any Str | true |

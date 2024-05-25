@@ -15,11 +15,11 @@ resource_attributes:
     type: string
   postgresql.table.name:
     description: The schema name followed by the table name.
-    enabled: false
+    enabled: true
     type: string
   postgresql.index.name:
     description: The name of the index on a table.
-    enabled: false
+    enabled: true
     type: string
 
 attributes:
