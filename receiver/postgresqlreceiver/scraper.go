@@ -17,7 +17,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
@@ -139,6 +138,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectIOStats(ctx, now, listClient, &errs)
 	p.collectAnalyzeCount(ctx, now, listClient, &errs)
 	p.collectChecksumStats(ctx, now, listClient, &errs)
+	p.collectBufferHits(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -318,6 +318,22 @@ func (p *postgreSQLScraper) collectReplicationStats(
 	}
 }
 
+func (p *postgreSQLScraper) collectBufferHits(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	buffhits, err := client.getBufferHit(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	for _, bh := range buffhits {
+		p.mb.RecordPostgresqlBufferHitDataPoint(now, bh.hits, bh.dbName)
+	}
+}
+
 func (p *postgreSQLScraper) collectActivityStats(
 	ctx context.Context,
 	now pcommon.Timestamp,
@@ -460,7 +476,6 @@ func (p *postgreSQLScraper) collectAnalyzeCount(
 ) {
 	analyzeCounts, err := client.getAnalyzeCount(ctx)
 
-	pp.Println(analyzeCounts)
 	if err != nil {
 		errs.addPartial(err)
 		return

@@ -12,27 +12,13 @@ metrics:
     enabled: false
 ```
 
-### postgresql.checksums.checksum_failures
+### postgresql.buffer_hit
 
-The number of checksum failures in this database. This metric is tagged with db.
+The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbname | name of the database | Any Str |
-
-### postgresql.checksums.enabled
-
-Whether database checksums are enabled. Value is always 1 and tagged with enabled:true or enabled:false. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
 
 #### Attributes
 
@@ -381,13 +367,33 @@ The number of blocks read.
 | ---- | ----------- | ------ |
 | source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` |
 
-### postgresql.buffer_hit
+### postgresql.checksums.checksum_failures
 
-The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.
+The number of checksum failures in this database. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {hit}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+
+### postgresql.checksums.enabled
+
+Whether database checksums are enabled. Value is always 1 and tagged with enabled:true or enabled:false. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
 
 ### postgresql.cluster_vacuum.heap_blks_scanned
 

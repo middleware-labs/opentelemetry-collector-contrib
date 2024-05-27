@@ -150,14 +150,13 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlBlocksReadDataPoint(ts, 1, AttributeSourceHeapRead)
 
-			allMetricsCount++
-			mb.RecordPostgresqlBufferHitDataPoint(ts, 1)
-
 			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlBufferHitDataPoint(ts, 1, "dbname-val")
+
 			allMetricsCount++
 			mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(ts, "1", "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlChecksumsEnabledDataPoint(ts, "1", "dbname-val")
 
@@ -1214,6 +1213,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.checksums.checksum_failures":
 					assert.False(t, validatedMetrics["postgresql.checksums.checksum_failures"], "Found a duplicate in the metrics slice: postgresql.checksums.checksum_failures")
 					validatedMetrics["postgresql.checksums.checksum_failures"] = true

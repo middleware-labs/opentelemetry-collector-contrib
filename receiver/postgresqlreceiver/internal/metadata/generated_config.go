@@ -343,13 +343,13 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlBufferHit: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlChecksumsChecksumFailures: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlChecksumsEnabled: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapBlksScanned: MetricConfig{
 			Enabled: false,

@@ -1886,9 +1886,10 @@ func (m *metricPostgresqlBufferHit) init() {
 	m.data.SetDescription("The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.")
 	m.data.SetUnit("{hit}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlBufferHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlBufferHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1896,6 +1897,7 @@ func (m *metricPostgresqlBufferHit) recordDataPoint(start pcommon.Timestamp, ts 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12193,8 +12195,8 @@ func (mb *MetricsBuilder) RecordPostgresqlBlocksReadDataPoint(ts pcommon.Timesta
 }
 
 // RecordPostgresqlBufferHitDataPoint adds a data point to postgresql.buffer_hit metric.
-func (mb *MetricsBuilder) RecordPostgresqlBufferHitDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlBufferHit.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlBufferHitDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string) {
+	mb.metricPostgresqlBufferHit.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue)
 }
 
 // RecordPostgresqlChecksumsChecksumFailuresDataPoint adds a data point to postgresql.checksums.checksum_failures metric.

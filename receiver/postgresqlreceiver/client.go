@@ -51,6 +51,7 @@ type client interface {
 	getIOStats(ctx context.Context) ([]IOStats, error)
 	getAnalyzeCount(ctx context.Context) ([]AnalyzeCount, error)
 	getChecksumStats(ctx context.Context) ([]ChecksumStats, error)
+	getBufferHit(ctx context.Context) ([]BufferHit, error)
 }
 
 type postgreSQLClient struct {
@@ -953,6 +954,42 @@ func (c *postgreSQLClient) getAnalyzeCount(ctx context.Context) ([]AnalyzeCount,
 		})
 	}
 	return analyzeCounts, errors
+}
+
+type BufferHit struct {
+	dbName string
+	hits   int64
+}
+
+func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
+	query := `SELECT datname, blks_hit FROM pg_stat_database;`
+
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_database:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var bh []BufferHit
+	var errors error
+
+	for rows.Next() {
+		var dbname sql.NullString
+		var hits sql.NullInt64
+
+		err = rows.Scan(&dbname, &hits)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+		bh = append(bh, BufferHit{
+			dbName: dbname.String,
+			hits:   hits.Int64,
+		})
+	}
+	return bh, errors
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

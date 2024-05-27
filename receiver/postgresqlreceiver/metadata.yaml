@@ -418,7 +418,7 @@ metrics:
   postgresql.checksums.checksum_failures:
     attributes:
       - dbname
-    enabled: true
+    enabled: false
     description: The number of checksum failures in this database. This metric is tagged
       with db.
     unit: "1"
@@ -430,7 +430,7 @@ metrics:
   postgresql.checksums.enabled:
     attributes:
       - dbname
-    enabled: true 
+    enabled: false
     description: Whether database checksums are enabled. Value is always 1 and tagged
       with enabled:true or enabled:false. This metric is tagged with db.
     unit: "1"
@@ -1372,7 +1372,9 @@ metrics:
     gauge:
       value_type: int
   postgresql.buffer_hit:
-    enabled: false
+    attributes:
+      - dbname
+    enabled: true 
     description: The number of times disk blocks were found in the buffer cache, preventing
       the need to read from the database. This metric is tagged with db.
     unit: '{hit}/s'
