@@ -280,13 +280,13 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlAnalyzed: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlAutoanalyzed: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlAutovacuumed: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlBackends: MetricConfig{
 			Enabled: false,
@@ -490,34 +490,34 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlIoEvictions: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoExtendTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoExtends: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoFsyncTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoFsyncs: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoHits: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoReadTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoReads: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoWriteTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIoWrites: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLastAnalyzeAge: MetricConfig{
 			Enabled: false,

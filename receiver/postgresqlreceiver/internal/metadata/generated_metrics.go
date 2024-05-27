@@ -797,14 +797,15 @@ type metricPostgresqlAnalyzed struct {
 // init fills postgresql.analyzed metric with initial data.
 func (m *metricPostgresqlAnalyzed) init() {
 	m.data.SetName("postgresql.analyzed")
-	m.data.SetDescription("Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with db, schema, table.")
+	m.data.SetDescription("Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with schema, table.")
 	m.data.SetUnit("1")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlAnalyzed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlAnalyzed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, schemaNameAttributeValue string, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -812,6 +813,8 @@ func (m *metricPostgresqlAnalyzed) recordDataPoint(start pcommon.Timestamp, ts p
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -853,9 +856,10 @@ func (m *metricPostgresqlAutoanalyzed) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlAutoanalyzed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlAutoanalyzed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, schemaNameAttributeValue string, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -863,6 +867,8 @@ func (m *metricPostgresqlAutoanalyzed) recordDataPoint(start pcommon.Timestamp, 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -904,9 +910,10 @@ func (m *metricPostgresqlAutovacuumed) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlAutovacuumed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlAutovacuumed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, schemaNameAttributeValue string, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -914,6 +921,8 @@ func (m *metricPostgresqlAutovacuumed) recordDataPoint(start pcommon.Timestamp, 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12010,32 +12019,32 @@ func (mb *MetricsBuilder) RecordPostgresqlAnalyzeSampleBlksTotalDataPoint(ts pco
 }
 
 // RecordPostgresqlAnalyzedDataPoint adds a data point to postgresql.analyzed metric.
-func (mb *MetricsBuilder) RecordPostgresqlAnalyzedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlAnalyzedDataPoint(ts pcommon.Timestamp, inputVal string, schemaNameAttributeValue string, relationNameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlAnalyzed, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlAnalyzed.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlAnalyzed.recordDataPoint(mb.startTime, ts, val, schemaNameAttributeValue, relationNameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlAutoanalyzedDataPoint adds a data point to postgresql.autoanalyzed metric.
-func (mb *MetricsBuilder) RecordPostgresqlAutoanalyzedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlAutoanalyzedDataPoint(ts pcommon.Timestamp, inputVal string, schemaNameAttributeValue string, relationNameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlAutoanalyzed, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlAutoanalyzed.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlAutoanalyzed.recordDataPoint(mb.startTime, ts, val, schemaNameAttributeValue, relationNameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlAutovacuumedDataPoint adds a data point to postgresql.autovacuumed metric.
-func (mb *MetricsBuilder) RecordPostgresqlAutovacuumedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlAutovacuumedDataPoint(ts pcommon.Timestamp, inputVal string, schemaNameAttributeValue string, relationNameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlAutovacuumed, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlAutovacuumed.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlAutovacuumed.recordDataPoint(mb.startTime, ts, val, schemaNameAttributeValue, relationNameAttributeValue)
 	return nil
 }
 

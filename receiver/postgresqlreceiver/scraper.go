@@ -137,6 +137,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectActivityStats(ctx, now, listClient, &errs)
 	p.collectQueryStats(ctx, now, listClient, &errs)
 	p.collectIOStats(ctx, now, listClient, &errs)
+	p.collectAnalyzeCount(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -426,6 +427,30 @@ func (p *postgreSQLScraper) collectIOStats(
 
 	}
 
+}
+
+func (p *postgreSQLScraper) collectAnalyzeCount(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	analyzeCounts, err := client.getAnalyzeCount(ctx)
+
+	pp.Println(analyzeCounts)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, c := range analyzeCounts {
+		ac := strconv.FormatInt(c.analyzeCount, 10)
+		aac := strconv.FormatInt(c.autoAnalyzeCount, 10)
+		avc := strconv.FormatInt(c.autoVacuumCount, 10)
+		p.mb.RecordPostgresqlAnalyzedDataPoint(now, ac, c.schemaname, c.relname)
+		p.mb.RecordPostgresqlAutoanalyzedDataPoint(now, aac, c.schemaname, c.relname)
+		p.mb.RecordPostgresqlAutovacuumedDataPoint(now, avc, c.relname, c.relname)
+	}
 }
 
 func (p *postgreSQLScraper) collectWalAge(

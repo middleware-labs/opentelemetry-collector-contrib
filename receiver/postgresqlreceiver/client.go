@@ -49,6 +49,7 @@ type client interface {
 	getActivityStats(ctx context.Context) ([]queryActivityStats, error)
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getIOStats(ctx context.Context) ([]IOStats, error)
+	getAnalyzeCount(ctx context.Context) ([]AnalyzeCount, error)
 }
 
 type postgreSQLClient struct {
@@ -823,6 +824,67 @@ func (c *postgreSQLClient) getIOStats(ctx context.Context) ([]IOStats, error) {
 		})
 	}
 	return ioS, errors
+}
+
+type AnalyzeCount struct {
+	schemaname       string
+	relname          string
+	analyzeCount     int64
+	autoAnalyzeCount int64
+	autoVacuumCount  int64
+}
+
+func (c *postgreSQLClient) getAnalyzeCount(ctx context.Context) ([]AnalyzeCount, error) {
+	query := `SELECT
+    schemaname AS schema,
+    relname AS table,
+    analyze_count,
+	autovacuum_count,
+	autoanalyze_count
+	FROM
+    pg_stat_all_tables;
+	`
+	/*
+	   SELECT analyze_count, autovacuum_count, autoanalyze_count FROM pg_stat_all_tables;
+	*/
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unabled to query pg_stat_user_tables:: %w", err)
+	}
+	defer rows.Close()
+
+	var errors error
+	var analyzeCounts []AnalyzeCount
+
+	for rows.Next() {
+		var analyzeCount sql.NullInt64
+		var autoAnalyzeCount sql.NullInt64
+		var autoVacuumCount sql.NullInt64
+		var schemaname sql.NullString
+		var relname sql.NullString
+
+		err := rows.Scan(
+			&schemaname,
+			&relname,
+			&analyzeCount,
+			&autoVacuumCount,
+			&autoAnalyzeCount,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+		analyzeCounts = append(analyzeCounts, AnalyzeCount{
+			schemaname:       schemaname.String,
+			relname:          relname.String,
+			analyzeCount:     analyzeCount.Int64,
+			autoAnalyzeCount: autoAnalyzeCount.Int64,
+			autoVacuumCount:  autoVacuumCount.Int64,
+		})
+	}
+	return analyzeCounts, errors
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

@@ -87,14 +87,17 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeSampleBlksTotalDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlAnalyzedDataPoint(ts, "1")
+			mb.RecordPostgresqlAnalyzedDataPoint(ts, "1", "schema_name-val", "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlAutoanalyzedDataPoint(ts, "1")
+			mb.RecordPostgresqlAutoanalyzedDataPoint(ts, "1", "schema_name-val", "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlAutovacuumedDataPoint(ts, "1")
+			mb.RecordPostgresqlAutovacuumedDataPoint(ts, "1", "schema_name-val", "relation_name-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlBackendsDataPoint(ts, 1)
@@ -297,43 +300,33 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlIndividualIndexSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoEvictionsDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoExtendTimeDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoExtendsDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoFsyncTimeDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoFsyncsDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoHitsDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoReadTimeDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoReadsDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoWriteTimeDataPoint(ts, "1", "backend_type-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIoWritesDataPoint(ts, "1", "backend_type-val")
 
@@ -893,7 +886,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.analyzed"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
-					assert.Equal(t, "Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with db, schema, table.", ms.At(i).Description())
+					assert.Equal(t, "Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with schema, table.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
@@ -902,6 +895,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.autoanalyzed":
 					assert.False(t, validatedMetrics["postgresql.autoanalyzed"], "Found a duplicate in the metrics slice: postgresql.autoanalyzed")
 					validatedMetrics["postgresql.autoanalyzed"] = true
@@ -916,6 +915,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.autovacuumed":
 					assert.False(t, validatedMetrics["postgresql.autovacuumed"], "Found a duplicate in the metrics slice: postgresql.autovacuumed")
 					validatedMetrics["postgresql.autovacuumed"] = true
@@ -930,6 +935,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.backends":
 					assert.False(t, validatedMetrics["postgresql.backends"], "Found a duplicate in the metrics slice: postgresql.backends")
 					validatedMetrics["postgresql.backends"] = true
