@@ -138,6 +138,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectQueryStats(ctx, now, listClient, &errs)
 	p.collectIOStats(ctx, now, listClient, &errs)
 	p.collectAnalyzeCount(ctx, now, listClient, &errs)
+	p.collectChecksumStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -346,7 +347,6 @@ func (p *postgreSQLScraper) collectQueryStats(
 ) {
 	qs, err := client.getQueryStats(ctx)
 	if err != nil {
-		pp.Println(err.Error())
 		errs.addPartial(err)
 		return
 	}
@@ -427,6 +427,29 @@ func (p *postgreSQLScraper) collectIOStats(
 
 	}
 
+}
+
+func (p *postgreSQLScraper) collectChecksumStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	cs, err := client.getChecksumStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, c := range cs {
+		enabled := strconv.FormatInt(int64(c.checksumEnabled), 10)
+		failures := strconv.FormatInt(c.checksumFailures, 10)
+		dbname := c.dbname
+
+		p.mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(now, failures, dbname)
+		p.mb.RecordPostgresqlChecksumsEnabledDataPoint(now, enabled, dbname)
+	}
 }
 
 func (p *postgreSQLScraper) collectAnalyzeCount(

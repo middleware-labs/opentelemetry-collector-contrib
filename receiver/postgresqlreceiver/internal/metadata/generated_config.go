@@ -280,13 +280,13 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlAnalyzed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAutoanalyzed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlAutovacuumed: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlBackends: MetricConfig{
 			Enabled: false,
@@ -346,10 +346,10 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlChecksumsChecksumFailures: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlChecksumsEnabled: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlClusterVacuumHeapBlksScanned: MetricConfig{
 			Enabled: false,

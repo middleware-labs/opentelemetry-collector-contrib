@@ -50,6 +50,7 @@ type client interface {
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getIOStats(ctx context.Context) ([]IOStats, error)
 	getAnalyzeCount(ctx context.Context) ([]AnalyzeCount, error)
+	getChecksumStats(ctx context.Context) ([]ChecksumStats, error)
 }
 
 type postgreSQLClient struct {
@@ -824,6 +825,73 @@ func (c *postgreSQLClient) getIOStats(ctx context.Context) ([]IOStats, error) {
 		})
 	}
 	return ioS, errors
+}
+
+type ChecksumStats struct {
+	dbname           string
+	checksumFailures int64
+	checksumEnabled  int
+}
+
+func (c *postgreSQLClient) getChecksumStats(ctx context.Context) ([]ChecksumStats, error) {
+	query := `SELECT datname, checksum_failures FROM pg_stat_database;`
+
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_database:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var errors error
+	var cs []ChecksumStats
+
+	enabled, err := c.getChecksumEnabled(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("cannot check if checksums are enabled:: %w", err)
+	}
+	for rows.Next() {
+		var (
+			dbname   sql.NullString
+			failures sql.NullInt64
+		)
+		err := rows.Scan(
+			&dbname,
+			&failures,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+
+		cs = append(cs, ChecksumStats{
+			dbname:           dbname.String,
+			checksumEnabled:  enabled,
+			checksumFailures: failures.Int64,
+		})
+	}
+	return cs, errors
+}
+
+func (c *postgreSQLClient) getChecksumEnabled(ctx context.Context) (int, error) {
+	/*
+		-1 : Error
+		 0 : Checksums disabled
+		 1 : Checksums enabled
+	*/
+	var enabled sql.NullString
+	err := c.client.QueryRowContext(ctx, "SHOW data_checksums;").Scan(&enabled)
+	if err != nil {
+		return -1, fmt.Errorf("failed to get data_checksums")
+	}
+
+	if enabled.String == "off" {
+		return 0, nil
+	} else {
+		return 1, nil
+	}
+
 }
 
 type AnalyzeCount struct {

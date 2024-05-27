@@ -95,7 +95,9 @@ attributes:
   relation_name:
     description: name of the relation
     type: string
-  
+  dbname: 
+    description: name of the database  
+    type: string
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -284,7 +286,7 @@ metrics:
     attributes:
       - schema_name
       - relation_name
-    enabled: true 
+    enabled: false 
     description: Enabled with `relations`. The number of times this table has been manually
       analyzed. This metric is tagged with schema, table.
     unit: "1"
@@ -297,7 +299,7 @@ metrics:
     attributes:
       - schema_name
       - relation_name
-    enabled: true 
+    enabled: false
     description: Enabled with `relations`. The number of times this table has been analyzed
       by the autovacuum daemon. This metric is tagged with db, schema, table.
     unit: "1"
@@ -310,7 +312,7 @@ metrics:
     attributes:
       - schema_name
       - relation_name
-    enabled: true 
+    enabled: false
     description: Enabled with `relations`. The number of times this table has been vacuumed
       by the autovacuum daemon. This metric is tagged with db, schema, table.
     unit: "1"
@@ -414,7 +416,9 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.checksums.checksum_failures:
-    enabled: false
+    attributes:
+      - dbname
+    enabled: true
     description: The number of checksum failures in this database. This metric is tagged
       with db.
     unit: "1"
@@ -424,7 +428,9 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.checksums.enabled:
-    enabled: false
+    attributes:
+      - dbname
+    enabled: true 
     description: Whether database checksums are enabled. Value is always 1 and tagged
       with enabled:true or enabled:false. This metric is tagged with db.
     unit: "1"

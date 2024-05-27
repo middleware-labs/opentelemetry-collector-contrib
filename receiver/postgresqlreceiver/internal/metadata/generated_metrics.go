@@ -1937,9 +1937,10 @@ func (m *metricPostgresqlChecksumsChecksumFailures) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlChecksumsChecksumFailures) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlChecksumsChecksumFailures) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1947,6 +1948,7 @@ func (m *metricPostgresqlChecksumsChecksumFailures) recordDataPoint(start pcommo
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -1988,9 +1990,10 @@ func (m *metricPostgresqlChecksumsEnabled) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlChecksumsEnabled) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlChecksumsEnabled) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1998,6 +2001,7 @@ func (m *metricPostgresqlChecksumsEnabled) recordDataPoint(start pcommon.Timesta
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12194,22 +12198,22 @@ func (mb *MetricsBuilder) RecordPostgresqlBufferHitDataPoint(ts pcommon.Timestam
 }
 
 // RecordPostgresqlChecksumsChecksumFailuresDataPoint adds a data point to postgresql.checksums.checksum_failures metric.
-func (mb *MetricsBuilder) RecordPostgresqlChecksumsChecksumFailuresDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlChecksumsChecksumFailuresDataPoint(ts pcommon.Timestamp, inputVal string, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlChecksumsChecksumFailures, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlChecksumsChecksumFailures.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlChecksumsChecksumFailures.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlChecksumsEnabledDataPoint adds a data point to postgresql.checksums.enabled metric.
-func (mb *MetricsBuilder) RecordPostgresqlChecksumsEnabledDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlChecksumsEnabledDataPoint(ts pcommon.Timestamp, inputVal string, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlChecksumsEnabled, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlChecksumsEnabled.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlChecksumsEnabled.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue)
 	return nil
 }
 

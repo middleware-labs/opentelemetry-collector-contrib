@@ -12,9 +12,23 @@ metrics:
     enabled: false
 ```
 
-### postgresql.analyzed
+### postgresql.checksums.checksum_failures
 
-Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with schema, table.
+The number of checksum failures in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+
+### postgresql.checksums.enabled
+
+Whether database checksums are enabled. Value is always 1 and tagged with enabled:true or enabled:false. This metric is tagged with db.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
@@ -24,38 +38,7 @@ Enabled with `relations`. The number of times this table has been manually analy
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| schema_name | name of the schema | Any Str |
-| relation_name | name of the relation | Any Str |
-
-### postgresql.autoanalyzed
-
-Enabled with `relations`. The number of times this table has been analyzed by the autovacuum daemon. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema_name | name of the schema | Any Str |
-| relation_name | name of the relation | Any Str |
-
-### postgresql.autovacuumed
-
-Enabled with `relations`. The number of times this table has been vacuumed by the autovacuum daemon. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema_name | name of the schema | Any Str |
-| relation_name | name of the relation | Any Str |
+| dbname | name of the database | Any Str |
 
 ## Optional Metrics
 
@@ -184,6 +167,51 @@ Total number of heap blocks that will be sampled. This metric is tagged with db,
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {block} | Gauge | Int |
+
+### postgresql.analyzed
+
+Enabled with `relations`. The number of times this table has been manually analyzed. This metric is tagged with schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| schema_name | name of the schema | Any Str |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.autoanalyzed
+
+Enabled with `relations`. The number of times this table has been analyzed by the autovacuum daemon. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| schema_name | name of the schema | Any Str |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.autovacuumed
+
+Enabled with `relations`. The number of times this table has been vacuumed by the autovacuum daemon. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| schema_name | name of the schema | Any Str |
+| relation_name | name of the relation | Any Str |
 
 ### postgresql.backends
 
@@ -360,22 +388,6 @@ The number of times disk blocks were found in the buffer cache, preventing the n
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {hit}/s | Gauge | Int |
-
-### postgresql.checksums.checksum_failures
-
-The number of checksum failures in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
-
-### postgresql.checksums.enabled
-
-Whether database checksums are enabled. Value is always 1 and tagged with enabled:true or enabled:false. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
 
 ### postgresql.cluster_vacuum.heap_blks_scanned
 

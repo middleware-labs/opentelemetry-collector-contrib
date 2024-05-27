@@ -87,15 +87,12 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzeSampleBlksTotalDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzedDataPoint(ts, "1", "schema_name-val", "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAutoanalyzedDataPoint(ts, "1", "schema_name-val", "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAutovacuumedDataPoint(ts, "1", "schema_name-val", "relation_name-val")
 
@@ -156,11 +153,13 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlBufferHitDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(ts, "1")
+			mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(ts, "1", "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlChecksumsEnabledDataPoint(ts, "1")
+			mb.RecordPostgresqlChecksumsEnabledDataPoint(ts, "1", "dbname-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapBlksScannedDataPoint(ts, 1)
@@ -1229,6 +1228,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.checksums.enabled":
 					assert.False(t, validatedMetrics["postgresql.checksums.enabled"], "Found a duplicate in the metrics slice: postgresql.checksums.enabled")
 					validatedMetrics["postgresql.checksums.enabled"] = true
@@ -1243,6 +1245,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.cluster_vacuum.heap_blks_scanned":
 					assert.False(t, validatedMetrics["postgresql.cluster_vacuum.heap_blks_scanned"], "Found a duplicate in the metrics slice: postgresql.cluster_vacuum.heap_blks_scanned")
 					validatedMetrics["postgresql.cluster_vacuum.heap_blks_scanned"] = true
