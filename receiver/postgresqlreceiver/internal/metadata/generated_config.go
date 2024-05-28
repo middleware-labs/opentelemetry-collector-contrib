@@ -352,37 +352,37 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapBlksScanned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapBlksTotal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapTuplesScanned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapTuplesWritten: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlClusterVacuumIndexRebuildCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlCommits: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlConflictsBufferpin: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlConflictsDeadlock: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlConflictsLock: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlConflictsSnapshot: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlConflictsTablespace: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlConnectionMax: MetricConfig{
 			Enabled: false,

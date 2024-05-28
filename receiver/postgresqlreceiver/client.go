@@ -53,6 +53,7 @@ type client interface {
 	getChecksumStats(ctx context.Context) ([]ChecksumStats, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
 	getClusterVacuumStats(ctx context.Context) ([]ClusterVacuumStats, error)
+	getDatabaseConflictsStats(ctx context.Context) ([]conflictStats, error)
 }
 
 type postgreSQLClient struct {
@@ -955,6 +956,86 @@ func (c *postgreSQLClient) getAnalyzeCount(ctx context.Context) ([]AnalyzeCount,
 		})
 	}
 	return analyzeCounts, errors
+}
+
+type conflictStats struct {
+	dbid       int64
+	dbname     string
+	tableSpace int64
+	lock       int64
+	snapshot   int64
+	bufferPin  int64
+	deadlock   int64
+}
+
+func (c *postgreSQLClient) getDatabaseConflictsStats(ctx context.Context) ([]conflictStats, error) {
+	// query := ` SELECT
+	// datid,
+	// datname,
+	// confl_tablespace,
+	// confl_lock,
+	// confl_snapshot,
+	// confl_bufferpin,
+	// confl_deadlock
+	// FROM pg_catalog.pg_stat_database_conflicts;
+	// `
+	query := ` SELECT
+	datid,
+	datname,
+	confl_tablespace,
+	confl_lock,
+	confl_snapshot,
+	confl_bufferpin,
+	confl_deadlock
+	FROM pg_catalog.pg_stat_database_conflicts;
+	`
+
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_database_conflicts:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var cs []conflictStats
+	var errors error
+
+	for rows.Next() {
+		var (
+			dbid       sql.NullInt64
+			dbname     sql.NullString
+			tableSpace sql.NullInt64
+			lock       sql.NullInt64
+			snapshot   sql.NullInt64
+			bufferPin  sql.NullInt64
+			deadlock   sql.NullInt64
+		)
+		err := rows.Scan(
+			&dbid,
+			&dbname,
+			&tableSpace,
+			&lock,
+			&snapshot,
+			&bufferPin,
+			&deadlock,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+		cs = append(cs, conflictStats{
+			dbid:       dbid.Int64,
+			dbname:     dbname.String,
+			tableSpace: tableSpace.Int64,
+			lock:       lock.Int64,
+			snapshot:   snapshot.Int64,
+			bufferPin:  bufferPin.Int64,
+			deadlock:   deadlock.Int64,
+		})
+	}
+	return cs, nil
 }
 
 type BufferHit struct {

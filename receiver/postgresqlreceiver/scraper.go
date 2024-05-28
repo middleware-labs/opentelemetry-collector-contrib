@@ -140,6 +140,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectChecksumStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
 	p.collectClusterVacuumStats(ctx, now, listClient, &errs)
+	p.collectDatabaseConflictStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -441,6 +442,35 @@ func (p *postgreSQLScraper) collectIOStats(
 		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads, s.backendType)
 		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time, s.backendType)
 		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes, s.backendType)
+
+	}
+
+}
+
+func (p *postgreSQLScraper) collectDatabaseConflictStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	cs, err := client.getDatabaseConflictsStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	for _, s := range cs {
+		tbs := strconv.FormatInt(s.tableSpace, 10)
+		l := strconv.FormatInt(s.lock, 10)
+		ss := strconv.FormatInt(s.snapshot, 10)
+		bp := strconv.FormatInt(s.bufferPin, 10)
+		dl := strconv.FormatInt(s.deadlock, 10)
+
+		p.mb.RecordPostgresqlConflictsTablespaceDataPoint(now, tbs, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlConflictsLockDataPoint(now, l, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlConflictsSnapshotDataPoint(now, ss, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlConflictsBufferpinDataPoint(now, bp, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlConflictsDeadlockDataPoint(now, dl, s.dbid, s.dbname)
 
 	}
 

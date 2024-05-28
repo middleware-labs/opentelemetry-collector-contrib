@@ -159,43 +159,43 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlChecksumsEnabledDataPoint(ts, "1", "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapBlksScannedDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapBlksTotalDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapTuplesScannedDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumHeapTuplesWrittenDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlCommitsDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConflictsBufferpinDataPoint(ts, "1")
+			mb.RecordPostgresqlConflictsBufferpinDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConflictsDeadlockDataPoint(ts, "1")
+			mb.RecordPostgresqlConflictsDeadlockDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConflictsLockDataPoint(ts, "1")
+			mb.RecordPostgresqlConflictsLockDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConflictsSnapshotDataPoint(ts, "1")
+			mb.RecordPostgresqlConflictsSnapshotDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConflictsTablespaceDataPoint(ts, "1")
+			mb.RecordPostgresqlConflictsTablespaceDataPoint(ts, "1", 4, "dbname-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlConnectionMaxDataPoint(ts, 1)
@@ -1415,6 +1415,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.conflicts.deadlock":
 					assert.False(t, validatedMetrics["postgresql.conflicts.deadlock"], "Found a duplicate in the metrics slice: postgresql.conflicts.deadlock")
 					validatedMetrics["postgresql.conflicts.deadlock"] = true
@@ -1429,6 +1435,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.conflicts.lock":
 					assert.False(t, validatedMetrics["postgresql.conflicts.lock"], "Found a duplicate in the metrics slice: postgresql.conflicts.lock")
 					validatedMetrics["postgresql.conflicts.lock"] = true
@@ -1443,6 +1455,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.conflicts.snapshot":
 					assert.False(t, validatedMetrics["postgresql.conflicts.snapshot"], "Found a duplicate in the metrics slice: postgresql.conflicts.snapshot")
 					validatedMetrics["postgresql.conflicts.snapshot"] = true
@@ -1457,6 +1475,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.conflicts.tablespace":
 					assert.False(t, validatedMetrics["postgresql.conflicts.tablespace"], "Found a duplicate in the metrics slice: postgresql.conflicts.tablespace")
 					validatedMetrics["postgresql.conflicts.tablespace"] = true
@@ -1471,6 +1495,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.connection.max":
 					assert.False(t, validatedMetrics["postgresql.connection.max"], "Found a duplicate in the metrics slice: postgresql.connection.max")
 					validatedMetrics["postgresql.connection.max"] = true

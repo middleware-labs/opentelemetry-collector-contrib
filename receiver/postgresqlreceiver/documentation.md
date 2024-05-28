@@ -12,95 +12,80 @@ metrics:
     enabled: false
 ```
 
-### postgresql.cluster_vacuum.heap_blks_scanned
+### postgresql.conflicts.bufferpin
 
-Number of heap blocks scanned. This counter only advances when the phase is seq scanning heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+Number of queries in this database that have been canceled due to pinned buffers. Buffer pin conflicts will occur when the walreceiver process tries to apply a buffer cleanup like HOT chain pruning. This require a complete lock of the buffer and any query pinning the buffer will conflict with the cleaning. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block} | Gauge | Int |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbname | name of the database | Any Str |
-| relname | name of the relation | Any Str |
-| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
-| phase | Current processing phase of index creation. | Any Str |
-| index | Index of the table | Any Str |
-
-### postgresql.cluster_vacuum.heap_blks_total
-
-Total number of heap blocks in the table. This number is reported as of the beginning of seq scanning heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block} | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
 | dbname | name of the database | Any Str |
-| relname | name of the relation | Any Str |
-| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
-| phase | Current processing phase of index creation. | Any Str |
-| index | Index of the table | Any Str |
 
-### postgresql.cluster_vacuum.heap_tuples_scanned
+### postgresql.conflicts.deadlock
 
-Number of heap tuples scanned. This counter only advances when the phase is seq scanning heap, index scanning heap or writing new heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+Number of queries in this database that have been canceled due to deadlocks. Deadlock conflicts will happen when the walreceiver tries to apply a buffer like HOT chain pruning. If the conflict takes more than deadlock_timeout seconds, a deadlock check will be triggered and conflicting queries will be canceled until the buffer is unpinned. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
 | dbname | name of the database | Any Str |
-| relname | name of the relation | Any Str |
-| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
-| phase | Current processing phase of index creation. | Any Str |
-| index | Index of the table | Any Str |
 
-### postgresql.cluster_vacuum.heap_tuples_written
+### postgresql.conflicts.lock
 
-Number of heap tuples written. This counter only advances when the phase is seq scanning heap, index scanning heap or writing new heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+Number of queries in this database that have been canceled due to lock timeouts. This will occur when the walreceiver process tries to apply a change requiring an ACCESS EXCLUSIVE lock while a query on the replica is reading the table. The conflicting query will be killed after waiting up to max_standby_streaming_delay seconds. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
 | dbname | name of the database | Any Str |
-| relname | name of the relation | Any Str |
-| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
-| phase | Current processing phase of index creation. | Any Str |
-| index | Index of the table | Any Str |
 
-### postgresql.cluster_vacuum.index_rebuild_count
+### postgresql.conflicts.snapshot
 
-Number of indexes rebuilt. This counter only advances when the phase is rebuilding index. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+Number of queries in this database that have been canceled due to old snapshots. Snapshot conflict will occur when a VACUUM is replayed, removing tuples currently read on a standby. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
 | dbname | name of the database | Any Str |
-| relname | name of the relation | Any Str |
-| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
-| phase | Current processing phase of index creation. | Any Str |
-| index | Index of the table | Any Str |
+
+### postgresql.conflicts.tablespace
+
+Number of queries in this database that have been canceled due to dropped tablespaces. This will occur when a temp_tablespace is dropped while being used on a standby. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
 
 ## Optional Metrics
 
@@ -485,6 +470,96 @@ Whether database checksums are enabled. Value is always 1 and tagged with enable
 | ---- | ----------- | ------ |
 | dbname | name of the database | Any Str |
 
+### postgresql.cluster_vacuum.heap_blks_scanned
+
+Number of heap blocks scanned. This counter only advances when the phase is seq scanning heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+| index | Index of the table | Any Str |
+
+### postgresql.cluster_vacuum.heap_blks_total
+
+Total number of heap blocks in the table. This number is reported as of the beginning of seq scanning heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+| index | Index of the table | Any Str |
+
+### postgresql.cluster_vacuum.heap_tuples_scanned
+
+Number of heap tuples scanned. This counter only advances when the phase is seq scanning heap, index scanning heap or writing new heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+| index | Index of the table | Any Str |
+
+### postgresql.cluster_vacuum.heap_tuples_written
+
+Number of heap tuples written. This counter only advances when the phase is seq scanning heap, index scanning heap or writing new heap. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+| index | Index of the table | Any Str |
+
+### postgresql.cluster_vacuum.index_rebuild_count
+
+Number of indexes rebuilt. This counter only advances when the phase is rebuilding index. Only available with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+| index | Index of the table | Any Str |
+
 ### postgresql.commits
 
 The number of transactions that have been committed in this database. This metric is tagged with db.
@@ -492,46 +567,6 @@ The number of transactions that have been committed in this database. This metri
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {transaction}/s | Gauge | Int |
-
-### postgresql.conflicts.bufferpin
-
-Number of queries in this database that have been canceled due to pinned buffers. Buffer pin conflicts will occur when the walreceiver process tries to apply a buffer cleanup like HOT chain pruning. This require a complete lock of the buffer and any query pinning the buffer will conflict with the cleaning. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-### postgresql.conflicts.deadlock
-
-Number of queries in this database that have been canceled due to deadlocks. Deadlock conflicts will happen when the walreceiver tries to apply a buffer like HOT chain pruning. If the conflict takes more than deadlock_timeout seconds, a deadlock check will be triggered and conflicting queries will be canceled until the buffer is unpinned. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-### postgresql.conflicts.lock
-
-Number of queries in this database that have been canceled due to lock timeouts. This will occur when the walreceiver process tries to apply a change requiring an ACCESS EXCLUSIVE lock while a query on the replica is reading the table. The conflicting query will be killed after waiting up to max_standby_streaming_delay seconds. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-### postgresql.conflicts.snapshot
-
-Number of queries in this database that have been canceled due to old snapshots. Snapshot conflict will occur when a VACUUM is replayed, removing tuples currently read on a standby. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-### postgresql.conflicts.tablespace
-
-Number of queries in this database that have been canceled due to dropped tablespaces. This will occur when a temp_tablespace is dropped while being used on a standby. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
 
 ### postgresql.connection.max
 

@@ -452,7 +452,10 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.conflicts.bufferpin:
-    enabled: false
+    attributes:
+      - dbid
+      - dbname
+    enabled: true 
     description: Number of queries in this database that have been canceled due to pinned
       buffers. Buffer pin conflicts will occur when the walreceiver process tries to
       apply a buffer cleanup like HOT chain pruning. This require a complete lock of
@@ -465,7 +468,10 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.conflicts.deadlock:
-    enabled: false
+    attributes:
+      - dbid
+      - dbname
+    enabled: true
     description: Number of queries in this database that have been canceled due to deadlocks.
       Deadlock conflicts will happen when the walreceiver tries to apply a buffer like
       HOT chain pruning. If the conflict takes more than deadlock_timeout seconds, a
@@ -478,7 +484,10 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.conflicts.lock:
-    enabled: false
+    attributes:
+      - dbid
+      - dbname
+    enabled: true 
     description: Number of queries in this database that have been canceled due to lock
       timeouts. This will occur when the walreceiver process tries to apply a change
       requiring an ACCESS EXCLUSIVE lock while a query on the replica is reading the
@@ -491,7 +500,10 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.conflicts.snapshot:
-    enabled: false
+    attributes:
+      - dbid
+      - dbname
+    enabled: true
     description: Number of queries in this database that have been canceled due to old
       snapshots. Snapshot conflict will occur when a VACUUM is replayed, removing tuples
       currently read on a standby. This metric is tagged with db.
@@ -502,7 +514,10 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.conflicts.tablespace:
-    enabled: false
+    attributes:
+      - dbid
+      - dbname
+    enabled: true 
     description: Number of queries in this database that have been canceled due to dropped
       tablespaces. This will occur when a temp_tablespace is dropped while being used
       on a standby. This metric is tagged with db.
@@ -1399,7 +1414,7 @@ metrics:
       - command
       - phase
       - index
-    enabled: true
+    enabled: false 
     description: Number of heap blocks scanned. This counter only advances when the
       phase is seq scanning heap. Only available with PostgreSQL 12 and newer. This
       metric is tagged with db, table, command, phase, index.
@@ -1413,7 +1428,7 @@ metrics:
       - command
       - phase
       - index
-    enabled: true
+    enabled: false 
     description: Total number of heap blocks in the table. This number is reported as
       of the beginning of seq scanning heap. Only available with PostgreSQL 12 and newer.
       This metric is tagged with db, table, command, phase, index.
@@ -1427,7 +1442,7 @@ metrics:
       - command
       - phase
       - index
-    enabled: true
+    enabled: false 
     description: Number of heap tuples scanned. This counter only advances when the
       phase is seq scanning heap, index scanning heap or writing new heap. Only available
       with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase,
@@ -1442,7 +1457,7 @@ metrics:
       - command
       - phase
       - index
-    enabled: true
+    enabled: false 
     description: Number of heap tuples written. This counter only advances when the
       phase is seq scanning heap, index scanning heap or writing new heap. Only available
       with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase,
@@ -1457,7 +1472,7 @@ metrics:
       - command
       - phase
       - index
-    enabled: true 
+    enabled: false  
     description: Number of indexes rebuilt. This counter only advances when the phase
       is rebuilding index. Only available with PostgreSQL 12 and newer. This metric
       is tagged with db, table, command, phase, index.

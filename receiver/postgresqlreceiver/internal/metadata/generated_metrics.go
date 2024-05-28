@@ -2369,9 +2369,10 @@ func (m *metricPostgresqlConflictsBufferpin) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlConflictsBufferpin) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlConflictsBufferpin) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2379,6 +2380,8 @@ func (m *metricPostgresqlConflictsBufferpin) recordDataPoint(start pcommon.Times
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2420,9 +2423,10 @@ func (m *metricPostgresqlConflictsDeadlock) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlConflictsDeadlock) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlConflictsDeadlock) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2430,6 +2434,8 @@ func (m *metricPostgresqlConflictsDeadlock) recordDataPoint(start pcommon.Timest
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2471,9 +2477,10 @@ func (m *metricPostgresqlConflictsLock) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlConflictsLock) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlConflictsLock) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2481,6 +2488,8 @@ func (m *metricPostgresqlConflictsLock) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2522,9 +2531,10 @@ func (m *metricPostgresqlConflictsSnapshot) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlConflictsSnapshot) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlConflictsSnapshot) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2532,6 +2542,8 @@ func (m *metricPostgresqlConflictsSnapshot) recordDataPoint(start pcommon.Timest
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2573,9 +2585,10 @@ func (m *metricPostgresqlConflictsTablespace) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlConflictsTablespace) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlConflictsTablespace) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2583,6 +2596,8 @@ func (m *metricPostgresqlConflictsTablespace) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12280,52 +12295,52 @@ func (mb *MetricsBuilder) RecordPostgresqlCommitsDataPoint(ts pcommon.Timestamp,
 }
 
 // RecordPostgresqlConflictsBufferpinDataPoint adds a data point to postgresql.conflicts.bufferpin metric.
-func (mb *MetricsBuilder) RecordPostgresqlConflictsBufferpinDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlConflictsBufferpinDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlConflictsBufferpin, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlConflictsBufferpin.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlConflictsBufferpin.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlConflictsDeadlockDataPoint adds a data point to postgresql.conflicts.deadlock metric.
-func (mb *MetricsBuilder) RecordPostgresqlConflictsDeadlockDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlConflictsDeadlockDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlConflictsDeadlock, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlConflictsDeadlock.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlConflictsDeadlock.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlConflictsLockDataPoint adds a data point to postgresql.conflicts.lock metric.
-func (mb *MetricsBuilder) RecordPostgresqlConflictsLockDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlConflictsLockDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlConflictsLock, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlConflictsLock.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlConflictsLock.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlConflictsSnapshotDataPoint adds a data point to postgresql.conflicts.snapshot metric.
-func (mb *MetricsBuilder) RecordPostgresqlConflictsSnapshotDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlConflictsSnapshotDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlConflictsSnapshot, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlConflictsSnapshot.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlConflictsSnapshot.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlConflictsTablespaceDataPoint adds a data point to postgresql.conflicts.tablespace metric.
-func (mb *MetricsBuilder) RecordPostgresqlConflictsTablespaceDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlConflictsTablespaceDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlConflictsTablespace, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlConflictsTablespace.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlConflictsTablespace.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
