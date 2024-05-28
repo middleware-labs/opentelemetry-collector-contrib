@@ -308,6 +308,13 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [query_text, query_id]
 
+  postgresql.query.slow_count:
+    enabled: true
+    description: Queries that are slower than 10 seconds
+    unit: 1
+    gauge:
+      value_type: int
+
   postgresql.server.uptime:
     enabled: true
     description: The number of seconds that the server has been up.
@@ -316,3 +323,4 @@ metrics:
       value_type: double 
       monotonic: true
       aggregation_temporality: cumulative 
+  

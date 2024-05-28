@@ -48,6 +48,7 @@ type client interface {
 	listDatabases(ctx context.Context) ([]string, error)
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getServerUptime(ctx context.Context) (string, error)
+	getSlowQueryCount(ctx context.Context) (string, error)
 }
 
 type postgreSQLClient struct {
@@ -562,6 +563,21 @@ func (c *postgreSQLClient) getServerUptime(ctx context.Context) (string, error) 
 	}
 
 	return uptime.String, nil
+}
+
+func (c *postgreSQLClient) getSlowQueryCount(ctx context.Context) (string, error) {
+	query := `SELECT COUNT(*)
+	FROM pg_stat_activity
+	WHERE state != 'idle' AND (current_timestamp - query_start > INTERVAL '10 seconds');
+	`
+	var slowCount sql.NullString
+
+	err := c.client.QueryRow(query).Scan(&slowCount)
+	if err != nil {
+		return "", err
+	}
+	return slowCount.String, nil
+
 }
 
 func (c *postgreSQLClient) listDatabases(ctx context.Context) ([]string, error) {

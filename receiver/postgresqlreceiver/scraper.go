@@ -136,6 +136,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	p.collectUptime(ctx, now, listClient, &errs)
+	p.collectSlowQueryCount(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -193,12 +194,32 @@ func (p *postgreSQLScraper) collectUptime(
 		return
 	}
 	uptimeFloat, err := strconv.ParseFloat(uptime, 64)
-	pp.Println("UPTIME-----------------------", uptimeFloat)
 	if err != nil {
 		errs.addPartial(err)
 	}
 	p.mb.RecordPostgresqlServerUptimeDataPoint(now, uptimeFloat)
 
+}
+
+func (p *postgreSQLScraper) collectSlowQueryCount(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	slowCount, err := client.getSlowQueryCount(ctx)
+	pp.Println(slowCount)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	slowCountInt, err := strconv.ParseInt(slowCount, 10, 64)
+	if err != nil {
+		errs.addPartial(err)
+	}
+
+	p.mb.RecordPostgresqlQuerySlowCountDataPoint(now, slowCountInt)
 }
 
 func (p *postgreSQLScraper) collectQueryPerfStats(

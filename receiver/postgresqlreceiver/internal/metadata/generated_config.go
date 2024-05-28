@@ -41,6 +41,7 @@ type MetricsConfig struct {
 	PostgresqlIndexSize                MetricConfig `mapstructure:"postgresql.index.size"`
 	PostgresqlOperations               MetricConfig `mapstructure:"postgresql.operations"`
 	PostgresqlQueryCount               MetricConfig `mapstructure:"postgresql.query.count"`
+	PostgresqlQuerySlowCount           MetricConfig `mapstructure:"postgresql.query.slow_count"`
 	PostgresqlQueryTotalExecTime       MetricConfig `mapstructure:"postgresql.query.total_exec_time"`
 	PostgresqlReplicationDataDelay     MetricConfig `mapstructure:"postgresql.replication.data_delay"`
 	PostgresqlRollbacks                MetricConfig `mapstructure:"postgresql.rollbacks"`
@@ -103,6 +104,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		PostgresqlQueryCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQuerySlowCount: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlQueryTotalExecTime: MetricConfig{

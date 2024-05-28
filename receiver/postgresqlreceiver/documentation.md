@@ -169,6 +169,14 @@ Number of times the statement was executed
 | query_text | Text of a representative statement | Any Str |
 | query_id | Hash code to identify identical normalized queries. | Any Str |
 
+### postgresql.query.slow_count
+
+Queries that are slower than 10 seconds
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
 ### postgresql.query.total_exec_time
 
 The total wait time of the summarized timed events in nanaoseconds.

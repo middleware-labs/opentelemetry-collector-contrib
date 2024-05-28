@@ -119,6 +119,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordPostgresqlQuerySlowCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordPostgresqlQueryTotalExecTimeDataPoint(ts, 1, "query_text-val", "query_id-val")
 
 			defaultMetricsCount++
@@ -430,6 +434,18 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("query_id")
 					assert.True(t, ok)
 					assert.EqualValues(t, "query_id-val", attrVal.Str())
+				case "postgresql.query.slow_count":
+					assert.False(t, validatedMetrics["postgresql.query.slow_count"], "Found a duplicate in the metrics slice: postgresql.query.slow_count")
+					validatedMetrics["postgresql.query.slow_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Queries that are slower than 10 seconds", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.query.total_exec_time":
 					assert.False(t, validatedMetrics["postgresql.query.total_exec_time"], "Found a duplicate in the metrics slice: postgresql.query.total_exec_time")
 					validatedMetrics["postgresql.query.total_exec_time"] = true

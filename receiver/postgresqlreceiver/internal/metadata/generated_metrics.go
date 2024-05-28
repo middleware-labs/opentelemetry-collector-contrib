@@ -1062,6 +1062,55 @@ func newMetricPostgresqlQueryCount(cfg MetricConfig) metricPostgresqlQueryCount 
 	return m
 }
 
+type metricPostgresqlQuerySlowCount struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.query.slow_count metric with initial data.
+func (m *metricPostgresqlQuerySlowCount) init() {
+	m.data.SetName("postgresql.query.slow_count")
+	m.data.SetDescription("Queries that are slower than 10 seconds")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricPostgresqlQuerySlowCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlQuerySlowCount) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlQuerySlowCount) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlQuerySlowCount(cfg MetricConfig) metricPostgresqlQuerySlowCount {
+	m := metricPostgresqlQuerySlowCount{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricPostgresqlQueryTotalExecTime struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -1702,6 +1751,7 @@ type MetricsBuilder struct {
 	metricPostgresqlIndexSize                metricPostgresqlIndexSize
 	metricPostgresqlOperations               metricPostgresqlOperations
 	metricPostgresqlQueryCount               metricPostgresqlQueryCount
+	metricPostgresqlQuerySlowCount           metricPostgresqlQuerySlowCount
 	metricPostgresqlQueryTotalExecTime       metricPostgresqlQueryTotalExecTime
 	metricPostgresqlReplicationDataDelay     metricPostgresqlReplicationDataDelay
 	metricPostgresqlRollbacks                metricPostgresqlRollbacks
@@ -1748,6 +1798,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSetting
 		metricPostgresqlIndexSize:                newMetricPostgresqlIndexSize(mbc.Metrics.PostgresqlIndexSize),
 		metricPostgresqlOperations:               newMetricPostgresqlOperations(mbc.Metrics.PostgresqlOperations),
 		metricPostgresqlQueryCount:               newMetricPostgresqlQueryCount(mbc.Metrics.PostgresqlQueryCount),
+		metricPostgresqlQuerySlowCount:           newMetricPostgresqlQuerySlowCount(mbc.Metrics.PostgresqlQuerySlowCount),
 		metricPostgresqlQueryTotalExecTime:       newMetricPostgresqlQueryTotalExecTime(mbc.Metrics.PostgresqlQueryTotalExecTime),
 		metricPostgresqlReplicationDataDelay:     newMetricPostgresqlReplicationDataDelay(mbc.Metrics.PostgresqlReplicationDataDelay),
 		metricPostgresqlRollbacks:                newMetricPostgresqlRollbacks(mbc.Metrics.PostgresqlRollbacks),
@@ -1837,6 +1888,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricPostgresqlIndexSize.emit(ils.Metrics())
 	mb.metricPostgresqlOperations.emit(ils.Metrics())
 	mb.metricPostgresqlQueryCount.emit(ils.Metrics())
+	mb.metricPostgresqlQuerySlowCount.emit(ils.Metrics())
 	mb.metricPostgresqlQueryTotalExecTime.emit(ils.Metrics())
 	mb.metricPostgresqlReplicationDataDelay.emit(ils.Metrics())
 	mb.metricPostgresqlRollbacks.emit(ils.Metrics())
@@ -1947,6 +1999,11 @@ func (mb *MetricsBuilder) RecordPostgresqlOperationsDataPoint(ts pcommon.Timesta
 // RecordPostgresqlQueryCountDataPoint adds a data point to postgresql.query.count metric.
 func (mb *MetricsBuilder) RecordPostgresqlQueryCountDataPoint(ts pcommon.Timestamp, val int64, queryTextAttributeValue string, queryIDAttributeValue string) {
 	mb.metricPostgresqlQueryCount.recordDataPoint(mb.startTime, ts, val, queryTextAttributeValue, queryIDAttributeValue)
+}
+
+// RecordPostgresqlQuerySlowCountDataPoint adds a data point to postgresql.query.slow_count metric.
+func (mb *MetricsBuilder) RecordPostgresqlQuerySlowCountDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlQuerySlowCount.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlQueryTotalExecTimeDataPoint adds a data point to postgresql.query.total_exec_time metric.

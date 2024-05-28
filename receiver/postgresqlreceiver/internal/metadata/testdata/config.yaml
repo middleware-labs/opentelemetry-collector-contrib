@@ -33,6 +33,8 @@ all_set:
       enabled: true
     postgresql.query.count:
       enabled: true
+    postgresql.query.slow_count:
+      enabled: true
     postgresql.query.total_exec_time:
       enabled: true
     postgresql.replication.data_delay:
@@ -97,6 +99,8 @@ none_set:
     postgresql.operations:
       enabled: false
     postgresql.query.count:
+      enabled: false
+    postgresql.query.slow_count:
       enabled: false
     postgresql.query.total_exec_time:
       enabled: false
