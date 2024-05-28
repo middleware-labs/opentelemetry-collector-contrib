@@ -52,6 +52,7 @@ type client interface {
 	getAnalyzeCount(ctx context.Context) ([]AnalyzeCount, error)
 	getChecksumStats(ctx context.Context) ([]ChecksumStats, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
+	getClusterVacuumStats(ctx context.Context) ([]ClusterVacuumStats, error)
 }
 
 type postgreSQLClient struct {
@@ -992,6 +993,105 @@ func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error
 	return bh, errors
 }
 
+type ClusterVacuumStats struct {
+	datname           string
+	relname           string
+	command           string
+	phase             string
+	index             string
+	heapTuplesScanned int64
+	heapTuplesWrites  int64
+	heapBlksScanned   int64
+	heapBlksTotal     int64
+	indexRebuildCount int64
+}
+
+func (c *postgreSQLClient) getClusterVacuumStats(ctx context.Context) ([]ClusterVacuumStats, error) {
+	query := `
+	SELECT
+       v.datname, c.relname, v.command, v.phase,
+       i.relname,
+       heap_tuples_scanned, heap_tuples_written, heap_blks_total, heap_blks_scanned, index_rebuild_count
+  FROM pg_stat_progress_cluster as v
+  LEFT JOIN pg_class c on c.oid = v.relid
+  LEFT JOIN pg_class i on i.oid = v.cluster_index_relid;
+	`
+
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_catalog.pg_stat_progress_vacuum")
+	}
+	defer rows.Close()
+
+	var errors error
+	var cvs []ClusterVacuumStats
+
+	for rows.Next() {
+		var (
+			dbname  sql.NullString
+			relname sql.NullString
+			command sql.NullString
+			phase   sql.NullString
+			index   sql.NullString
+		)
+
+		var (
+			heapBlksScanned   sql.NullInt64
+			heapBlksTotal     sql.NullInt64
+			heapTuplesWritten sql.NullInt64
+			heapTuplesScanned sql.NullInt64
+			indexRebuildCount sql.NullInt64
+		)
+
+		err := rows.Scan(
+			&dbname,
+			&relname,
+			&command,
+			&phase,
+			&index,
+			&heapTuplesScanned,
+			&heapTuplesWritten,
+			&heapBlksTotal,
+			&heapBlksScanned,
+			&indexRebuildCount,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+
+		cvs = append(cvs, ClusterVacuumStats{
+			datname:           getStringValue(dbname),
+			relname:           getStringValue(relname),
+			command:           getStringValue(command),
+			phase:             getStringValue(phase),
+			index:             getStringValue(index),
+			heapTuplesScanned: getInt64Value(heapTuplesScanned),
+			heapTuplesWrites:  getInt64Value(heapTuplesWritten),
+			heapBlksTotal:     getInt64Value(heapBlksTotal),
+			heapBlksScanned:   getInt64Value(heapBlksScanned),
+			indexRebuildCount: getInt64Value(indexRebuildCount),
+		})
+	}
+	if len(cvs) == 0 {
+		cvs = append(cvs, ClusterVacuumStats{
+			datname:           "",
+			relname:           "",
+			command:           "",
+			phase:             "",
+			index:             "",
+			heapTuplesScanned: 0,
+			heapTuplesWrites:  0,
+			heapBlksTotal:     0,
+			heapBlksScanned:   0,
+			indexRebuildCount: 0,
+		})
+	}
+	return cvs, nil
+}
+
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {
 	var version string
 	err := c.client.QueryRowContext(ctx, "SHOW server_version").Scan(&version)
@@ -1039,4 +1139,18 @@ func tableKey(database, table string) tableIdentifier {
 
 func indexKey(database, table, index string) indexIdentifer {
 	return indexIdentifer(fmt.Sprintf("%s|%s|%s", database, table, index))
+}
+
+func getStringValue(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
+	}
+	return ""
+}
+
+func getInt64Value(ni sql.NullInt64) int64 {
+	if ni.Valid {
+		return ni.Int64
+	}
+	return 0
 }

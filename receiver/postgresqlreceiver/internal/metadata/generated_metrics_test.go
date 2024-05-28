@@ -150,7 +150,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlBlocksReadDataPoint(ts, 1, AttributeSourceHeapRead)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBufferHitDataPoint(ts, 1, "dbname-val")
 
@@ -160,20 +159,25 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlChecksumsEnabledDataPoint(ts, "1", "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlClusterVacuumHeapBlksScannedDataPoint(ts, 1)
+			mb.RecordPostgresqlClusterVacuumHeapBlksScannedDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlClusterVacuumHeapBlksTotalDataPoint(ts, 1)
+			mb.RecordPostgresqlClusterVacuumHeapBlksTotalDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlClusterVacuumHeapTuplesScannedDataPoint(ts, 1)
+			mb.RecordPostgresqlClusterVacuumHeapTuplesScannedDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlClusterVacuumHeapTuplesWrittenDataPoint(ts, 1)
+			mb.RecordPostgresqlClusterVacuumHeapTuplesWrittenDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(ts, 1)
+			mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlCommitsDataPoint(ts, 1)
@@ -1262,6 +1266,21 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("command")
+					assert.True(t, ok)
+					assert.EqualValues(t, "command-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("index")
+					assert.True(t, ok)
+					assert.EqualValues(t, "index-val", attrVal.Str())
 				case "postgresql.cluster_vacuum.heap_blks_total":
 					assert.False(t, validatedMetrics["postgresql.cluster_vacuum.heap_blks_total"], "Found a duplicate in the metrics slice: postgresql.cluster_vacuum.heap_blks_total")
 					validatedMetrics["postgresql.cluster_vacuum.heap_blks_total"] = true
@@ -1274,6 +1293,21 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("command")
+					assert.True(t, ok)
+					assert.EqualValues(t, "command-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("index")
+					assert.True(t, ok)
+					assert.EqualValues(t, "index-val", attrVal.Str())
 				case "postgresql.cluster_vacuum.heap_tuples_scanned":
 					assert.False(t, validatedMetrics["postgresql.cluster_vacuum.heap_tuples_scanned"], "Found a duplicate in the metrics slice: postgresql.cluster_vacuum.heap_tuples_scanned")
 					validatedMetrics["postgresql.cluster_vacuum.heap_tuples_scanned"] = true
@@ -1286,6 +1320,21 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("command")
+					assert.True(t, ok)
+					assert.EqualValues(t, "command-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("index")
+					assert.True(t, ok)
+					assert.EqualValues(t, "index-val", attrVal.Str())
 				case "postgresql.cluster_vacuum.heap_tuples_written":
 					assert.False(t, validatedMetrics["postgresql.cluster_vacuum.heap_tuples_written"], "Found a duplicate in the metrics slice: postgresql.cluster_vacuum.heap_tuples_written")
 					validatedMetrics["postgresql.cluster_vacuum.heap_tuples_written"] = true
@@ -1298,6 +1347,21 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("command")
+					assert.True(t, ok)
+					assert.EqualValues(t, "command-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("index")
+					assert.True(t, ok)
+					assert.EqualValues(t, "index-val", attrVal.Str())
 				case "postgresql.cluster_vacuum.index_rebuild_count":
 					assert.False(t, validatedMetrics["postgresql.cluster_vacuum.index_rebuild_count"], "Found a duplicate in the metrics slice: postgresql.cluster_vacuum.index_rebuild_count")
 					validatedMetrics["postgresql.cluster_vacuum.index_rebuild_count"] = true
@@ -1310,6 +1374,21 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("command")
+					assert.True(t, ok)
+					assert.EqualValues(t, "command-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("index")
+					assert.True(t, ok)
+					assert.EqualValues(t, "index-val", attrVal.Str())
 				case "postgresql.commits":
 					assert.False(t, validatedMetrics["postgresql.commits"], "Found a duplicate in the metrics slice: postgresql.commits")
 					validatedMetrics["postgresql.commits"] = true

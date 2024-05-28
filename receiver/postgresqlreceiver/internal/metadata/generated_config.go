@@ -343,7 +343,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlBufferHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlChecksumsChecksumFailures: MetricConfig{
 			Enabled: false,
@@ -352,19 +352,19 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlClusterVacuumHeapBlksScanned: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlClusterVacuumHeapBlksTotal: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlClusterVacuumHeapTuplesScanned: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlClusterVacuumHeapTuplesWritten: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlClusterVacuumIndexRebuildCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlCommits: MetricConfig{
 			Enabled: false,

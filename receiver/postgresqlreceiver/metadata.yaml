@@ -98,6 +98,18 @@ attributes:
   dbname: 
     description: name of the database  
     type: string
+  relname:
+    description: name of the relation
+    type: string
+  command:
+    description: The command that is running. Either CLUSTER or VACUUM FULL.
+    type: string
+  phase:
+    description: Current processing phase of index creation.
+    type: string
+  index: 
+    description: Index of the table
+    type: string 
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -1374,14 +1386,20 @@ metrics:
   postgresql.buffer_hit:
     attributes:
       - dbname
-    enabled: true 
+    enabled: false
     description: The number of times disk blocks were found in the buffer cache, preventing
       the need to read from the database. This metric is tagged with db.
     unit: '{hit}/s'
     gauge:
       value_type: int
   postgresql.cluster_vacuum.heap_blks_scanned:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - command
+      - phase
+      - index
+    enabled: true
     description: Number of heap blocks scanned. This counter only advances when the
       phase is seq scanning heap. Only available with PostgreSQL 12 and newer. This
       metric is tagged with db, table, command, phase, index.
@@ -1389,7 +1407,13 @@ metrics:
     gauge:
       value_type: int
   postgresql.cluster_vacuum.heap_blks_total:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - command
+      - phase
+      - index
+    enabled: true
     description: Total number of heap blocks in the table. This number is reported as
       of the beginning of seq scanning heap. Only available with PostgreSQL 12 and newer.
       This metric is tagged with db, table, command, phase, index.
@@ -1397,7 +1421,13 @@ metrics:
     gauge:
       value_type: int
   postgresql.cluster_vacuum.heap_tuples_scanned:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - command
+      - phase
+      - index
+    enabled: true
     description: Number of heap tuples scanned. This counter only advances when the
       phase is seq scanning heap, index scanning heap or writing new heap. Only available
       with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase,
@@ -1406,7 +1436,13 @@ metrics:
     gauge:
       value_type: int
   postgresql.cluster_vacuum.heap_tuples_written:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - command
+      - phase
+      - index
+    enabled: true
     description: Number of heap tuples written. This counter only advances when the
       phase is seq scanning heap, index scanning heap or writing new heap. Only available
       with PostgreSQL 12 and newer. This metric is tagged with db, table, command, phase,
@@ -1415,7 +1451,13 @@ metrics:
     gauge:
       value_type: int
   postgresql.cluster_vacuum.index_rebuild_count:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - command
+      - phase
+      - index
+    enabled: true 
     description: Number of indexes rebuilt. This counter only advances when the phase
       is rebuilding index. Only available with PostgreSQL 12 and newer. This metric
       is tagged with db, table, command, phase, index.

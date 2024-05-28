@@ -139,6 +139,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectAnalyzeCount(ctx, now, listClient, &errs)
 	p.collectChecksumStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
+	p.collectClusterVacuumStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -465,6 +466,37 @@ func (p *postgreSQLScraper) collectChecksumStats(
 
 		p.mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(now, failures, dbname)
 		p.mb.RecordPostgresqlChecksumsEnabledDataPoint(now, enabled, dbname)
+	}
+}
+
+func (p *postgreSQLScraper) collectClusterVacuumStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	cvs, err := client.getClusterVacuumStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	for _, s := range cvs {
+		p.mb.RecordPostgresqlClusterVacuumHeapBlksScannedDataPoint(
+			now, s.heapBlksScanned, s.datname, s.relname, s.command, s.phase, s.index,
+		)
+		p.mb.RecordPostgresqlClusterVacuumHeapBlksTotalDataPoint(
+			now, s.heapBlksTotal, s.datname, s.relname, s.command, s.phase, s.index,
+		)
+		p.mb.RecordPostgresqlClusterVacuumHeapTuplesScannedDataPoint(
+			now, s.heapTuplesScanned, s.datname, s.relname, s.command, s.phase, s.index,
+		)
+		p.mb.RecordPostgresqlClusterVacuumHeapTuplesWrittenDataPoint(
+			now, s.heapTuplesWrites, s.datname, s.relname, s.command, s.phase, s.index,
+		)
+		p.mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(
+			now, s.indexRebuildCount, s.datname, s.relname, s.command, s.phase, s.index,
+		)
 	}
 }
 
