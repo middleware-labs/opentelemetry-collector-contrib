@@ -171,11 +171,11 @@ Number of times the statement was executed
 
 ### postgresql.query.total_exec_time
 
-The total wait time of the summarized timed events.
+The total wait time of the summarized timed events in nanaoseconds.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| ms | Sum | Int | Cumulative | false |
+| ns | Sum | Int | Cumulative | false |
 
 #### Attributes
 
@@ -219,6 +219,14 @@ The number of rows in the database.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | state | The tuple (row) state. | Str: ``dead``, ``live`` |
+
+### postgresql.server.uptime
+
+The number of seconds that the server has been up.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| s | Sum | Double | Cumulative | true |
 
 ### postgresql.table.count
 

@@ -138,6 +138,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordPostgresqlServerUptimeDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordPostgresqlTableCountDataPoint(ts, 1)
 
 			defaultMetricsCount++
@@ -431,8 +435,8 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.query.total_exec_time"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
-					assert.Equal(t, "The total wait time of the summarized timed events.", ms.At(i).Description())
-					assert.Equal(t, "ms", ms.At(i).Unit())
+					assert.Equal(t, "The total wait time of the summarized timed events in nanaoseconds.", ms.At(i).Description())
+					assert.Equal(t, "ns", ms.At(i).Unit())
 					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
 					dp := ms.At(i).Sum().DataPoints().At(0)
@@ -506,6 +510,20 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.server.uptime":
+					assert.False(t, validatedMetrics["postgresql.server.uptime"], "Found a duplicate in the metrics slice: postgresql.server.uptime")
+					validatedMetrics["postgresql.server.uptime"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "The number of seconds that the server has been up.", ms.At(i).Description())
+					assert.Equal(t, "s", ms.At(i).Unit())
+					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
 				case "postgresql.table.count":
 					assert.False(t, validatedMetrics["postgresql.table.count"], "Found a duplicate in the metrics slice: postgresql.table.count")
 					validatedMetrics["postgresql.table.count"] = true

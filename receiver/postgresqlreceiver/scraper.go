@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
+	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
@@ -133,6 +135,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
+	p.collectUptime(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -176,6 +179,26 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName(db)
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
+}
+
+func (p *postgreSQLScraper) collectUptime(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	uptime, err := client.getServerUptime(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	uptimeFloat, err := strconv.ParseFloat(uptime, 64)
+	pp.Println("UPTIME-----------------------", uptimeFloat)
+	if err != nil {
+		errs.addPartial(err)
+	}
+	p.mb.RecordPostgresqlServerUptimeDataPoint(now, uptimeFloat)
+
 }
 
 func (p *postgreSQLScraper) collectQueryPerfStats(

@@ -47,6 +47,7 @@ type client interface {
 	getIndexStats(ctx context.Context, database string) (map[indexIdentifer]indexStat, error)
 	listDatabases(ctx context.Context) ([]string, error)
 	getQueryStats(ctx context.Context) ([]queryStats, error)
+	getServerUptime(ctx context.Context) (string, error)
 }
 
 type postgreSQLClient struct {
@@ -550,9 +551,22 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 	return qs, errors
 }
 
+func (c *postgreSQLClient) getServerUptime(ctx context.Context) (string, error) {
+	query := `
+	SELECT EXTRACT(epoch FROM current_timestamp - pg_postmaster_start_time()) AS uptime;
+	`
+	var uptime sql.NullString
+	err := c.client.QueryRow(query).Scan(&uptime)
+	if err != nil {
+		return "", err
+	}
+
+	return uptime.String, nil
+}
+
 func (c *postgreSQLClient) listDatabases(ctx context.Context) ([]string, error) {
 	query := `SELECT datname FROM pg_database
-	WHERE datistemplate = false;`
+	WHERE datistemplate = false`
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err

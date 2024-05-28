@@ -307,3 +307,12 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [query_text, query_id]
+
+  postgresql.server.uptime:
+    enabled: true
+    description: The number of seconds that the server has been up.
+    unit: s
+    sum:
+      value_type: double 
+      monotonic: true
+      aggregation_temporality: cumulative 

@@ -1071,8 +1071,8 @@ type metricPostgresqlQueryTotalExecTime struct {
 // init fills postgresql.query.total_exec_time metric with initial data.
 func (m *metricPostgresqlQueryTotalExecTime) init() {
 	m.data.SetName("postgresql.query.total_exec_time")
-	m.data.SetDescription("The total wait time of the summarized timed events.")
-	m.data.SetUnit("ms")
+	m.data.SetDescription("The total wait time of the summarized timed events in nanaoseconds.")
+	m.data.SetUnit("ns")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
@@ -1315,6 +1315,57 @@ func (m *metricPostgresqlSequentialScans) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlSequentialScans(cfg MetricConfig) metricPostgresqlSequentialScans {
 	m := metricPostgresqlSequentialScans{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlServerUptime struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.server.uptime metric with initial data.
+func (m *metricPostgresqlServerUptime) init() {
+	m.data.SetName("postgresql.server.uptime")
+	m.data.SetDescription("The number of seconds that the server has been up.")
+	m.data.SetUnit("s")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricPostgresqlServerUptime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlServerUptime) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlServerUptime) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlServerUptime(cfg MetricConfig) metricPostgresqlServerUptime {
+	m := metricPostgresqlServerUptime{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1656,6 +1707,7 @@ type MetricsBuilder struct {
 	metricPostgresqlRollbacks                metricPostgresqlRollbacks
 	metricPostgresqlRows                     metricPostgresqlRows
 	metricPostgresqlSequentialScans          metricPostgresqlSequentialScans
+	metricPostgresqlServerUptime             metricPostgresqlServerUptime
 	metricPostgresqlTableCount               metricPostgresqlTableCount
 	metricPostgresqlTableSize                metricPostgresqlTableSize
 	metricPostgresqlTableVacuumCount         metricPostgresqlTableVacuumCount
@@ -1701,6 +1753,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSetting
 		metricPostgresqlRollbacks:                newMetricPostgresqlRollbacks(mbc.Metrics.PostgresqlRollbacks),
 		metricPostgresqlRows:                     newMetricPostgresqlRows(mbc.Metrics.PostgresqlRows),
 		metricPostgresqlSequentialScans:          newMetricPostgresqlSequentialScans(mbc.Metrics.PostgresqlSequentialScans),
+		metricPostgresqlServerUptime:             newMetricPostgresqlServerUptime(mbc.Metrics.PostgresqlServerUptime),
 		metricPostgresqlTableCount:               newMetricPostgresqlTableCount(mbc.Metrics.PostgresqlTableCount),
 		metricPostgresqlTableSize:                newMetricPostgresqlTableSize(mbc.Metrics.PostgresqlTableSize),
 		metricPostgresqlTableVacuumCount:         newMetricPostgresqlTableVacuumCount(mbc.Metrics.PostgresqlTableVacuumCount),
@@ -1789,6 +1842,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricPostgresqlRollbacks.emit(ils.Metrics())
 	mb.metricPostgresqlRows.emit(ils.Metrics())
 	mb.metricPostgresqlSequentialScans.emit(ils.Metrics())
+	mb.metricPostgresqlServerUptime.emit(ils.Metrics())
 	mb.metricPostgresqlTableCount.emit(ils.Metrics())
 	mb.metricPostgresqlTableSize.emit(ils.Metrics())
 	mb.metricPostgresqlTableVacuumCount.emit(ils.Metrics())
@@ -1918,6 +1972,11 @@ func (mb *MetricsBuilder) RecordPostgresqlRowsDataPoint(ts pcommon.Timestamp, va
 // RecordPostgresqlSequentialScansDataPoint adds a data point to postgresql.sequential_scans metric.
 func (mb *MetricsBuilder) RecordPostgresqlSequentialScansDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricPostgresqlSequentialScans.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordPostgresqlServerUptimeDataPoint adds a data point to postgresql.server.uptime metric.
+func (mb *MetricsBuilder) RecordPostgresqlServerUptimeDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricPostgresqlServerUptime.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTableCountDataPoint adds a data point to postgresql.table.count metric.
