@@ -442,7 +442,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlDiskRead: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlFunctionCalls: MetricConfig{
 			Enabled: false,
@@ -703,25 +703,25 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlSessionsAbandoned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsActiveTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsCount: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsFatal: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsIdleInTransactionTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsKilled: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSessionsSessionTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlSlruBlksExists: MetricConfig{
 			Enabled: false,

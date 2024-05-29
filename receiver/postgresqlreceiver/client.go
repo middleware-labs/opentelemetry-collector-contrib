@@ -56,6 +56,7 @@ type client interface {
 	getDatabaseConflictsStats(ctx context.Context) ([]conflictStats, error)
 	getCommits(ctx context.Context) ([]Commits, error)
 	getSessionStats(ctx context.Context) ([]SessionStats, error)
+	getDiskReads(ctx context.Context) ([]DiskReads, error)
 }
 
 type postgreSQLClient struct {
@@ -1270,6 +1271,52 @@ func (c *postgreSQLClient) getClusterVacuumStats(ctx context.Context) ([]Cluster
 		})
 	}
 	return cvs, nil
+}
+
+type DiskReads struct {
+	diskRead int64
+	dbname   string
+	dbid     int64
+}
+
+func (c *postgreSQLClient) getDiskReads(ctx context.Context) ([]DiskReads, error) {
+	query := `SELECT datid, datname, blks_read FROM pg_stat_database;`
+
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_database")
+	}
+
+	defer rows.Close()
+
+	var dr []DiskReads
+	var errors error
+
+	for rows.Next() {
+		var (
+			diskRead sql.NullInt64
+			dbname   sql.NullString
+			dbid     sql.NullInt64
+		)
+
+		err = rows.Scan(
+			&dbid,
+			&dbname,
+			&diskRead,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+
+		dr = append(dr, DiskReads{
+			diskRead: diskRead.Int64,
+			dbname:   dbname.String,
+			dbid:     dbid.Int64,
+		})
+	}
+
+	return dr, errors
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

@@ -3579,9 +3579,10 @@ func (m *metricPostgresqlDiskRead) init() {
 	m.data.SetDescription("The number of disk blocks read in this database. This metric is tagged with db.")
 	m.data.SetUnit("{block}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlDiskRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlDiskRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3589,6 +3590,8 @@ func (m *metricPostgresqlDiskRead) recordDataPoint(start pcommon.Timestamp, ts p
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8451,7 +8454,7 @@ type metricPostgresqlSlruBlksHit struct {
 // init fills postgresql.slru.blks_hit metric with initial data.
 func (m *metricPostgresqlSlruBlksHit) init() {
 	m.data.SetName("postgresql.slru.blks_hit")
-	m.data.SetDescription("Number of times disk blocks were found already in the SLRU (simple least-recently-used), so that a read was not necessary (this only includes hits in the SLRU, not the operating system's file system cache). This metric is tagged with slru_name.")
+	m.data.SetDescription("Number of tim'f', -1, 64)es disk blocks were found already in the SLRU (simple least-recently-used), so that a read was not necessary (this only includes hits in the SLRU, not the operating system's file system cache). This metric is tagged with slru_name.")
 	m.data.SetUnit("{block}")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
@@ -12469,8 +12472,8 @@ func (mb *MetricsBuilder) RecordPostgresqlDeadlocksCountDataPoint(ts pcommon.Tim
 }
 
 // RecordPostgresqlDiskReadDataPoint adds a data point to postgresql.disk_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlDiskReadDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlDiskRead.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlDiskReadDataPoint(ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
+	mb.metricPostgresqlDiskRead.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 }
 
 // RecordPostgresqlFunctionCallsDataPoint adds a data point to postgresql.function.calls metric.

@@ -249,8 +249,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlDeadlocksCountDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlDiskReadDataPoint(ts, 1)
+			mb.RecordPostgresqlDiskReadDataPoint(ts, 1, 4, "dbname-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionCallsDataPoint(ts, "1")
@@ -510,31 +511,24 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlSequentialScansDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsAbandonedDataPoint(ts, "1", 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsActiveTimeDataPoint(ts, "1", 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsCountDataPoint(ts, "1", 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsFatalDataPoint(ts, "1", 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(ts, "1", 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsKilledDataPoint(ts, "1", 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlSessionsSessionTimeDataPoint(ts, "1", 4, "dbname-val")
 
@@ -1757,6 +1751,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.function.calls":
 					assert.False(t, validatedMetrics["postgresql.function.calls"], "Found a duplicate in the metrics slice: postgresql.function.calls")
 					validatedMetrics["postgresql.function.calls"] = true
@@ -3249,7 +3249,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.slru.blks_hit"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
-					assert.Equal(t, "Number of times disk blocks were found already in the SLRU (simple least-recently-used), so that a read was not necessary (this only includes hits in the SLRU, not the operating system's file system cache). This metric is tagged with slru_name.", ms.At(i).Description())
+					assert.Equal(t, "Number of tim'f', -1, 64)es disk blocks were found already in the SLRU (simple least-recently-used), so that a read was not necessary (this only includes hits in the SLRU, not the operating system's file system cache). This metric is tagged with slru_name.", ms.At(i).Description())
 					assert.Equal(t, "{block}", ms.At(i).Unit())
 					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())

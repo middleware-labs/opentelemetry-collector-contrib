@@ -143,6 +143,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectDatabaseConflictStats(ctx, now, listClient, &errs)
 	p.collectCommts(ctx, now, listClient, &errs)
 	p.collectSessionStats(ctx, now, listClient, &errs)
+	p.collectDiskReads(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -443,6 +444,22 @@ func (p *postgreSQLScraper) collectIOStats(
 		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads, s.backendType)
 		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time, s.backendType)
 		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes, s.backendType)
+	}
+}
+
+func (p *postgreSQLScraper) collectDiskReads(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	drs, err := client.getDiskReads(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	for _, s := range drs {
+		p.mb.RecordPostgresqlDiskReadDataPoint(now, s.diskRead, s.dbid, s.dbname)
 	}
 }
 
