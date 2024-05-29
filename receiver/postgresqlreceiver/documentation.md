@@ -12,24 +12,25 @@ metrics:
     enabled: false
 ```
 
-### postgresql.disk_read
+### postgresql.function.calls
 
-The number of disk blocks read in this database. This metric is tagged with db.
+Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| dbid | id of the database. | Any Int |
-| dbname | name of the database | Any Str |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
 
-### postgresql.function.calls
+### postgresql.function.self_time
 
-Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
+Enabled with `collect_function_metrics`. Total time spent in this function itself, not including other functions called by it. This metric is tagged with db, schema, function.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
@@ -58,6 +59,38 @@ Enabled with `collect_function_metrics`. Total time spent in this function and a
 | fname | function name | Any Str |
 | fid | Function id | Any Int |
 | schema_name | name of the schema | Any Str |
+
+### postgresql.heap_blocks_hit
+
+Enabled with `relations`. The number of buffer hits in this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relid | id of the relation | Any Int |
+| schema_name | name of the schema | Any Str |
+| relname | name of the relation | Any Str |
+
+### postgresql.heap_blocks_read
+
+Enabled with `relations`. The number of disk blocks read from this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relid | id of the relation | Any Int |
+| schema_name | name of the schema | Any Str |
+| relname | name of the relation | Any Str |
 
 ## Optional Metrics
 
@@ -774,37 +807,20 @@ The number of deadlocks detected in this database. This metric is tagged with db
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {lock} | Sum | Int | Cumulative | true |
 
-### postgresql.function.self_time
+### postgresql.disk_read
 
-Enabled with `collect_function_metrics`. Total time spent in this function itself, not including other functions called by it. This metric is tagged with db, schema, function.
+The number of disk blocks read in this database. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| fname | function name | Any Str |
-| fid | Function id | Any Int |
-| schema_name | name of the schema | Any Str |
-
-### postgresql.heap_blocks_hit
-
-Enabled with `relations`. The number of buffer hits in this table. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {hit}/s | Gauge | Int |
-
-### postgresql.heap_blocks_read
-
-Enabled with `relations`. The number of disk blocks read from this table. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block}/s | Gauge | Int |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
 
 ### postgresql.index.scans
 

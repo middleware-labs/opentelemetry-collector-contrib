@@ -101,6 +101,9 @@ attributes:
   relname:
     description: name of the relation
     type: string
+  relid:
+    description: id of the relation
+    type: int
   command:
     description: The command that is running. Either CLUSTER or VACUUM FULL.
     type: string
@@ -548,7 +551,7 @@ metrics:
       - fname
       - fid
       - schema_name
-    enabled: true
+    enabled: false 
     description: Enabled with `collect_function_metrics`. The number of calls made to
       a function. This metric is tagged with db, schema, function.
     unit: "1"
@@ -562,7 +565,7 @@ metrics:
       - fname
       - fid
       - schema_name
-    enabled: true 
+    enabled: false 
     description: Enabled with `collect_function_metrics`. Total time spent in this function
       itself, not including other functions called by it. This metric is tagged with
       db, schema, function.
@@ -577,7 +580,7 @@ metrics:
       - fname
       - fid
       - schema_name
-    enabled: true 
+    enabled: false 
     description: Enabled with `collect_function_metrics`. Total time spent in this function
       and all other functions called by it. This metric is tagged with db, schema, function.
     unit: "1"
@@ -1642,14 +1645,22 @@ metrics:
     gauge:
       value_type: int
   postgresql.heap_blocks_hit:
-    enabled: false
+    attributes:
+      - relid
+      - schema_name
+      - relname
+    enabled: true
     description: Enabled with `relations`. The number of buffer hits in this table.
       This metric is tagged with db, schema, table.
     unit: '{hit}/s'
     gauge:
       value_type: int
   postgresql.heap_blocks_read:
-    enabled: false
+    attributes:
+      - relid
+      - schema_name
+      - relname   
+    enabled: true
     description: Enabled with `relations`. The number of disk blocks read from this
       table. This metric is tagged with db, schema, table.
     unit: '{block}/s'

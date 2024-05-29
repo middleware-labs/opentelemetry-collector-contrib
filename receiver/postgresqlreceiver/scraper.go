@@ -145,6 +145,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectSessionStats(ctx, now, listClient, &errs)
 	p.collectDiskReads(ctx, now, listClient, &errs)
 	p.collectFuncStats(ctx, now, listClient, &errs)
+	p.collectHeapBlockStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -637,6 +638,25 @@ func (p *postgreSQLScraper) collectFuncStats(
 		p.mb.RecordPostgresqlFunctionCallsDataPoint(now, calls, s.fname, s.fid, s.schemaName)
 		p.mb.RecordPostgresqlFunctionSelfTimeDataPoint(now, selfTime, s.fname, s.fid, s.schemaName)
 		p.mb.RecordPostgresqlFunctionTotalTimeDataPoint(now, totalTime, s.fname, s.fid, s.schemaName)
+	}
+}
+
+func (p *postgreSQLScraper) collectHeapBlockStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	hbs, err := client.getHeapBlocksStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range hbs {
+		p.mb.RecordPostgresqlHeapBlocksHitDataPoint(now, s.hits, s.relId, s.schemaName, s.relName)
+		p.mb.RecordPostgresqlHeapBlocksReadDataPoint(now, s.reads, s.relId, s.schemaName, s.relName)
 	}
 }
 

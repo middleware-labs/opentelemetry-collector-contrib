@@ -58,6 +58,7 @@ type client interface {
 	getSessionStats(ctx context.Context) ([]SessionStats, error)
 	getDiskReads(ctx context.Context) ([]DiskReads, error)
 	getFunctionStats(ctx context.Context) ([]FuncStats, error)
+	getHeapBlocksStats(ctx context.Context) ([]HeapBlockStats, error)
 }
 
 type postgreSQLClient struct {
@@ -1376,6 +1377,60 @@ func (c *postgreSQLClient) getFunctionStats(ctx context.Context) ([]FuncStats, e
 		})
 	}
 	return fs, nil
+}
+
+type HeapBlockStats struct {
+	relId      int64
+	schemaName string
+	relName    string
+	hits       int64
+	reads      int64
+}
+
+func (c *postgreSQLClient) getHeapBlocksStats(ctx context.Context) ([]HeapBlockStats, error) {
+	query := `SELECT relid, schemaname, relname, heap_blks_hit, heap_blks_read FROM pg_statio_all_tables;`
+
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_statio_all_tables:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var hbs []HeapBlockStats
+	var errors error
+
+	for rows.Next() {
+		var (
+			relId      sql.NullInt64
+			schemaName sql.NullString
+			relName    sql.NullString
+			hits       sql.NullInt64
+			reads      sql.NullInt64
+		)
+
+		err := rows.Scan(
+			&relId,
+			&schemaName,
+			&relName,
+			&hits,
+			&reads,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+
+		hbs = append(hbs, HeapBlockStats{
+			relId:      relId.Int64,
+			schemaName: schemaName.String,
+			relName:    relName.String,
+			hits:       hits.Int64,
+			reads:      reads.Int64,
+		})
+	}
+	return hbs, nil
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

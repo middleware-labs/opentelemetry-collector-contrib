@@ -3796,9 +3796,10 @@ func (m *metricPostgresqlHeapBlocksHit) init() {
 	m.data.SetDescription("Enabled with `relations`. The number of buffer hits in this table. This metric is tagged with db, schema, table.")
 	m.data.SetUnit("{hit}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlHeapBlocksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlHeapBlocksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relidAttributeValue int64, schemaNameAttributeValue string, relnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3806,6 +3807,9 @@ func (m *metricPostgresqlHeapBlocksHit) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("relid", relidAttributeValue)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3845,9 +3849,10 @@ func (m *metricPostgresqlHeapBlocksRead) init() {
 	m.data.SetDescription("Enabled with `relations`. The number of disk blocks read from this table. This metric is tagged with db, schema, table.")
 	m.data.SetUnit("{block}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlHeapBlocksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlHeapBlocksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relidAttributeValue int64, schemaNameAttributeValue string, relnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3855,6 +3860,9 @@ func (m *metricPostgresqlHeapBlocksRead) recordDataPoint(start pcommon.Timestamp
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("relid", relidAttributeValue)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12519,13 +12527,13 @@ func (mb *MetricsBuilder) RecordPostgresqlFunctionTotalTimeDataPoint(ts pcommon.
 }
 
 // RecordPostgresqlHeapBlocksHitDataPoint adds a data point to postgresql.heap_blocks_hit metric.
-func (mb *MetricsBuilder) RecordPostgresqlHeapBlocksHitDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlHeapBlocksHit.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlHeapBlocksHitDataPoint(ts pcommon.Timestamp, val int64, relidAttributeValue int64, schemaNameAttributeValue string, relnameAttributeValue string) {
+	mb.metricPostgresqlHeapBlocksHit.recordDataPoint(mb.startTime, ts, val, relidAttributeValue, schemaNameAttributeValue, relnameAttributeValue)
 }
 
 // RecordPostgresqlHeapBlocksReadDataPoint adds a data point to postgresql.heap_blocks_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlHeapBlocksReadDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlHeapBlocksRead.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlHeapBlocksReadDataPoint(ts pcommon.Timestamp, val int64, relidAttributeValue int64, schemaNameAttributeValue string, relnameAttributeValue string) {
+	mb.metricPostgresqlHeapBlocksRead.recordDataPoint(mb.startTime, ts, val, relidAttributeValue, schemaNameAttributeValue, relnameAttributeValue)
 }
 
 // RecordPostgresqlIndexScansDataPoint adds a data point to postgresql.index.scans metric.

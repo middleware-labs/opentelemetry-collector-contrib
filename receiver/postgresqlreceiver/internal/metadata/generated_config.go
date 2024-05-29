@@ -442,22 +442,22 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlDiskRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlFunctionCalls: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlFunctionSelfTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlFunctionTotalTime: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlHeapBlocksHit: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlHeapBlocksRead: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIndexScans: MetricConfig{
 			Enabled: false,
