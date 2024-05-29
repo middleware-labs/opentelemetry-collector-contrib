@@ -57,6 +57,7 @@ type client interface {
 	getCommits(ctx context.Context) ([]Commits, error)
 	getSessionStats(ctx context.Context) ([]SessionStats, error)
 	getDiskReads(ctx context.Context) ([]DiskReads, error)
+	getFunctionStats(ctx context.Context) ([]FuncStats, error)
 }
 
 type postgreSQLClient struct {
@@ -1317,6 +1318,64 @@ func (c *postgreSQLClient) getDiskReads(ctx context.Context) ([]DiskReads, error
 	}
 
 	return dr, errors
+}
+
+type FuncStats struct {
+	fid        int64
+	schemaName string
+	fname      string
+	calls      int64
+	totalTime  float64
+	selfTime   float64
+}
+
+func (c *postgreSQLClient) getFunctionStats(ctx context.Context) ([]FuncStats, error) {
+	query := `SELECT funcid, schemaname, funcname, calls, total_time, self_time FROM pg_stat_user_functions;`
+
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_user_functions:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var fs []FuncStats
+	var errors error
+
+	for rows.Next() {
+		var (
+			fid        sql.NullInt64
+			schemaName sql.NullString
+			fname      sql.NullString
+			calls      sql.NullInt64
+			totalTime  sql.NullFloat64
+			selfTime   sql.NullFloat64
+		)
+
+		err := rows.Scan(
+			&fid,
+			&schemaName,
+			&fname,
+			&calls,
+			&totalTime,
+			&selfTime,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+
+		fs = append(fs, FuncStats{
+			fid:        fid.Int64,
+			schemaName: schemaName.String,
+			fname:      fname.String,
+			calls:      calls.Int64,
+			totalTime:  totalTime.Float64,
+			selfTime:   selfTime.Float64,
+		})
+	}
+	return fs, nil
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

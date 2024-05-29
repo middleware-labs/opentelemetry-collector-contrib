@@ -27,6 +27,38 @@ The number of disk blocks read in this database. This metric is tagged with db.
 | dbid | id of the database. | Any Int |
 | dbname | name of the database | Any Str |
 
+### postgresql.function.calls
+
+Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
+
+### postgresql.function.total_time
+
+Enabled with `collect_function_metrics`. Total time spent in this function and all other functions called by it. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
+
 ## Optional Metrics
 
 The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
@@ -742,14 +774,6 @@ The number of deadlocks detected in this database. This metric is tagged with db
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {lock} | Sum | Int | Cumulative | true |
 
-### postgresql.function.calls
-
-Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
 ### postgresql.function.self_time
 
 Enabled with `collect_function_metrics`. Total time spent in this function itself, not including other functions called by it. This metric is tagged with db, schema, function.
@@ -758,13 +782,13 @@ Enabled with `collect_function_metrics`. Total time spent in this function itsel
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | false |
 
-### postgresql.function.total_time
+#### Attributes
 
-Enabled with `collect_function_metrics`. Total time spent in this function and all other functions called by it. This metric is tagged with db, schema, function.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
 
 ### postgresql.heap_blocks_hit
 

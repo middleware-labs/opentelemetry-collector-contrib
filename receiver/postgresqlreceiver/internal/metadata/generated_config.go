@@ -445,13 +445,13 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		PostgresqlFunctionCalls: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlFunctionSelfTime: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlFunctionTotalTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlHeapBlocksHit: MetricConfig{
 			Enabled: false,

@@ -144,6 +144,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectCommts(ctx, now, listClient, &errs)
 	p.collectSessionStats(ctx, now, listClient, &errs)
 	p.collectDiskReads(ctx, now, listClient, &errs)
+	p.collectFuncStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -614,6 +615,28 @@ func (p *postgreSQLScraper) collectAnalyzeCount(
 		p.mb.RecordPostgresqlAnalyzedDataPoint(now, ac, c.schemaname, c.relname)
 		p.mb.RecordPostgresqlAutoanalyzedDataPoint(now, aac, c.schemaname, c.relname)
 		p.mb.RecordPostgresqlAutovacuumedDataPoint(now, avc, c.relname, c.relname)
+	}
+}
+
+func (p *postgreSQLScraper) collectFuncStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	fs, err := client.getFunctionStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range fs {
+		calls := strconv.FormatInt(s.calls, 10)
+		selfTime := strconv.FormatFloat(s.selfTime, 'f', -1, 64)
+		totalTime := strconv.FormatFloat(s.totalTime, 'f', -1, 64)
+		p.mb.RecordPostgresqlFunctionCallsDataPoint(now, calls, s.fname, s.fid, s.schemaName)
+		p.mb.RecordPostgresqlFunctionSelfTimeDataPoint(now, selfTime, s.fname, s.fid, s.schemaName)
+		p.mb.RecordPostgresqlFunctionTotalTimeDataPoint(now, totalTime, s.fname, s.fid, s.schemaName)
 	}
 }
 

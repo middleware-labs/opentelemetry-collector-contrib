@@ -253,14 +253,16 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlDiskReadDataPoint(ts, 1, 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlFunctionCallsDataPoint(ts, "1")
+			mb.RecordPostgresqlFunctionCallsDataPoint(ts, "1", "fname-val", 3, "schema_name-val")
 
 			allMetricsCount++
-			mb.RecordPostgresqlFunctionSelfTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlFunctionSelfTimeDataPoint(ts, "1", "fname-val", 3, "schema_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlFunctionTotalTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlFunctionTotalTimeDataPoint(ts, "1", "fname-val", 3, "schema_name-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlHeapBlocksHitDataPoint(ts, 1)
@@ -1771,6 +1773,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("fname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "fname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("fid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
 				case "postgresql.function.self_time":
 					assert.False(t, validatedMetrics["postgresql.function.self_time"], "Found a duplicate in the metrics slice: postgresql.function.self_time")
 					validatedMetrics["postgresql.function.self_time"] = true
@@ -1785,6 +1796,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("fname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "fname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("fid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
 				case "postgresql.function.total_time":
 					assert.False(t, validatedMetrics["postgresql.function.total_time"], "Found a duplicate in the metrics slice: postgresql.function.total_time")
 					validatedMetrics["postgresql.function.total_time"] = true
@@ -1799,6 +1819,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("fname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "fname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("fid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
 				case "postgresql.heap_blocks_hit":
 					assert.False(t, validatedMetrics["postgresql.heap_blocks_hit"], "Found a duplicate in the metrics slice: postgresql.heap_blocks_hit")
 					validatedMetrics["postgresql.heap_blocks_hit"] = true

@@ -110,6 +110,12 @@ attributes:
   index: 
     description: Index of the table
     type: string 
+  fid:
+    description: Function id
+    type: int
+  fname:
+    description: function name
+    type: string 
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -538,7 +544,11 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   postgresql.function.calls:
-    enabled: false
+    attributes:
+      - fname
+      - fid
+      - schema_name
+    enabled: true
     description: Enabled with `collect_function_metrics`. The number of calls made to
       a function. This metric is tagged with db, schema, function.
     unit: "1"
@@ -548,7 +558,11 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.function.self_time:
-    enabled: false
+    attributes:
+      - fname
+      - fid
+      - schema_name
+    enabled: true 
     description: Enabled with `collect_function_metrics`. Total time spent in this function
       itself, not including other functions called by it. This metric is tagged with
       db, schema, function.
@@ -559,7 +573,11 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
   postgresql.function.total_time:
-    enabled: false
+    attributes:
+      - fname
+      - fid
+      - schema_name
+    enabled: true 
     description: Enabled with `collect_function_metrics`. Total time spent in this function
       and all other functions called by it. This metric is tagged with db, schema, function.
     unit: "1"
@@ -1617,7 +1635,7 @@ metrics:
     attributes:
       - dbid
       - dbname
-    enabled: true
+    enabled: false 
     description: The number of disk blocks read in this database. This metric is tagged
       with db.
     unit: '{block}/s'

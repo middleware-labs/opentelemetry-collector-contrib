@@ -3633,9 +3633,10 @@ func (m *metricPostgresqlFunctionCalls) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlFunctionCalls) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlFunctionCalls) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, fnameAttributeValue string, fidAttributeValue int64, schemaNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3643,6 +3644,9 @@ func (m *metricPostgresqlFunctionCalls) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("fname", fnameAttributeValue)
+	dp.Attributes().PutInt("fid", fidAttributeValue)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3684,9 +3688,10 @@ func (m *metricPostgresqlFunctionSelfTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlFunctionSelfTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlFunctionSelfTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, fnameAttributeValue string, fidAttributeValue int64, schemaNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3694,6 +3699,9 @@ func (m *metricPostgresqlFunctionSelfTime) recordDataPoint(start pcommon.Timesta
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("fname", fnameAttributeValue)
+	dp.Attributes().PutInt("fid", fidAttributeValue)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3735,9 +3743,10 @@ func (m *metricPostgresqlFunctionTotalTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlFunctionTotalTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlFunctionTotalTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, fnameAttributeValue string, fidAttributeValue int64, schemaNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3745,6 +3754,9 @@ func (m *metricPostgresqlFunctionTotalTime) recordDataPoint(start pcommon.Timest
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("fname", fnameAttributeValue)
+	dp.Attributes().PutInt("fid", fidAttributeValue)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12477,32 +12489,32 @@ func (mb *MetricsBuilder) RecordPostgresqlDiskReadDataPoint(ts pcommon.Timestamp
 }
 
 // RecordPostgresqlFunctionCallsDataPoint adds a data point to postgresql.function.calls metric.
-func (mb *MetricsBuilder) RecordPostgresqlFunctionCallsDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlFunctionCallsDataPoint(ts pcommon.Timestamp, inputVal string, fnameAttributeValue string, fidAttributeValue int64, schemaNameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlFunctionCalls, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlFunctionCalls.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlFunctionCalls.recordDataPoint(mb.startTime, ts, val, fnameAttributeValue, fidAttributeValue, schemaNameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlFunctionSelfTimeDataPoint adds a data point to postgresql.function.self_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlFunctionSelfTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlFunctionSelfTimeDataPoint(ts pcommon.Timestamp, inputVal string, fnameAttributeValue string, fidAttributeValue int64, schemaNameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlFunctionSelfTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlFunctionSelfTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlFunctionSelfTime.recordDataPoint(mb.startTime, ts, val, fnameAttributeValue, fidAttributeValue, schemaNameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlFunctionTotalTimeDataPoint adds a data point to postgresql.function.total_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlFunctionTotalTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlFunctionTotalTimeDataPoint(ts pcommon.Timestamp, inputVal string, fnameAttributeValue string, fidAttributeValue int64, schemaNameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlFunctionTotalTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlFunctionTotalTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlFunctionTotalTime.recordDataPoint(mb.startTime, ts, val, fnameAttributeValue, fidAttributeValue, schemaNameAttributeValue)
 	return nil
 }
 
