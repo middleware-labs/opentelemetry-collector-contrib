@@ -367,7 +367,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlCommits: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsBufferpin: MetricConfig{
 			Enabled: false,
@@ -703,25 +703,25 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlSessionsAbandoned: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSessionsActiveTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSessionsCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSessionsFatal: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSessionsIdleInTransactionTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSessionsKilled: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSessionsSessionTime: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlSlruBlksExists: MetricConfig{
 			Enabled: false,

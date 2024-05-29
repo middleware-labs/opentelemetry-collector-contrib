@@ -12,13 +12,103 @@ metrics:
     enabled: false
 ```
 
-### postgresql.commits
+### postgresql.sessions.abandoned
 
-The number of transactions that have been committed in this database. This metric is tagged with db.
+Number of database sessions to this database that were terminated because connection to the client was lost. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {transaction}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.sessions.active_time
+
+Time spent executing SQL statements in this database, in milliseconds (this corresponds to the states active and fastpath function call in pg_stat_activity). This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.sessions.count
+
+Total number of sessions established to this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.sessions.fatal
+
+Number of database sessions to this database that were terminated by fatal errors. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.sessions.idle_in_transaction_time
+
+Time spent idling while in a transaction in this database, in milliseconds (this corresponds to the states idle in transaction and idle in transaction (aborted) in pg_stat_activity). This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.sessions.killed
+
+Number of database sessions to this database that were terminated by operator intervention. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {session} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.sessions.session_time
+
+Time spent by database sessions in this database, in milliseconds (note that statistics are only updated when the state of a session changes, so if sessions have been idle for a long time, this idle time won't be included). This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {millisecond} | Sum | Int | Cumulative | true |
 
 #### Attributes
 
@@ -499,6 +589,21 @@ Number of indexes rebuilt. This counter only advances when the phase is rebuildi
 | command | The command that is running. Either CLUSTER or VACUUM FULL. | Any Str |
 | phase | Current processing phase of index creation. | Any Str |
 | index | Index of the table | Any Str |
+
+### postgresql.commits
+
+The number of transactions that have been committed in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
 
 ### postgresql.conflicts.bufferpin
 
@@ -1635,62 +1740,6 @@ The number of sequential scans.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {sequential_scan} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.abandoned
-
-Number of database sessions to this database that were terminated because connection to the client was lost. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {session} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.active_time
-
-Time spent executing SQL statements in this database, in milliseconds (this corresponds to the states active and fastpath function call in pg_stat_activity). This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {millisecond} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.count
-
-Total number of sessions established to this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {session} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.fatal
-
-Number of database sessions to this database that were terminated by fatal errors. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {session} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.idle_in_transaction_time
-
-Time spent idling while in a transaction in this database, in milliseconds (this corresponds to the states idle in transaction and idle in transaction (aborted) in pg_stat_activity). This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {millisecond} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.killed
-
-Number of database sessions to this database that were terminated by operator intervention. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {session} | Sum | Int | Cumulative | true |
-
-### postgresql.sessions.session_time
-
-Time spent by database sessions in this database, in milliseconds (note that statistics are only updated when the state of a session changes, so if sessions have been idle for a long time, this idle time won't be included). This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {millisecond} | Sum | Int | Cumulative | true |
 
 ### postgresql.slru.blks_exists
 

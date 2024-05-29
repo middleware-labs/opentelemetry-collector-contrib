@@ -174,7 +174,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(ts, 1, "dbname-val", "relname-val", "command-val", "phase-val", "index-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCommitsDataPoint(ts, 1, 4, "dbname-val")
 
@@ -511,26 +510,33 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlSequentialScansDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsAbandonedDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsAbandonedDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsActiveTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsActiveTimeDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsCountDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsCountDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsFatalDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsFatalDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsKilledDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsKilledDataPoint(ts, "1", 4, "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlSessionsSessionTimeDataPoint(ts, "1")
+			mb.RecordPostgresqlSessionsSessionTimeDataPoint(ts, "1", 4, "dbname-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlSlruBlksExistsDataPoint(ts, "1")
@@ -3098,6 +3104,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.sessions.active_time":
 					assert.False(t, validatedMetrics["postgresql.sessions.active_time"], "Found a duplicate in the metrics slice: postgresql.sessions.active_time")
 					validatedMetrics["postgresql.sessions.active_time"] = true
@@ -3112,6 +3124,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.sessions.count":
 					assert.False(t, validatedMetrics["postgresql.sessions.count"], "Found a duplicate in the metrics slice: postgresql.sessions.count")
 					validatedMetrics["postgresql.sessions.count"] = true
@@ -3126,6 +3144,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.sessions.fatal":
 					assert.False(t, validatedMetrics["postgresql.sessions.fatal"], "Found a duplicate in the metrics slice: postgresql.sessions.fatal")
 					validatedMetrics["postgresql.sessions.fatal"] = true
@@ -3140,6 +3164,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.sessions.idle_in_transaction_time":
 					assert.False(t, validatedMetrics["postgresql.sessions.idle_in_transaction_time"], "Found a duplicate in the metrics slice: postgresql.sessions.idle_in_transaction_time")
 					validatedMetrics["postgresql.sessions.idle_in_transaction_time"] = true
@@ -3154,6 +3184,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.sessions.killed":
 					assert.False(t, validatedMetrics["postgresql.sessions.killed"], "Found a duplicate in the metrics slice: postgresql.sessions.killed")
 					validatedMetrics["postgresql.sessions.killed"] = true
@@ -3168,6 +3204,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.sessions.session_time":
 					assert.False(t, validatedMetrics["postgresql.sessions.session_time"], "Found a duplicate in the metrics slice: postgresql.sessions.session_time")
 					validatedMetrics["postgresql.sessions.session_time"] = true
@@ -3182,6 +3224,12 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 4, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.slru.blks_exists":
 					assert.False(t, validatedMetrics["postgresql.slru.blks_exists"], "Found a duplicate in the metrics slice: postgresql.slru.blks_exists")
 					validatedMetrics["postgresql.slru.blks_exists"] = true

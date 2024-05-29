@@ -55,6 +55,7 @@ type client interface {
 	getClusterVacuumStats(ctx context.Context) ([]ClusterVacuumStats, error)
 	getDatabaseConflictsStats(ctx context.Context) ([]conflictStats, error)
 	getCommits(ctx context.Context) ([]Commits, error)
+	getSessionStats(ctx context.Context) ([]SessionStats, error)
 }
 
 type postgreSQLClient struct {
@@ -691,6 +692,74 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		})
 	}
 	return qs, errors
+}
+
+type SessionStats struct {
+	dbid                 int64
+	dbname               string
+	sessionsAbandoned    int64
+	activeTime           float64
+	sessionCount         int64
+	sessionsFatal        int64
+	idleInTransctionTime float64
+	sessionsKilled       int64
+	sessionTime          float64
+}
+
+func (c *postgreSQLClient) getSessionStats(ctx context.Context) ([]SessionStats, error) {
+	query := ` SELECT datid, datname, sessions_abandoned, active_time, sessions, sessions_fatal, idle_in_transaction_time, sessions_killed, session_time FROM pg_stat_database;`
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_database:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var ss []SessionStats
+	var errors error
+
+	for rows.Next() {
+		var (
+			dbid                 sql.NullInt64
+			dbname               sql.NullString
+			sessionsAbandoned    sql.NullInt64
+			activeTime           sql.NullFloat64
+			sessionCount         sql.NullInt64
+			sessionsFatal        sql.NullInt64
+			idleInTransctionTime sql.NullFloat64
+			sessionsKilled       sql.NullInt64
+			sessionTime          sql.NullFloat64
+		)
+		err := rows.Scan(
+			&dbid,
+			&dbname,
+			&sessionsAbandoned,
+			&activeTime,
+			&sessionCount,
+			&sessionsFatal,
+			&idleInTransctionTime,
+			&sessionsKilled,
+			&sessionTime,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+		ss = append(ss, SessionStats{
+			dbid:                 dbid.Int64,
+			dbname:               dbname.String,
+			sessionsAbandoned:    sessionCount.Int64,
+			activeTime:           activeTime.Float64,
+			sessionCount:         sessionCount.Int64,
+			sessionsFatal:        sessionsFatal.Int64,
+			idleInTransctionTime: idleInTransctionTime.Float64,
+			sessionsKilled:       sessionsKilled.Int64,
+			sessionTime:          sessionTime.Float64,
+		})
+	}
+	return ss, nil
 }
 
 func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, error) {

@@ -8027,9 +8027,10 @@ func (m *metricPostgresqlSessionsAbandoned) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsAbandoned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsAbandoned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8037,6 +8038,8 @@ func (m *metricPostgresqlSessionsAbandoned) recordDataPoint(start pcommon.Timest
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8078,9 +8081,10 @@ func (m *metricPostgresqlSessionsActiveTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsActiveTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsActiveTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8088,6 +8092,8 @@ func (m *metricPostgresqlSessionsActiveTime) recordDataPoint(start pcommon.Times
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8129,9 +8135,10 @@ func (m *metricPostgresqlSessionsCount) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8139,6 +8146,8 @@ func (m *metricPostgresqlSessionsCount) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8180,9 +8189,10 @@ func (m *metricPostgresqlSessionsFatal) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsFatal) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsFatal) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8190,6 +8200,8 @@ func (m *metricPostgresqlSessionsFatal) recordDataPoint(start pcommon.Timestamp,
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8231,9 +8243,10 @@ func (m *metricPostgresqlSessionsIdleInTransactionTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsIdleInTransactionTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsIdleInTransactionTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8241,6 +8254,8 @@ func (m *metricPostgresqlSessionsIdleInTransactionTime) recordDataPoint(start pc
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8282,9 +8297,10 @@ func (m *metricPostgresqlSessionsKilled) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsKilled) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsKilled) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8292,6 +8308,8 @@ func (m *metricPostgresqlSessionsKilled) recordDataPoint(start pcommon.Timestamp
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -8333,9 +8351,10 @@ func (m *metricPostgresqlSessionsSessionTime) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlSessionsSessionTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlSessionsSessionTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -8343,6 +8362,8 @@ func (m *metricPostgresqlSessionsSessionTime) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -13068,72 +13089,72 @@ func (mb *MetricsBuilder) RecordPostgresqlSequentialScansDataPoint(ts pcommon.Ti
 }
 
 // RecordPostgresqlSessionsAbandonedDataPoint adds a data point to postgresql.sessions.abandoned metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsAbandonedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsAbandonedDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsAbandoned, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsAbandoned.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsAbandoned.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlSessionsActiveTimeDataPoint adds a data point to postgresql.sessions.active_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsActiveTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsActiveTimeDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsActiveTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsActiveTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsActiveTime.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlSessionsCountDataPoint adds a data point to postgresql.sessions.count metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsCountDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsCountDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsCount, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsCount.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsCount.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlSessionsFatalDataPoint adds a data point to postgresql.sessions.fatal metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsFatalDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsFatalDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsFatal, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsFatal.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsFatal.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlSessionsIdleInTransactionTimeDataPoint adds a data point to postgresql.sessions.idle_in_transaction_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsIdleInTransactionTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsIdleInTransactionTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsIdleInTransactionTime.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlSessionsKilledDataPoint adds a data point to postgresql.sessions.killed metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsKilledDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsKilledDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsKilled, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsKilled.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsKilled.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 
 // RecordPostgresqlSessionsSessionTimeDataPoint adds a data point to postgresql.sessions.session_time metric.
-func (mb *MetricsBuilder) RecordPostgresqlSessionsSessionTimeDataPoint(ts pcommon.Timestamp, inputVal string) error {
+func (mb *MetricsBuilder) RecordPostgresqlSessionsSessionTimeDataPoint(ts pcommon.Timestamp, inputVal string, dbidAttributeValue int64, dbnameAttributeValue string) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse int64 for PostgresqlSessionsSessionTime, value was %s: %w", inputVal, err)
 	}
-	mb.metricPostgresqlSessionsSessionTime.recordDataPoint(mb.startTime, ts, val)
+	mb.metricPostgresqlSessionsSessionTime.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 	return nil
 }
 

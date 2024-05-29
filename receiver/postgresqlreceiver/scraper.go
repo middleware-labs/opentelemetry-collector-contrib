@@ -142,6 +142,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectClusterVacuumStats(ctx, now, listClient, &errs)
 	p.collectDatabaseConflictStats(ctx, now, listClient, &errs)
 	p.collectCommts(ctx, now, listClient, &errs)
+	p.collectSessionStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -512,6 +513,36 @@ func (p *postgreSQLScraper) collectChecksumStats(
 
 		p.mb.RecordPostgresqlChecksumsChecksumFailuresDataPoint(now, failures, dbname)
 		p.mb.RecordPostgresqlChecksumsEnabledDataPoint(now, enabled, dbname)
+	}
+}
+
+func (p *postgreSQLScraper) collectSessionStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	ss, err := client.getSessionStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range ss {
+		abandoned := strconv.FormatInt(s.sessionsAbandoned, 10)
+		activeTime := strconv.FormatFloat(s.activeTime, 'f', -1, 64)
+		count := strconv.FormatInt(s.sessionCount, 10)
+		fatal := strconv.FormatInt(s.sessionCount, 10)
+		killed := strconv.FormatInt(s.sessionsKilled, 10)
+		time := strconv.FormatFloat(s.sessionTime, 'f', -1, 64)
+		idleXactTime := strconv.FormatFloat(s.idleInTransctionTime, 'f', -1, 64)
+		p.mb.RecordPostgresqlSessionsAbandonedDataPoint(now, abandoned, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlSessionsActiveTimeDataPoint(now, activeTime, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlSessionsCountDataPoint(now, count, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlSessionsFatalDataPoint(now, fatal, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlSessionsKilledDataPoint(now, killed, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlSessionsSessionTimeDataPoint(now, time, s.dbid, s.dbname)
+		p.mb.RecordPostgresqlSessionsIdleInTransactionTimeDataPoint(now, idleXactTime, s.dbid, s.dbname)
 	}
 }
 
