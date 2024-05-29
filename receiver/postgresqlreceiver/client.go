@@ -54,6 +54,7 @@ type client interface {
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
 	getClusterVacuumStats(ctx context.Context) ([]ClusterVacuumStats, error)
 	getDatabaseConflictsStats(ctx context.Context) ([]conflictStats, error)
+	getCommits(ctx context.Context) ([]Commits, error)
 }
 
 type postgreSQLClient struct {
@@ -969,16 +970,6 @@ type conflictStats struct {
 }
 
 func (c *postgreSQLClient) getDatabaseConflictsStats(ctx context.Context) ([]conflictStats, error) {
-	// query := ` SELECT
-	// datid,
-	// datname,
-	// confl_tablespace,
-	// confl_lock,
-	// confl_snapshot,
-	// confl_bufferpin,
-	// confl_deadlock
-	// FROM pg_catalog.pg_stat_database_conflicts;
-	// `
 	query := ` SELECT
 	datid,
 	datname,
@@ -1036,6 +1027,45 @@ func (c *postgreSQLClient) getDatabaseConflictsStats(ctx context.Context) ([]con
 		})
 	}
 	return cs, nil
+}
+
+type Commits struct {
+	dbid    int64
+	dbname  string
+	commits int64
+}
+
+func (c *postgreSQLClient) getCommits(ctx context.Context) ([]Commits, error) {
+	query := `SELECT datid, datname, xact_commit FROM pg_stat_database;`
+
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_database:: %w", err)
+	}
+
+	defer rows.Close()
+
+	var cmts []Commits
+	var errors error
+
+	for rows.Next() {
+		var dbname sql.NullString
+		var dbid, commts sql.NullInt64
+
+		err = rows.Scan(&dbid, &dbname, &commts)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+			continue
+		}
+		cmts = append(cmts, Commits{
+			dbid:    dbid.Int64,
+			dbname:  dbname.String,
+			commits: commts.Int64,
+		})
+	}
+	return cmts, nil
 }
 
 type BufferHit struct {

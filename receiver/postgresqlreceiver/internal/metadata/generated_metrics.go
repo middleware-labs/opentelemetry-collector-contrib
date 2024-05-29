@@ -2318,9 +2318,10 @@ func (m *metricPostgresqlCommits) init() {
 	m.data.SetDescription("The number of transactions that have been committed in this database. This metric is tagged with db.")
 	m.data.SetUnit("{transaction}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlCommits) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlCommits) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2328,6 +2329,8 @@ func (m *metricPostgresqlCommits) recordDataPoint(start pcommon.Timestamp, ts pc
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("dbid", dbidAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12290,8 +12293,8 @@ func (mb *MetricsBuilder) RecordPostgresqlClusterVacuumIndexRebuildCountDataPoin
 }
 
 // RecordPostgresqlCommitsDataPoint adds a data point to postgresql.commits metric.
-func (mb *MetricsBuilder) RecordPostgresqlCommitsDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlCommits.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlCommitsDataPoint(ts pcommon.Timestamp, val int64, dbidAttributeValue int64, dbnameAttributeValue string) {
+	mb.metricPostgresqlCommits.recordDataPoint(mb.startTime, ts, val, dbidAttributeValue, dbnameAttributeValue)
 }
 
 // RecordPostgresqlConflictsBufferpinDataPoint adds a data point to postgresql.conflicts.bufferpin metric.

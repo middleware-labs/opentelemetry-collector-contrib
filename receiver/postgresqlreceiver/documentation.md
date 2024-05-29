@@ -12,73 +12,13 @@ metrics:
     enabled: false
 ```
 
-### postgresql.conflicts.bufferpin
+### postgresql.commits
 
-Number of queries in this database that have been canceled due to pinned buffers. Buffer pin conflicts will occur when the walreceiver process tries to apply a buffer cleanup like HOT chain pruning. This require a complete lock of the buffer and any query pinning the buffer will conflict with the cleaning. This metric is tagged with db.
+The number of transactions that have been committed in this database. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbid | id of the database. | Any Int |
-| dbname | name of the database | Any Str |
-
-### postgresql.conflicts.deadlock
-
-Number of queries in this database that have been canceled due to deadlocks. Deadlock conflicts will happen when the walreceiver tries to apply a buffer like HOT chain pruning. If the conflict takes more than deadlock_timeout seconds, a deadlock check will be triggered and conflicting queries will be canceled until the buffer is unpinned. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbid | id of the database. | Any Int |
-| dbname | name of the database | Any Str |
-
-### postgresql.conflicts.lock
-
-Number of queries in this database that have been canceled due to lock timeouts. This will occur when the walreceiver process tries to apply a change requiring an ACCESS EXCLUSIVE lock while a query on the replica is reading the table. The conflicting query will be killed after waiting up to max_standby_streaming_delay seconds. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbid | id of the database. | Any Int |
-| dbname | name of the database | Any Str |
-
-### postgresql.conflicts.snapshot
-
-Number of queries in this database that have been canceled due to old snapshots. Snapshot conflict will occur when a VACUUM is replayed, removing tuples currently read on a standby. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbid | id of the database. | Any Int |
-| dbname | name of the database | Any Str |
-
-### postgresql.conflicts.tablespace
-
-Number of queries in this database that have been canceled due to dropped tablespaces. This will occur when a temp_tablespace is dropped while being used on a standby. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {query} | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {transaction}/s | Gauge | Int |
 
 #### Attributes
 
@@ -560,13 +500,80 @@ Number of indexes rebuilt. This counter only advances when the phase is rebuildi
 | phase | Current processing phase of index creation. | Any Str |
 | index | Index of the table | Any Str |
 
-### postgresql.commits
+### postgresql.conflicts.bufferpin
 
-The number of transactions that have been committed in this database. This metric is tagged with db.
+Number of queries in this database that have been canceled due to pinned buffers. Buffer pin conflicts will occur when the walreceiver process tries to apply a buffer cleanup like HOT chain pruning. This require a complete lock of the buffer and any query pinning the buffer will conflict with the cleaning. This metric is tagged with db.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {transaction}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.conflicts.deadlock
+
+Number of queries in this database that have been canceled due to deadlocks. Deadlock conflicts will happen when the walreceiver tries to apply a buffer like HOT chain pruning. If the conflict takes more than deadlock_timeout seconds, a deadlock check will be triggered and conflicting queries will be canceled until the buffer is unpinned. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.conflicts.lock
+
+Number of queries in this database that have been canceled due to lock timeouts. This will occur when the walreceiver process tries to apply a change requiring an ACCESS EXCLUSIVE lock while a query on the replica is reading the table. The conflicting query will be killed after waiting up to max_standby_streaming_delay seconds. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.conflicts.snapshot
+
+Number of queries in this database that have been canceled due to old snapshots. Snapshot conflict will occur when a VACUUM is replayed, removing tuples currently read on a standby. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
+
+### postgresql.conflicts.tablespace
+
+Number of queries in this database that have been canceled due to dropped tablespaces. This will occur when a temp_tablespace is dropped while being used on a standby. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {query} | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbid | id of the database. | Any Int |
+| dbname | name of the database | Any Str |
 
 ### postgresql.connection.max
 

@@ -367,22 +367,22 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlCommits: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlConflictsBufferpin: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsDeadlock: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsLock: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsSnapshot: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConflictsTablespace: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlConnectionMax: MetricConfig{
 			Enabled: false,

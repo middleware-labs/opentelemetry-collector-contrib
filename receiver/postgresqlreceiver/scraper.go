@@ -141,6 +141,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectBufferHits(ctx, now, listClient, &errs)
 	p.collectClusterVacuumStats(ctx, now, listClient, &errs)
 	p.collectDatabaseConflictStats(ctx, now, listClient, &errs)
+	p.collectCommts(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -176,7 +177,6 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 		p.mb.RecordPostgresqlDbSizeDataPoint(now, size)
 	}
 	if stats, ok := r.dbStats[dbName]; ok {
-		p.mb.RecordPostgresqlCommitsDataPoint(now, stats.transactionCommitted)
 		p.mb.RecordPostgresqlRollbacksDataPoint(now, stats.transactionRollback)
 		p.mb.RecordPostgresqlDeadlocksDataPoint(now, stats.deadlocks)
 		p.mb.RecordPostgresqlTempFilesDataPoint(now, stats.tempFiles)
@@ -442,9 +442,25 @@ func (p *postgreSQLScraper) collectIOStats(
 		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads, s.backendType)
 		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time, s.backendType)
 		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes, s.backendType)
+	}
+}
 
+func (p *postgreSQLScraper) collectCommts(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	cmts, err := client.getCommits(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
 	}
 
+	for _, s := range cmts {
+		p.mb.RecordPostgresqlCommitsDataPoint(now, s.commits, s.dbid, s.dbname)
+	}
 }
 
 func (p *postgreSQLScraper) collectDatabaseConflictStats(
