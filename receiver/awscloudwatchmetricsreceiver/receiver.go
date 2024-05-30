@@ -36,7 +36,7 @@ type metricReceiver struct {
 	imdsEndpoint string
 	pollInterval time.Duration
 
-	pollingApproach string
+	pollingApproach string // profiling | role_delegation | access_keys
 	profile         string
 	awsAccountId    string
 	awsRoleArn      string
@@ -96,10 +96,6 @@ func chunkSlice(requests []request, maxSize int) [][]request {
 	return slicedMetrics
 }
 
-// divide up into slices of 500, then execute
-// Split requests slices into small slices no longer than 500 elements
-// GetMetricData only allows 500 elements in a slice, otherwise we'll get validation error
-// Avoids making a network call for each metric configured
 func (m *metricReceiver) request(st, et time.Time) []cloudwatch.GetMetricDataInput {
 	chunks := chunkSlice(m.requests, maxNumberOfElements)
 	metricDataInput := make([]cloudwatch.GetMetricDataInput, len(chunks))
@@ -271,7 +267,7 @@ func (m *metricReceiver) pollForMetrics(ctx context.Context, startTime, endTime 
 					continue
 				}
 				observedTime := pcommon.NewTimestampFromTime(time.Now())
-				metrics := m.parseMetrics(ctx, observedTime, m.requests, output)
+				metrics := m.parseMetrics(observedTime, m.requests, output)
 				if metrics.MetricCount() > 0 {
 					if err := m.consumer.ConsumeMetrics(ctx, metrics); err != nil {
 						m.logger.Error("unable to consume metrics", zap.Error(err))
@@ -302,7 +298,7 @@ func convertValueAndUnit(value float64, standardUnit types.StandardUnit, otelUni
 	return value, otelUnit
 }
 
-func (m *metricReceiver) parseMetrics(ctx context.Context, nowts pcommon.Timestamp, nr []request, resp *cloudwatch.GetMetricDataOutput) pmetric.Metrics {
+func (m *metricReceiver) parseMetrics(nowts pcommon.Timestamp, nr []request, resp *cloudwatch.GetMetricDataOutput) pmetric.Metrics {
 	pdm := pmetric.NewMetrics()
 	rms := pdm.ResourceMetrics()
 	rm := rms.AppendEmpty()
@@ -313,16 +309,15 @@ func (m *metricReceiver) parseMetrics(ctx context.Context, nowts pcommon.Timesta
 	resourceAttrs.PutStr("channel", conventions.AttributeCloudProviderAWS)
 	resourceAttrs.PutStr("polling_approach", m.pollingApproach)
 	if m.awsAccountId != "" {
-		resourceAttrs.PutStr("cloud.account.id", m.awsAccountId)
+		resourceAttrs.PutStr(conventions.AttributeCloudAccountID, m.awsAccountId)
 	} else {
-		resourceAttrs.PutStr("cloud.account.id", "unknown")
+		resourceAttrs.PutStr(conventions.AttributeCloudAccountID, "unknown")
 	}
 
 	ilms := rm.ScopeMetrics()
 	ilm := ilms.AppendEmpty()
 	ms := ilm.Metrics()
 	ms.EnsureCapacity(len(m.requests))
-	//atts := make(map[string]interface{})
 
 	for idx, results := range resp.MetricDataResults {
 
@@ -332,6 +327,7 @@ func (m *metricReceiver) parseMetrics(ctx context.Context, nowts pcommon.Timesta
 			continue
 		}
 
+		// To fetch all the metrics, even its blank.
 		if len(results.Timestamps) == 0 {
 			now := time.Now()
 			results.Timestamps = append(results.Timestamps, now)
@@ -423,7 +419,6 @@ func (m *metricReceiver) autoDiscoverRequests(ctx context.Context, auto *AutoDis
 	cwInput := cloudwatch.ListMetricsInput{
 		Namespace: aws.String(auto.Namespace),
 		//RecentlyActive: "PT3H",
-
 	}
 
 	if auto.Namespace != "AWS/S3" && auto.Namespace != "AWS/Lambda" {
@@ -469,15 +464,11 @@ func (m *metricReceiver) configureAWSClient(ctx context.Context) error {
 	case "profiling":
 		cfg, err = m.configureProfiling(ctx)
 		//creds, _ := cfg.Credentials.Retrieve(ctx)
-		//fmt.Println("profiling AccessKeyID--->", creds.AccessKeyID)
+		//fmt.Println("AccessKeyID: ", creds.AccessKeyID)
 	case "role_delegation":
 		cfg, err = m.configureRoleDelegation(ctx)
-		creds, _ := cfg.Credentials.Retrieve(ctx)
-		fmt.Println("---------role_delegation--------->", creds.AccessKeyID)
 	case "access_keys":
 		cfg, err = m.configureAccessKeys(ctx)
-		creds, _ := cfg.Credentials.Retrieve(ctx)
-		fmt.Println("---------access_keys--------->", creds.AccessKeyID)
 	default:
 		return errors.New("incomplete AWS configuration: must define polling_approach as profiling | role_delegation | access_keys")
 	}
@@ -520,7 +511,6 @@ func (m *metricReceiver) configureRoleDelegation(ctx context.Context) (aws.Confi
 }
 
 func (m *metricReceiver) configureAccessKeys(ctx context.Context) (aws.Config, error) {
-	//config.WithSharedConfigProfile(m.profile),
 	return config.LoadDefaultConfig(ctx,
 		config.WithRegion(m.region),
 		config.WithEC2IMDSEndpoint(m.imdsEndpoint),
