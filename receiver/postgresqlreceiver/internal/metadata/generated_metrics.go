@@ -4002,9 +4002,10 @@ func (m *metricPostgresqlIndexBloat) init() {
 	m.data.SetDescription("Enabled with `collect_bloat_metrics`. The estimated percentage of index bloat. This metric is tagged with db, schema, table, index.")
 	m.data.SetUnit("{percent}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlIndexBloat) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlIndexBloat) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, indexnameAttributeValue string, wastedIBytesAttributeValue int64) {
 	if !m.config.Enabled {
 		return
 	}
@@ -4012,6 +4013,10 @@ func (m *metricPostgresqlIndexBloat) recordDataPoint(start pcommon.Timestamp, ts
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("indexname", indexnameAttributeValue)
+	dp.Attributes().PutInt("wastedIBytes", wastedIBytesAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -9381,9 +9386,10 @@ func (m *metricPostgresqlTableBloat) init() {
 	m.data.SetDescription("Enabled with `collect_bloat_metrics`. The estimated percentage of table bloat. This metric is tagged with db, schema, table.")
 	m.data.SetUnit("{percent}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlTableBloat) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlTableBloat) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, schemaNameAttributeValue string, relnameAttributeValue string, wastedBytesAttributeValue int64) {
 	if !m.config.Enabled {
 		return
 	}
@@ -9391,6 +9397,10 @@ func (m *metricPostgresqlTableBloat) recordDataPoint(start pcommon.Timestamp, ts
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("schema_name", schemaNameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutInt("wastedBytes", wastedBytesAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12547,8 +12557,8 @@ func (mb *MetricsBuilder) RecordPostgresqlIndexSizeDataPoint(ts pcommon.Timestam
 }
 
 // RecordPostgresqlIndexBloatDataPoint adds a data point to postgresql.index_bloat metric.
-func (mb *MetricsBuilder) RecordPostgresqlIndexBloatDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlIndexBloat.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlIndexBloatDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, indexnameAttributeValue string, wastedIBytesAttributeValue int64) {
+	mb.metricPostgresqlIndexBloat.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, indexnameAttributeValue, wastedIBytesAttributeValue)
 }
 
 // RecordPostgresqlIndexBlocksHitDataPoint adds a data point to postgresql.index_blocks_hit metric.
@@ -13322,8 +13332,8 @@ func (mb *MetricsBuilder) RecordPostgresqlTableVacuumCountDataPoint(ts pcommon.T
 }
 
 // RecordPostgresqlTableBloatDataPoint adds a data point to postgresql.table_bloat metric.
-func (mb *MetricsBuilder) RecordPostgresqlTableBloatDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlTableBloat.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlTableBloatDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, schemaNameAttributeValue string, relnameAttributeValue string, wastedBytesAttributeValue int64) {
+	mb.metricPostgresqlTableBloat.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, schemaNameAttributeValue, relnameAttributeValue, wastedBytesAttributeValue)
 }
 
 // RecordPostgresqlTempBytesDataPoint adds a data point to postgresql.temp_bytes metric.

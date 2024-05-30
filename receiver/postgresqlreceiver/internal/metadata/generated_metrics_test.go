@@ -252,23 +252,18 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlDiskReadDataPoint(ts, 1, 4, "dbname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionCallsDataPoint(ts, "1", "fname-val", 3, "schema_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionSelfTimeDataPoint(ts, "1", "fname-val", 3, "schema_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionTotalTimeDataPoint(ts, "1", "fname-val", 3, "schema_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlHeapBlocksHitDataPoint(ts, 1, 5, "schema_name-val", "relname-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlHeapBlocksReadDataPoint(ts, 1, 5, "schema_name-val", "relname-val")
 
@@ -278,8 +273,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlIndexSizeDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlIndexBloatDataPoint(ts, 1)
+			mb.RecordPostgresqlIndexBloatDataPoint(ts, 1, "dbname-val", "relname-val", "indexname-val", 12)
 
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBlocksHitDataPoint(ts, 1)
@@ -593,8 +589,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlTableVacuumCountDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlTableBloatDataPoint(ts, 1)
+			mb.RecordPostgresqlTableBloatDataPoint(ts, 1, "dbname-val", "schema_name-val", "relname-val", 11)
 
 			allMetricsCount++
 			mb.RecordPostgresqlTempBytesDataPoint(ts, 1)
@@ -1910,6 +1907,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("indexname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "indexname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("wastedIBytes")
+					assert.True(t, ok)
+					assert.EqualValues(t, 12, attrVal.Int())
 				case "postgresql.index_blocks_hit":
 					assert.False(t, validatedMetrics["postgresql.index_blocks_hit"], "Found a duplicate in the metrics slice: postgresql.index_blocks_hit")
 					validatedMetrics["postgresql.index_blocks_hit"] = true
@@ -3543,6 +3552,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("schema_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("wastedBytes")
+					assert.True(t, ok)
+					assert.EqualValues(t, 11, attrVal.Int())
 				case "postgresql.temp_bytes":
 					assert.False(t, validatedMetrics["postgresql.temp_bytes"], "Found a duplicate in the metrics slice: postgresql.temp_bytes")
 					validatedMetrics["postgresql.temp_bytes"] = true

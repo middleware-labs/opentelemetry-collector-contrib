@@ -119,6 +119,16 @@ attributes:
   fname:
     description: function name
     type: string 
+  indexname:
+    description: name of the index
+    type: string
+  wastedBytes:
+    description: estimated space wasted due to table bloat in bytes
+    type: int 
+  wastedIBytes:
+    description: calculates the space wasted due to index bloat in bytes
+    type: int
+  
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -1649,7 +1659,7 @@ metrics:
       - relid
       - schema_name
       - relname
-    enabled: true
+    enabled: false
     description: Enabled with `relations`. The number of buffer hits in this table.
       This metric is tagged with db, schema, table.
     unit: '{hit}/s'
@@ -1660,14 +1670,19 @@ metrics:
       - relid
       - schema_name
       - relname   
-    enabled: true
+    enabled: false 
     description: Enabled with `relations`. The number of disk blocks read from this
       table. This metric is tagged with db, schema, table.
     unit: '{block}/s'
     gauge:
       value_type: int
   postgresql.index_bloat:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - indexname
+      - wastedIBytes
+    enabled: true
     description: Enabled with `collect_bloat_metrics`. The estimated percentage of index
       bloat. This metric is tagged with db, schema, table, index.
     unit: '{percent}'
@@ -2023,7 +2038,12 @@ metrics:
     gauge:
       value_type: int
   postgresql.table_bloat:
-    enabled: false
+    attributes:
+      - dbname
+      - schema_name
+      - relname
+      - wastedBytes
+    enabled: true
     description: Enabled with `collect_bloat_metrics`. The estimated percentage of table
       bloat. This metric is tagged with db, schema, table.
     unit: '{percent}'

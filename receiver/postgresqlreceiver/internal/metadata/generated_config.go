@@ -445,19 +445,19 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlFunctionCalls: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlFunctionSelfTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlFunctionTotalTime: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlHeapBlocksHit: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlHeapBlocksRead: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexScans: MetricConfig{
 			Enabled: false,
@@ -466,7 +466,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlIndexBloat: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlIndexBlocksHit: MetricConfig{
 			Enabled: false,
@@ -781,7 +781,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlTableBloat: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlTempBytes: MetricConfig{
 			Enabled: false,

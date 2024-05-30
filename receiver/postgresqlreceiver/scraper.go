@@ -146,6 +146,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectDiskReads(ctx, now, listClient, &errs)
 	p.collectFuncStats(ctx, now, listClient, &errs)
 	p.collectHeapBlockStats(ctx, now, listClient, &errs)
+	p.collectBloatStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -446,6 +447,29 @@ func (p *postgreSQLScraper) collectIOStats(
 		p.mb.RecordPostgresqlIoReadsDataPoint(now, reads, s.backendType)
 		p.mb.RecordPostgresqlIoWriteTimeDataPoint(now, write_time, s.backendType)
 		p.mb.RecordPostgresqlIoWritesDataPoint(now, writes, s.backendType)
+	}
+}
+
+func (p *postgreSQLScraper) collectBloatStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	bs, err := client.getBloatStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range bs {
+		p.mb.RecordPostgresqlIndexBloatDataPoint(
+			now, int64(s.ibloat), s.dbname, s.relName, s.indexName, s.wastedIBytes,
+		)
+		p.mb.RecordPostgresqlTableBloatDataPoint(
+			now, int64(s.tbloat), s.dbname, s.schemaName, s.relName, s.wastedBytes,
+		)
 	}
 }
 

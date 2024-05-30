@@ -12,85 +12,39 @@ metrics:
     enabled: false
 ```
 
-### postgresql.function.calls
+### postgresql.index_bloat
 
-Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| fname | function name | Any Str |
-| fid | Function id | Any Int |
-| schema_name | name of the schema | Any Str |
-
-### postgresql.function.self_time
-
-Enabled with `collect_function_metrics`. Total time spent in this function itself, not including other functions called by it. This metric is tagged with db, schema, function.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| fname | function name | Any Str |
-| fid | Function id | Any Int |
-| schema_name | name of the schema | Any Str |
-
-### postgresql.function.total_time
-
-Enabled with `collect_function_metrics`. Total time spent in this function and all other functions called by it. This metric is tagged with db, schema, function.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| fname | function name | Any Str |
-| fid | Function id | Any Int |
-| schema_name | name of the schema | Any Str |
-
-### postgresql.heap_blocks_hit
-
-Enabled with `relations`. The number of buffer hits in this table. This metric is tagged with db, schema, table.
+Enabled with `collect_bloat_metrics`. The estimated percentage of index bloat. This metric is tagged with db, schema, table, index.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {hit}/s | Gauge | Int |
+| {percent} | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| relid | id of the relation | Any Int |
-| schema_name | name of the schema | Any Str |
+| dbname | name of the database | Any Str |
 | relname | name of the relation | Any Str |
+| indexname | name of the index | Any Str |
+| wastedIBytes | calculates the space wasted due to index bloat in bytes | Any Int |
 
-### postgresql.heap_blocks_read
+### postgresql.table_bloat
 
-Enabled with `relations`. The number of disk blocks read from this table. This metric is tagged with db, schema, table.
+Enabled with `collect_bloat_metrics`. The estimated percentage of table bloat. This metric is tagged with db, schema, table.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {block}/s | Gauge | Int |
+| {percent} | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| relid | id of the relation | Any Int |
+| dbname | name of the database | Any Str |
 | schema_name | name of the schema | Any Str |
 | relname | name of the relation | Any Str |
+| wastedBytes | estimated space wasted due to table bloat in bytes | Any Int |
 
 ## Optional Metrics
 
@@ -822,6 +776,86 @@ The number of disk blocks read in this database. This metric is tagged with db.
 | dbid | id of the database. | Any Int |
 | dbname | name of the database | Any Str |
 
+### postgresql.function.calls
+
+Enabled with `collect_function_metrics`. The number of calls made to a function. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
+
+### postgresql.function.self_time
+
+Enabled with `collect_function_metrics`. Total time spent in this function itself, not including other functions called by it. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
+
+### postgresql.function.total_time
+
+Enabled with `collect_function_metrics`. Total time spent in this function and all other functions called by it. This metric is tagged with db, schema, function.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| fname | function name | Any Str |
+| fid | Function id | Any Int |
+| schema_name | name of the schema | Any Str |
+
+### postgresql.heap_blocks_hit
+
+Enabled with `relations`. The number of buffer hits in this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {hit}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relid | id of the relation | Any Int |
+| schema_name | name of the schema | Any Str |
+| relname | name of the relation | Any Str |
+
+### postgresql.heap_blocks_read
+
+Enabled with `relations`. The number of disk blocks read from this table. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relid | id of the relation | Any Int |
+| schema_name | name of the schema | Any Str |
+| relname | name of the relation | Any Str |
+
 ### postgresql.index.scans
 
 The number of index scans on a table.
@@ -837,14 +871,6 @@ The size of the index on disk.
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | By | Gauge | Int |
-
-### postgresql.index_bloat
-
-Enabled with `collect_bloat_metrics`. The estimated percentage of index bloat. This metric is tagged with db, schema, table, index.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {percent} | Gauge | Int |
 
 ### postgresql.index_blocks_hit
 
@@ -1939,14 +1965,6 @@ Number of times a table has manually been vacuumed.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {vacuums} | Sum | Int | Cumulative | true |
-
-### postgresql.table_bloat
-
-Enabled with `collect_bloat_metrics`. The estimated percentage of table bloat. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {percent} | Gauge | Int |
 
 ### postgresql.temp_bytes
 
