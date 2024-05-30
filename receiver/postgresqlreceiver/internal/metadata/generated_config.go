@@ -433,7 +433,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlDeadRows: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlDeadlocks: MetricConfig{
 			Enabled: false,
@@ -466,7 +466,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlIndexBloat: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlIndexBlocksHit: MetricConfig{
 			Enabled: false,
@@ -532,7 +532,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlLiveRows: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlLocks: MetricConfig{
 			Enabled: false,
@@ -673,22 +673,22 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlRowsDeleted: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlRowsFetched: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlRowsHotUpdated: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlRowsInserted: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlRowsReturned: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlRowsUpdated: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlRunning: MetricConfig{
 			Enabled: false,
@@ -781,7 +781,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlTableBloat: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlTempBytes: MetricConfig{
 			Enabled: false,

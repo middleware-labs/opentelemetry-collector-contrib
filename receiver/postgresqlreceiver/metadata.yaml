@@ -1638,7 +1638,9 @@ metrics:
     gauge:
       value_type: int
   postgresql.dead_rows:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true 
     description: Enabled with `relations`. The estimated number of dead rows. This metric
       is tagged with db, schema, table.
     unit: '{row}'
@@ -1682,7 +1684,7 @@ metrics:
       - relname
       - indexname
       - wastedIBytes
-    enabled: true
+    enabled: false 
     description: Enabled with `collect_bloat_metrics`. The estimated percentage of index
       bloat. This metric is tagged with db, schema, table, index.
     unit: '{percent}'
@@ -1766,7 +1768,9 @@ metrics:
     gauge:
       value_type: int
   postgresql.live_rows:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true
     description: Enabled with `relations`. The estimated number of live rows. This metric
       is tagged with db, schema, table.
     unit: '{row}'
@@ -1924,42 +1928,54 @@ metrics:
     gauge:
       value_type: int
   postgresql.rows_deleted:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true
     description: Enabled with `relations`. The number of rows deleted by queries in
       this database. This metric is tagged with db.
     unit: '{row}/s'
     gauge:
       value_type: int
   postgresql.rows_fetched:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true
     description: The number of rows fetched by queries in this database. This metric
       is tagged with db.
     unit: '{row}/s'
     gauge:
       value_type: int
   postgresql.rows_hot_updated:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true
     description: Enabled with `relations`. The number of rows HOT updated, meaning no
       separate index update was needed. This metric is tagged with db, schema, table.
     unit: '{row}/s'
     gauge:
       value_type: int
   postgresql.rows_inserted:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true
     description: Enabled with `relations`. The number of rows inserted by queries in
       this database. This metric is tagged with db.
     unit: '{row}/s'
     gauge:
       value_type: int
   postgresql.rows_returned:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true 
     description: The number of rows returned by queries in this database. This metric
       is tagged with db.
     unit: '{row}/s'
     gauge:
       value_type: int
   postgresql.rows_updated:
-    enabled: false
+    attributes:
+      - relation_name
+    enabled: true 
     description: Enabled with `relations`. The number of rows updated by queries in
       this database. This metric is tagged with db.
     unit: '{row}/s'
@@ -2043,7 +2059,7 @@ metrics:
       - schema_name
       - relname
       - wastedBytes
-    enabled: true
+    enabled: false 
     description: Enabled with `collect_bloat_metrics`. The estimated percentage of table
       bloat. This metric is tagged with db, schema, table.
     unit: '{percent}'

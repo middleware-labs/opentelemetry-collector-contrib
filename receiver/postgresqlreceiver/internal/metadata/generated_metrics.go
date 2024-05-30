@@ -3428,9 +3428,10 @@ func (m *metricPostgresqlDeadRows) init() {
 	m.data.SetDescription("Enabled with `relations`. The estimated number of dead rows. This metric is tagged with db, schema, table.")
 	m.data.SetUnit("{row}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlDeadRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlDeadRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -3438,6 +3439,7 @@ func (m *metricPostgresqlDeadRows) recordDataPoint(start pcommon.Timestamp, ts p
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -5125,9 +5127,10 @@ func (m *metricPostgresqlLiveRows) init() {
 	m.data.SetDescription("Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.")
 	m.data.SetUnit("{row}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlLiveRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlLiveRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -5135,6 +5138,7 @@ func (m *metricPostgresqlLiveRows) recordDataPoint(start pcommon.Timestamp, ts p
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -7561,9 +7565,10 @@ func (m *metricPostgresqlRowsDeleted) init() {
 	m.data.SetDescription("Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlRowsDeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlRowsDeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -7571,6 +7576,7 @@ func (m *metricPostgresqlRowsDeleted) recordDataPoint(start pcommon.Timestamp, t
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -7610,9 +7616,10 @@ func (m *metricPostgresqlRowsFetched) init() {
 	m.data.SetDescription("The number of rows fetched by queries in this database. This metric is tagged with db.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlRowsFetched) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlRowsFetched) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -7620,6 +7627,7 @@ func (m *metricPostgresqlRowsFetched) recordDataPoint(start pcommon.Timestamp, t
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -7659,9 +7667,10 @@ func (m *metricPostgresqlRowsHotUpdated) init() {
 	m.data.SetDescription("Enabled with `relations`. The number of rows HOT updated, meaning no separate index update was needed. This metric is tagged with db, schema, table.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlRowsHotUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlRowsHotUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -7669,6 +7678,7 @@ func (m *metricPostgresqlRowsHotUpdated) recordDataPoint(start pcommon.Timestamp
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -7708,9 +7718,10 @@ func (m *metricPostgresqlRowsInserted) init() {
 	m.data.SetDescription("Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlRowsInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlRowsInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -7718,6 +7729,7 @@ func (m *metricPostgresqlRowsInserted) recordDataPoint(start pcommon.Timestamp, 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -7757,9 +7769,10 @@ func (m *metricPostgresqlRowsReturned) init() {
 	m.data.SetDescription("The number of rows returned by queries in this database. This metric is tagged with db.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlRowsReturned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlRowsReturned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -7767,6 +7780,7 @@ func (m *metricPostgresqlRowsReturned) recordDataPoint(start pcommon.Timestamp, 
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -7806,9 +7820,10 @@ func (m *metricPostgresqlRowsUpdated) init() {
 	m.data.SetDescription("Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlRowsUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlRowsUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -7816,6 +7831,7 @@ func (m *metricPostgresqlRowsUpdated) recordDataPoint(start pcommon.Timestamp, t
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -12482,8 +12498,8 @@ func (mb *MetricsBuilder) RecordPostgresqlDbSizeDataPoint(ts pcommon.Timestamp, 
 }
 
 // RecordPostgresqlDeadRowsDataPoint adds a data point to postgresql.dead_rows metric.
-func (mb *MetricsBuilder) RecordPostgresqlDeadRowsDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlDeadRows.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlDeadRowsDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlDeadRows.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlDeadlocksDataPoint adds a data point to postgresql.deadlocks metric.
@@ -12717,8 +12733,8 @@ func (mb *MetricsBuilder) RecordPostgresqlLastVacuumAgeDataPoint(ts pcommon.Time
 }
 
 // RecordPostgresqlLiveRowsDataPoint adds a data point to postgresql.live_rows metric.
-func (mb *MetricsBuilder) RecordPostgresqlLiveRowsDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlLiveRows.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlLiveRowsDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlLiveRows.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlLocksDataPoint adds a data point to postgresql.locks metric.
@@ -13072,33 +13088,33 @@ func (mb *MetricsBuilder) RecordPostgresqlRowsDataPoint(ts pcommon.Timestamp, va
 }
 
 // RecordPostgresqlRowsDeletedDataPoint adds a data point to postgresql.rows_deleted metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsDeletedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlRowsDeleted.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlRowsDeletedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsDeleted.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlRowsFetchedDataPoint adds a data point to postgresql.rows_fetched metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsFetchedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlRowsFetched.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlRowsFetchedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsFetched.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlRowsHotUpdatedDataPoint adds a data point to postgresql.rows_hot_updated metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsHotUpdatedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlRowsHotUpdated.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlRowsHotUpdatedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsHotUpdated.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlRowsInsertedDataPoint adds a data point to postgresql.rows_inserted metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsInsertedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlRowsInserted.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlRowsInsertedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsInserted.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlRowsReturnedDataPoint adds a data point to postgresql.rows_returned metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsReturnedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlRowsReturned.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlRowsReturnedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsReturned.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlRowsUpdatedDataPoint adds a data point to postgresql.rows_updated metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsUpdatedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlRowsUpdated.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlRowsUpdatedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsUpdated.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlRunningDataPoint adds a data point to postgresql.running metric.

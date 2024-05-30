@@ -240,8 +240,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlDbSizeDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlDeadRowsDataPoint(ts, 1)
+			mb.RecordPostgresqlDeadRowsDataPoint(ts, 1, "relation_name-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlDeadlocksDataPoint(ts, 1)
@@ -273,7 +274,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlIndexSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBloatDataPoint(ts, 1, "dbname-val", "relname-val", "indexname-val", 12)
 
@@ -340,8 +340,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlLastVacuumAgeDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlLiveRowsDataPoint(ts, 1)
+			mb.RecordPostgresqlLiveRowsDataPoint(ts, 1, "relation_name-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlLocksDataPoint(ts, 1)
@@ -481,23 +482,29 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDataPoint(ts, 1, AttributeStateDead)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlRowsDeletedDataPoint(ts, 1)
+			mb.RecordPostgresqlRowsDeletedDataPoint(ts, 1, "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlRowsFetchedDataPoint(ts, 1)
+			mb.RecordPostgresqlRowsFetchedDataPoint(ts, 1, "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlRowsHotUpdatedDataPoint(ts, 1)
+			mb.RecordPostgresqlRowsHotUpdatedDataPoint(ts, 1, "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlRowsInsertedDataPoint(ts, 1)
+			mb.RecordPostgresqlRowsInsertedDataPoint(ts, 1, "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlRowsReturnedDataPoint(ts, 1)
+			mb.RecordPostgresqlRowsReturnedDataPoint(ts, 1, "relation_name-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlRowsUpdatedDataPoint(ts, 1)
+			mb.RecordPostgresqlRowsUpdatedDataPoint(ts, 1, "relation_name-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlRunningDataPoint(ts, 1)
@@ -589,7 +596,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlTableVacuumCountDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableBloatDataPoint(ts, 1, "dbname-val", "schema_name-val", "relname-val", 11)
 
@@ -1712,6 +1718,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.deadlocks":
 					assert.False(t, validatedMetrics["postgresql.deadlocks"], "Found a duplicate in the metrics slice: postgresql.deadlocks")
 					validatedMetrics["postgresql.deadlocks"] = true
@@ -2233,6 +2242,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.locks":
 					assert.False(t, validatedMetrics["postgresql.locks"], "Found a duplicate in the metrics slice: postgresql.locks")
 					validatedMetrics["postgresql.locks"] = true
@@ -3038,6 +3050,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.rows_fetched":
 					assert.False(t, validatedMetrics["postgresql.rows_fetched"], "Found a duplicate in the metrics slice: postgresql.rows_fetched")
 					validatedMetrics["postgresql.rows_fetched"] = true
@@ -3050,6 +3065,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.rows_hot_updated":
 					assert.False(t, validatedMetrics["postgresql.rows_hot_updated"], "Found a duplicate in the metrics slice: postgresql.rows_hot_updated")
 					validatedMetrics["postgresql.rows_hot_updated"] = true
@@ -3062,6 +3080,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.rows_inserted":
 					assert.False(t, validatedMetrics["postgresql.rows_inserted"], "Found a duplicate in the metrics slice: postgresql.rows_inserted")
 					validatedMetrics["postgresql.rows_inserted"] = true
@@ -3074,6 +3095,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.rows_returned":
 					assert.False(t, validatedMetrics["postgresql.rows_returned"], "Found a duplicate in the metrics slice: postgresql.rows_returned")
 					validatedMetrics["postgresql.rows_returned"] = true
@@ -3086,6 +3110,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.rows_updated":
 					assert.False(t, validatedMetrics["postgresql.rows_updated"], "Found a duplicate in the metrics slice: postgresql.rows_updated")
 					validatedMetrics["postgresql.rows_updated"] = true
@@ -3098,6 +3125,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("relation_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relation_name-val", attrVal.Str())
 				case "postgresql.running":
 					assert.False(t, validatedMetrics["postgresql.running"], "Found a duplicate in the metrics slice: postgresql.running")
 					validatedMetrics["postgresql.running"] = true

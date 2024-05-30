@@ -12,39 +12,117 @@ metrics:
     enabled: false
 ```
 
-### postgresql.index_bloat
+### postgresql.dead_rows
 
-Enabled with `collect_bloat_metrics`. The estimated percentage of index bloat. This metric is tagged with db, schema, table, index.
+Enabled with `relations`. The estimated number of dead rows. This metric is tagged with db, schema, table.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {percent} | Gauge | Int |
+| {row} | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| dbname | name of the database | Any Str |
-| relname | name of the relation | Any Str |
-| indexname | name of the index | Any Str |
-| wastedIBytes | calculates the space wasted due to index bloat in bytes | Any Int |
+| relation_name | name of the relation | Any Str |
 
-### postgresql.table_bloat
+### postgresql.live_rows
 
-Enabled with `collect_bloat_metrics`. The estimated percentage of table bloat. This metric is tagged with db, schema, table.
+Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {percent} | Gauge | Int |
+| {row} | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| dbname | name of the database | Any Str |
-| schema_name | name of the schema | Any Str |
-| relname | name of the relation | Any Str |
-| wastedBytes | estimated space wasted due to table bloat in bytes | Any Int |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_deleted
+
+Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_fetched
+
+The number of rows fetched by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_hot_updated
+
+Enabled with `relations`. The number of rows HOT updated, meaning no separate index update was needed. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_inserted
+
+Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_returned
+
+The number of rows returned by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_updated
+
+Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
 
 ## Optional Metrics
 
@@ -737,14 +815,6 @@ The database disk usage.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | By | Sum | Int | Cumulative | false |
 
-### postgresql.dead_rows
-
-Enabled with `relations`. The estimated number of dead rows. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row} | Gauge | Int |
-
 ### postgresql.deadlocks
 
 The number of deadlocks.
@@ -871,6 +941,23 @@ The size of the index on disk.
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | By | Gauge | Int |
+
+### postgresql.index_bloat
+
+Enabled with `collect_bloat_metrics`. The estimated percentage of index bloat. This metric is tagged with db, schema, table, index.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {percent} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| indexname | name of the index | Any Str |
+| wastedIBytes | calculates the space wasted due to index bloat in bytes | Any Int |
 
 ### postgresql.index_blocks_hit
 
@@ -1099,14 +1186,6 @@ Last time at which this table was manually vacuumed (not counting VACUUM FULL). 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {second} | Gauge | Int |
-
-### postgresql.live_rows
-
-Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row} | Gauge | Int |
 
 ### postgresql.locks
 
@@ -1629,54 +1708,6 @@ The number of rows in the database.
 | ---- | ----------- | ------ |
 | state | The tuple (row) state. | Str: ``dead``, ``live`` |
 
-### postgresql.rows_deleted
-
-Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-### postgresql.rows_fetched
-
-The number of rows fetched by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-### postgresql.rows_hot_updated
-
-Enabled with `relations`. The number of rows HOT updated, meaning no separate index update was needed. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-### postgresql.rows_inserted
-
-Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-### postgresql.rows_returned
-
-The number of rows returned by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-### postgresql.rows_updated
-
-Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
 ### postgresql.running
 
 The number of instances running.
@@ -1965,6 +1996,23 @@ Number of times a table has manually been vacuumed.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {vacuums} | Sum | Int | Cumulative | true |
+
+### postgresql.table_bloat
+
+Enabled with `collect_bloat_metrics`. The estimated percentage of table bloat. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {percent} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| schema_name | name of the schema | Any Str |
+| relname | name of the relation | Any Str |
+| wastedBytes | estimated space wasted due to table bloat in bytes | Any Int |
 
 ### postgresql.temp_bytes
 
