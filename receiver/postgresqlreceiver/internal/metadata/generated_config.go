@@ -433,7 +433,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlDeadRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlDeadlocks: MetricConfig{
 			Enabled: false,
@@ -532,7 +532,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlLiveRows: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlLocks: MetricConfig{
 			Enabled: false,
@@ -673,22 +673,22 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlRowsDeleted: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsFetched: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsHotUpdated: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsInserted: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsReturned: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRowsUpdated: MetricConfig{
-			Enabled: true,
+			Enabled: false,
 		},
 		PostgresqlRunning: MetricConfig{
 			Enabled: false,
@@ -808,16 +808,16 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlTransactionsDurationMax: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlTransactionsDurationSum: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlTransactionsIdleInTransaction: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlTransactionsOpen: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlUptime: MetricConfig{
 			Enabled: false,

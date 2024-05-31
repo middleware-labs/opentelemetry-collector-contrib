@@ -12,117 +12,73 @@ metrics:
     enabled: false
 ```
 
-### postgresql.dead_rows
+### postgresql.transactions.duration.max
 
-Enabled with `relations`. The estimated number of dead rows. This metric is tagged with db, schema, table.
+The age of the longest running transaction per user, db and app. (DBM only)
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {row} | Gauge | Int |
+| ns | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| pid | pid for the transaction | Any Int |
+| user_name | user name | Any Str |
+| application_name | name of the running application | Any Str |
+| dbname | name of the database | Any Str |
 
-### postgresql.live_rows
+### postgresql.transactions.duration.sum
 
-Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
+The sum of the age of all running transactions per user, db and app. (DBM only)
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {row} | Gauge | Int |
+| ns | Gauge | Double |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| pid | pid for the transaction | Any Int |
+| user_name | user name | Any Str |
+| application_name | name of the running application | Any Str |
+| dbname | name of the database | Any Str |
 
-### postgresql.rows_deleted
+### postgresql.transactions.idle_in_transaction
 
-Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
+Enabled with `collect_activity_metrics`. The number of 'idle in transaction' transactions in this database. This metric (by default) is tagged with db, app, user.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
+| {transaction} | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| pid | pid for the transaction | Any Int |
+| user_name | user name | Any Str |
+| application_name | name of the running application | Any Str |
+| dbname | name of the database | Any Str |
 
-### postgresql.rows_fetched
+### postgresql.transactions.open
 
-The number of rows fetched by queries in this database. This metric is tagged with db.
+Enabled with `collect_activity_metrics`. The number of open transactions in this database. This metric (by default) is tagged with db, app, user.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
+| {transaction} | Gauge | Int |
 
 #### Attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
-
-### postgresql.rows_hot_updated
-
-Enabled with `relations`. The number of rows HOT updated, meaning no separate index update was needed. This metric is tagged with db, schema, table.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
-
-### postgresql.rows_inserted
-
-Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
-
-### postgresql.rows_returned
-
-The number of rows returned by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
-
-### postgresql.rows_updated
-
-Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| pid | pid for the transaction | Any Int |
+| user_name | user name | Any Str |
+| application_name | name of the running application | Any Str |
+| dbname | name of the database | Any Str |
 
 ## Optional Metrics
 
@@ -815,6 +771,20 @@ The database disk usage.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | By | Sum | Int | Cumulative | false |
 
+### postgresql.dead_rows
+
+Enabled with `relations`. The estimated number of dead rows. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
 ### postgresql.deadlocks
 
 The number of deadlocks.
@@ -1186,6 +1156,20 @@ Last time at which this table was manually vacuumed (not counting VACUUM FULL). 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {second} | Gauge | Int |
+
+### postgresql.live_rows
+
+Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
 
 ### postgresql.locks
 
@@ -1708,6 +1692,90 @@ The number of rows in the database.
 | ---- | ----------- | ------ |
 | state | The tuple (row) state. | Str: ``dead``, ``live`` |
 
+### postgresql.rows_deleted
+
+Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_fetched
+
+The number of rows fetched by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_hot_updated
+
+Enabled with `relations`. The number of rows HOT updated, meaning no separate index update was needed. This metric is tagged with db, schema, table.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_inserted
+
+Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_returned
+
+The number of rows returned by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
+### postgresql.rows_updated
+
+Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {row}/s | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| relation_name | name of the relation | Any Str |
+
 ### postgresql.running
 
 The number of instances running.
@@ -2077,38 +2145,6 @@ Enabled with `relations`. The total disk space used by the table, including inde
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | By | Gauge | Int |
-
-### postgresql.transactions.duration.max
-
-The age of the longest running transaction per user, db and app. (DBM only)
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ns | Gauge | Int |
-
-### postgresql.transactions.duration.sum
-
-The sum of the age of all running transactions per user, db and app. (DBM only)
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ns | Gauge | Int |
-
-### postgresql.transactions.idle_in_transaction
-
-Enabled with `collect_activity_metrics`. The number of 'idle in transaction' transactions in this database. This metric (by default) is tagged with db, app, user.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {transaction} | Gauge | Int |
-
-### postgresql.transactions.open
-
-Enabled with `collect_activity_metrics`. The number of open transactions in this database. This metric (by default) is tagged with db, app, user.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {transaction} | Gauge | Int |
 
 ### postgresql.uptime
 

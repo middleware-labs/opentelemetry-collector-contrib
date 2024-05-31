@@ -80,6 +80,9 @@ attributes:
   userid:
     description: id of the user that executed this query.
     type: int
+  user_name:
+    description: user name 
+    type: string
   dbid:
     description: id of the database.
     type: int
@@ -128,7 +131,13 @@ attributes:
   wastedIBytes:
     description: calculates the space wasted due to index bloat in bytes
     type: int
-  
+  pid:
+    description: pid for the transaction
+    type: int  
+  application_name:
+    description: name of the running application
+    type: string 
+
 
 metrics:
   postgresql.bgwriter.buffers.allocated:
@@ -1640,7 +1649,7 @@ metrics:
   postgresql.dead_rows:
     attributes:
       - relation_name
-    enabled: true 
+    enabled: false 
     description: Enabled with `relations`. The estimated number of dead rows. This metric
       is tagged with db, schema, table.
     unit: '{row}'
@@ -1770,7 +1779,7 @@ metrics:
   postgresql.live_rows:
     attributes:
       - relation_name
-    enabled: true
+    enabled: false
     description: Enabled with `relations`. The estimated number of live rows. This metric
       is tagged with db, schema, table.
     unit: '{row}'
@@ -1930,7 +1939,7 @@ metrics:
   postgresql.rows_deleted:
     attributes:
       - relation_name
-    enabled: true
+    enabled: false 
     description: Enabled with `relations`. The number of rows deleted by queries in
       this database. This metric is tagged with db.
     unit: '{row}/s'
@@ -1939,7 +1948,7 @@ metrics:
   postgresql.rows_fetched:
     attributes:
       - relation_name
-    enabled: true
+    enabled: false
     description: The number of rows fetched by queries in this database. This metric
       is tagged with db.
     unit: '{row}/s'
@@ -1948,7 +1957,7 @@ metrics:
   postgresql.rows_hot_updated:
     attributes:
       - relation_name
-    enabled: true
+    enabled: false 
     description: Enabled with `relations`. The number of rows HOT updated, meaning no
       separate index update was needed. This metric is tagged with db, schema, table.
     unit: '{row}/s'
@@ -1957,7 +1966,7 @@ metrics:
   postgresql.rows_inserted:
     attributes:
       - relation_name
-    enabled: true
+    enabled: false 
     description: Enabled with `relations`. The number of rows inserted by queries in
       this database. This metric is tagged with db.
     unit: '{row}/s'
@@ -1966,7 +1975,7 @@ metrics:
   postgresql.rows_returned:
     attributes:
       - relation_name
-    enabled: true 
+    enabled: false 
     description: The number of rows returned by queries in this database. This metric
       is tagged with db.
     unit: '{row}/s'
@@ -1975,7 +1984,7 @@ metrics:
   postgresql.rows_updated:
     attributes:
       - relation_name
-    enabled: true 
+    enabled: false 
     description: Enabled with `relations`. The number of rows updated by queries in
       this database. This metric is tagged with db.
     unit: '{row}/s'
@@ -2115,21 +2124,36 @@ metrics:
     gauge:
       value_type: int
   postgresql.transactions.duration.max:
-    enabled: false
+    attributes:
+      - pid
+      - user_name
+      - application_name
+      - dbname
+    enabled: true 
     description: The age of the longest running transaction per user, db and app. (DBM
       only)
     unit: ns
     gauge:
       value_type: int
   postgresql.transactions.duration.sum:
-    enabled: false
+    attributes:
+      - pid
+      - user_name
+      - application_name
+      - dbname
+    enabled: true 
     description: The sum of the age of all running transactions per user, db and app.
       (DBM only)
     unit: ns
     gauge:
-      value_type: int
+      value_type: double
   postgresql.transactions.idle_in_transaction:
-    enabled: false
+    attributes:
+      - pid
+      - user_name
+      - application_name
+      - dbname
+    enabled: true 
     description: Enabled with `collect_activity_metrics`. The number of 'idle in transaction'
       transactions in this database. This metric (by default) is tagged with db, app,
       user.
@@ -2137,7 +2161,12 @@ metrics:
     gauge:
       value_type: int
   postgresql.transactions.open:
-    enabled: false
+    attributes:
+      - pid
+      - user_name
+      - application_name
+      - dbname
+    enabled: true 
     description: Enabled with `collect_activity_metrics`. The number of open transactions
       in this database. This metric (by default) is tagged with db, app, user.
     unit: '{transaction}'

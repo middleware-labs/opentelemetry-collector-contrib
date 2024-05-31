@@ -148,6 +148,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectHeapBlockStats(ctx, now, listClient, &errs)
 	p.collectBloatStats(ctx, now, listClient, &errs)
 	p.collectRowStats(ctx, now, listClient, &errs)
+	p.collectTransactionStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -707,6 +708,35 @@ func (p *postgreSQLScraper) collectRowStats(
 		p.mb.RecordPostgresqlRowsHotUpdatedDataPoint(now, s.rowsHotUpdated, s.relationName)
 		p.mb.RecordPostgresqlLiveRowsDataPoint(now, s.liveRows, s.relationName)
 		p.mb.RecordPostgresqlDeadRowsDataPoint(now, s.deadRows, s.relationName)
+	}
+}
+
+func (p *postgreSQLScraper) collectTransactionStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	ts, err := client.getTransactionsStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range ts {
+		p.mb.RecordPostgresqlTransactionsDurationMaxDataPoint(
+			now, int64(s.totalDurationNanoseconds), s.pid, s.userName, s.applicationName, s.dbname,
+		)
+		p.mb.RecordPostgresqlTransactionsIdleInTransactionDataPoint(
+			now, s.idleInTransactionCount, s.pid, s.userName, s.applicationName, s.dbname,
+		)
+		p.mb.RecordPostgresqlTransactionsOpenDataPoint(
+			now, s.openInTransactionCount, s.pid, s.userName, s.applicationName, s.dbname,
+		)
+		p.mb.RecordPostgresqlTransactionsDurationSumDataPoint(
+			now, s.duration, s.pid, s.userName, s.applicationName, s.dbname,
+		)
 	}
 }
 

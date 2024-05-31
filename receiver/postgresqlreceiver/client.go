@@ -61,6 +61,7 @@ type client interface {
 	getHeapBlocksStats(ctx context.Context) ([]HeapBlockStats, error)
 	getBloatStats(ctx context.Context) ([]BloatStats, error)
 	getRowStats(ctx context.Context) ([]RowStats, error)
+	getTransactionsStats(ctx context.Context) ([]TransactionStats, error)
 }
 
 type postgreSQLClient struct {
@@ -1624,6 +1625,104 @@ func (c *postgreSQLClient) getRowStats(ctx context.Context) ([]RowStats, error) 
 		})
 	}
 	return rs, nil
+}
+
+type TransactionStats struct {
+	totalDurationNanoseconds float64
+	idleInTransactionCount   int64
+	openInTransactionCount   int64
+	pid                      int64
+	duration                 float64
+	userName                 string
+	dbname                   string
+	applicationName          string
+}
+
+func (c *postgreSQLClient) getTransactionsStats(ctx context.Context) ([]TransactionStats, error) {
+	query := `WITH TransactionStats AS (
+		SELECT
+			SUM(EXTRACT(EPOCH FROM (now() - xact_start))) * 1e9 AS total_duration_nanoseconds, -- Convert seconds to nanoseconds for total duration
+			COUNT(*) FILTER (WHERE state = 'idle in transaction') AS idle_in_transaction_count,
+			COUNT(*) FILTER (WHERE xact_start IS NOT NULL) AS open_transactions_count
+		FROM
+			pg_stat_activity
+	), LongestTransaction AS (
+		SELECT
+			pid,
+			EXTRACT(EPOCH FROM (now() - xact_start)) * 1e9 AS duration_nanoseconds, -- Convert duration to nanoseconds
+			usename AS user_name,
+			datname AS database_name,
+			application_name
+		FROM
+			pg_stat_activity
+		WHERE
+			xact_start IS NOT NULL
+		ORDER BY
+			duration_nanoseconds DESC
+		LIMIT 1
+	)
+	SELECT
+		TS.total_duration_nanoseconds,
+		TS.idle_in_transaction_count,
+		TS.open_transactions_count,
+		LT.pid,
+		LT.duration_nanoseconds AS duration, -- Alias for consistency
+		LT.user_name,
+		LT.database_name,
+		LT.application_name
+	FROM
+		TransactionStats TS, LongestTransaction LT;
+	
+	`
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query the transaction stats:: %w", err)
+	}
+
+	defer rows.Close()
+	var ts []TransactionStats
+	var errors error
+
+	for rows.Next() {
+		var (
+			totalDurationNanoseconds sql.NullFloat64
+			idleInTransactionCount   sql.NullInt64
+			openInTransactionCount   sql.NullInt64
+			pid                      sql.NullInt64
+			duration                 sql.NullFloat64
+			userName                 sql.NullString
+			dbname                   sql.NullString
+			applicationName          sql.NullString
+		)
+
+		err := rows.Scan(
+			&totalDurationNanoseconds,
+			&idleInTransactionCount,
+			&openInTransactionCount,
+			&pid,
+			&duration,
+			&userName,
+			&dbname,
+			&applicationName,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+
+		ts = append(ts, TransactionStats{
+			totalDurationNanoseconds: totalDurationNanoseconds.Float64,
+			idleInTransactionCount:   idleInTransactionCount.Int64,
+			openInTransactionCount:   openInTransactionCount.Int64,
+			pid:                      pid.Int64,
+			duration:                 duration.Float64,
+			userName:                 userName.String,
+			dbname:                   dbname.String,
+			applicationName:          applicationName.String,
+		})
+	}
+	return ts, nil
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

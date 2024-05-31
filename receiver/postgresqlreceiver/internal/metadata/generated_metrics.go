@@ -9850,9 +9850,10 @@ func (m *metricPostgresqlTransactionsDurationMax) init() {
 	m.data.SetDescription("The age of the longest running transaction per user, db and app. (DBM only)")
 	m.data.SetUnit("ns")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlTransactionsDurationMax) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlTransactionsDurationMax) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -9860,6 +9861,10 @@ func (m *metricPostgresqlTransactionsDurationMax) recordDataPoint(start pcommon.
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("pid", pidAttributeValue)
+	dp.Attributes().PutStr("user_name", userNameAttributeValue)
+	dp.Attributes().PutStr("application_name", applicationNameAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -9899,16 +9904,21 @@ func (m *metricPostgresqlTransactionsDurationSum) init() {
 	m.data.SetDescription("The sum of the age of all running transactions per user, db and app. (DBM only)")
 	m.data.SetUnit("ns")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlTransactionsDurationSum) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlTransactionsDurationSum) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
 	dp := m.data.Gauge().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutInt("pid", pidAttributeValue)
+	dp.Attributes().PutStr("user_name", userNameAttributeValue)
+	dp.Attributes().PutStr("application_name", applicationNameAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -9948,9 +9958,10 @@ func (m *metricPostgresqlTransactionsIdleInTransaction) init() {
 	m.data.SetDescription("Enabled with `collect_activity_metrics`. The number of 'idle in transaction' transactions in this database. This metric (by default) is tagged with db, app, user.")
 	m.data.SetUnit("{transaction}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlTransactionsIdleInTransaction) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlTransactionsIdleInTransaction) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -9958,6 +9969,10 @@ func (m *metricPostgresqlTransactionsIdleInTransaction) recordDataPoint(start pc
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("pid", pidAttributeValue)
+	dp.Attributes().PutStr("user_name", userNameAttributeValue)
+	dp.Attributes().PutStr("application_name", applicationNameAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -9997,9 +10012,10 @@ func (m *metricPostgresqlTransactionsOpen) init() {
 	m.data.SetDescription("Enabled with `collect_activity_metrics`. The number of open transactions in this database. This metric (by default) is tagged with db, app, user.")
 	m.data.SetUnit("{transaction}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlTransactionsOpen) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlTransactionsOpen) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10007,6 +10023,10 @@ func (m *metricPostgresqlTransactionsOpen) recordDataPoint(start pcommon.Timesta
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutInt("pid", pidAttributeValue)
+	dp.Attributes().PutStr("user_name", userNameAttributeValue)
+	dp.Attributes().PutStr("application_name", applicationNameAttributeValue)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -13393,23 +13413,23 @@ func (mb *MetricsBuilder) RecordPostgresqlTotalSizeDataPoint(ts pcommon.Timestam
 }
 
 // RecordPostgresqlTransactionsDurationMaxDataPoint adds a data point to postgresql.transactions.duration.max metric.
-func (mb *MetricsBuilder) RecordPostgresqlTransactionsDurationMaxDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlTransactionsDurationMax.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlTransactionsDurationMaxDataPoint(ts pcommon.Timestamp, val int64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
+	mb.metricPostgresqlTransactionsDurationMax.recordDataPoint(mb.startTime, ts, val, pidAttributeValue, userNameAttributeValue, applicationNameAttributeValue, dbnameAttributeValue)
 }
 
 // RecordPostgresqlTransactionsDurationSumDataPoint adds a data point to postgresql.transactions.duration.sum metric.
-func (mb *MetricsBuilder) RecordPostgresqlTransactionsDurationSumDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlTransactionsDurationSum.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlTransactionsDurationSumDataPoint(ts pcommon.Timestamp, val float64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
+	mb.metricPostgresqlTransactionsDurationSum.recordDataPoint(mb.startTime, ts, val, pidAttributeValue, userNameAttributeValue, applicationNameAttributeValue, dbnameAttributeValue)
 }
 
 // RecordPostgresqlTransactionsIdleInTransactionDataPoint adds a data point to postgresql.transactions.idle_in_transaction metric.
-func (mb *MetricsBuilder) RecordPostgresqlTransactionsIdleInTransactionDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlTransactionsIdleInTransaction.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlTransactionsIdleInTransactionDataPoint(ts pcommon.Timestamp, val int64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
+	mb.metricPostgresqlTransactionsIdleInTransaction.recordDataPoint(mb.startTime, ts, val, pidAttributeValue, userNameAttributeValue, applicationNameAttributeValue, dbnameAttributeValue)
 }
 
 // RecordPostgresqlTransactionsOpenDataPoint adds a data point to postgresql.transactions.open metric.
-func (mb *MetricsBuilder) RecordPostgresqlTransactionsOpenDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlTransactionsOpen.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlTransactionsOpenDataPoint(ts pcommon.Timestamp, val int64, pidAttributeValue int64, userNameAttributeValue string, applicationNameAttributeValue string, dbnameAttributeValue string) {
+	mb.metricPostgresqlTransactionsOpen.recordDataPoint(mb.startTime, ts, val, pidAttributeValue, userNameAttributeValue, applicationNameAttributeValue, dbnameAttributeValue)
 }
 
 // RecordPostgresqlUptimeDataPoint adds a data point to postgresql.uptime metric.

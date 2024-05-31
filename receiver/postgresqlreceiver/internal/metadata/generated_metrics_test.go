@@ -240,7 +240,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlDbSizeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDeadRowsDataPoint(ts, 1, "relation_name-val")
 
@@ -340,7 +339,6 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlLastVacuumAgeDataPoint(ts, 1)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLiveRowsDataPoint(ts, 1, "relation_name-val")
 
@@ -482,27 +480,21 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDataPoint(ts, 1, AttributeStateDead)
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDeletedDataPoint(ts, 1, "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsFetchedDataPoint(ts, 1, "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsHotUpdatedDataPoint(ts, 1, "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsInsertedDataPoint(ts, 1, "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsReturnedDataPoint(ts, 1, "relation_name-val")
 
-			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsUpdatedDataPoint(ts, 1, "relation_name-val")
 
@@ -623,17 +615,21 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlTotalSizeDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlTransactionsDurationMaxDataPoint(ts, 1)
+			mb.RecordPostgresqlTransactionsDurationMaxDataPoint(ts, 1, 3, "user_name-val", "application_name-val", "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlTransactionsDurationSumDataPoint(ts, 1)
+			mb.RecordPostgresqlTransactionsDurationSumDataPoint(ts, 1, 3, "user_name-val", "application_name-val", "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlTransactionsIdleInTransactionDataPoint(ts, 1)
+			mb.RecordPostgresqlTransactionsIdleInTransactionDataPoint(ts, 1, 3, "user_name-val", "application_name-val", "dbname-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlTransactionsOpenDataPoint(ts, 1)
+			mb.RecordPostgresqlTransactionsOpenDataPoint(ts, 1, 3, "user_name-val", "application_name-val", "dbname-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlUptimeDataPoint(ts, 1)
@@ -3704,6 +3700,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("pid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("user_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "user_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("application_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "application_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.transactions.duration.sum":
 					assert.False(t, validatedMetrics["postgresql.transactions.duration.sum"], "Found a duplicate in the metrics slice: postgresql.transactions.duration.sum")
 					validatedMetrics["postgresql.transactions.duration.sum"] = true
@@ -3714,8 +3722,20 @@ func TestMetricsBuilder(t *testing.T) {
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.Equal(t, float64(1), dp.DoubleValue())
+					attrVal, ok := dp.Attributes().Get("pid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("user_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "user_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("application_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "application_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.transactions.idle_in_transaction":
 					assert.False(t, validatedMetrics["postgresql.transactions.idle_in_transaction"], "Found a duplicate in the metrics slice: postgresql.transactions.idle_in_transaction")
 					validatedMetrics["postgresql.transactions.idle_in_transaction"] = true
@@ -3728,6 +3748,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("pid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("user_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "user_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("application_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "application_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.transactions.open":
 					assert.False(t, validatedMetrics["postgresql.transactions.open"], "Found a duplicate in the metrics slice: postgresql.transactions.open")
 					validatedMetrics["postgresql.transactions.open"] = true
@@ -3740,6 +3772,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("pid")
+					assert.True(t, ok)
+					assert.EqualValues(t, 3, attrVal.Int())
+					attrVal, ok = dp.Attributes().Get("user_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "user_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("application_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "application_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
 				case "postgresql.uptime":
 					assert.False(t, validatedMetrics["postgresql.uptime"], "Found a duplicate in the metrics slice: postgresql.uptime")
 					validatedMetrics["postgresql.uptime"] = true
