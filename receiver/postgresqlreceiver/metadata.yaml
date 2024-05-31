@@ -21,6 +21,10 @@ resource_attributes:
     description: The name of the index on a table.
     enabled: true
     type: string
+  postgresql.version:
+    description: Version of postgresql database
+    enabled: true
+    type: string
 
 attributes:
   bg_buffer_source:

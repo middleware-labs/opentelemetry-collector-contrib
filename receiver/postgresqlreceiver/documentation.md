@@ -330,3 +330,4 @@ The number of temp files.
 | postgresql.database.name | The name of the database. | Any Str | true |
 | postgresql.index.name | The name of the index on a table. | Any Str | true |
 | postgresql.table.name | The schema name followed by the table name. | Any Str | true |
+| postgresql.version | Version of postgresql database | Any Str | true |

@@ -42,6 +42,13 @@ func (rb *ResourceBuilder) SetPostgresqlTableName(val string) {
 	}
 }
 
+// SetPostgresqlVersion sets provided value as "postgresql.version" attribute.
+func (rb *ResourceBuilder) SetPostgresqlVersion(val string) {
+	if rb.config.PostgresqlVersion.Enabled {
+		rb.res.Attributes().PutStr("postgresql.version", val)
+	}
+}
+
 // Emit returns the built resource and resets the internal builder state.
 func (rb *ResourceBuilder) Emit() pcommon.Resource {
 	r := rb.res

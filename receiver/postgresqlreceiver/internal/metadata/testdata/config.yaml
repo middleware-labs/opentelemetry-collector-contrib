@@ -66,6 +66,8 @@ all_set:
       enabled: true
     postgresql.table.name:
       enabled: true
+    postgresql.version:
+      enabled: true
 none_set:
   metrics:
     postgresql.backends:
@@ -132,4 +134,6 @@ none_set:
     postgresql.index.name:
       enabled: false
     postgresql.table.name:
+      enabled: false
+    postgresql.version:
       enabled: false

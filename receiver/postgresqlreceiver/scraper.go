@@ -17,7 +17,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
@@ -140,6 +139,15 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
+
+	version, err := listClient.getVersionString(ctx)
+
+	if err != nil {
+		errs.add(err)
+		p.logger.Error("Failed to get postgres version", zap.String("database", err.Error()), zap.Error(err))
+	}
+
+	rb.SetPostgresqlVersion(version)
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
 	return p.mb.Emit(), errs.combine()
@@ -208,7 +216,6 @@ func (p *postgreSQLScraper) collectSlowQueryCount(
 	errs *errsMux,
 ) {
 	slowCount, err := client.getSlowQueryCount(ctx)
-	pp.Println(slowCount)
 	if err != nil {
 		errs.addPartial(err)
 		return

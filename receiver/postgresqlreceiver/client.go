@@ -49,6 +49,7 @@ type client interface {
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getServerUptime(ctx context.Context) (string, error)
 	getSlowQueryCount(ctx context.Context) (string, error)
+	getVersionString(ctx context.Context) (string, error)
 }
 
 type postgreSQLClient struct {
@@ -550,6 +551,22 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		})
 	}
 	return qs, errors
+}
+
+func (c *postgreSQLClient) getVersionString(ctx context.Context) (string, error) {
+	var version string
+	err := c.client.QueryRowContext(ctx, "SHOW server_version").Scan(&version)
+	if err != nil {
+		return "", fmt.Errorf("failed to get PostgreSQL version: %w", err)
+	}
+
+	// Parse the major version number from the version string
+	parts := strings.Split(version, ".")
+	if len(parts) < 1 {
+		return "", fmt.Errorf("invalid PostgreSQL version string: %s", version)
+	}
+
+	return version, nil
 }
 
 func (c *postgreSQLClient) getServerUptime(ctx context.Context) (string, error) {

@@ -158,6 +158,7 @@ type ResourceAttributesConfig struct {
 	PostgresqlDatabaseName ResourceAttributeConfig `mapstructure:"postgresql.database.name"`
 	PostgresqlIndexName    ResourceAttributeConfig `mapstructure:"postgresql.index.name"`
 	PostgresqlTableName    ResourceAttributeConfig `mapstructure:"postgresql.table.name"`
+	PostgresqlVersion      ResourceAttributeConfig `mapstructure:"postgresql.version"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -169,6 +170,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		PostgresqlTableName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		PostgresqlVersion: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}
