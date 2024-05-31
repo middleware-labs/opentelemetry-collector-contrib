@@ -28,6 +28,13 @@ func (rb *ResourceBuilder) SetMysqlInstanceEndpoint(val string) {
 	}
 }
 
+// SetMysqlVersion sets provided value as "mysql.version" attribute.
+func (rb *ResourceBuilder) SetMysqlVersion(val string) {
+	if rb.config.MysqlVersion.Enabled {
+		rb.res.Attributes().PutStr("mysql.version", val)
+	}
+}
+
 // Emit returns the built resource and resets the internal builder state.
 func (rb *ResourceBuilder) Emit() pcommon.Resource {
 	r := rb.res

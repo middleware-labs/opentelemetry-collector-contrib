@@ -14,15 +14,16 @@ func TestResourceBuilder(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, test)
 			rb := NewResourceBuilder(cfg)
 			rb.SetMysqlInstanceEndpoint("mysql.instance.endpoint-val")
+			rb.SetMysqlVersion("mysql.version-val")
 
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
 
 			switch test {
 			case "default":
-				assert.Equal(t, 1, res.Attributes().Len())
+				assert.Equal(t, 2, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 1, res.Attributes().Len())
+				assert.Equal(t, 2, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -34,6 +35,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "mysql.instance.endpoint-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("mysql.version")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "mysql.version-val", val.Str())
 			}
 		})
 	}

@@ -90,6 +90,8 @@ all_set:
   resource_attributes:
     mysql.instance.endpoint:
       enabled: true
+    mysql.version:
+      enabled: true
 none_set:
   metrics:
     mysql.buffer_pool.data_pages:
@@ -180,4 +182,6 @@ none_set:
       enabled: false
   resource_attributes:
     mysql.instance.endpoint:
+      enabled: false
+    mysql.version:
       enabled: false

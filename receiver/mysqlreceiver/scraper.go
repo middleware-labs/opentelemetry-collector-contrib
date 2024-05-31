@@ -104,8 +104,13 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 	rb := m.mb.NewResourceBuilder()
 	rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
-	m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
+	version, err := m.sqlclient.getVersion()
+	if err != nil {
+		m.logger.Error("failed to fetch mysql version.", zap.Error(err))
+	}
+	rb.SetMysqlVersion(version)
+	m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	return m.mb.Emit(), errs.Combine()
 }
 
