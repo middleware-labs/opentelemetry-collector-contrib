@@ -32,6 +32,7 @@ type MetricsConfig struct {
 	PostgresqlBgwriterDuration         MetricConfig `mapstructure:"postgresql.bgwriter.duration"`
 	PostgresqlBgwriterMaxwritten       MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten"`
 	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
+	PostgresqlBufferHit                MetricConfig `mapstructure:"postgresql.buffer_hit"`
 	PostgresqlCommits                  MetricConfig `mapstructure:"postgresql.commits"`
 	PostgresqlConnectionMax            MetricConfig `mapstructure:"postgresql.connection.max"`
 	PostgresqlDatabaseCount            MetricConfig `mapstructure:"postgresql.database.count"`
@@ -39,10 +40,17 @@ type MetricsConfig struct {
 	PostgresqlDeadlocks                MetricConfig `mapstructure:"postgresql.deadlocks"`
 	PostgresqlIndexScans               MetricConfig `mapstructure:"postgresql.index.scans"`
 	PostgresqlIndexSize                MetricConfig `mapstructure:"postgresql.index.size"`
+	PostgresqlLiveRows                 MetricConfig `mapstructure:"postgresql.live_rows"`
 	PostgresqlOperations               MetricConfig `mapstructure:"postgresql.operations"`
+	PostgresqlQueryCount               MetricConfig `mapstructure:"postgresql.query.count"`
+	PostgresqlQueryTotalExecTime       MetricConfig `mapstructure:"postgresql.query.total_exec_time"`
 	PostgresqlReplicationDataDelay     MetricConfig `mapstructure:"postgresql.replication.data_delay"`
 	PostgresqlRollbacks                MetricConfig `mapstructure:"postgresql.rollbacks"`
 	PostgresqlRows                     MetricConfig `mapstructure:"postgresql.rows"`
+	PostgresqlRowsDeleted              MetricConfig `mapstructure:"postgresql.rows_deleted"`
+	PostgresqlRowsFetched              MetricConfig `mapstructure:"postgresql.rows_fetched"`
+	PostgresqlRowsInserted             MetricConfig `mapstructure:"postgresql.rows_inserted"`
+	PostgresqlRowsUpdated              MetricConfig `mapstructure:"postgresql.rows_updated"`
 	PostgresqlSequentialScans          MetricConfig `mapstructure:"postgresql.sequential_scans"`
 	PostgresqlTableCount               MetricConfig `mapstructure:"postgresql.table.count"`
 	PostgresqlTableSize                MetricConfig `mapstructure:"postgresql.table.size"`
@@ -75,6 +83,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlBlocksRead: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlBufferHit: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlCommits: MetricConfig{
 			Enabled: true,
 		},
@@ -96,7 +107,16 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlIndexSize: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlLiveRows: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlOperations: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueryCount: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlQueryTotalExecTime: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlReplicationDataDelay: MetricConfig{
@@ -106,6 +126,18 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		PostgresqlRows: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsDeleted: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsFetched: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsInserted: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlRowsUpdated: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlSequentialScans: MetricConfig{

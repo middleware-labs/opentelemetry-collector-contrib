@@ -16,6 +16,7 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
+	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
@@ -132,11 +133,13 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectWalAge(ctx, now, listClient, &errs)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
-	
+	p.collectRowStats(ctx, now, listClient, &errs)
+	p.collectQueryPerfStats(ctx, now, listClient, &errs)
+
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
-	
+
 	return p.mb.Emit(), errs.combine()
 }
 
@@ -327,6 +330,50 @@ func (p *postgreSQLScraper) collectWalAge(
 		return
 	}
 	p.mb.RecordPostgresqlWalAgeDataPoint(now, walAge)
+}
+
+func (p *postgreSQLScraper) collectRowStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	rs, err := client.getRowStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	pp.Println(rs)
+	for _, s := range rs {
+		// p.mb.RecordPostgresqlRowsReturnedDataPoint(now, s.rowsReturned, s.relationName)
+		p.mb.RecordPostgresqlRowsFetchedDataPoint(now, s.rowsFetched, s.relationName)
+		p.mb.RecordPostgresqlRowsInsertedDataPoint(now, s.rowsInserted, s.relationName)
+		p.mb.RecordPostgresqlRowsUpdatedDataPoint(now, s.rowsUpdated, s.relationName)
+		p.mb.RecordPostgresqlRowsDeletedDataPoint(now, s.rowsDeleted, s.relationName)
+		// p.mb.RecordPostgresqlRowsHotUpdatedDataPoint(now, s.rowsHotUpdated, s.relationName)
+		p.mb.RecordPostgresqlLiveRowsDataPoint(now, s.liveRows, s.relationName)
+		// p.mb.RecordPostgresqlDeadRowsDataPoint(now, s.deadRows, s.relationName)
+	}
+
+}
+
+func (p *postgreSQLScraper) collectQueryPerfStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	queryStats, err := client.getQueryStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range queryStats {
+		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
+		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, int64(s.queryExecTime), s.queryText, s.queryId)
+	}
 }
 
 func (p *postgreSQLScraper) retrieveDatabaseStats(
