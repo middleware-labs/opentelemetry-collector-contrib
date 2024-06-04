@@ -14,7 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -23,7 +24,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscloudwatchreceiver/internal/metadata"
+
+	conventions "go.opentelemetry.io/collector/semconv/v1.6.1"
 )
 
 const (
@@ -32,36 +34,45 @@ const (
 )
 
 type logsReceiver struct {
-	settings                      receiver.Settings
-	region                        string
-	profile                       string
-	imdsEndpoint                  string
-	pollInterval                  time.Duration
-	maxEventsPerRequest           int
+	settings                      receiver.Settingsregion  string
+	profile string
+
+	pollingApproach string
+	// Credentials
+	awsAccountId string
+	awsRoleArn   string
+	externalId   string
+	awsAccessKey string
+	awsSecretKey string
+
+	imdsEndpoint        string
+	pollInterval        time.Duration
+	maxEventsPerRequest int
 	initialStartTime              time.Time
-	groupNextStartTimes           map[string]time.Time
-	groupRequests                 []groupRequest
-	autodiscover                  *AutodiscoverConfig
+	groupNextStartTimes           map[string]       time.Time
+	groupRequests       []groupRequest
+	autodiscover        *AutodiscoverConfig
 	client                        client
 	consumer                      consumer.Logs
 	wg                            *sync.WaitGroup
 	doneChan                      chan bool
 	storageID                     *component.ID
 	cloudwatchCheckpointPersister *cloudwatchCheckpointPersister
-	accountID                     string
 }
+
+const maxLogGroupsPerDiscovery = int32(50)
 
 type client interface {
 	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(options *cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
 	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(options *cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
+	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
+	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
 }
 
 type streamNames struct {
 	group string
-	names []*string
+	names []string
 }
-
-var nowFunc = time.Now
 
 func (sn *streamNames) request(limit int, nextToken string, st, et *time.Time) *cloudwatchlogs.FilterLogEventsInput {
 	base := &cloudwatchlogs.FilterLogEventsInput{
@@ -141,14 +152,16 @@ func newLogsReceiver(cfg *Config, settings receiver.Settings, consumer consumer.
 		}
 	}
 
-	if cfg.Logs.InitialLookback != 0 {
-		startTime = nowFunc().Add(-cfg.Logs.InitialLookback)
-	}
-
 	return &logsReceiver{
 		settings:            settings,
-		region:              cfg.Region,
-		profile:             cfg.Profile,
+		region:  cfg.Region,
+		profile: cfg.Profile,
+
+		awsAccountId: cfg.AwsAccountId,
+		awsRoleArn:   cfg.AwsRoleArn,
+		externalId:   cfg.ExternalId,
+		awsAccessKey: cfg.AwsAccessKey,
+		awsSecretKey: cfg.AwsSecretKey,
 		consumer:            consumer,
 		maxEventsPerRequest: cfg.Logs.MaxEventsPerRequest,
 		imdsEndpoint:        cfg.IMDSEndpoint,
@@ -225,7 +238,7 @@ func (l *logsReceiver) startPolling(ctx context.Context) {
 func (l *logsReceiver) poll(ctx context.Context) error {
 	var errs error
 	currentGroups := make(map[string]bool)
-	endTime := nowFunc()
+	endTime := time.Now()
 	for _, r := range l.groupRequests {
 		groupName := r.groupName()
 		currentGroups[groupName] = true
@@ -297,7 +310,7 @@ func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTi
 	// In case of failure, the startTime of the request will be used as the checkpoint for the next poll
 	nextStartTime := startTime
 
-	err := l.ensureSession()
+	err := l.configureAWSClient(ctx)
 	if err != nil {
 		return nextStartTime, err
 	}
@@ -314,7 +327,8 @@ func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTi
 			input := pc.request(l.maxEventsPerRequest, *nextToken, &startTime, &endTime)
 			resp, err := l.client.FilterLogEvents(ctx, input)
 			if err != nil {
-				if _, ok := errors.AsType[*types.ResourceNotFoundException](err); ok {
+				var resourceNotFoundException *types.ResourceNotFoundException
+				if errors.As(err, &resourceNotFoundException) {
 					l.settings.Logger.Warn("log group no longer exists, skipping",
 						zap.String("logGroup", logGroup),
 						zap.Error(err))
@@ -323,7 +337,7 @@ func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTi
 				return nextStartTime, fmt.Errorf("failed to retrieve logs from log group %s: %w", logGroup, err)
 			}
 
-			observedTime := pcommon.NewTimestampFromTime(nowFunc())
+			observedTime := pcommon.NewTimestampFromTime(time.Now())
 			logs := l.processEvents(observedTime, logGroup, resp)
 			if logs.LogRecordCount() > 0 {
 				if err = l.consumer.ConsumeLogs(ctx, logs); err != nil {
@@ -334,15 +348,12 @@ func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTi
 				}
 				// the next timestamp should be 1 more millisecond than the last log
 				nextStartTime = time.UnixMilli(*resp.Events[len(resp.Events)-1].Timestamp + 1)
+			} else {
+				// Skip the time range in case there are no logs
+				nextStartTime = endTime
 			}
 			nextToken = resp.NextToken
 		}
-	}
-
-	// If no events were observed across any page of this window, advance to
-	// endTime so we don't repeatedly re-scan the same empty range.
-	if nextStartTime.Equal(startTime) {
-		nextStartTime = endTime
 	}
 
 	return nextStartTime, nil
@@ -385,19 +396,21 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 			rl := logs.ResourceLogs().AppendEmpty()
 			resourceLogs = &rl
 			resourceAttributes := resourceLogs.Resource().Attributes()
-			resourceAttributes.PutStr("aws.region", l.region)
+			resourceAttributes.PutStr(conventions.AttributeCloudProvider, conventions.AttributeCloudProviderAWS)
+			resourceAttributes.PutStr(conventions.AttributeCloudRegion, l.region)
 			resourceAttributes.PutStr("cloudwatch.log.group.name", logGroupName)
-			if l.accountID != "" {
-				resourceAttributes.PutStr("cloud.account.id", l.accountID)
-			}
 			if logStreamName != "" {
 				resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
 			}
+			resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
+
+			//middleware.io specific attributes
+			resourceAttributes.PutStr("channel", conventions.AttributeCloudProviderAWS)
+			resourceAttributes.PutStr("aws.scraping_approach", "api_polling")
+			resourceAttributes.PutStr("aws.polling_approach", l.pollingApproach)
 			group[logStreamName] = resourceLogs
 
-			scopeLogs := resourceLogs.ScopeLogs().AppendEmpty()
-			scopeLogs.Scope().SetName(metadata.ScopeName)
-			scopeLogs.Scope().SetVersion(l.settings.BuildInfo.Version)
+			_ = resourceLogs.ScopeLogs().AppendEmpty()
 		}
 
 		// Now we know resourceLogs is initialized and has one scopeLogs so we don't have to handle any special cases.
@@ -416,7 +429,7 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverConfig) ([]groupRequest, error) {
 	l.settings.Logger.Debug("attempting to discover log groups.", zap.Int("limit", auto.Limit))
 	groups := []groupRequest{}
-	err := l.ensureSession()
+	err := l.configureAWSClient(ctx)
 	if err != nil {
 		return groups, fmt.Errorf("unable to establish a session to auto discover log groups: %w", err)
 	}
@@ -467,6 +480,7 @@ func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverCon
 			}
 
 			numGroups++
+			l.logger.Debug("discovered log group", zap.String("log group", *lg.LogGroupName))
 
 			// default behavior is to collect all if not stream filtered
 			if len(auto.Streams.Names) == 0 && len(auto.Streams.Prefixes) == 0 {
@@ -506,12 +520,5 @@ func (l *logsReceiver) ensureSession() error {
 
 	cfg, err := config.LoadDefaultConfig(context.Background(), cfgOptions...)
 	l.client = cloudwatchlogs.NewFromConfig(cfg)
-
-	stsClient := sts.NewFromConfig(cfg)
-	stsResult, _ := stsClient.GetCallerIdentity(context.Background(), &sts.GetCallerIdentityInput{})
-	if stsClient != nil && *stsResult.Account != "" {
-		l.accountID = *stsResult.Account
-	}
-
 	return err
 }
