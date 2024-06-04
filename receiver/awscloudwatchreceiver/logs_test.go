@@ -53,7 +53,7 @@ func TestPrefixedConfig(t *testing.T) {
 	cfg.Logs.Groups = GroupConfig{
 		NamedConfigs: map[string]StreamConfig{
 			testLogGroupName: {
-				Names: []*string{&testLogStreamName},
+				Names: []string{testLogStreamName},
 			},
 		},
 	}
@@ -169,7 +169,7 @@ func TestDiscovery(t *testing.T) {
 			Limit: 1,
 			Streams: StreamConfig{
 				Prefixes: []*string{&testLogStreamPrefix},
-				Names:    []*string{&testLogStreamMessage},
+				Names:    []string{testLogStreamMessage},
 			},
 		},
 	}
@@ -199,7 +199,7 @@ func TestShutdownWhileCollecting(t *testing.T) {
 	cfg.Logs.Groups = GroupConfig{
 		NamedConfigs: map[string]StreamConfig{
 			testLogGroupName: {
-				Names: []*string{&testLogStreamName},
+				Names: []string{testLogStreamName},
 			},
 		},
 	}
@@ -213,6 +213,7 @@ func TestShutdownWhileCollecting(t *testing.T) {
 	doneChan := make(chan time.Time, 1)
 	mc := &mockClient{}
 	mc.On("FilterLogEvents", mock.Anything, mock.Anything, mock.Anything).Return(&cloudwatchlogs.FilterLogEventsOutput{
+		//Events:    []types.FilteredLogEvent{},
 		Events:    []types.FilteredLogEvent{},
 		NextToken: aws.String("next"),
 	}, nil).

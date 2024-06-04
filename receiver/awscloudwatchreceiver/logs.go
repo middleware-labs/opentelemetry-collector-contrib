@@ -14,6 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -22,6 +24,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter"
+
+	conventions "go.opentelemetry.io/collector/semconv/v1.6.1"
 )
 
 const (
@@ -30,16 +34,24 @@ const (
 )
 
 type logsReceiver struct {
-	settings                      receiver.Settings
-	region                        string
-	profile                       string
-	imdsEndpoint                  string
-	pollInterval                  time.Duration
-	maxEventsPerRequest           int
+	settings                      receiver.Settingsregion  string
+	profile string
+
+	pollingApproach string
+	// Credentials
+	awsAccountId string
+	awsRoleArn   string
+	externalId   string
+	awsAccessKey string
+	awsSecretKey string
+
+	imdsEndpoint        string
+	pollInterval        time.Duration
+	maxEventsPerRequest int
 	initialStartTime              time.Time
-	groupNextStartTimes           map[string]time.Time
-	groupRequests                 []groupRequest
-	autodiscover                  *AutodiscoverConfig
+	groupNextStartTimes           map[string]       time.Time
+	groupRequests       []groupRequest
+	autodiscover        *AutodiscoverConfig
 	client                        client
 	consumer                      consumer.Logs
 	wg                            *sync.WaitGroup
@@ -48,14 +60,18 @@ type logsReceiver struct {
 	cloudwatchCheckpointPersister *cloudwatchCheckpointPersister
 }
 
+const maxLogGroupsPerDiscovery = int32(50)
+
 type client interface {
 	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(options *cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
 	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(options *cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
+	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
+	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
 }
 
 type streamNames struct {
 	group string
-	names []*string
+	names []string
 }
 
 func (sn *streamNames) request(limit int, nextToken string, st, et *time.Time) *cloudwatchlogs.FilterLogEventsInput {
@@ -138,8 +154,14 @@ func newLogsReceiver(cfg *Config, settings receiver.Settings, consumer consumer.
 
 	return &logsReceiver{
 		settings:            settings,
-		region:              cfg.Region,
-		profile:             cfg.Profile,
+		region:  cfg.Region,
+		profile: cfg.Profile,
+
+		awsAccountId: cfg.AwsAccountId,
+		awsRoleArn:   cfg.AwsRoleArn,
+		externalId:   cfg.ExternalId,
+		awsAccessKey: cfg.AwsAccessKey,
+		awsSecretKey: cfg.AwsSecretKey,
 		consumer:            consumer,
 		maxEventsPerRequest: cfg.Logs.MaxEventsPerRequest,
 		imdsEndpoint:        cfg.IMDSEndpoint,
@@ -288,7 +310,7 @@ func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTi
 	// In case of failure, the startTime of the request will be used as the checkpoint for the next poll
 	nextStartTime := startTime
 
-	err := l.ensureSession()
+	err := l.configureAWSClient(ctx)
 	if err != nil {
 		return nextStartTime, err
 	}
@@ -374,11 +396,18 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 			rl := logs.ResourceLogs().AppendEmpty()
 			resourceLogs = &rl
 			resourceAttributes := resourceLogs.Resource().Attributes()
-			resourceAttributes.PutStr("aws.region", l.region)
+			resourceAttributes.PutStr(conventions.AttributeCloudProvider, conventions.AttributeCloudProviderAWS)
+			resourceAttributes.PutStr(conventions.AttributeCloudRegion, l.region)
 			resourceAttributes.PutStr("cloudwatch.log.group.name", logGroupName)
 			if logStreamName != "" {
 				resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
 			}
+			resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
+
+			//middleware.io specific attributes
+			resourceAttributes.PutStr("channel", conventions.AttributeCloudProviderAWS)
+			resourceAttributes.PutStr("aws.scraping_approach", "api_polling")
+			resourceAttributes.PutStr("aws.polling_approach", l.pollingApproach)
 			group[logStreamName] = resourceLogs
 
 			_ = resourceLogs.ScopeLogs().AppendEmpty()
@@ -400,7 +429,7 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverConfig) ([]groupRequest, error) {
 	l.settings.Logger.Debug("attempting to discover log groups.", zap.Int("limit", auto.Limit))
 	groups := []groupRequest{}
-	err := l.ensureSession()
+	err := l.configureAWSClient(ctx)
 	if err != nil {
 		return groups, fmt.Errorf("unable to establish a session to auto discover log groups: %w", err)
 	}
@@ -451,6 +480,7 @@ func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverCon
 			}
 
 			numGroups++
+			l.logger.Debug("discovered log group", zap.String("log group", *lg.LogGroupName))
 
 			// default behavior is to collect all if not stream filtered
 			if len(auto.Streams.Names) == 0 && len(auto.Streams.Prefixes) == 0 {

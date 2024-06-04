@@ -92,7 +92,7 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	e.SetK8sPodName(pod.Name)
 	e.SetK8sPodQosClass(string(pod.Status.QOSClass))
 	e.SetK8sJobName(jobInfo.Name)
-    e.SetK8sJobUID(string(jobInfo.UID))
+	e.SetK8sJobUID(string(jobInfo.UID))
     e.SetK8sClusterName("unknown")
 	e.SetK8sNamespaceName(pod.Namespace)
 	e.SetK8sNodeName(pod.Spec.NodeName)
