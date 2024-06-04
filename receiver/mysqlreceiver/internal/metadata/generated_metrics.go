@@ -2353,496 +2353,6 @@ func newMetricMysqlPageOperations(cfg MetricConfig) metricMysqlPageOperations {
 	return m
 }
 
-type metricMysqlPerformanceComDelete struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_delete metric with initial data.
-func (m *metricMysqlPerformanceComDelete) init() {
-	m.data.SetName("mysql.performance.com_delete")
-	m.data.SetDescription("The rate of delete statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComDelete) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComDelete) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComDelete) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComDelete(cfg MetricConfig) metricMysqlPerformanceComDelete {
-	m := metricMysqlPerformanceComDelete{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComDeleteMulti struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_delete_multi metric with initial data.
-func (m *metricMysqlPerformanceComDeleteMulti) init() {
-	m.data.SetName("mysql.performance.com_delete_multi")
-	m.data.SetDescription("The rate of delete-multi statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComDeleteMulti) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComDeleteMulti) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComDeleteMulti) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComDeleteMulti(cfg MetricConfig) metricMysqlPerformanceComDeleteMulti {
-	m := metricMysqlPerformanceComDeleteMulti{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComInsert struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_insert metric with initial data.
-func (m *metricMysqlPerformanceComInsert) init() {
-	m.data.SetName("mysql.performance.com_insert")
-	m.data.SetDescription("The rate of insert statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComInsert) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComInsert) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComInsert) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComInsert(cfg MetricConfig) metricMysqlPerformanceComInsert {
-	m := metricMysqlPerformanceComInsert{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComInsertSelect struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_insert_select metric with initial data.
-func (m *metricMysqlPerformanceComInsertSelect) init() {
-	m.data.SetName("mysql.performance.com_insert_select")
-	m.data.SetDescription("The rate of insert-select statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComInsertSelect) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComInsertSelect) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComInsertSelect) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComInsertSelect(cfg MetricConfig) metricMysqlPerformanceComInsertSelect {
-	m := metricMysqlPerformanceComInsertSelect{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComLoad struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_load metric with initial data.
-func (m *metricMysqlPerformanceComLoad) init() {
-	m.data.SetName("mysql.performance.com_load")
-	m.data.SetDescription("The rate of load statements")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComLoad) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComLoad) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComLoad) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComLoad(cfg MetricConfig) metricMysqlPerformanceComLoad {
-	m := metricMysqlPerformanceComLoad{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComReplace struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_replace metric with initial data.
-func (m *metricMysqlPerformanceComReplace) init() {
-	m.data.SetName("mysql.performance.com_replace")
-	m.data.SetDescription("The rate of replace statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComReplace) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComReplace) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComReplace) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComReplace(cfg MetricConfig) metricMysqlPerformanceComReplace {
-	m := metricMysqlPerformanceComReplace{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComReplaceSelect struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_replace_select metric with initial data.
-func (m *metricMysqlPerformanceComReplaceSelect) init() {
-	m.data.SetName("mysql.performance.com_replace_select")
-	m.data.SetDescription("The rate of replace-select statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComReplaceSelect) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComReplaceSelect) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComReplaceSelect) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComReplaceSelect(cfg MetricConfig) metricMysqlPerformanceComReplaceSelect {
-	m := metricMysqlPerformanceComReplaceSelect{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComSelect struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_select metric with initial data.
-func (m *metricMysqlPerformanceComSelect) init() {
-	m.data.SetName("mysql.performance.com_select")
-	m.data.SetDescription("The rate of select statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComSelect) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComSelect) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComSelect) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComSelect(cfg MetricConfig) metricMysqlPerformanceComSelect {
-	m := metricMysqlPerformanceComSelect{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComUpdate struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_update metric with initial data.
-func (m *metricMysqlPerformanceComUpdate) init() {
-	m.data.SetName("mysql.performance.com_update")
-	m.data.SetDescription("The rate of update statements.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComUpdate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComUpdate) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComUpdate) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComUpdate(cfg MetricConfig) metricMysqlPerformanceComUpdate {
-	m := metricMysqlPerformanceComUpdate{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMysqlPerformanceComUpdateMulti struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mysql.performance.com_update_multi metric with initial data.
-func (m *metricMysqlPerformanceComUpdateMulti) init() {
-	m.data.SetName("mysql.performance.com_update_multi")
-	m.data.SetDescription("The rate of update-multi.")
-	m.data.SetUnit("{query}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMysqlPerformanceComUpdateMulti) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMysqlPerformanceComUpdateMulti) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMysqlPerformanceComUpdateMulti) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMysqlPerformanceComUpdateMulti(cfg MetricConfig) metricMysqlPerformanceComUpdateMulti {
-	m := metricMysqlPerformanceComUpdateMulti{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
 type metricMysqlPreparedStatements struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3042,6 +2552,57 @@ func (m *metricMysqlQuerySlowCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMysqlQuerySlowCount(cfg MetricConfig) metricMysqlQuerySlowCount {
 	m := metricMysqlQuerySlowCount{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMysqlQueryTotalErrors struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.query.total_errors metric with initial data.
+func (m *metricMysqlQueryTotalErrors) init() {
+	m.data.SetName("mysql.query.total_errors")
+	m.data.SetDescription("The total number of errors while performing queries in the database")
+	m.data.SetUnit("1")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMysqlQueryTotalErrors) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlQueryTotalErrors) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlQueryTotalErrors) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlQueryTotalErrors(cfg MetricConfig) metricMysqlQueryTotalErrors {
+	m := metricMysqlQueryTotalErrors{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3359,6 +2920,61 @@ func (m *metricMysqlStatementEventCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMysqlStatementEventCount(cfg MetricConfig) metricMysqlStatementEventCount {
 	m := metricMysqlStatementEventCount{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMysqlStatementEventErrors struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.statement_event.errors metric with initial data.
+func (m *metricMysqlStatementEventErrors) init() {
+	m.data.SetName("mysql.statement_event.errors")
+	m.data.SetDescription("the error count of the summarized events")
+	m.data.SetUnit("1")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMysqlStatementEventErrors) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, schemaAttributeValue string, digestAttributeValue string, digestTextAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("schema", schemaAttributeValue)
+	dp.Attributes().PutStr("digest", digestAttributeValue)
+	dp.Attributes().PutStr("digest_text", digestTextAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlStatementEventErrors) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlStatementEventErrors) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlStatementEventErrors(cfg MetricConfig) metricMysqlStatementEventErrors {
+	m := metricMysqlStatementEventErrors{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -4015,69 +3631,61 @@ func newMetricMysqlUptime(cfg MetricConfig) metricMysqlUptime {
 // MetricsBuilder provides an interface for scrapers to report metrics while taking care of all the transformations
 // required to produce metric representation defined in metadata and user config.
 type MetricsBuilder struct {
-	config                                 MetricsBuilderConfig // config of the metrics builder.
-	startTime                              pcommon.Timestamp    // start time that will be applied to all recorded data points.
-	metricsCapacity                        int                  // maximum observed number of metrics per resource.
-	metricsBuffer                          pmetric.Metrics      // accumulates metrics data before emitting.
-	buildInfo                              component.BuildInfo  // contains version information.
-	metricMysqlBufferPoolDataPages         metricMysqlBufferPoolDataPages
-	metricMysqlBufferPoolLimit             metricMysqlBufferPoolLimit
-	metricMysqlBufferPoolOperations        metricMysqlBufferPoolOperations
-	metricMysqlBufferPoolPageFlushes       metricMysqlBufferPoolPageFlushes
-	metricMysqlBufferPoolPages             metricMysqlBufferPoolPages
-	metricMysqlBufferPoolUsage             metricMysqlBufferPoolUsage
-	metricMysqlClientNetworkIo             metricMysqlClientNetworkIo
-	metricMysqlCommands                    metricMysqlCommands
-	metricMysqlConnectionCount             metricMysqlConnectionCount
-	metricMysqlConnectionErrors            metricMysqlConnectionErrors
-	metricMysqlDoubleWrites                metricMysqlDoubleWrites
-	metricMysqlHandlers                    metricMysqlHandlers
-	metricMysqlIndexIoWaitCount            metricMysqlIndexIoWaitCount
-	metricMysqlIndexIoWaitTime             metricMysqlIndexIoWaitTime
-	metricMysqlInnodbRowsDeleted           metricMysqlInnodbRowsDeleted
-	metricMysqlInnodbRowsInserted          metricMysqlInnodbRowsInserted
-	metricMysqlInnodbRowsRead              metricMysqlInnodbRowsRead
-	metricMysqlInnodbRowsUpdated           metricMysqlInnodbRowsUpdated
-	metricMysqlJoins                       metricMysqlJoins
-	metricMysqlLocks                       metricMysqlLocks
-	metricMysqlLogOperations               metricMysqlLogOperations
-	metricMysqlMysqlxConnections           metricMysqlMysqlxConnections
-	metricMysqlMysqlxWorkerThreads         metricMysqlMysqlxWorkerThreads
-	metricMysqlOpenedResources             metricMysqlOpenedResources
-	metricMysqlOperations                  metricMysqlOperations
-	metricMysqlPageOperations              metricMysqlPageOperations
-	metricMysqlPerformanceComDelete        metricMysqlPerformanceComDelete
-	metricMysqlPerformanceComDeleteMulti   metricMysqlPerformanceComDeleteMulti
-	metricMysqlPerformanceComInsert        metricMysqlPerformanceComInsert
-	metricMysqlPerformanceComInsertSelect  metricMysqlPerformanceComInsertSelect
-	metricMysqlPerformanceComLoad          metricMysqlPerformanceComLoad
-	metricMysqlPerformanceComReplace       metricMysqlPerformanceComReplace
-	metricMysqlPerformanceComReplaceSelect metricMysqlPerformanceComReplaceSelect
-	metricMysqlPerformanceComSelect        metricMysqlPerformanceComSelect
-	metricMysqlPerformanceComUpdate        metricMysqlPerformanceComUpdate
-	metricMysqlPerformanceComUpdateMulti   metricMysqlPerformanceComUpdateMulti
-	metricMysqlPreparedStatements          metricMysqlPreparedStatements
-	metricMysqlQueryClientCount            metricMysqlQueryClientCount
-	metricMysqlQueryCount                  metricMysqlQueryCount
-	metricMysqlQuerySlowCount              metricMysqlQuerySlowCount
-	metricMysqlReplicaSQLDelay             metricMysqlReplicaSQLDelay
-	metricMysqlReplicaTimeBehindSource     metricMysqlReplicaTimeBehindSource
-	metricMysqlRowLocks                    metricMysqlRowLocks
-	metricMysqlRowOperations               metricMysqlRowOperations
-	metricMysqlSorts                       metricMysqlSorts
-	metricMysqlStatementEventCount         metricMysqlStatementEventCount
-	metricMysqlStatementEventWaitTime      metricMysqlStatementEventWaitTime
-	metricMysqlTableIoWaitCount            metricMysqlTableIoWaitCount
-	metricMysqlTableIoWaitTime             metricMysqlTableIoWaitTime
-	metricMysqlTableLockWaitReadCount      metricMysqlTableLockWaitReadCount
-	metricMysqlTableLockWaitReadTime       metricMysqlTableLockWaitReadTime
-	metricMysqlTableLockWaitWriteCount     metricMysqlTableLockWaitWriteCount
-	metricMysqlTableLockWaitWriteTime      metricMysqlTableLockWaitWriteTime
-	metricMysqlTableOpenCache              metricMysqlTableOpenCache
-	metricMysqlThreads                     metricMysqlThreads
-	metricMysqlTmpResources                metricMysqlTmpResources
-	metricMysqlTotalRows                   metricMysqlTotalRows
-	metricMysqlUptime                      metricMysqlUptime
+	config                             MetricsBuilderConfig // config of the metrics builder.
+	startTime                          pcommon.Timestamp    // start time that will be applied to all recorded data points.
+	metricsCapacity                    int                  // maximum observed number of metrics per resource.
+	metricsBuffer                      pmetric.Metrics      // accumulates metrics data before emitting.
+	buildInfo                          component.BuildInfo  // contains version information.
+	metricMysqlBufferPoolDataPages     metricMysqlBufferPoolDataPages
+	metricMysqlBufferPoolLimit         metricMysqlBufferPoolLimit
+	metricMysqlBufferPoolOperations    metricMysqlBufferPoolOperations
+	metricMysqlBufferPoolPageFlushes   metricMysqlBufferPoolPageFlushes
+	metricMysqlBufferPoolPages         metricMysqlBufferPoolPages
+	metricMysqlBufferPoolUsage         metricMysqlBufferPoolUsage
+	metricMysqlClientNetworkIo         metricMysqlClientNetworkIo
+	metricMysqlCommands                metricMysqlCommands
+	metricMysqlConnectionCount         metricMysqlConnectionCount
+	metricMysqlConnectionErrors        metricMysqlConnectionErrors
+	metricMysqlDoubleWrites            metricMysqlDoubleWrites
+	metricMysqlHandlers                metricMysqlHandlers
+	metricMysqlIndexIoWaitCount        metricMysqlIndexIoWaitCount
+	metricMysqlIndexIoWaitTime         metricMysqlIndexIoWaitTime
+	metricMysqlInnodbRowsDeleted       metricMysqlInnodbRowsDeleted
+	metricMysqlInnodbRowsInserted      metricMysqlInnodbRowsInserted
+	metricMysqlInnodbRowsRead          metricMysqlInnodbRowsRead
+	metricMysqlInnodbRowsUpdated       metricMysqlInnodbRowsUpdated
+	metricMysqlJoins                   metricMysqlJoins
+	metricMysqlLocks                   metricMysqlLocks
+	metricMysqlLogOperations           metricMysqlLogOperations
+	metricMysqlMysqlxConnections       metricMysqlMysqlxConnections
+	metricMysqlMysqlxWorkerThreads     metricMysqlMysqlxWorkerThreads
+	metricMysqlOpenedResources         metricMysqlOpenedResources
+	metricMysqlOperations              metricMysqlOperations
+	metricMysqlPageOperations          metricMysqlPageOperations
+	metricMysqlPreparedStatements      metricMysqlPreparedStatements
+	metricMysqlQueryClientCount        metricMysqlQueryClientCount
+	metricMysqlQueryCount              metricMysqlQueryCount
+	metricMysqlQuerySlowCount          metricMysqlQuerySlowCount
+	metricMysqlQueryTotalErrors        metricMysqlQueryTotalErrors
+	metricMysqlReplicaSQLDelay         metricMysqlReplicaSQLDelay
+	metricMysqlReplicaTimeBehindSource metricMysqlReplicaTimeBehindSource
+	metricMysqlRowLocks                metricMysqlRowLocks
+	metricMysqlRowOperations           metricMysqlRowOperations
+	metricMysqlSorts                   metricMysqlSorts
+	metricMysqlStatementEventCount     metricMysqlStatementEventCount
+	metricMysqlStatementEventErrors    metricMysqlStatementEventErrors
+	metricMysqlStatementEventWaitTime  metricMysqlStatementEventWaitTime
+	metricMysqlTableIoWaitCount        metricMysqlTableIoWaitCount
+	metricMysqlTableIoWaitTime         metricMysqlTableIoWaitTime
+	metricMysqlTableLockWaitReadCount  metricMysqlTableLockWaitReadCount
+	metricMysqlTableLockWaitReadTime   metricMysqlTableLockWaitReadTime
+	metricMysqlTableLockWaitWriteCount metricMysqlTableLockWaitWriteCount
+	metricMysqlTableLockWaitWriteTime  metricMysqlTableLockWaitWriteTime
+	metricMysqlTableOpenCache          metricMysqlTableOpenCache
+	metricMysqlThreads                 metricMysqlThreads
+	metricMysqlTmpResources            metricMysqlTmpResources
+	metricMysqlTotalRows               metricMysqlTotalRows
+	metricMysqlUptime                  metricMysqlUptime
 }
 
 // metricBuilderOption applies changes to default metrics builder.
@@ -4092,68 +3700,60 @@ func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
 
 func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSettings, options ...metricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
-		config:                                 mbc,
-		startTime:                              pcommon.NewTimestampFromTime(time.Now()),
-		metricsBuffer:                          pmetric.NewMetrics(),
-		buildInfo:                              settings.BuildInfo,
-		metricMysqlBufferPoolDataPages:         newMetricMysqlBufferPoolDataPages(mbc.Metrics.MysqlBufferPoolDataPages),
-		metricMysqlBufferPoolLimit:             newMetricMysqlBufferPoolLimit(mbc.Metrics.MysqlBufferPoolLimit),
-		metricMysqlBufferPoolOperations:        newMetricMysqlBufferPoolOperations(mbc.Metrics.MysqlBufferPoolOperations),
-		metricMysqlBufferPoolPageFlushes:       newMetricMysqlBufferPoolPageFlushes(mbc.Metrics.MysqlBufferPoolPageFlushes),
-		metricMysqlBufferPoolPages:             newMetricMysqlBufferPoolPages(mbc.Metrics.MysqlBufferPoolPages),
-		metricMysqlBufferPoolUsage:             newMetricMysqlBufferPoolUsage(mbc.Metrics.MysqlBufferPoolUsage),
-		metricMysqlClientNetworkIo:             newMetricMysqlClientNetworkIo(mbc.Metrics.MysqlClientNetworkIo),
-		metricMysqlCommands:                    newMetricMysqlCommands(mbc.Metrics.MysqlCommands),
-		metricMysqlConnectionCount:             newMetricMysqlConnectionCount(mbc.Metrics.MysqlConnectionCount),
-		metricMysqlConnectionErrors:            newMetricMysqlConnectionErrors(mbc.Metrics.MysqlConnectionErrors),
-		metricMysqlDoubleWrites:                newMetricMysqlDoubleWrites(mbc.Metrics.MysqlDoubleWrites),
-		metricMysqlHandlers:                    newMetricMysqlHandlers(mbc.Metrics.MysqlHandlers),
-		metricMysqlIndexIoWaitCount:            newMetricMysqlIndexIoWaitCount(mbc.Metrics.MysqlIndexIoWaitCount),
-		metricMysqlIndexIoWaitTime:             newMetricMysqlIndexIoWaitTime(mbc.Metrics.MysqlIndexIoWaitTime),
-		metricMysqlInnodbRowsDeleted:           newMetricMysqlInnodbRowsDeleted(mbc.Metrics.MysqlInnodbRowsDeleted),
-		metricMysqlInnodbRowsInserted:          newMetricMysqlInnodbRowsInserted(mbc.Metrics.MysqlInnodbRowsInserted),
-		metricMysqlInnodbRowsRead:              newMetricMysqlInnodbRowsRead(mbc.Metrics.MysqlInnodbRowsRead),
-		metricMysqlInnodbRowsUpdated:           newMetricMysqlInnodbRowsUpdated(mbc.Metrics.MysqlInnodbRowsUpdated),
-		metricMysqlJoins:                       newMetricMysqlJoins(mbc.Metrics.MysqlJoins),
-		metricMysqlLocks:                       newMetricMysqlLocks(mbc.Metrics.MysqlLocks),
-		metricMysqlLogOperations:               newMetricMysqlLogOperations(mbc.Metrics.MysqlLogOperations),
-		metricMysqlMysqlxConnections:           newMetricMysqlMysqlxConnections(mbc.Metrics.MysqlMysqlxConnections),
-		metricMysqlMysqlxWorkerThreads:         newMetricMysqlMysqlxWorkerThreads(mbc.Metrics.MysqlMysqlxWorkerThreads),
-		metricMysqlOpenedResources:             newMetricMysqlOpenedResources(mbc.Metrics.MysqlOpenedResources),
-		metricMysqlOperations:                  newMetricMysqlOperations(mbc.Metrics.MysqlOperations),
-		metricMysqlPageOperations:              newMetricMysqlPageOperations(mbc.Metrics.MysqlPageOperations),
-		metricMysqlPerformanceComDelete:        newMetricMysqlPerformanceComDelete(mbc.Metrics.MysqlPerformanceComDelete),
-		metricMysqlPerformanceComDeleteMulti:   newMetricMysqlPerformanceComDeleteMulti(mbc.Metrics.MysqlPerformanceComDeleteMulti),
-		metricMysqlPerformanceComInsert:        newMetricMysqlPerformanceComInsert(mbc.Metrics.MysqlPerformanceComInsert),
-		metricMysqlPerformanceComInsertSelect:  newMetricMysqlPerformanceComInsertSelect(mbc.Metrics.MysqlPerformanceComInsertSelect),
-		metricMysqlPerformanceComLoad:          newMetricMysqlPerformanceComLoad(mbc.Metrics.MysqlPerformanceComLoad),
-		metricMysqlPerformanceComReplace:       newMetricMysqlPerformanceComReplace(mbc.Metrics.MysqlPerformanceComReplace),
-		metricMysqlPerformanceComReplaceSelect: newMetricMysqlPerformanceComReplaceSelect(mbc.Metrics.MysqlPerformanceComReplaceSelect),
-		metricMysqlPerformanceComSelect:        newMetricMysqlPerformanceComSelect(mbc.Metrics.MysqlPerformanceComSelect),
-		metricMysqlPerformanceComUpdate:        newMetricMysqlPerformanceComUpdate(mbc.Metrics.MysqlPerformanceComUpdate),
-		metricMysqlPerformanceComUpdateMulti:   newMetricMysqlPerformanceComUpdateMulti(mbc.Metrics.MysqlPerformanceComUpdateMulti),
-		metricMysqlPreparedStatements:          newMetricMysqlPreparedStatements(mbc.Metrics.MysqlPreparedStatements),
-		metricMysqlQueryClientCount:            newMetricMysqlQueryClientCount(mbc.Metrics.MysqlQueryClientCount),
-		metricMysqlQueryCount:                  newMetricMysqlQueryCount(mbc.Metrics.MysqlQueryCount),
-		metricMysqlQuerySlowCount:              newMetricMysqlQuerySlowCount(mbc.Metrics.MysqlQuerySlowCount),
-		metricMysqlReplicaSQLDelay:             newMetricMysqlReplicaSQLDelay(mbc.Metrics.MysqlReplicaSQLDelay),
-		metricMysqlReplicaTimeBehindSource:     newMetricMysqlReplicaTimeBehindSource(mbc.Metrics.MysqlReplicaTimeBehindSource),
-		metricMysqlRowLocks:                    newMetricMysqlRowLocks(mbc.Metrics.MysqlRowLocks),
-		metricMysqlRowOperations:               newMetricMysqlRowOperations(mbc.Metrics.MysqlRowOperations),
-		metricMysqlSorts:                       newMetricMysqlSorts(mbc.Metrics.MysqlSorts),
-		metricMysqlStatementEventCount:         newMetricMysqlStatementEventCount(mbc.Metrics.MysqlStatementEventCount),
-		metricMysqlStatementEventWaitTime:      newMetricMysqlStatementEventWaitTime(mbc.Metrics.MysqlStatementEventWaitTime),
-		metricMysqlTableIoWaitCount:            newMetricMysqlTableIoWaitCount(mbc.Metrics.MysqlTableIoWaitCount),
-		metricMysqlTableIoWaitTime:             newMetricMysqlTableIoWaitTime(mbc.Metrics.MysqlTableIoWaitTime),
-		metricMysqlTableLockWaitReadCount:      newMetricMysqlTableLockWaitReadCount(mbc.Metrics.MysqlTableLockWaitReadCount),
-		metricMysqlTableLockWaitReadTime:       newMetricMysqlTableLockWaitReadTime(mbc.Metrics.MysqlTableLockWaitReadTime),
-		metricMysqlTableLockWaitWriteCount:     newMetricMysqlTableLockWaitWriteCount(mbc.Metrics.MysqlTableLockWaitWriteCount),
-		metricMysqlTableLockWaitWriteTime:      newMetricMysqlTableLockWaitWriteTime(mbc.Metrics.MysqlTableLockWaitWriteTime),
-		metricMysqlTableOpenCache:              newMetricMysqlTableOpenCache(mbc.Metrics.MysqlTableOpenCache),
-		metricMysqlThreads:                     newMetricMysqlThreads(mbc.Metrics.MysqlThreads),
-		metricMysqlTmpResources:                newMetricMysqlTmpResources(mbc.Metrics.MysqlTmpResources),
-		metricMysqlTotalRows:                   newMetricMysqlTotalRows(mbc.Metrics.MysqlTotalRows),
-		metricMysqlUptime:                      newMetricMysqlUptime(mbc.Metrics.MysqlUptime),
+		config:                             mbc,
+		startTime:                          pcommon.NewTimestampFromTime(time.Now()),
+		metricsBuffer:                      pmetric.NewMetrics(),
+		buildInfo:                          settings.BuildInfo,
+		metricMysqlBufferPoolDataPages:     newMetricMysqlBufferPoolDataPages(mbc.Metrics.MysqlBufferPoolDataPages),
+		metricMysqlBufferPoolLimit:         newMetricMysqlBufferPoolLimit(mbc.Metrics.MysqlBufferPoolLimit),
+		metricMysqlBufferPoolOperations:    newMetricMysqlBufferPoolOperations(mbc.Metrics.MysqlBufferPoolOperations),
+		metricMysqlBufferPoolPageFlushes:   newMetricMysqlBufferPoolPageFlushes(mbc.Metrics.MysqlBufferPoolPageFlushes),
+		metricMysqlBufferPoolPages:         newMetricMysqlBufferPoolPages(mbc.Metrics.MysqlBufferPoolPages),
+		metricMysqlBufferPoolUsage:         newMetricMysqlBufferPoolUsage(mbc.Metrics.MysqlBufferPoolUsage),
+		metricMysqlClientNetworkIo:         newMetricMysqlClientNetworkIo(mbc.Metrics.MysqlClientNetworkIo),
+		metricMysqlCommands:                newMetricMysqlCommands(mbc.Metrics.MysqlCommands),
+		metricMysqlConnectionCount:         newMetricMysqlConnectionCount(mbc.Metrics.MysqlConnectionCount),
+		metricMysqlConnectionErrors:        newMetricMysqlConnectionErrors(mbc.Metrics.MysqlConnectionErrors),
+		metricMysqlDoubleWrites:            newMetricMysqlDoubleWrites(mbc.Metrics.MysqlDoubleWrites),
+		metricMysqlHandlers:                newMetricMysqlHandlers(mbc.Metrics.MysqlHandlers),
+		metricMysqlIndexIoWaitCount:        newMetricMysqlIndexIoWaitCount(mbc.Metrics.MysqlIndexIoWaitCount),
+		metricMysqlIndexIoWaitTime:         newMetricMysqlIndexIoWaitTime(mbc.Metrics.MysqlIndexIoWaitTime),
+		metricMysqlInnodbRowsDeleted:       newMetricMysqlInnodbRowsDeleted(mbc.Metrics.MysqlInnodbRowsDeleted),
+		metricMysqlInnodbRowsInserted:      newMetricMysqlInnodbRowsInserted(mbc.Metrics.MysqlInnodbRowsInserted),
+		metricMysqlInnodbRowsRead:          newMetricMysqlInnodbRowsRead(mbc.Metrics.MysqlInnodbRowsRead),
+		metricMysqlInnodbRowsUpdated:       newMetricMysqlInnodbRowsUpdated(mbc.Metrics.MysqlInnodbRowsUpdated),
+		metricMysqlJoins:                   newMetricMysqlJoins(mbc.Metrics.MysqlJoins),
+		metricMysqlLocks:                   newMetricMysqlLocks(mbc.Metrics.MysqlLocks),
+		metricMysqlLogOperations:           newMetricMysqlLogOperations(mbc.Metrics.MysqlLogOperations),
+		metricMysqlMysqlxConnections:       newMetricMysqlMysqlxConnections(mbc.Metrics.MysqlMysqlxConnections),
+		metricMysqlMysqlxWorkerThreads:     newMetricMysqlMysqlxWorkerThreads(mbc.Metrics.MysqlMysqlxWorkerThreads),
+		metricMysqlOpenedResources:         newMetricMysqlOpenedResources(mbc.Metrics.MysqlOpenedResources),
+		metricMysqlOperations:              newMetricMysqlOperations(mbc.Metrics.MysqlOperations),
+		metricMysqlPageOperations:          newMetricMysqlPageOperations(mbc.Metrics.MysqlPageOperations),
+		metricMysqlPreparedStatements:      newMetricMysqlPreparedStatements(mbc.Metrics.MysqlPreparedStatements),
+		metricMysqlQueryClientCount:        newMetricMysqlQueryClientCount(mbc.Metrics.MysqlQueryClientCount),
+		metricMysqlQueryCount:              newMetricMysqlQueryCount(mbc.Metrics.MysqlQueryCount),
+		metricMysqlQuerySlowCount:          newMetricMysqlQuerySlowCount(mbc.Metrics.MysqlQuerySlowCount),
+		metricMysqlQueryTotalErrors:        newMetricMysqlQueryTotalErrors(mbc.Metrics.MysqlQueryTotalErrors),
+		metricMysqlReplicaSQLDelay:         newMetricMysqlReplicaSQLDelay(mbc.Metrics.MysqlReplicaSQLDelay),
+		metricMysqlReplicaTimeBehindSource: newMetricMysqlReplicaTimeBehindSource(mbc.Metrics.MysqlReplicaTimeBehindSource),
+		metricMysqlRowLocks:                newMetricMysqlRowLocks(mbc.Metrics.MysqlRowLocks),
+		metricMysqlRowOperations:           newMetricMysqlRowOperations(mbc.Metrics.MysqlRowOperations),
+		metricMysqlSorts:                   newMetricMysqlSorts(mbc.Metrics.MysqlSorts),
+		metricMysqlStatementEventCount:     newMetricMysqlStatementEventCount(mbc.Metrics.MysqlStatementEventCount),
+		metricMysqlStatementEventErrors:    newMetricMysqlStatementEventErrors(mbc.Metrics.MysqlStatementEventErrors),
+		metricMysqlStatementEventWaitTime:  newMetricMysqlStatementEventWaitTime(mbc.Metrics.MysqlStatementEventWaitTime),
+		metricMysqlTableIoWaitCount:        newMetricMysqlTableIoWaitCount(mbc.Metrics.MysqlTableIoWaitCount),
+		metricMysqlTableIoWaitTime:         newMetricMysqlTableIoWaitTime(mbc.Metrics.MysqlTableIoWaitTime),
+		metricMysqlTableLockWaitReadCount:  newMetricMysqlTableLockWaitReadCount(mbc.Metrics.MysqlTableLockWaitReadCount),
+		metricMysqlTableLockWaitReadTime:   newMetricMysqlTableLockWaitReadTime(mbc.Metrics.MysqlTableLockWaitReadTime),
+		metricMysqlTableLockWaitWriteCount: newMetricMysqlTableLockWaitWriteCount(mbc.Metrics.MysqlTableLockWaitWriteCount),
+		metricMysqlTableLockWaitWriteTime:  newMetricMysqlTableLockWaitWriteTime(mbc.Metrics.MysqlTableLockWaitWriteTime),
+		metricMysqlTableOpenCache:          newMetricMysqlTableOpenCache(mbc.Metrics.MysqlTableOpenCache),
+		metricMysqlThreads:                 newMetricMysqlThreads(mbc.Metrics.MysqlThreads),
+		metricMysqlTmpResources:            newMetricMysqlTmpResources(mbc.Metrics.MysqlTmpResources),
+		metricMysqlTotalRows:               newMetricMysqlTotalRows(mbc.Metrics.MysqlTotalRows),
+		metricMysqlUptime:                  newMetricMysqlUptime(mbc.Metrics.MysqlUptime),
 	}
 	for _, op := range options {
 		op(mb)
@@ -4241,26 +3841,18 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMysqlOpenedResources.emit(ils.Metrics())
 	mb.metricMysqlOperations.emit(ils.Metrics())
 	mb.metricMysqlPageOperations.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComDelete.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComDeleteMulti.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComInsert.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComInsertSelect.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComLoad.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComReplace.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComReplaceSelect.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComSelect.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComUpdate.emit(ils.Metrics())
-	mb.metricMysqlPerformanceComUpdateMulti.emit(ils.Metrics())
 	mb.metricMysqlPreparedStatements.emit(ils.Metrics())
 	mb.metricMysqlQueryClientCount.emit(ils.Metrics())
 	mb.metricMysqlQueryCount.emit(ils.Metrics())
 	mb.metricMysqlQuerySlowCount.emit(ils.Metrics())
+	mb.metricMysqlQueryTotalErrors.emit(ils.Metrics())
 	mb.metricMysqlReplicaSQLDelay.emit(ils.Metrics())
 	mb.metricMysqlReplicaTimeBehindSource.emit(ils.Metrics())
 	mb.metricMysqlRowLocks.emit(ils.Metrics())
 	mb.metricMysqlRowOperations.emit(ils.Metrics())
 	mb.metricMysqlSorts.emit(ils.Metrics())
 	mb.metricMysqlStatementEventCount.emit(ils.Metrics())
+	mb.metricMysqlStatementEventErrors.emit(ils.Metrics())
 	mb.metricMysqlStatementEventWaitTime.emit(ils.Metrics())
 	mb.metricMysqlTableIoWaitCount.emit(ils.Metrics())
 	mb.metricMysqlTableIoWaitTime.emit(ils.Metrics())
@@ -4533,56 +4125,6 @@ func (mb *MetricsBuilder) RecordMysqlPageOperationsDataPoint(ts pcommon.Timestam
 	return nil
 }
 
-// RecordMysqlPerformanceComDeleteDataPoint adds a data point to mysql.performance.com_delete metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComDeleteDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComDelete.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComDeleteMultiDataPoint adds a data point to mysql.performance.com_delete_multi metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComDeleteMultiDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComDeleteMulti.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComInsertDataPoint adds a data point to mysql.performance.com_insert metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComInsertDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComInsert.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComInsertSelectDataPoint adds a data point to mysql.performance.com_insert_select metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComInsertSelectDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComInsertSelect.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComLoadDataPoint adds a data point to mysql.performance.com_load metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComLoadDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComLoad.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComReplaceDataPoint adds a data point to mysql.performance.com_replace metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComReplaceDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComReplace.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComReplaceSelectDataPoint adds a data point to mysql.performance.com_replace_select metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComReplaceSelectDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComReplaceSelect.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComSelectDataPoint adds a data point to mysql.performance.com_select metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComSelectDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComSelect.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComUpdateDataPoint adds a data point to mysql.performance.com_update metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComUpdateDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComUpdate.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMysqlPerformanceComUpdateMultiDataPoint adds a data point to mysql.performance.com_update_multi metric.
-func (mb *MetricsBuilder) RecordMysqlPerformanceComUpdateMultiDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMysqlPerformanceComUpdateMulti.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordMysqlPreparedStatementsDataPoint adds a data point to mysql.prepared_statements metric.
 func (mb *MetricsBuilder) RecordMysqlPreparedStatementsDataPoint(ts pcommon.Timestamp, inputVal string, preparedStatementsCommandAttributeValue AttributePreparedStatementsCommand) error {
 	val, err := strconv.ParseInt(inputVal, 10, 64)
@@ -4621,6 +4163,11 @@ func (mb *MetricsBuilder) RecordMysqlQuerySlowCountDataPoint(ts pcommon.Timestam
 	}
 	mb.metricMysqlQuerySlowCount.recordDataPoint(mb.startTime, ts, val)
 	return nil
+}
+
+// RecordMysqlQueryTotalErrorsDataPoint adds a data point to mysql.query.total_errors metric.
+func (mb *MetricsBuilder) RecordMysqlQueryTotalErrorsDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricMysqlQueryTotalErrors.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMysqlReplicaSQLDelayDataPoint adds a data point to mysql.replica.sql_delay metric.
@@ -4666,6 +4213,11 @@ func (mb *MetricsBuilder) RecordMysqlSortsDataPoint(ts pcommon.Timestamp, inputV
 // RecordMysqlStatementEventCountDataPoint adds a data point to mysql.statement_event.count metric.
 func (mb *MetricsBuilder) RecordMysqlStatementEventCountDataPoint(ts pcommon.Timestamp, val int64, schemaAttributeValue string, digestAttributeValue string, digestTextAttributeValue string, eventStateAttributeValue AttributeEventState) {
 	mb.metricMysqlStatementEventCount.recordDataPoint(mb.startTime, ts, val, schemaAttributeValue, digestAttributeValue, digestTextAttributeValue, eventStateAttributeValue.String())
+}
+
+// RecordMysqlStatementEventErrorsDataPoint adds a data point to mysql.statement_event.errors metric.
+func (mb *MetricsBuilder) RecordMysqlStatementEventErrorsDataPoint(ts pcommon.Timestamp, val int64, schemaAttributeValue string, digestAttributeValue string, digestTextAttributeValue string) {
+	mb.metricMysqlStatementEventErrors.recordDataPoint(mb.startTime, ts, val, schemaAttributeValue, digestAttributeValue, digestTextAttributeValue)
 }
 
 // RecordMysqlStatementEventWaitTimeDataPoint adds a data point to mysql.statement_event.wait.time metric.

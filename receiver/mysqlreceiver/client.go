@@ -26,6 +26,7 @@ type client interface {
 	getReplicaStatusStats() ([]ReplicaStatusStats, error)
 	getInnodbStatusStats() (map[string]int64, error, int)
 	getTotalRows() ([]NRows, error)
+	getTotalErrors() (int64, error)
 	Close() error
 }
 
@@ -402,6 +403,29 @@ func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
 		stats = append(stats, s)
 	}
 	return stats, nil
+}
+
+func (c *mySQLClient) getTotalErrors() (int64, error) {
+	query := `SELECT SUM_ERRORS FROM performance_schema.events_statements_summary_by_digest;`
+
+	rows, err := c.client.Query(query)
+	if err != nil {
+		return -1, err
+	}
+
+	var nerrors int64 = 0
+
+	for rows.Next() {
+		var ec int64
+
+		err := rows.Scan(&ec)
+		if err != nil {
+			return -1, err
+		}
+		nerrors += ec
+	}
+
+	return nerrors, nil
 }
 
 func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {

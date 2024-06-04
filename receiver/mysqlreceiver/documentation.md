@@ -264,86 +264,6 @@ The number of InnoDB page operations.
 | ---- | ----------- | ------ |
 | operation | The page operation types. | Str: ``created``, ``read``, ``written`` |
 
-### mysql.performance.com_delete
-
-The rate of delete statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_delete_multi
-
-The rate of delete-multi statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_insert
-
-The rate of insert statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_insert_select
-
-The rate of insert-select statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_load
-
-The rate of load statements
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_replace
-
-The rate of replace statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_replace_select
-
-The rate of replace-select statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_select
-
-The rate of select statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_update
-
-The rate of update statements.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
-### mysql.performance.com_update_multi
-
-The rate of update-multi.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
-
 ### mysql.prepared_statements
 
 The number of times each type of prepared statement command has been issued.
@@ -357,6 +277,14 @@ The number of times each type of prepared statement command has been issued.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | command | The prepare statement command types. | Str: ``execute``, ``close``, ``fetch``, ``prepare``, ``reset``, ``send_long_data`` |
+
+### mysql.query.total_errors
+
+The total number of errors while performing queries in the database
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
 
 ### mysql.row_locks
 
@@ -416,6 +344,22 @@ Summary of current and recent statement events.
 | digest | Digest. | Any Str |
 | digest_text | Text before digestion. | Any Str |
 | kind | Possible event states. | Str: ``errors``, ``warnings``, ``rows_affected``, ``rows_sent``, ``rows_examined``, ``created_tmp_disk_tables``, ``created_tmp_tables``, ``sort_merge_passes``, ``sort_rows``, ``no_index_used`` |
+
+### mysql.statement_event.errors
+
+the error count of the summarized events
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| schema | The schema of the object. | Any Str |
+| digest | Digest. | Any Str |
+| digest_text | Text before digestion. | Any Str |
 
 ### mysql.statement_event.wait.time
 

@@ -103,7 +103,11 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	// colect replicas status metrics.
 	m.scrapeReplicaStatusStats(now)
 
+	// collect rows in the database
 	m.scrapeTotalRows(now, errs)
+
+	// collect total errors
+	m.scrapeTotalErrors(now, errs)
 
 	rb := m.mb.NewResourceBuilder()
 	rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
@@ -413,7 +417,6 @@ func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererr
 
 func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	nrows, err := m.sqlclient.getTotalRows()
-	pp.Println(nrows)
 	if err != nil {
 		m.logger.Error("Failed to fetch Total Rows", zap.Error(err))
 		errs.AddPartial(1, err)
@@ -491,7 +494,7 @@ func (m *mySQLScraper) scrapeIndexIoWaitsStats(now pcommon.Timestamp, errs *scra
 func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	statementEventsStats, err := m.sqlclient.getStatementEventsStats()
 	if err != nil {
-		m.logger.Error("Failed to fetch index io_waits stats", zap.Error(err))
+		m.logger.Error("Failed to fetch index statement event stats", zap.Error(err))
 		errs.AddPartial(8, err)
 		return
 	}
@@ -509,14 +512,28 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countSortRows, s.schema, s.digest, s.digestText, metadata.AttributeEventStateSortRows)
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countWarnings, s.schema, s.digest, s.digestText, metadata.AttributeEventStateWarnings)
 
+		m.mb.RecordMysqlStatementEventErrorsDataPoint(now, s.countErrors, s.schema, s.digest, s.digestText)
 		m.mb.RecordMysqlStatementEventWaitTimeDataPoint(now, s.sumTimerWait/picosecondsInNanoseconds, s.schema, s.digest, s.digestText)
 	}
+}
+
+func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	totalErrors, err := m.sqlclient.getTotalErrors()
+
+	if err != nil {
+		pp.Println("Failing")
+		pp.Println(err)
+		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
+		return
+	}
+	pp.Println("Total errors: ", totalErrors)
+	m.mb.RecordMysqlQueryTotalErrorsDataPoint(now, totalErrors)
 }
 
 func (m *mySQLScraper) scrapeTableLockWaitEventStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	tableLockWaitEventStats, err := m.sqlclient.getTableLockWaitEventStats()
 	if err != nil {
-		m.logger.Error("Failed to fetch index io_waits stats", zap.Error(err))
+		m.logger.Error("Failed to fetch index table lock wait stats", zap.Error(err))
 		errs.AddPartial(8, err)
 		return
 	}

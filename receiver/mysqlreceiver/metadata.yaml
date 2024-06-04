@@ -525,6 +525,9 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [schema, digest, digest_text, event_state]
+  
+
+
   mysql.statement_event.wait.time:
     enabled: true
     description: The total wait time of the summarized timed events.
@@ -633,4 +636,22 @@ metrics:
       value_type: int
     attributes: [dbname]
   
-#MYSQL PERFORMANCE METRICS
+  mysql.statement_event.errors:
+    enabled: true
+    description: the error count of the summarized events
+    unit: 1
+    sum:
+      value_type: int
+      monotonic: true 
+      aggregation_temporality: cumulative
+    attributes: [schema, digest, digest_text]
+
+  #DBM CARD Metrics
+  mysql.query.total_errors:
+    enabled: true
+    description: The total number of errors while performing queries in the database 
+    unit: 1
+    sum:
+      value_type: int
+      monotonic: true 
+      aggregation_temporality: cumulative
