@@ -29,6 +29,14 @@ all_set:
       enabled: true
     mysql.index.io.wait.time:
       enabled: true
+    mysql.innodb.rows_deleted:
+      enabled: true
+    mysql.innodb.rows_inserted:
+      enabled: true
+    mysql.innodb.rows_read:
+      enabled: true
+    mysql.innodb.rows_updated:
+      enabled: true
     mysql.joins:
       enabled: true
     mysql.locks:
@@ -44,6 +52,26 @@ all_set:
     mysql.operations:
       enabled: true
     mysql.page_operations:
+      enabled: true
+    mysql.performance.com_delete:
+      enabled: true
+    mysql.performance.com_delete_multi:
+      enabled: true
+    mysql.performance.com_insert:
+      enabled: true
+    mysql.performance.com_insert_select:
+      enabled: true
+    mysql.performance.com_load:
+      enabled: true
+    mysql.performance.com_replace:
+      enabled: true
+    mysql.performance.com_replace_select:
+      enabled: true
+    mysql.performance.com_select:
+      enabled: true
+    mysql.performance.com_update:
+      enabled: true
+    mysql.performance.com_update_multi:
       enabled: true
     mysql.prepared_statements:
       enabled: true
@@ -84,6 +112,8 @@ all_set:
     mysql.threads:
       enabled: true
     mysql.tmp_resources:
+      enabled: true
+    mysql.total_rows:
       enabled: true
     mysql.uptime:
       enabled: true
@@ -120,6 +150,14 @@ none_set:
       enabled: false
     mysql.index.io.wait.time:
       enabled: false
+    mysql.innodb.rows_deleted:
+      enabled: false
+    mysql.innodb.rows_inserted:
+      enabled: false
+    mysql.innodb.rows_read:
+      enabled: false
+    mysql.innodb.rows_updated:
+      enabled: false
     mysql.joins:
       enabled: false
     mysql.locks:
@@ -135,6 +173,26 @@ none_set:
     mysql.operations:
       enabled: false
     mysql.page_operations:
+      enabled: false
+    mysql.performance.com_delete:
+      enabled: false
+    mysql.performance.com_delete_multi:
+      enabled: false
+    mysql.performance.com_insert:
+      enabled: false
+    mysql.performance.com_insert_select:
+      enabled: false
+    mysql.performance.com_load:
+      enabled: false
+    mysql.performance.com_replace:
+      enabled: false
+    mysql.performance.com_replace_select:
+      enabled: false
+    mysql.performance.com_select:
+      enabled: false
+    mysql.performance.com_update:
+      enabled: false
+    mysql.performance.com_update_multi:
       enabled: false
     mysql.prepared_statements:
       enabled: false
@@ -175,6 +233,8 @@ none_set:
     mysql.threads:
       enabled: false
     mysql.tmp_resources:
+      enabled: false
+    mysql.total_rows:
       enabled: false
     mysql.uptime:
       enabled: false

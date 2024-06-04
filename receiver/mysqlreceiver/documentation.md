@@ -146,6 +146,38 @@ The total time of I/O wait events for an index.
 | schema | The schema of the object. | Any Str |
 | index | The name of the index. | Any Str |
 
+### mysql.innodb.rows_deleted
+
+Rate at which rows are being deleted in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_inserted
+
+Rate at which rows are being inserted in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_read
+
+Rate at which rows are being read in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_updated
+
+Rate at which rows are being updated in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
 ### mysql.locks
 
 The number of MySQL locks.
@@ -232,6 +264,86 @@ The number of InnoDB page operations.
 | ---- | ----------- | ------ |
 | operation | The page operation types. | Str: ``created``, ``read``, ``written`` |
 
+### mysql.performance.com_delete
+
+The rate of delete statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_delete_multi
+
+The rate of delete-multi statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_insert
+
+The rate of insert statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_insert_select
+
+The rate of insert-select statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_load
+
+The rate of load statements
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_replace
+
+The rate of replace statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_replace_select
+
+The rate of replace-select statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_select
+
+The rate of select statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_update
+
+The rate of update statements.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
+### mysql.performance.com_update_multi
+
+The rate of update-multi.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {query}/s | Gauge | Int |
+
 ### mysql.prepared_statements
 
 The number of times each type of prepared statement command has been issued.
@@ -311,7 +423,7 @@ The total wait time of the summarized timed events.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | true |
+| ns | Sum | Int | Cumulative | false |
 
 #### Attributes
 
@@ -380,6 +492,20 @@ The number of created temporary resources.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | resource | The kind of temporary resources. | Str: ``disk_tables``, ``files``, ``tables`` |
+
+### mysql.total_rows
+
+Total rows in the mysql db
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | The name of the database | Any Str |
 
 ### mysql.uptime
 

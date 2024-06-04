@@ -16,6 +16,7 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
+	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver/internal/metadata"
 )
 
@@ -101,6 +102,8 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 	// colect replicas status metrics.
 	m.scrapeReplicaStatusStats(now)
+
+	m.scrapeTotalRows(now, errs)
 
 	rb := m.mb.NewResourceBuilder()
 	rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
@@ -405,6 +408,19 @@ func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererr
 		case "Uptime":
 			addPartialIfError(errs, m.mb.RecordMysqlUptimeDataPoint(now, v))
 		}
+	}
+}
+
+func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	nrows, err := m.sqlclient.getTotalRows()
+	pp.Println(nrows)
+	if err != nil {
+		m.logger.Error("Failed to fetch Total Rows", zap.Error(err))
+		errs.AddPartial(1, err)
+		return
+	}
+	for _, r := range nrows {
+		m.mb.RecordMysqlTotalRowsDataPoint(now, r.totalRows, r.dbname)
 	}
 }
 
