@@ -80,6 +80,102 @@ Enabled with `collect_activity_metrics`. The number of open transactions in this
 | application_name | name of the running application | Any Str |
 | dbname | name of the database | Any Str |
 
+### postgresql.vacuum.heap_blks_scanned
+
+Number of heap blocks scanned. Because the visibility map is used to optimize scans, some blocks will be skipped without inspection; skipped blocks are included in this total, so that this number will eventually become equal to heap_blks_total when the vacuum is complete. This counter only advances when the phase is scanning heap. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+
+### postgresql.vacuum.heap_blks_total
+
+Total number of heap blocks in the table. This number is reported as of the beginning of the scan; blocks added later will not be (and need not be) visited by this VACUUM. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+
+### postgresql.vacuum.heap_blks_vacuumed
+
+Number of heap blocks vacuumed. Unless the table has no indexes, this counter only advances when the phase is vacuuming heap. Blocks that contain no dead tuples are skipped, so the counter may sometimes skip forward in large increments. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+
+### postgresql.vacuum.index_vacuum_count
+
+Number of completed index vacuum cycles. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {block} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+
+### postgresql.vacuum.max_dead_tuples
+
+Number of dead tuples that we can store before needing to perform an index vacuum cycle, based on maintenance_work_mem. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+
+### postgresql.vacuum.num_dead_tuples
+
+Number of dead tuples collected since the last index vacuum cycle. This metric is tagged with db, table, phase.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | name of the database | Any Str |
+| relname | name of the relation | Any Str |
+| phase | Current processing phase of index creation. | Any Str |
+
 ## Optional Metrics
 
 The following metrics are not emitted by default. Each of them can be enabled by applying the following configuration:
@@ -2153,54 +2249,6 @@ The uptime of the server in seconds.
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | {second} | Gauge | Int |
-
-### postgresql.vacuum.heap_blks_scanned
-
-Number of heap blocks scanned. Because the visibility map is used to optimize scans, some blocks will be skipped without inspection; skipped blocks are included in this total, so that this number will eventually become equal to heap_blks_total when the vacuum is complete. This counter only advances when the phase is scanning heap. This metric is tagged with db, table, phase.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block} | Gauge | Int |
-
-### postgresql.vacuum.heap_blks_total
-
-Total number of heap blocks in the table. This number is reported as of the beginning of the scan; blocks added later will not be (and need not be) visited by this VACUUM. This metric is tagged with db, table, phase.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block} | Gauge | Int |
-
-### postgresql.vacuum.heap_blks_vacuumed
-
-Number of heap blocks vacuumed. Unless the table has no indexes, this counter only advances when the phase is vacuuming heap. Blocks that contain no dead tuples are skipped, so the counter may sometimes skip forward in large increments. This metric is tagged with db, table, phase.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block} | Gauge | Int |
-
-### postgresql.vacuum.index_vacuum_count
-
-Number of completed index vacuum cycles. This metric is tagged with db, table, phase.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {block} | Gauge | Int |
-
-### postgresql.vacuum.max_dead_tuples
-
-Number of dead tuples that we can store before needing to perform an index vacuum cycle, based on maintenance_work_mem. This metric is tagged with db, table, phase.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
-
-### postgresql.vacuum.num_dead_tuples
-
-Number of dead tuples collected since the last index vacuum cycle. This metric is tagged with db, table, phase.
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
 
 ### postgresql.vacuumed
 

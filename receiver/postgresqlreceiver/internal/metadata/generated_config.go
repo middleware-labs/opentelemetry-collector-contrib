@@ -823,22 +823,22 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		PostgresqlVacuumHeapBlksScanned: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlVacuumHeapBlksTotal: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlVacuumHeapBlksVacuumed: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlVacuumIndexVacuumCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlVacuumMaxDeadTuples: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlVacuumNumDeadTuples: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		PostgresqlVacuumed: MetricConfig{
 			Enabled: false,

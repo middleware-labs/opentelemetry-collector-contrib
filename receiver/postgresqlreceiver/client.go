@@ -62,6 +62,7 @@ type client interface {
 	getBloatStats(ctx context.Context) ([]BloatStats, error)
 	getRowStats(ctx context.Context) ([]RowStats, error)
 	getTransactionsStats(ctx context.Context) ([]TransactionStats, error)
+	getVacuumStats(ctx context.Context) ([]VacuumStats, error)
 }
 
 type postgreSQLClient struct {
@@ -1723,6 +1724,77 @@ func (c *postgreSQLClient) getTransactionsStats(ctx context.Context) ([]Transact
 		})
 	}
 	return ts, nil
+}
+
+type VacuumStats struct {
+	dbname           string
+	relname          string
+	phase            string
+	heapBlksScanned  int64
+	heapBlksTotal    int64
+	heapBlksVacuumed int64
+	indexVacuumCount int64
+	maxDeadTuples    int64
+	numDeadTuples    int64
+}
+
+func (c *postgreSQLClient) getVacuumStats(ctx context.Context) ([]VacuumStats, error) {
+	query := `SELECT v.datname, c.relname, v.phase,
+	v.heap_blks_total, v.heap_blks_scanned, v.heap_blks_vacuumed,
+	v.index_vacuum_count, v.max_dead_tuples, v.num_dead_tuples
+	FROM pg_stat_progress_vacuum as v
+	JOIN pg_class c on c.oid = v.relid;`
+	rows, err := c.client.QueryContext(ctx, query)
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to query pg_stat_progress_vacuum:: %w", err)
+	}
+	defer rows.Close()
+
+	var vs []VacuumStats
+	var errors error
+
+	for rows.Next() {
+		var (
+			dbname           sql.NullString
+			relname          sql.NullString
+			phase            sql.NullString
+			heapBlksTotal    sql.NullInt64
+			heapBlksScanned  sql.NullInt64
+			heapBlksVacuumed sql.NullInt64
+			indexVacuumCount sql.NullInt64
+			maxDeadTuples    sql.NullInt64
+			numDeadTuples    sql.NullInt64
+		)
+
+		err := rows.Scan(
+			&dbname,
+			&relname,
+			&phase,
+			&heapBlksTotal,
+			&heapBlksScanned,
+			&heapBlksVacuumed,
+			&indexVacuumCount,
+			&maxDeadTuples,
+			&numDeadTuples,
+		)
+
+		if err != nil {
+			errors = multierr.Append(errors, err)
+		}
+		vs = append(vs, VacuumStats{
+			dbname:           dbname.String,
+			relname:          relname.String,
+			phase:            phase.String,
+			heapBlksTotal:    heapBlksTotal.Int64,
+			heapBlksScanned:  heapBlksScanned.Int64,
+			heapBlksVacuumed: heapBlksVacuumed.Int64,
+			indexVacuumCount: indexVacuumCount.Int64,
+			maxDeadTuples:    maxDeadTuples.Int64,
+			numDeadTuples:    numDeadTuples.Int64,
+		})
+	}
+	return vs, nil
 }
 
 func (c *postgreSQLClient) getVersion(ctx context.Context) (int, error) {

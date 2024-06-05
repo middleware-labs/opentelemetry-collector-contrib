@@ -634,23 +634,29 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlUptimeDataPoint(ts, 1)
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlVacuumHeapBlksScannedDataPoint(ts, 1)
+			mb.RecordPostgresqlVacuumHeapBlksScannedDataPoint(ts, 1, "dbname-val", "relname-val", "phase-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlVacuumHeapBlksTotalDataPoint(ts, 1)
+			mb.RecordPostgresqlVacuumHeapBlksTotalDataPoint(ts, 1, "dbname-val", "relname-val", "phase-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlVacuumHeapBlksVacuumedDataPoint(ts, 1)
+			mb.RecordPostgresqlVacuumHeapBlksVacuumedDataPoint(ts, 1, "dbname-val", "relname-val", "phase-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlVacuumIndexVacuumCountDataPoint(ts, 1)
+			mb.RecordPostgresqlVacuumIndexVacuumCountDataPoint(ts, 1, "dbname-val", "relname-val", "phase-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlVacuumMaxDeadTuplesDataPoint(ts, 1)
+			mb.RecordPostgresqlVacuumMaxDeadTuplesDataPoint(ts, 1, "dbname-val", "relname-val", "phase-val")
 
+			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlVacuumNumDeadTuplesDataPoint(ts, 1)
+			mb.RecordPostgresqlVacuumNumDeadTuplesDataPoint(ts, 1, "dbname-val", "relname-val", "phase-val")
 
 			allMetricsCount++
 			mb.RecordPostgresqlVacuumedDataPoint(ts, "1")
@@ -3808,6 +3814,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
 				case "postgresql.vacuum.heap_blks_total":
 					assert.False(t, validatedMetrics["postgresql.vacuum.heap_blks_total"], "Found a duplicate in the metrics slice: postgresql.vacuum.heap_blks_total")
 					validatedMetrics["postgresql.vacuum.heap_blks_total"] = true
@@ -3820,6 +3835,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
 				case "postgresql.vacuum.heap_blks_vacuumed":
 					assert.False(t, validatedMetrics["postgresql.vacuum.heap_blks_vacuumed"], "Found a duplicate in the metrics slice: postgresql.vacuum.heap_blks_vacuumed")
 					validatedMetrics["postgresql.vacuum.heap_blks_vacuumed"] = true
@@ -3832,6 +3856,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
 				case "postgresql.vacuum.index_vacuum_count":
 					assert.False(t, validatedMetrics["postgresql.vacuum.index_vacuum_count"], "Found a duplicate in the metrics slice: postgresql.vacuum.index_vacuum_count")
 					validatedMetrics["postgresql.vacuum.index_vacuum_count"] = true
@@ -3844,6 +3877,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
 				case "postgresql.vacuum.max_dead_tuples":
 					assert.False(t, validatedMetrics["postgresql.vacuum.max_dead_tuples"], "Found a duplicate in the metrics slice: postgresql.vacuum.max_dead_tuples")
 					validatedMetrics["postgresql.vacuum.max_dead_tuples"] = true
@@ -3856,6 +3898,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
 				case "postgresql.vacuum.num_dead_tuples":
 					assert.False(t, validatedMetrics["postgresql.vacuum.num_dead_tuples"], "Found a duplicate in the metrics slice: postgresql.vacuum.num_dead_tuples")
 					validatedMetrics["postgresql.vacuum.num_dead_tuples"] = true
@@ -3868,6 +3919,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("dbname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "dbname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("relname")
+					assert.True(t, ok)
+					assert.EqualValues(t, "relname-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("phase")
+					assert.True(t, ok)
+					assert.EqualValues(t, "phase-val", attrVal.Str())
 				case "postgresql.vacuumed":
 					assert.False(t, validatedMetrics["postgresql.vacuumed"], "Found a duplicate in the metrics slice: postgresql.vacuumed")
 					validatedMetrics["postgresql.vacuumed"] = true

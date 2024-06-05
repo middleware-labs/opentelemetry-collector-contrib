@@ -10115,9 +10115,10 @@ func (m *metricPostgresqlVacuumHeapBlksScanned) init() {
 	m.data.SetDescription("Number of heap blocks scanned. Because the visibility map is used to optimize scans, some blocks will be skipped without inspection; skipped blocks are included in this total, so that this number will eventually become equal to heap_blks_total when the vacuum is complete. This counter only advances when the phase is scanning heap. This metric is tagged with db, table, phase.")
 	m.data.SetUnit("{block}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlVacuumHeapBlksScanned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlVacuumHeapBlksScanned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10125,6 +10126,9 @@ func (m *metricPostgresqlVacuumHeapBlksScanned) recordDataPoint(start pcommon.Ti
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("phase", phaseAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -10164,9 +10168,10 @@ func (m *metricPostgresqlVacuumHeapBlksTotal) init() {
 	m.data.SetDescription("Total number of heap blocks in the table. This number is reported as of the beginning of the scan; blocks added later will not be (and need not be) visited by this VACUUM. This metric is tagged with db, table, phase.")
 	m.data.SetUnit("{block}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlVacuumHeapBlksTotal) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlVacuumHeapBlksTotal) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10174,6 +10179,9 @@ func (m *metricPostgresqlVacuumHeapBlksTotal) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("phase", phaseAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -10213,9 +10221,10 @@ func (m *metricPostgresqlVacuumHeapBlksVacuumed) init() {
 	m.data.SetDescription("Number of heap blocks vacuumed. Unless the table has no indexes, this counter only advances when the phase is vacuuming heap. Blocks that contain no dead tuples are skipped, so the counter may sometimes skip forward in large increments. This metric is tagged with db, table, phase.")
 	m.data.SetUnit("{block}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlVacuumHeapBlksVacuumed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlVacuumHeapBlksVacuumed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10223,6 +10232,9 @@ func (m *metricPostgresqlVacuumHeapBlksVacuumed) recordDataPoint(start pcommon.T
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("phase", phaseAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -10262,9 +10274,10 @@ func (m *metricPostgresqlVacuumIndexVacuumCount) init() {
 	m.data.SetDescription("Number of completed index vacuum cycles. This metric is tagged with db, table, phase.")
 	m.data.SetUnit("{block}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlVacuumIndexVacuumCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlVacuumIndexVacuumCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10272,6 +10285,9 @@ func (m *metricPostgresqlVacuumIndexVacuumCount) recordDataPoint(start pcommon.T
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("phase", phaseAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -10311,9 +10327,10 @@ func (m *metricPostgresqlVacuumMaxDeadTuples) init() {
 	m.data.SetDescription("Number of dead tuples that we can store before needing to perform an index vacuum cycle, based on maintenance_work_mem. This metric is tagged with db, table, phase.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlVacuumMaxDeadTuples) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlVacuumMaxDeadTuples) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10321,6 +10338,9 @@ func (m *metricPostgresqlVacuumMaxDeadTuples) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("phase", phaseAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -10360,9 +10380,10 @@ func (m *metricPostgresqlVacuumNumDeadTuples) init() {
 	m.data.SetDescription("Number of dead tuples collected since the last index vacuum cycle. This metric is tagged with db, table, phase.")
 	m.data.SetUnit("1")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlVacuumNumDeadTuples) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlVacuumNumDeadTuples) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -10370,6 +10391,9 @@ func (m *metricPostgresqlVacuumNumDeadTuples) recordDataPoint(start pcommon.Time
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+	dp.Attributes().PutStr("relname", relnameAttributeValue)
+	dp.Attributes().PutStr("phase", phaseAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -13438,33 +13462,33 @@ func (mb *MetricsBuilder) RecordPostgresqlUptimeDataPoint(ts pcommon.Timestamp, 
 }
 
 // RecordPostgresqlVacuumHeapBlksScannedDataPoint adds a data point to postgresql.vacuum.heap_blks_scanned metric.
-func (mb *MetricsBuilder) RecordPostgresqlVacuumHeapBlksScannedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlVacuumHeapBlksScanned.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlVacuumHeapBlksScannedDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
+	mb.metricPostgresqlVacuumHeapBlksScanned.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, phaseAttributeValue)
 }
 
 // RecordPostgresqlVacuumHeapBlksTotalDataPoint adds a data point to postgresql.vacuum.heap_blks_total metric.
-func (mb *MetricsBuilder) RecordPostgresqlVacuumHeapBlksTotalDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlVacuumHeapBlksTotal.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlVacuumHeapBlksTotalDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
+	mb.metricPostgresqlVacuumHeapBlksTotal.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, phaseAttributeValue)
 }
 
 // RecordPostgresqlVacuumHeapBlksVacuumedDataPoint adds a data point to postgresql.vacuum.heap_blks_vacuumed metric.
-func (mb *MetricsBuilder) RecordPostgresqlVacuumHeapBlksVacuumedDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlVacuumHeapBlksVacuumed.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlVacuumHeapBlksVacuumedDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
+	mb.metricPostgresqlVacuumHeapBlksVacuumed.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, phaseAttributeValue)
 }
 
 // RecordPostgresqlVacuumIndexVacuumCountDataPoint adds a data point to postgresql.vacuum.index_vacuum_count metric.
-func (mb *MetricsBuilder) RecordPostgresqlVacuumIndexVacuumCountDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlVacuumIndexVacuumCount.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlVacuumIndexVacuumCountDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
+	mb.metricPostgresqlVacuumIndexVacuumCount.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, phaseAttributeValue)
 }
 
 // RecordPostgresqlVacuumMaxDeadTuplesDataPoint adds a data point to postgresql.vacuum.max_dead_tuples metric.
-func (mb *MetricsBuilder) RecordPostgresqlVacuumMaxDeadTuplesDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlVacuumMaxDeadTuples.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlVacuumMaxDeadTuplesDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
+	mb.metricPostgresqlVacuumMaxDeadTuples.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, phaseAttributeValue)
 }
 
 // RecordPostgresqlVacuumNumDeadTuplesDataPoint adds a data point to postgresql.vacuum.num_dead_tuples metric.
-func (mb *MetricsBuilder) RecordPostgresqlVacuumNumDeadTuplesDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlVacuumNumDeadTuples.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlVacuumNumDeadTuplesDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string, relnameAttributeValue string, phaseAttributeValue string) {
+	mb.metricPostgresqlVacuumNumDeadTuples.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue, relnameAttributeValue, phaseAttributeValue)
 }
 
 // RecordPostgresqlVacuumedDataPoint adds a data point to postgresql.vacuumed metric.

@@ -149,6 +149,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectBloatStats(ctx, now, listClient, &errs)
 	p.collectRowStats(ctx, now, listClient, &errs)
 	p.collectTransactionStats(ctx, now, listClient, &errs)
+	p.collectVacuumStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 	rb.SetPostgresqlDatabaseName("N/A")
@@ -618,6 +619,41 @@ func (p *postgreSQLScraper) collectClusterVacuumStats(
 		)
 		p.mb.RecordPostgresqlClusterVacuumIndexRebuildCountDataPoint(
 			now, s.indexRebuildCount, s.datname, s.relname, s.command, s.phase, s.index,
+		)
+	}
+}
+
+func (p *postgreSQLScraper) collectVacuumStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	vs, err := client.getVacuumStats(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range vs {
+		p.mb.RecordPostgresqlVacuumHeapBlksScannedDataPoint(
+			now, s.heapBlksScanned, s.dbname, s.relname, s.phase,
+		)
+		p.mb.RecordPostgresqlVacuumHeapBlksTotalDataPoint(
+			now, s.heapBlksTotal, s.dbname, s.relname, s.phase,
+		)
+		p.mb.RecordPostgresqlVacuumHeapBlksVacuumedDataPoint(
+			now, s.heapBlksVacuumed, s.dbname, s.relname, s.phase,
+		)
+		p.mb.RecordPostgresqlVacuumIndexVacuumCountDataPoint(
+			now, s.indexVacuumCount, s.dbname, s.relname, s.phase,
+		)
+		p.mb.RecordPostgresqlVacuumMaxDeadTuplesDataPoint(
+			now, s.maxDeadTuples, s.dbname, s.relname, s.phase,
+		)
+		p.mb.RecordPostgresqlVacuumNumDeadTuplesDataPoint(
+			now, s.numDeadTuples, s.dbname, s.relname, s.phase,
 		)
 	}
 }

@@ -2179,7 +2179,11 @@ metrics:
     gauge:
       value_type: int
   postgresql.vacuum.heap_blks_scanned:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - phase
+    enabled: true 
     description: Number of heap blocks scanned. Because the visibility map is used to
       optimize scans, some blocks will be skipped without inspection; skipped blocks
       are included in this total, so that this number will eventually become equal to
@@ -2189,7 +2193,11 @@ metrics:
     gauge:
       value_type: int
   postgresql.vacuum.heap_blks_total:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - phase
+    enabled: true 
     description: Total number of heap blocks in the table. This number is reported as
       of the beginning of the scan; blocks added later will not be (and need not be)
       visited by this VACUUM. This metric is tagged with db, table, phase.
@@ -2197,7 +2205,11 @@ metrics:
     gauge:
       value_type: int
   postgresql.vacuum.heap_blks_vacuumed:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - phase
+    enabled: true 
     description: Number of heap blocks vacuumed. Unless the table has no indexes, this
       counter only advances when the phase is vacuuming heap. Blocks that contain no
       dead tuples are skipped, so the counter may sometimes skip forward in large increments.
@@ -2206,14 +2218,22 @@ metrics:
     gauge:
       value_type: int
   postgresql.vacuum.index_vacuum_count:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - phase
+    enabled: true 
     description: Number of completed index vacuum cycles. This metric is tagged with
       db, table, phase.
     unit: '{block}'
     gauge:
       value_type: int
   postgresql.vacuum.max_dead_tuples:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - phase
+    enabled: true 
     description: Number of dead tuples that we can store before needing to perform an
       index vacuum cycle, based on maintenance_work_mem. This metric is tagged with
       db, table, phase.
@@ -2221,7 +2241,11 @@ metrics:
     gauge:
       value_type: int
   postgresql.vacuum.num_dead_tuples:
-    enabled: false
+    attributes:
+      - dbname
+      - relname
+      - phase
+    enabled: true 
     description: Number of dead tuples collected since the last index vacuum cycle.
       This metric is tagged with db, table, phase.
     unit: "1"
