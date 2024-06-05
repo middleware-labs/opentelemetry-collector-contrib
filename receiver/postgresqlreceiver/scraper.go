@@ -141,7 +141,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	if err != nil {
 		errs.add(err)
 	}
-	rb.SetPostgresqlDatabaseVersion(version)
+	rb.SetPostgresqlDbVersion(version)
 	rb.SetPostgresqlDatabaseName("N/A")
 
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))

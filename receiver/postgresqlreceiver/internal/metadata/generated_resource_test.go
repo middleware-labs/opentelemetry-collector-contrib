@@ -14,7 +14,7 @@ func TestResourceBuilder(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, test)
 			rb := NewResourceBuilder(cfg)
 			rb.SetPostgresqlDatabaseName("postgresql.database.name-val")
-			rb.SetPostgresqlDatabaseVersion("postgresql.database.version-val")
+			rb.SetPostgresqlDbVersion("postgresql.db.version-val")
 			rb.SetPostgresqlIndexName("postgresql.index.name-val")
 			rb.SetPostgresqlTableName("postgresql.table.name-val")
 
@@ -38,10 +38,10 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.EqualValues(t, "postgresql.database.name-val", val.Str())
 			}
-			val, ok = res.Attributes().Get("postgresql.database.version")
+			val, ok = res.Attributes().Get("postgresql.db.version")
 			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "postgresql.database.version-val", val.Str())
+				assert.EqualValues(t, "postgresql.db.version-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("postgresql.index.name")
 			assert.True(t, ok)
