@@ -70,6 +70,8 @@ all_set:
   resource_attributes:
     postgresql.database.name:
       enabled: true
+    postgresql.database.version:
+      enabled: true
     postgresql.index.name:
       enabled: true
     postgresql.table.name:
@@ -144,6 +146,8 @@ none_set:
       enabled: false
   resource_attributes:
     postgresql.database.name:
+      enabled: false
+    postgresql.database.version:
       enabled: false
     postgresql.index.name:
       enabled: false

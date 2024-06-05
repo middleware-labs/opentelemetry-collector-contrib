@@ -28,6 +28,13 @@ func (rb *ResourceBuilder) SetPostgresqlDatabaseName(val string) {
 	}
 }
 
+// SetPostgresqlDatabaseVersion sets provided value as "postgresql.database.version" attribute.
+func (rb *ResourceBuilder) SetPostgresqlDatabaseVersion(val string) {
+	if rb.config.PostgresqlDatabaseVersion.Enabled {
+		rb.res.Attributes().PutStr("postgresql.database.version", val)
+	}
+}
+
 // SetPostgresqlIndexName sets provided value as "postgresql.index.name" attribute.
 func (rb *ResourceBuilder) SetPostgresqlIndexName(val string) {
 	if rb.config.PostgresqlIndexName.Enabled {

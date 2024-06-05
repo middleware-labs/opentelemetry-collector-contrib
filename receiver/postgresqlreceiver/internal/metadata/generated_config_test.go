@@ -61,9 +61,10 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					PostgresqlWalLag:                   MetricConfig{Enabled: true},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					PostgresqlDatabaseName: ResourceAttributeConfig{Enabled: true},
-					PostgresqlIndexName:    ResourceAttributeConfig{Enabled: true},
-					PostgresqlTableName:    ResourceAttributeConfig{Enabled: true},
+					PostgresqlDatabaseName:    ResourceAttributeConfig{Enabled: true},
+					PostgresqlDatabaseVersion: ResourceAttributeConfig{Enabled: true},
+					PostgresqlIndexName:       ResourceAttributeConfig{Enabled: true},
+					PostgresqlTableName:       ResourceAttributeConfig{Enabled: true},
 				},
 			},
 		},
@@ -106,9 +107,10 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					PostgresqlWalLag:                   MetricConfig{Enabled: false},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					PostgresqlDatabaseName: ResourceAttributeConfig{Enabled: false},
-					PostgresqlIndexName:    ResourceAttributeConfig{Enabled: false},
-					PostgresqlTableName:    ResourceAttributeConfig{Enabled: false},
+					PostgresqlDatabaseName:    ResourceAttributeConfig{Enabled: false},
+					PostgresqlDatabaseVersion: ResourceAttributeConfig{Enabled: false},
+					PostgresqlIndexName:       ResourceAttributeConfig{Enabled: false},
+					PostgresqlTableName:       ResourceAttributeConfig{Enabled: false},
 				},
 			},
 		},
@@ -145,17 +147,19 @@ func TestResourceAttributesConfig(t *testing.T) {
 		{
 			name: "all_set",
 			want: ResourceAttributesConfig{
-				PostgresqlDatabaseName: ResourceAttributeConfig{Enabled: true},
-				PostgresqlIndexName:    ResourceAttributeConfig{Enabled: true},
-				PostgresqlTableName:    ResourceAttributeConfig{Enabled: true},
+				PostgresqlDatabaseName:    ResourceAttributeConfig{Enabled: true},
+				PostgresqlDatabaseVersion: ResourceAttributeConfig{Enabled: true},
+				PostgresqlIndexName:       ResourceAttributeConfig{Enabled: true},
+				PostgresqlTableName:       ResourceAttributeConfig{Enabled: true},
 			},
 		},
 		{
 			name: "none_set",
 			want: ResourceAttributesConfig{
-				PostgresqlDatabaseName: ResourceAttributeConfig{Enabled: false},
-				PostgresqlIndexName:    ResourceAttributeConfig{Enabled: false},
-				PostgresqlTableName:    ResourceAttributeConfig{Enabled: false},
+				PostgresqlDatabaseName:    ResourceAttributeConfig{Enabled: false},
+				PostgresqlDatabaseVersion: ResourceAttributeConfig{Enabled: false},
+				PostgresqlIndexName:       ResourceAttributeConfig{Enabled: false},
+				PostgresqlTableName:       ResourceAttributeConfig{Enabled: false},
 			},
 		},
 	}

@@ -171,14 +171,18 @@ type ResourceAttributeConfig struct {
 
 // ResourceAttributesConfig provides config for postgresql resource attributes.
 type ResourceAttributesConfig struct {
-	PostgresqlDatabaseName ResourceAttributeConfig `mapstructure:"postgresql.database.name"`
-	PostgresqlIndexName    ResourceAttributeConfig `mapstructure:"postgresql.index.name"`
-	PostgresqlTableName    ResourceAttributeConfig `mapstructure:"postgresql.table.name"`
+	PostgresqlDatabaseName    ResourceAttributeConfig `mapstructure:"postgresql.database.name"`
+	PostgresqlDatabaseVersion ResourceAttributeConfig `mapstructure:"postgresql.database.version"`
+	PostgresqlIndexName       ResourceAttributeConfig `mapstructure:"postgresql.index.name"`
+	PostgresqlTableName       ResourceAttributeConfig `mapstructure:"postgresql.table.name"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
 		PostgresqlDatabaseName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		PostgresqlDatabaseVersion: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		PostgresqlIndexName: ResourceAttributeConfig{

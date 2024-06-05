@@ -16,7 +16,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
@@ -137,7 +136,14 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
+
+	version, err := listClient.getVersionString(ctx)
+	if err != nil {
+		errs.add(err)
+	}
+	rb.SetPostgresqlDatabaseVersion(version)
 	rb.SetPostgresqlDatabaseName("N/A")
+
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
 	return p.mb.Emit(), errs.combine()
@@ -344,7 +350,7 @@ func (p *postgreSQLScraper) collectRowStats(
 		errs.addPartial(err)
 		return
 	}
-	pp.Println(rs)
+	// pp.Println(rs)
 	for _, s := range rs {
 		// p.mb.RecordPostgresqlRowsReturnedDataPoint(now, s.rowsReturned, s.relationName)
 		p.mb.RecordPostgresqlRowsFetchedDataPoint(now, s.rowsFetched, s.relationName)

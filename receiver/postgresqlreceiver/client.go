@@ -49,6 +49,7 @@ type client interface {
 	getRowStats(ctx context.Context) ([]RowStats, error)
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
+	getVersionString(ctx context.Context) (string, error)
 }
 
 type postgreSQLClient struct {
@@ -646,6 +647,16 @@ func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error
 		})
 	}
 	return bh, errors
+}
+
+func (c *postgreSQLClient) getVersionString(ctx context.Context) (string, error) {
+	var version string
+	err := c.client.QueryRowContext(ctx, "SHOW server_version").Scan(&version)
+	if err != nil {
+		return "", fmt.Errorf("failed to get PostgreSQL version: %w", err)
+	}
+
+	return version, nil
 }
 
 func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, error) {
