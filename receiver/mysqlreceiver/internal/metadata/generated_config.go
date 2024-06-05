@@ -211,11 +211,15 @@ type ResourceAttributeConfig struct {
 
 // ResourceAttributesConfig provides config for mysql resource attributes.
 type ResourceAttributesConfig struct {
+	MysqlDatabaseVersion  ResourceAttributeConfig `mapstructure:"mysql.database.version"`
 	MysqlInstanceEndpoint ResourceAttributeConfig `mapstructure:"mysql.instance.endpoint"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
+		MysqlDatabaseVersion: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		MysqlInstanceEndpoint: ResourceAttributeConfig{
 			Enabled: true,
 		},

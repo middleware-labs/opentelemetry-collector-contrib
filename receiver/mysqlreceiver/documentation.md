@@ -311,7 +311,7 @@ The total wait time of the summarized timed events.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | true |
+| ns | Sum | Int | Cumulative | false |
 
 #### Attributes
 
@@ -601,4 +601,5 @@ The number of hits, misses or overflows for open tables cache lookups.
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
+| mysql.database.version | Version of the MySQL database | Any Str | true |
 | mysql.instance.endpoint | Endpoint of the MySQL instance. | Any Str | true |

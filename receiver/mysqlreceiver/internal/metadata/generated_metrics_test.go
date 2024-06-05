@@ -211,6 +211,7 @@ func TestMetricsBuilder(t *testing.T) {
 			mb.RecordMysqlUptimeDataPoint(ts, "1")
 
 			rb := mb.NewResourceBuilder()
+			rb.SetMysqlDatabaseVersion("mysql.database.version-val")
 			rb.SetMysqlInstanceEndpoint("mysql.instance.endpoint-val")
 			res := rb.Emit()
 			metrics := mb.Emit(WithResource(res))
@@ -788,7 +789,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
 					assert.Equal(t, "The total wait time of the summarized timed events.", ms.At(i).Description())
 					assert.Equal(t, "ns", ms.At(i).Unit())
-					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
 					dp := ms.At(i).Sum().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
