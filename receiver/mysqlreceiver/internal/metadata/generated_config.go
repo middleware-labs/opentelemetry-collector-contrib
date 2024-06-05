@@ -101,7 +101,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		MysqlCommands: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlConnectionCount: MetricConfig{
 			Enabled: false,

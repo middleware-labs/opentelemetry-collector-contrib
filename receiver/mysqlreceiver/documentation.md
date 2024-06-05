@@ -84,6 +84,20 @@ The number of bytes in the InnoDB buffer pool.
 | ---- | ----------- | ------ |
 | status | The status of buffer pool data. | Str: ``dirty``, ``clean`` |
 
+### mysql.commands
+
+The number of times each type of command has been executed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| command | The command types. | Str: ``delete``, ``insert``, ``select``, ``update`` |
+
 ### mysql.double_writes
 
 The number of writes to the InnoDB doublewrite buffer.
@@ -482,20 +496,6 @@ The number of transmitted bytes between server and clients.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | kind | The name of the transmission direction. | Str: ``received``, ``sent`` |
-
-### mysql.commands
-
-The number of times each type of command has been executed.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| command | The command types. | Str: ``delete``, ``insert``, ``select``, ``update`` |
 
 ### mysql.connection.count
 

@@ -242,7 +242,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [prepared_statements_command]
   mysql.commands:
-    enabled: false
+    enabled: true 
     description: The number of times each type of command has been executed.
     unit: 1
     sum:
@@ -541,6 +541,7 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [schema, digest, digest_text]
+
   mysql.mysqlx_worker_threads:
     enabled: false
     description: The number of worker threads available.
@@ -649,6 +650,8 @@ metrics:
       monotonic: true 
       aggregation_temporality: cumulative
     attributes: [schema, digest, digest_text]
+  
+  
 
   #DBM CARD Metrics
   mysql.query.total_errors:
