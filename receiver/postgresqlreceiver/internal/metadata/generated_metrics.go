@@ -663,7 +663,7 @@ type metricPostgresqlConnectionCount struct {
 func (m *metricPostgresqlConnectionCount) init() {
 	m.data.SetName("postgresql.connection.count")
 	m.data.SetDescription("The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user")
-	m.data.SetUnit("{connection}")
+	m.data.SetUnit("{connections}")
 	m.data.SetEmptyGauge()
 }
 
