@@ -10,10 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -26,8 +24,17 @@ const (
 )
 
 type logsReceiver struct {
-	region              string
-	profile             string
+	region  string
+	profile string
+
+	pollingApproach string
+	// Credentials
+	awsAccountId string
+	awsRoleArn   string
+	externalId   string
+	awsAccessKey string
+	awsSecretKey string
+
 	imdsEndpoint        string
 	pollInterval        time.Duration
 	maxEventsPerRequest int
@@ -41,16 +48,16 @@ type logsReceiver struct {
 	doneChan            chan bool
 }
 
-const maxLogGroupsPerDiscovery = int64(50)
+const maxLogGroupsPerDiscovery = int32(50)
 
 type client interface {
-	DescribeLogGroupsWithContext(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...request.Option) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
-	FilterLogEventsWithContext(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...request.Option) (*cloudwatchlogs.FilterLogEventsOutput, error)
+	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
+	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
 }
 
 type streamNames struct {
 	group string
-	names []*string
+	names []string
 }
 
 func (sn *streamNames) request(limit int, nextToken string, st, et *time.Time) *cloudwatchlogs.FilterLogEventsInput {
@@ -58,7 +65,7 @@ func (sn *streamNames) request(limit int, nextToken string, st, et *time.Time) *
 		LogGroupName: &sn.group,
 		StartTime:    aws.Int64(st.UnixMilli()),
 		EndTime:      aws.Int64(et.UnixMilli()),
-		Limit:        aws.Int64(int64(limit)),
+		Limit:        aws.Int32(int32(limit)),
 	}
 	if len(sn.names) > 0 {
 		base.LogStreamNames = sn.names
@@ -83,7 +90,7 @@ func (sp *streamPrefix) request(limit int, nextToken string, st, et *time.Time) 
 		LogGroupName:        &sp.group,
 		StartTime:           aws.Int64(st.UnixMilli()),
 		EndTime:             aws.Int64(et.UnixMilli()),
-		Limit:               aws.Int64(int64(limit)),
+		Limit:               aws.Int32(int32(limit)),
 		LogStreamNamePrefix: sp.prefix,
 	}
 	if nextToken != "" {
@@ -119,8 +126,15 @@ func newLogsReceiver(cfg *Config, logger *zap.Logger, consumer consumer.Logs) *l
 	}
 
 	return &logsReceiver{
-		region:              cfg.Region,
-		profile:             cfg.Profile,
+		region:  cfg.Region,
+		profile: cfg.Profile,
+
+		awsAccountId: cfg.AwsAccountId,
+		awsRoleArn:   cfg.AwsRoleArn,
+		externalId:   cfg.ExternalId,
+		awsAccessKey: cfg.AwsAccessKey,
+		awsSecretKey: cfg.AwsSecretKey,
+
 		consumer:            consumer,
 		maxEventsPerRequest: cfg.Logs.MaxEventsPerRequest,
 		imdsEndpoint:        cfg.IMDSEndpoint,
@@ -190,7 +204,7 @@ func (l *logsReceiver) poll(ctx context.Context) error {
 }
 
 func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTime, endTime time.Time) error {
-	err := l.ensureSession()
+	err := l.configureAWSClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -205,7 +219,7 @@ func (l *logsReceiver) pollForLogs(ctx context.Context, pc groupRequest, startTi
 			}
 		default:
 			input := pc.request(l.maxEventsPerRequest, *nextToken, &startTime, &endTime)
-			resp, err := l.client.FilterLogEventsWithContext(ctx, input)
+			resp, err := l.client.FilterLogEvents(ctx, input)
 			if err != nil {
 				l.logger.Error("unable to retrieve logs from cloudwatch", zap.String("log group", pc.groupName()), zap.Error(err))
 				break
@@ -286,7 +300,7 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverConfig) ([]groupRequest, error) {
 	l.logger.Debug("attempting to discover log groups.", zap.Int("limit", auto.Limit))
 	groups := []groupRequest{}
-	err := l.ensureSession()
+	err := l.configureAWSClient(ctx)
 	if err != nil {
 		return groups, fmt.Errorf("unable to establish a session to auto discover log groups: %w", err)
 	}
@@ -299,14 +313,14 @@ func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverCon
 		}
 
 		req := &cloudwatchlogs.DescribeLogGroupsInput{
-			Limit: aws.Int64(maxLogGroupsPerDiscovery),
+			Limit: aws.Int32(maxLogGroupsPerDiscovery),
 		}
 
 		if auto.Prefix != "" {
 			req.LogGroupNamePrefix = &auto.Prefix
 		}
 
-		dlgResults, err := l.client.DescribeLogGroupsWithContext(ctx, req)
+		dlgResults, err := l.client.DescribeLogGroups(ctx, req)
 		if err != nil {
 			return groups, fmt.Errorf("unable to list log groups: %w", err)
 		}
@@ -320,7 +334,7 @@ func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverCon
 			}
 
 			numGroups++
-			l.logger.Debug("discovered log group", zap.String("log group", lg.GoString()))
+			l.logger.Debug("discovered log group", zap.String("log group", *lg.LogGroupName))
 			// default behavior is to collect all if not stream filtered
 			if len(auto.Streams.Names) == 0 && len(auto.Streams.Prefixes) == 0 {
 				groups = append(groups, &streamNames{group: *lg.LogGroupName})
@@ -338,23 +352,4 @@ func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverCon
 		nextToken = dlgResults.NextToken
 	}
 	return groups, nil
-}
-
-func (l *logsReceiver) ensureSession() error {
-	if l.client != nil {
-		return nil
-	}
-	awsConfig := aws.NewConfig().WithRegion(l.region)
-	options := session.Options{
-		Config: *awsConfig,
-	}
-	if l.imdsEndpoint != "" {
-		options.EC2IMDSEndpoint = l.imdsEndpoint
-	}
-	if l.profile != "" {
-		options.Profile = l.profile
-	}
-	s, err := session.NewSessionWithOptions(options)
-	l.client = cloudwatchlogs.New(s)
-	return err
 }
