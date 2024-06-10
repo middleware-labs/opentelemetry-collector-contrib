@@ -134,6 +134,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectRowStats(ctx, now, listClient, &errs)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
+	p.collectBufferHits(ctx, now, listClient, &errs)
 
 	rb := p.mb.NewResourceBuilder()
 
@@ -379,6 +380,24 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 	for _, s := range queryStats {
 		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
 		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, int64(s.queryExecTime), s.queryText, s.queryId)
+	}
+}
+
+func (p *postgreSQLScraper) collectBufferHits(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	bhs, err := client.getBufferHit(ctx)
+
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, s := range bhs {
+		p.mb.RecordPostgresqlBufferHitDataPoint(now, s.hits, s.dbName)
 	}
 }
 
