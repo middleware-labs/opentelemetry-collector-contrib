@@ -17,6 +17,8 @@ import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.uber.org/zap"
+
+	conventions "go.opentelemetry.io/collector/semconv/v1.6.1"
 )
 
 const (
@@ -275,9 +277,15 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 			rl := logs.ResourceLogs().AppendEmpty()
 			resourceLogs = &rl
 			resourceAttributes := resourceLogs.Resource().Attributes()
-			resourceAttributes.PutStr("aws.region", l.region)
+			resourceAttributes.PutStr(conventions.AttributeCloudProvider, conventions.AttributeCloudProviderAWS)
+			resourceAttributes.PutStr(conventions.AttributeCloudRegion, l.region)
 			resourceAttributes.PutStr("cloudwatch.log.group.name", logGroupName)
 			resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
+
+			//middleware.io specific attributes
+			resourceAttributes.PutStr("channel", conventions.AttributeCloudProviderAWS)
+			resourceAttributes.PutStr("aws.scraping_approach", "api_polling")
+			resourceAttributes.PutStr("aws.polling_approach", l.pollingApproach)
 			group[logStreamName] = resourceLogs
 
 			// Ensure one scopeLogs is initialized so we can handle in standardized way going forward.
