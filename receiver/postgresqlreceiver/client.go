@@ -50,6 +50,7 @@ type client interface {
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
 	getVersionString(ctx context.Context) (string, error)
+	getActiveConnections(ctx context.Context) (int64, error)
 }
 
 type postgreSQLClient struct {
@@ -647,6 +648,14 @@ func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error
 		})
 	}
 	return bh, errors
+}
+
+func (c *postgreSQLClient) getActiveConnections(ctx context.Context) (int64, error) {
+	query := `SELECT COUNT(*) FROM pg_stat_activity WHERE state = 'active';`
+	row := c.client.QueryRowContext(ctx, query)
+	var activeConns int64
+	err := row.Scan(&activeConns)
+	return activeConns, err
 }
 
 func (c *postgreSQLClient) getVersionString(ctx context.Context) (string, error) {

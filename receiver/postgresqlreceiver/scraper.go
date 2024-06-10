@@ -126,6 +126,8 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 		p.recordDatabase(now, database, r, numTables)
 		p.collectIndexes(ctx, now, dbClient, database, &errs)
 	}
+	rb := p.mb.NewResourceBuilder()
+	rb.SetPostgresqlDatabaseName("N/A")
 
 	p.mb.RecordPostgresqlDatabaseCountDataPoint(now, int64(len(databases)))
 	p.collectBGWriterStats(ctx, now, listClient, &errs)
@@ -135,15 +137,13 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectRowStats(ctx, now, listClient, &errs)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
-
-	rb := p.mb.NewResourceBuilder()
+	p.collectActiveConnections(ctx, now, listClient, &errs)
 
 	version, err := listClient.getVersionString(ctx)
 	if err != nil {
 		errs.add(err)
 	}
 	rb.SetPostgresqlDbVersion(version)
-	rb.SetPostgresqlDatabaseName("N/A")
 
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
@@ -381,6 +381,20 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
 		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, int64(s.queryExecTime), s.queryText, s.queryId)
 	}
+}
+
+func (p *postgreSQLScraper) collectActiveConnections(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	ac, err := client.getActiveConnections(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	p.mb.RecordPostgresqlConnectionCountDataPoint(now, ac)
 }
 
 func (p *postgreSQLScraper) collectBufferHits(

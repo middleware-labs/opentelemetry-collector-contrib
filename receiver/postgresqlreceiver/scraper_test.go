@@ -49,8 +49,13 @@ func TestScraper(t *testing.T) {
 	expectedMetrics, err := golden.ReadMetrics(expectedFile)
 	require.NoError(t, err)
 
-	require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceMetricsOrder(),
-		pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
+	require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
+		pmetrictest.IgnoreMetricsOrder(),
+		pmetrictest.IgnoreResourceMetricsOrder(),
+		pmetrictest.IgnoreMetricDataPointsOrder(),
+		pmetrictest.IgnoreStartTimestamp(),
+		pmetrictest.IgnoreTimestamp()),
+	)
 }
 
 func TestScraperNoDatabaseSingle(t *testing.T) {
@@ -205,12 +210,37 @@ func (m *mockClient) getIndexStats(ctx context.Context, database string) (map[in
 	return args.Get(0).(map[indexIdentifer]indexStat), args.Error(1)
 }
 
+func (m *mockClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]queryStats), args.Error(1)
+}
+
+func (m *mockClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]BufferHit), args.Error(1)
+}
+
+func (m *mockClient) getRowStats(ctx context.Context) ([]RowStats, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]RowStats), args.Error(1)
+}
+
+func (m *mockClient) getVersionString(ctx context.Context) (string, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(string), args.Error(1)
+}
+
 func (m *mockClient) getBGWriterStats(ctx context.Context) (*bgStat, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(*bgStat), args.Error(1)
 }
 
 func (m *mockClient) getMaxConnections(ctx context.Context) (int64, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(int64), args.Error(1)
+}
+
+func (m *mockClient) getActiveConnections(ctx context.Context) (int64, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(int64), args.Error(1)
 }
@@ -285,6 +315,8 @@ func (m *mockClient) initMocks(database string, databases []string, index int) {
 			maxWritten:           11,
 		}, nil)
 		m.On("getMaxConnections", mock.Anything).Return(int64(100), nil)
+		m.On("getActiveConnections", mock.Anything).Return(int64(1), nil)
+		m.On("getVersionString", mock.Anything).Return("16.3 (Ubuntu 16.3-1.pgdg22.04+1)", nil)
 		m.On("getLatestWalAgeSeconds", mock.Anything).Return(int64(3600), nil)
 		m.On("getReplicationStats", mock.Anything).Return([]replicationStats{
 			{
@@ -302,9 +334,73 @@ func (m *mockClient) initMocks(database string, databases []string, index int) {
 				writeLag:     -1,
 			},
 		}, nil)
+		m.On("getQueryStats", mock.Anything).Return([]queryStats{
+			{
+				queryId:       "6366587321661213570",
+				queryText:     "SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department",
+				queryCount:    1,
+				queryExecTime: 16401,
+			},
+			{
+				queryId:       "7034792503091443675",
+				queryText:     "SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname",
+				queryCount:    5,
+				queryExecTime: 416529,
+			},
+			{
+				queryId:       "-5872536860935463852",
+				queryText:     "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)",
+				queryCount:    1,
+				queryExecTime: 25141,
+			},
+		}, nil)
+
+		m.On("getBufferHit", mock.Anything).Return([]BufferHit{
+			{
+				dbName: "",
+				hits:   2148,
+			},
+			{
+				dbName: "postgres",
+				hits:   9053,
+			},
+			{
+				dbName: "template1",
+				hits:   8527,
+			},
+			{
+				dbName: "template0",
+				hits:   0,
+			},
+		}, nil)
+		m.On("getRowStats", mock.Anything).Return([]RowStats{
+			{
+				relationName:   "public.table1",
+				rowsReturned:   41923,
+				rowsFetched:    0,   //
+				rowsInserted:   165, //
+				rowsUpdated:    2,   //
+				rowsDeleted:    88,  //
+				rowsHotUpdated: 2,
+				liveRows:       77, //
+				deadRows:       90,
+			},
+			// {
+			// 	relationName:   "public.table2",
+			// 	rowsReturned:   41923,
+			// 	rowsFetched:    0,
+			// 	rowsInserted:   165,
+			// 	rowsUpdated:    2,
+			// 	rowsDeleted:    88,
+			// 	rowsHotUpdated: 2,
+			// 	liveRows:       77,
+			// 	deadRows:       90,
+			// },
+		}, nil)
 	} else {
 		table1 := "public.table1"
 		table2 := "public.table2"
+
 		tableMetrics := map[tableIdentifier]tableStats{
 			tableKey(database, table1): {
 				database:    database,

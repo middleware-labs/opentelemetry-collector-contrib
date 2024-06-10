@@ -379,3 +379,11 @@ metrics:
     unit: '{hit}/s'
     gauge:
       value_type: int
+
+  postgresql.connection.count:
+    enabled: true
+    description: The number of active connections to this database. If DBM is enabled,
+      this metric is tagged with state, app, db and user
+    unit: '{connections}'
+    gauge:
+      value_type: int

@@ -114,6 +114,14 @@ The number of commits.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | true |
 
+### postgresql.connection.count
+
+The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {connections} | Gauge | Int |
+
 ### postgresql.connection.max
 
 Configured maximum number of client connections allowed
