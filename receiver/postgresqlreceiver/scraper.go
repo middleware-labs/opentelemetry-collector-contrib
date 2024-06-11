@@ -294,6 +294,20 @@ func (p *postgreSQLScraper) collectMaxConnections(
 	p.mb.RecordPostgresqlConnectionMaxDataPoint(now, mc)
 }
 
+func (p *postgreSQLScraper) collectActiveConnections(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	ac, err := client.getActiveConnections(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	p.mb.RecordPostgresqlConnectionCountDataPoint(now, ac)
+}
+
 func (p *postgreSQLScraper) collectReplicationStats(
 	ctx context.Context,
 	now pcommon.Timestamp,
