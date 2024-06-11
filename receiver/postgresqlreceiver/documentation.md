@@ -122,14 +122,13 @@ The number of active connections to this database. If DBM is enabled, this metri
 | ---- | ----------- | ---------- |
 | {connection} | Gauge | Int |
 
-
 ### postgresql.connection.max
 
 Configured maximum number of client connections allowed
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| {connections} | Gauge | Int |
+| {connection} | Gauge | Int |
 
 ### postgresql.database.count
 
@@ -352,7 +351,7 @@ This metric requires WAL to be enabled with at least one replica.
 
 Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
 
-This metric requires WAL to be enabled with at least one replica. 
+This metric requires WAL to be enabled with at least one replica.
 
 
 | Unit | Metric Type | Value Type |

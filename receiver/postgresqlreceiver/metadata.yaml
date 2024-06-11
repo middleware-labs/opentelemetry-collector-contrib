@@ -182,7 +182,7 @@ metrics:
   postgresql.connection.max:
     enabled: true
     description: Configured maximum number of client connections allowed
-    unit: "{connections}"
+    unit: "{connection}"
     gauge:
       value_type: int
   postgresql.rows:
@@ -295,7 +295,8 @@ metrics:
     unit: s
     gauge:
       value_type: int
-    extended_documentation: | This metric requires WAL to be enabled with at least one replica.
+    extended_documentation: | 
+      This metric requires WAL to be enabled with at least one replica.
 
 
   #DBM METRICS:

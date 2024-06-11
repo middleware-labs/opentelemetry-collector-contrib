@@ -16,7 +16,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: postgresql.connection.count
-            unit: '{connections}'
+            unit: '{connection}'
           - description: The total wait time of the summarized timed events in nanaoseconds.
             name: postgresql.query.total_exec_time
             sum:
@@ -268,7 +268,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: postgresql.connection.max
-            unit: '{connections}'
+            unit: '{connection}'
           - description: Number of user databases.
             name: postgresql.database.count
             sum:

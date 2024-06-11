@@ -763,7 +763,7 @@ type metricPostgresqlConnectionMax struct {
 func (m *metricPostgresqlConnectionMax) init() {
 	m.data.SetName("postgresql.connection.max")
 	m.data.SetDescription("Configured maximum number of client connections allowed")
-	m.data.SetUnit("{connections}")
+	m.data.SetUnit("{connection}")
 	m.data.SetEmptyGauge()
 }
 
