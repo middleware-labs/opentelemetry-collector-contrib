@@ -397,20 +397,6 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 	}
 }
 
-func (p *postgreSQLScraper) collectActiveConnections(
-	ctx context.Context,
-	now pcommon.Timestamp,
-	client client,
-	errs *errsMux,
-) {
-	ac, err := client.getActiveConnections(ctx)
-	if err != nil {
-		errs.addPartial(err)
-		return
-	}
-	p.mb.RecordPostgresqlConnectionCountDataPoint(now, ac)
-}
-
 func (p *postgreSQLScraper) collectBufferHits(
 	ctx context.Context,
 	now pcommon.Timestamp,
