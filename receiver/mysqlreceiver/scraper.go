@@ -16,7 +16,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver/internal/metadata"
 )
 
@@ -239,16 +238,12 @@ func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererr
 
 		// commands
 		case "Com_delete":
-			pp.Println(v)
 			addPartialIfError(errs, m.mb.RecordMysqlCommandsDataPoint(now, v, metadata.AttributeCommandDelete))
 		case "Com_insert":
-			pp.Println(v)
 			addPartialIfError(errs, m.mb.RecordMysqlCommandsDataPoint(now, v, metadata.AttributeCommandInsert))
 		case "Com_select":
-			pp.Println(v)
 			addPartialIfError(errs, m.mb.RecordMysqlCommandsDataPoint(now, v, metadata.AttributeCommandSelect))
 		case "Com_update":
-			pp.Println(v)
 			addPartialIfError(errs, m.mb.RecordMysqlCommandsDataPoint(now, v, metadata.AttributeCommandUpdate))
 
 		// created tmps
@@ -565,6 +560,7 @@ func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererr
 
 	if err != nil {
 		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
+		errs.AddPartial(1, err)
 		return
 	}
 	m.mb.RecordMysqlQueryTotalErrorsDataPoint(now, totalErrors)

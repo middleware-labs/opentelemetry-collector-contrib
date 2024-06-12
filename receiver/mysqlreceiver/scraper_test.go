@@ -8,8 +8,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -62,19 +64,29 @@ func TestScrape(t *testing.T) {
 			statementEventsFile:         "statement_events",
 			tableLockWaitEventStatsFile: "table_lock_wait_event_stats",
 			replicaStatusFile:           "replica_stats",
+			innodbStatusStatsFile:       "innodb_status_stats",
+			totalErrorsFile:             "total_error_stats",
+			totalRowsFile:               "total_rows_stats",
 		}
 
 		scraper.renameCommands = true
 
 		actualMetrics, err := scraper.scrape(context.Background())
+		fmt.Println(err)
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "expected.yaml")
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(actualMetrics, expectedMetrics,
-			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
+		require.NoError(t, pmetrictest.CompareMetrics(
+			actualMetrics,
+			expectedMetrics,
+			pmetrictest.IgnoreMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(),
+			pmetrictest.IgnoreStartTimestamp(),
+			pmetrictest.IgnoreTimestamp(),
+		))
 	})
 
 	t.Run("scrape has partial failure", func(t *testing.T) {
@@ -99,6 +111,9 @@ func TestScrape(t *testing.T) {
 			statementEventsFile:         "statement_events_empty",
 			tableLockWaitEventStatsFile: "table_lock_wait_event_stats_empty",
 			replicaStatusFile:           "replica_stats_empty",
+			innodbStatusStatsFile:       "innodb_status_stats_empty",
+			totalErrorsFile:             "total_error_stats_empty",
+			totalRowsFile:               "total_rows_file_empty",
 		}
 
 		actualMetrics, scrapeErr := scraper.scrape(context.Background())
@@ -130,6 +145,107 @@ type mockClient struct {
 	statementEventsFile         string
 	tableLockWaitEventStatsFile string
 	replicaStatusFile           string
+	innodbStatusStatsFile       string
+	totalErrorsFile             string
+	totalRowsFile               string
+}
+
+// getInnodbStatusStats implements client.
+func (c *mockClient) getInnodbStatusStats() (map[string]int64, error, int) {
+	ret := make(map[string]int64)
+	var totalErrs int
+	parseErrs := make(map[string][]error)
+	file, err := os.Open(filepath.Join(
+		"testdata",
+		"scraper",
+		c.innodbStatusStatsFile+".txt",
+	))
+	if err != nil {
+		return nil, err, 1
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var k string
+
+		text := strings.Fields(scanner.Text())
+		k = text[0]
+		v, parseErr := strconv.ParseInt(text[1], 10, 64)
+		if parseErr != nil {
+			totalErrs += 1
+			parseErrs[k] = append(parseErrs[k], parseErr)
+			continue
+		}
+		ret[k] = v
+	}
+	fmt.Println(ret)
+	var flatError error
+	if totalErrs > 0 {
+		errorString := flattenErrorMap(parseErrs)
+		flatError = fmt.Errorf(errorString)
+	}
+
+	return ret, flatError, totalErrs
+}
+
+// getTotalErrors implements client.
+func (c *mockClient) getTotalErrors() (int64, error) {
+	var totalErrors int64 = 0
+
+	file, err := os.Open(filepath.Join(
+		"testdata",
+		"scraper",
+		c.totalErrorsFile+".txt",
+	))
+
+	if err != nil {
+		return -1, err
+	}
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := strings.Fields(scanner.Text())
+		if text[0] != "total_errors" {
+			return -1, fmt.Errorf("wrong format for the mock file")
+		}
+		nErrs, err := strconv.ParseInt(text[1], 10, 64)
+
+		if err != nil {
+			return -1, err
+		}
+		totalErrors += nErrs
+	}
+	return totalErrors, nil
+}
+
+// getTotalRows implements client.
+func (c *mockClient) getTotalRows() ([]NRows, error) {
+	var stats []NRows
+	file, err := os.Open(filepath.Join("testdata", "scraper", c.totalRowsFile+".txt"))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var s NRows
+		// text := strings.Split(scanner.Text(), " ")
+		text := strings.Fields(scanner.Text())
+		fmt.Println(text)
+		fmt.Println(text[0])
+		fmt.Println(text[1])
+		s.dbname = text[0]
+		s.totalRows, err = strconv.ParseInt(text[1], 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	return stats, nil
 }
 
 func readFile(fname string) (map[string]string, error) {

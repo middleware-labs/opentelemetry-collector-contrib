@@ -261,7 +261,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	}
 
 	innodbParser.SetInnodbStatusFromString(status)
-	//Some metrics fail to get parserd, then they are recorded into errs as a value with key as
+	//Some metrics fail to get parserd, then they are recorded into errs as a value with key as)
 	//the metric name. We don't want to panic if there are a few errors but we do want to record them.
 	metrics, errs := innodbParser.ParseStatus()
 
