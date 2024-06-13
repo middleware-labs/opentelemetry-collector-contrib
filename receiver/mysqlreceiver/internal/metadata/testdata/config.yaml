@@ -67,6 +67,8 @@ all_set:
       enabled: true
     mysql.statement_event.count_stars:
       enabled: true
+    mysql.statement_event.errors:
+      enabled: true
     mysql.statement_event.wait.time:
       enabled: true
     mysql.table.io.wait.count:
@@ -159,6 +161,8 @@ none_set:
     mysql.statement_event.count:
       enabled: false
     mysql.statement_event.count_stars:
+      enabled: false
+    mysql.statement_event.errors:
       enabled: false
     mysql.statement_event.wait.time:
       enabled: false

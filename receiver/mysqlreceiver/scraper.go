@@ -475,7 +475,7 @@ func (m *mySQLScraper) scrapeIndexIoWaitsStats(now pcommon.Timestamp, errs *scra
 func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	statementEventsStats, err := m.sqlclient.getStatementEventsStats()
 	if err != nil {
-		m.logger.Error("Failed to fetch index io_waits stats", zap.Error(err))
+		m.logger.Error("Failed to fetch statement stats", zap.Error(err))
 		errs.AddPartial(8, err)
 		return
 	}
@@ -494,6 +494,7 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countWarnings, s.schema, s.digest, s.digestText, metadata.AttributeEventStateWarnings)
 
 		m.mb.RecordMysqlStatementEventCountStarsDataPoint(now, s.countStar, s.schema, s.digest, s.digestText)
+		m.mb.RecordMysqlStatementEventErrorsDataPoint(now, s.countErrors, s.schema, s.digest, s.digestText)
 		m.mb.RecordMysqlStatementEventWaitTimeDataPoint(now, s.sumTimerWait/picosecondsInNanoseconds, s.schema, s.digest, s.digestText)
 	}
 }

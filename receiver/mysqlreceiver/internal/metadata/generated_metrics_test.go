@@ -81,6 +81,7 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordMysqlClientNetworkIoDataPoint(ts, "1", AttributeDirectionReceived)
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlCommandsDataPoint(ts, "1", AttributeCommandDelete)
 
@@ -143,9 +144,11 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordMysqlQueryClientCountDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlQueryCountDataPoint(ts, "1")
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlQuerySlowCountDataPoint(ts, "1")
 
@@ -174,6 +177,10 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlStatementEventCountStarsDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMysqlStatementEventErrorsDataPoint(ts, 1, "schema-val", "digest-val", "digest_text-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -793,6 +800,29 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, "The total count of executed queries per normalized query and schema.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("schema")
+					assert.True(t, ok)
+					assert.EqualValues(t, "schema-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("digest")
+					assert.True(t, ok)
+					assert.EqualValues(t, "digest-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("digest_text")
+					assert.True(t, ok)
+					assert.EqualValues(t, "digest_text-val", attrVal.Str())
+				case "mysql.statement_event.errors":
+					assert.False(t, validatedMetrics["mysql.statement_event.errors"], "Found a duplicate in the metrics slice: mysql.statement_event.errors")
+					validatedMetrics["mysql.statement_event.errors"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "the error count of the summarized events", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
 					dp := ms.At(i).Sum().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())

@@ -235,7 +235,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [prepared_statements_command]
   mysql.commands:
-    enabled: false
+    enabled: true 
     description: The number of times each type of command has been executed.
     unit: 1
     sum:
@@ -571,7 +571,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   mysql.query.count:
-    enabled: false
+    enabled: true 
     description: The number of statements executed by the server.
     unit: 1
     sum:
@@ -580,7 +580,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   mysql.query.slow.count:
-    enabled: false
+    enabled: true 
     description: The number of slow queries.
     unit: 1
     sum:
@@ -588,3 +588,13 @@ metrics:
       input_type: string
       monotonic: true
       aggregation_temporality: cumulative
+
+  mysql.statement_event.errors:
+    enabled: true
+    description: the error count of the summarized events
+    unit: 1
+    sum:
+      value_type: int
+      monotonic: true 
+      aggregation_temporality: cumulative
+    attributes: [schema, digest, digest_text]

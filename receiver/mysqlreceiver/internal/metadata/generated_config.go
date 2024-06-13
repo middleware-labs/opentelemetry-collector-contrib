@@ -58,6 +58,7 @@ type MetricsConfig struct {
 	MysqlSorts                    MetricConfig `mapstructure:"mysql.sorts"`
 	MysqlStatementEventCount      MetricConfig `mapstructure:"mysql.statement_event.count"`
 	MysqlStatementEventCountStars MetricConfig `mapstructure:"mysql.statement_event.count_stars"`
+	MysqlStatementEventErrors     MetricConfig `mapstructure:"mysql.statement_event.errors"`
 	MysqlStatementEventWaitTime   MetricConfig `mapstructure:"mysql.statement_event.wait.time"`
 	MysqlTableIoWaitCount         MetricConfig `mapstructure:"mysql.table.io.wait.count"`
 	MysqlTableIoWaitTime          MetricConfig `mapstructure:"mysql.table.io.wait.time"`
@@ -95,7 +96,7 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		MysqlCommands: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlConnectionCount: MetricConfig{
 			Enabled: false,
@@ -146,10 +147,10 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		MysqlQueryCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlQuerySlowCount: MetricConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 		MysqlReplicaSQLDelay: MetricConfig{
 			Enabled: false,
@@ -170,6 +171,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlStatementEventCountStars: MetricConfig{
+			Enabled: true,
+		},
+		MysqlStatementEventErrors: MetricConfig{
 			Enabled: true,
 		},
 		MysqlStatementEventWaitTime: MetricConfig{

@@ -2727,6 +2727,61 @@ func newMetricMysqlStatementEventCountStars(cfg MetricConfig) metricMysqlStateme
 	return m
 }
 
+type metricMysqlStatementEventErrors struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.statement_event.errors metric with initial data.
+func (m *metricMysqlStatementEventErrors) init() {
+	m.data.SetName("mysql.statement_event.errors")
+	m.data.SetDescription("the error count of the summarized events")
+	m.data.SetUnit("1")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMysqlStatementEventErrors) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, schemaAttributeValue string, digestAttributeValue string, digestTextAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("schema", schemaAttributeValue)
+	dp.Attributes().PutStr("digest", digestAttributeValue)
+	dp.Attributes().PutStr("digest_text", digestTextAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlStatementEventErrors) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlStatementEventErrors) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlStatementEventErrors(cfg MetricConfig) metricMysqlStatementEventErrors {
+	m := metricMysqlStatementEventErrors{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMysqlStatementEventWaitTime struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3363,6 +3418,7 @@ type MetricsBuilder struct {
 	metricMysqlSorts                    metricMysqlSorts
 	metricMysqlStatementEventCount      metricMysqlStatementEventCount
 	metricMysqlStatementEventCountStars metricMysqlStatementEventCountStars
+	metricMysqlStatementEventErrors     metricMysqlStatementEventErrors
 	metricMysqlStatementEventWaitTime   metricMysqlStatementEventWaitTime
 	metricMysqlTableIoWaitCount         metricMysqlTableIoWaitCount
 	metricMysqlTableIoWaitTime          metricMysqlTableIoWaitTime
@@ -3425,6 +3481,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSetting
 		metricMysqlSorts:                    newMetricMysqlSorts(mbc.Metrics.MysqlSorts),
 		metricMysqlStatementEventCount:      newMetricMysqlStatementEventCount(mbc.Metrics.MysqlStatementEventCount),
 		metricMysqlStatementEventCountStars: newMetricMysqlStatementEventCountStars(mbc.Metrics.MysqlStatementEventCountStars),
+		metricMysqlStatementEventErrors:     newMetricMysqlStatementEventErrors(mbc.Metrics.MysqlStatementEventErrors),
 		metricMysqlStatementEventWaitTime:   newMetricMysqlStatementEventWaitTime(mbc.Metrics.MysqlStatementEventWaitTime),
 		metricMysqlTableIoWaitCount:         newMetricMysqlTableIoWaitCount(mbc.Metrics.MysqlTableIoWaitCount),
 		metricMysqlTableIoWaitTime:          newMetricMysqlTableIoWaitTime(mbc.Metrics.MysqlTableIoWaitTime),
@@ -3530,6 +3587,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMysqlSorts.emit(ils.Metrics())
 	mb.metricMysqlStatementEventCount.emit(ils.Metrics())
 	mb.metricMysqlStatementEventCountStars.emit(ils.Metrics())
+	mb.metricMysqlStatementEventErrors.emit(ils.Metrics())
 	mb.metricMysqlStatementEventWaitTime.emit(ils.Metrics())
 	mb.metricMysqlTableIoWaitCount.emit(ils.Metrics())
 	mb.metricMysqlTableIoWaitTime.emit(ils.Metrics())
@@ -3849,6 +3907,11 @@ func (mb *MetricsBuilder) RecordMysqlStatementEventCountDataPoint(ts pcommon.Tim
 // RecordMysqlStatementEventCountStarsDataPoint adds a data point to mysql.statement_event.count_stars metric.
 func (mb *MetricsBuilder) RecordMysqlStatementEventCountStarsDataPoint(ts pcommon.Timestamp, val int64, schemaAttributeValue string, digestAttributeValue string, digestTextAttributeValue string) {
 	mb.metricMysqlStatementEventCountStars.recordDataPoint(mb.startTime, ts, val, schemaAttributeValue, digestAttributeValue, digestTextAttributeValue)
+}
+
+// RecordMysqlStatementEventErrorsDataPoint adds a data point to mysql.statement_event.errors metric.
+func (mb *MetricsBuilder) RecordMysqlStatementEventErrorsDataPoint(ts pcommon.Timestamp, val int64, schemaAttributeValue string, digestAttributeValue string, digestTextAttributeValue string) {
+	mb.metricMysqlStatementEventErrors.recordDataPoint(mb.startTime, ts, val, schemaAttributeValue, digestAttributeValue, digestTextAttributeValue)
 }
 
 // RecordMysqlStatementEventWaitTimeDataPoint adds a data point to mysql.statement_event.wait.time metric.
