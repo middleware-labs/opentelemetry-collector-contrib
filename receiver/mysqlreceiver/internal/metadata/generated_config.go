@@ -39,6 +39,10 @@ type MetricsConfig struct {
 	MysqlHandlers                 MetricConfig `mapstructure:"mysql.handlers"`
 	MysqlIndexIoWaitCount         MetricConfig `mapstructure:"mysql.index.io.wait.count"`
 	MysqlIndexIoWaitTime          MetricConfig `mapstructure:"mysql.index.io.wait.time"`
+	MysqlInnodbRowsDeleted        MetricConfig `mapstructure:"mysql.innodb.rows_deleted"`
+	MysqlInnodbRowsInserted       MetricConfig `mapstructure:"mysql.innodb.rows_inserted"`
+	MysqlInnodbRowsRead           MetricConfig `mapstructure:"mysql.innodb.rows_read"`
+	MysqlInnodbRowsUpdated        MetricConfig `mapstructure:"mysql.innodb.rows_updated"`
 	MysqlJoins                    MetricConfig `mapstructure:"mysql.joins"`
 	MysqlLocks                    MetricConfig `mapstructure:"mysql.locks"`
 	MysqlLogOperations            MetricConfig `mapstructure:"mysql.log_operations"`
@@ -51,6 +55,7 @@ type MetricsConfig struct {
 	MysqlQueryClientCount         MetricConfig `mapstructure:"mysql.query.client.count"`
 	MysqlQueryCount               MetricConfig `mapstructure:"mysql.query.count"`
 	MysqlQuerySlowCount           MetricConfig `mapstructure:"mysql.query.slow.count"`
+	MysqlQueryTotalErrors         MetricConfig `mapstructure:"mysql.query.total_errors"`
 	MysqlReplicaSQLDelay          MetricConfig `mapstructure:"mysql.replica.sql_delay"`
 	MysqlReplicaTimeBehindSource  MetricConfig `mapstructure:"mysql.replica.time_behind_source"`
 	MysqlRowLocks                 MetricConfig `mapstructure:"mysql.row_locks"`
@@ -69,6 +74,7 @@ type MetricsConfig struct {
 	MysqlTableOpenCache           MetricConfig `mapstructure:"mysql.table_open_cache"`
 	MysqlThreads                  MetricConfig `mapstructure:"mysql.threads"`
 	MysqlTmpResources             MetricConfig `mapstructure:"mysql.tmp_resources"`
+	MysqlTotalRows                MetricConfig `mapstructure:"mysql.total_rows"`
 	MysqlUptime                   MetricConfig `mapstructure:"mysql.uptime"`
 }
 
@@ -116,6 +122,18 @@ func DefaultMetricsConfig() MetricsConfig {
 		MysqlIndexIoWaitTime: MetricConfig{
 			Enabled: true,
 		},
+		MysqlInnodbRowsDeleted: MetricConfig{
+			Enabled: true,
+		},
+		MysqlInnodbRowsInserted: MetricConfig{
+			Enabled: true,
+		},
+		MysqlInnodbRowsRead: MetricConfig{
+			Enabled: true,
+		},
+		MysqlInnodbRowsUpdated: MetricConfig{
+			Enabled: true,
+		},
 		MysqlJoins: MetricConfig{
 			Enabled: false,
 		},
@@ -150,6 +168,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlQuerySlowCount: MetricConfig{
+			Enabled: true,
+		},
+		MysqlQueryTotalErrors: MetricConfig{
 			Enabled: true,
 		},
 		MysqlReplicaSQLDelay: MetricConfig{
@@ -206,6 +227,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		MysqlTmpResources: MetricConfig{
 			Enabled: true,
 		},
+		MysqlTotalRows: MetricConfig{
+			Enabled: true,
+		},
 		MysqlUptime: MetricConfig{
 			Enabled: true,
 		},
@@ -219,11 +243,15 @@ type ResourceAttributeConfig struct {
 
 // ResourceAttributesConfig provides config for mysql resource attributes.
 type ResourceAttributesConfig struct {
+	MysqlDbVersion        ResourceAttributeConfig `mapstructure:"mysql.db.version"`
 	MysqlInstanceEndpoint ResourceAttributeConfig `mapstructure:"mysql.instance.endpoint"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 	return ResourceAttributesConfig{
+		MysqlDbVersion: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		MysqlInstanceEndpoint: ResourceAttributeConfig{
 			Enabled: true,
 		},

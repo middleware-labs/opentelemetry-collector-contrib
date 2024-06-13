@@ -160,6 +160,38 @@ The total time of I/O wait events for an index.
 | schema | The schema of the object. | Any Str |
 | index | The name of the index. | Any Str |
 
+### mysql.innodb.rows_deleted
+
+Rate at which rows are being deleted in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_inserted
+
+Rate at which rows are being inserted in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_read
+
+Rate at which rows are being read in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_updated
+
+Rate at which rows are being updated in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
 ### mysql.locks
 
 The number of MySQL locks.
@@ -271,6 +303,14 @@ The number of statements executed by the server.
 ### mysql.query.slow.count
 
 The number of slow queries.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### mysql.query.total_errors
+
+The total number of errors while performing queries in the database
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
@@ -442,6 +482,20 @@ The number of created temporary resources.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | resource | The kind of temporary resources. | Str: ``disk_tables``, ``files``, ``tables`` |
+
+### mysql.total_rows
+
+Total rows in the mysql db
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | The name of the database | Any Str |
 
 ### mysql.uptime
 
@@ -633,4 +687,5 @@ The number of hits, misses or overflows for open tables cache lookups.
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
+| mysql.db.version | version of the mysql database | Any Str | true |
 | mysql.instance.endpoint | Endpoint of the MySQL instance. | Any Str | true |

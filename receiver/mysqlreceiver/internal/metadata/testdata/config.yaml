@@ -29,6 +29,14 @@ all_set:
       enabled: true
     mysql.index.io.wait.time:
       enabled: true
+    mysql.innodb.rows_deleted:
+      enabled: true
+    mysql.innodb.rows_inserted:
+      enabled: true
+    mysql.innodb.rows_read:
+      enabled: true
+    mysql.innodb.rows_updated:
+      enabled: true
     mysql.joins:
       enabled: true
     mysql.locks:
@@ -52,6 +60,8 @@ all_set:
     mysql.query.count:
       enabled: true
     mysql.query.slow.count:
+      enabled: true
+    mysql.query.total_errors:
       enabled: true
     mysql.replica.sql_delay:
       enabled: true
@@ -89,9 +99,13 @@ all_set:
       enabled: true
     mysql.tmp_resources:
       enabled: true
+    mysql.total_rows:
+      enabled: true
     mysql.uptime:
       enabled: true
   resource_attributes:
+    mysql.db.version:
+      enabled: true
     mysql.instance.endpoint:
       enabled: true
 none_set:
@@ -124,6 +138,14 @@ none_set:
       enabled: false
     mysql.index.io.wait.time:
       enabled: false
+    mysql.innodb.rows_deleted:
+      enabled: false
+    mysql.innodb.rows_inserted:
+      enabled: false
+    mysql.innodb.rows_read:
+      enabled: false
+    mysql.innodb.rows_updated:
+      enabled: false
     mysql.joins:
       enabled: false
     mysql.locks:
@@ -147,6 +169,8 @@ none_set:
     mysql.query.count:
       enabled: false
     mysql.query.slow.count:
+      enabled: false
+    mysql.query.total_errors:
       enabled: false
     mysql.replica.sql_delay:
       enabled: false
@@ -184,8 +208,12 @@ none_set:
       enabled: false
     mysql.tmp_resources:
       enabled: false
+    mysql.total_rows:
+      enabled: false
     mysql.uptime:
       enabled: false
   resource_attributes:
+    mysql.db.version:
+      enabled: false
     mysql.instance.endpoint:
       enabled: false

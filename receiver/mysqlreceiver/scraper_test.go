@@ -1,6 +1,5 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
-
 package mysqlreceiver
 
 import (
@@ -8,19 +7,20 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/golden"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"go.opentelemetry.io/collector/receiver/scrapererror"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/golden"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest/pmetrictest"
 )
 
 func TestScrape(t *testing.T) {
@@ -38,21 +38,16 @@ func TestScrape(t *testing.T) {
 		cfg.MetricsBuilderConfig.Metrics.MysqlQueryClientCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlQueryCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlQuerySlowCount.Enabled = true
-
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitReadCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitReadTime.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitWriteCount.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlTableLockWaitWriteTime.Enabled = true
-
 		cfg.MetricsBuilderConfig.Metrics.MysqlClientNetworkIo.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlPreparedStatements.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlCommands.Enabled = true
-
 		cfg.MetricsBuilderConfig.Metrics.MysqlReplicaSQLDelay.Enabled = true
 		cfg.MetricsBuilderConfig.Metrics.MysqlReplicaTimeBehindSource.Enabled = true
-
 		cfg.MetricsBuilderConfig.Metrics.MysqlConnectionCount.Enabled = true
-
 		scraper := newMySQLScraper(receivertest.NewNopCreateSettings(), cfg)
 		scraper.sqlclient = &mockClient{
 			globalStatsFile:             "global_stats",
@@ -62,19 +57,29 @@ func TestScrape(t *testing.T) {
 			statementEventsFile:         "statement_events",
 			tableLockWaitEventStatsFile: "table_lock_wait_event_stats",
 			replicaStatusFile:           "replica_stats",
+			innodbStatusStatsFile:       "innodb_status_stats",
+			totalErrorsFile:             "total_error_stats",
+			totalRowsFile:               "total_rows_stats",
 		}
 
 		scraper.renameCommands = true
 
 		actualMetrics, err := scraper.scrape(context.Background())
+		fmt.Println(err)
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "expected.yaml")
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(actualMetrics, expectedMetrics,
-			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
+		require.NoError(t, pmetrictest.CompareMetrics(
+			actualMetrics,
+			expectedMetrics,
+			pmetrictest.IgnoreMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(),
+			pmetrictest.IgnoreStartTimestamp(),
+			pmetrictest.IgnoreTimestamp(),
+		))
 	})
 
 	t.Run("scrape has partial failure", func(t *testing.T) {
@@ -99,6 +104,9 @@ func TestScrape(t *testing.T) {
 			statementEventsFile:         "statement_events_empty",
 			tableLockWaitEventStatsFile: "table_lock_wait_event_stats_empty",
 			replicaStatusFile:           "replica_stats_empty",
+			innodbStatusStatsFile:       "innodb_status_stats_empty",
+			totalErrorsFile:             "total_error_stats_empty",
+			totalRowsFile:               "total_rows_file_empty",
 		}
 
 		actualMetrics, scrapeErr := scraper.scrape(context.Background())
@@ -115,7 +123,7 @@ func TestScrape(t *testing.T) {
 		require.True(t, errors.As(scrapeErr, &partialError), "returned error was not PartialScrapeError")
 		// 5 comes from 4 failed "must-have" metrics that aren't present,
 		// and the other failure comes from a row that fails to parse as a number
-		require.Equal(t, partialError.Failed, 5, "Expected partial error count to be 5")
+		require.Equal(t, partialError.Failed, 6, "Expected partial error count to be 5")
 	})
 
 }
@@ -130,6 +138,117 @@ type mockClient struct {
 	statementEventsFile         string
 	tableLockWaitEventStatsFile string
 	replicaStatusFile           string
+	innodbStatusStatsFile       string
+	totalErrorsFile             string
+	totalRowsFile               string
+}
+
+// getInnodbStatusStats implements client.
+func (c *mockClient) getInnodbStatusStats() (map[string]int64, error, int) {
+	ret := make(map[string]int64)
+	var totalErrs int
+	parseErrs := make(map[string][]error)
+	file, err := os.Open(filepath.Join(
+		"testdata",
+		"scraper",
+		c.innodbStatusStatsFile+".txt",
+	))
+	if err != nil {
+		return nil, err, 1
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var k string
+
+		text := strings.Fields(scanner.Text())
+		k = text[0]
+		v, parseErr := strconv.ParseInt(text[1], 10, 64)
+		if parseErr != nil {
+			totalErrs += 1
+			parseErrs[k] = append(parseErrs[k], parseErr)
+			continue
+		}
+		ret[k] = v
+	}
+	fmt.Println(ret)
+	var flatError error
+	if totalErrs > 0 {
+		errorString := flattenErrorMap(parseErrs)
+		flatError = fmt.Errorf(errorString)
+	}
+
+	return ret, flatError, totalErrs
+}
+
+// getTotalErrors implements client.
+func (c *mockClient) getTotalErrors() (int64, error) {
+	var totalErrors int64 = 0
+
+	file, err := os.Open(filepath.Join(
+		"testdata",
+		"scraper",
+		c.totalErrorsFile+".txt",
+	))
+
+	if err != nil {
+		return -1, err
+	}
+
+	stats, err := file.Stat()
+
+	if err != nil {
+		return -1, err
+	}
+
+	if stats.Size() == 0 {
+		return -1, fmt.Errorf("file is empty")
+	}
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		text := strings.Fields(scanner.Text())
+		if text[0] != "total_errors" {
+			return -1, fmt.Errorf("wrong format for the mock file")
+		}
+		nErrs, err := strconv.ParseInt(text[1], 10, 64)
+
+		if err != nil {
+			return -1, err
+		}
+		totalErrors += nErrs
+	}
+	return totalErrors, nil
+}
+
+// getTotalRows implements client.
+func (c *mockClient) getTotalRows() ([]NRows, error) {
+	var stats []NRows
+	file, err := os.Open(filepath.Join("testdata", "scraper", c.totalRowsFile+".txt"))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var s NRows
+		// text := strings.Split(scanner.Text(), " ")
+		text := strings.Fields(scanner.Text())
+		fmt.Println(text)
+		fmt.Println(text[0])
+		fmt.Println(text[1])
+		s.dbname = text[0]
+		s.totalRows, err = strconv.ParseInt(text[1], 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+
+	return stats, nil
 }
 
 func readFile(fname string) (map[string]string, error) {
@@ -139,7 +258,6 @@ func readFile(fname string) (map[string]string, error) {
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		text := strings.Split(scanner.Text(), "\t")
@@ -147,23 +265,18 @@ func readFile(fname string) (map[string]string, error) {
 	}
 	return stats, nil
 }
-
 func (c *mockClient) Connect() error {
 	return nil
 }
-
 func (c *mockClient) getVersion() (string, error) {
 	return "8.0.27", nil
 }
-
 func (c *mockClient) getGlobalStats() (map[string]string, error) {
 	return readFile(c.globalStatsFile)
 }
-
 func (c *mockClient) getInnodbStats() (map[string]string, error) {
 	return readFile(c.innodbStatsFile)
 }
-
 func (c *mockClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 	var stats []TableIoWaitsStats
 	file, err := os.Open(filepath.Join("testdata", "scraper", c.tableIoWaitsFile+".txt"))
@@ -171,12 +284,10 @@ func (c *mockClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var s TableIoWaitsStats
 		text := strings.Split(scanner.Text(), "\t")
-
 		s.schema = text[0]
 		s.name = text[1]
 		s.countDelete, _ = parseInt(text[2])
@@ -187,12 +298,10 @@ func (c *mockClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 		s.timeFetch, _ = parseInt(text[7])
 		s.timeInsert, _ = parseInt(text[8])
 		s.timeUpdate, _ = parseInt(text[9])
-
 		stats = append(stats, s)
 	}
 	return stats, nil
 }
-
 func (c *mockClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 	var stats []IndexIoWaitsStats
 	file, err := os.Open(filepath.Join("testdata", "scraper", c.indexIoWaitsFile+".txt"))
@@ -200,12 +309,10 @@ func (c *mockClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var s IndexIoWaitsStats
 		text := strings.Split(scanner.Text(), "\t")
-
 		s.schema = text[0]
 		s.name = text[1]
 		s.index = text[2]
@@ -217,12 +324,10 @@ func (c *mockClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 		s.timeFetch, _ = parseInt(text[8])
 		s.timeInsert, _ = parseInt(text[9])
 		s.timeUpdate, _ = parseInt(text[10])
-
 		stats = append(stats, s)
 	}
 	return stats, nil
 }
-
 func (c *mockClient) getStatementEventsStats() ([]StatementEventStats, error) {
 	var stats []StatementEventStats
 	file, err := os.Open(filepath.Join("testdata", "scraper", c.statementEventsFile+".txt"))
@@ -230,12 +335,12 @@ func (c *mockClient) getStatementEventsStats() ([]StatementEventStats, error) {
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var s StatementEventStats
 		text := strings.Split(scanner.Text(), "\t")
-
+		fmt.Println(len(text))
+		fmt.Println(text)
 		s.schema = text[0]
 		s.digest = text[1]
 		s.digestText = text[2]
@@ -250,12 +355,11 @@ func (c *mockClient) getStatementEventsStats() ([]StatementEventStats, error) {
 		s.countSortMergePasses, _ = parseInt(text[11])
 		s.countSortRows, _ = parseInt(text[12])
 		s.countNoIndexUsed, _ = parseInt(text[13])
-
+		s.countStar, _ = parseInt(text[14])
 		stats = append(stats, s)
 	}
 	return stats, nil
 }
-
 func (c *mockClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {
 	var stats []tableLockWaitEventStats
 	file, err := os.Open(filepath.Join("testdata", "scraper", c.tableLockWaitEventStatsFile+".txt"))
@@ -263,12 +367,10 @@ func (c *mockClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, er
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var s tableLockWaitEventStats
 		text := strings.Split(scanner.Text(), "\t")
-
 		s.schema = text[0]
 		s.name = text[1]
 		s.countReadNormal, _ = parseInt(text[2])
@@ -291,12 +393,10 @@ func (c *mockClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, er
 		s.sumTimerWriteLowPriority, _ = parseInt(text[19])
 		s.sumTimerWriteNormal, _ = parseInt(text[20])
 		s.sumTimerWriteExternal, _ = parseInt(text[21])
-
 		stats = append(stats, s)
 	}
 	return stats, nil
 }
-
 func (c *mockClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 	var stats []ReplicaStatusStats
 	file, err := os.Open(filepath.Join("testdata", "scraper", c.replicaStatusFile+".txt"))
@@ -304,12 +404,10 @@ func (c *mockClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 		return nil, err
 	}
 	defer file.Close()
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var s ReplicaStatusStats
 		text := strings.Split(scanner.Text(), "\t")
-
 		s.replicaIOState = text[0]
 		s.sourceHost = text[1]
 		s.sourceUser = text[2]
@@ -372,12 +470,10 @@ func (c *mockClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 		s.sourcePublicKeyPath = text[57]
 		s.getSourcePublicKey, _ = parseInt(text[58])
 		s.networkNamespace = text[59]
-
 		stats = append(stats, s)
 	}
 	return stats, nil
 }
-
 func (c *mockClient) Close() error {
 	return nil
 }
