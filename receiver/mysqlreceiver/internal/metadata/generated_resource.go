@@ -21,6 +21,13 @@ func NewResourceBuilder(rac ResourceAttributesConfig) *ResourceBuilder {
 	}
 }
 
+// SetMysqlDatabaseVersion sets provided value as "mysql.database.version" attribute.
+func (rb *ResourceBuilder) SetMysqlDatabaseVersion(val string) {
+	if rb.config.MysqlDatabaseVersion.Enabled {
+		rb.res.Attributes().PutStr("mysql.database.version", val)
+	}
+}
+
 // SetMysqlInstanceEndpoint sets provided value as "mysql.instance.endpoint" attribute.
 func (rb *ResourceBuilder) SetMysqlInstanceEndpoint(val string) {
 	if rb.config.MysqlInstanceEndpoint.Enabled {
