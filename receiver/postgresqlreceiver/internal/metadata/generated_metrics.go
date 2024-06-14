@@ -611,7 +611,7 @@ type metricPostgresqlBufferHit struct {
 // init fills postgresql.buffer_hit metric with initial data.
 func (m *metricPostgresqlBufferHit) init() {
 	m.data.SetName("postgresql.buffer_hit")
-	m.data.SetDescription("The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.")
+	m.data.SetDescription("The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.")
 	m.data.SetUnit("{hit}/s")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
@@ -713,7 +713,7 @@ type metricPostgresqlConnectionCount struct {
 // init fills postgresql.connection.count metric with initial data.
 func (m *metricPostgresqlConnectionCount) init() {
 	m.data.SetName("postgresql.connection.count")
-	m.data.SetDescription("The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user")
+	m.data.SetDescription("The count of active connections to this database.")
 	m.data.SetUnit("{connection}")
 	m.data.SetEmptyGauge()
 }
@@ -1064,7 +1064,7 @@ type metricPostgresqlLiveRows struct {
 // init fills postgresql.live_rows metric with initial data.
 func (m *metricPostgresqlLiveRows) init() {
 	m.data.SetName("postgresql.live_rows")
-	m.data.SetDescription("Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.")
+	m.data.SetDescription("The approximate number of live rows, tagged with relation name.")
 	m.data.SetUnit("{row}")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
@@ -1168,7 +1168,7 @@ type metricPostgresqlQueryCount struct {
 // init fills postgresql.query.count metric with initial data.
 func (m *metricPostgresqlQueryCount) init() {
 	m.data.SetName("postgresql.query.count")
-	m.data.SetDescription("Number of times the statement was executed")
+	m.data.SetDescription("Number of times the statement was executed.")
 	m.data.SetUnit("1")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
@@ -1222,7 +1222,7 @@ type metricPostgresqlQueryTotalExecTime struct {
 // init fills postgresql.query.total_exec_time metric with initial data.
 func (m *metricPostgresqlQueryTotalExecTime) init() {
 	m.data.SetName("postgresql.query.total_exec_time")
-	m.data.SetDescription("The total wait time of the summarized timed events in nanaoseconds.")
+	m.data.SetDescription("Total wait time of the normalised timed events in nanaoseconds.")
 	m.data.SetUnit("ns")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
@@ -1431,7 +1431,7 @@ type metricPostgresqlRowsDeleted struct {
 // init fills postgresql.rows_deleted metric with initial data.
 func (m *metricPostgresqlRowsDeleted) init() {
 	m.data.SetName("postgresql.rows_deleted")
-	m.data.SetDescription("Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.")
+	m.data.SetDescription("Rows deleted by queries in this db, tagged with relation name.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
@@ -1482,7 +1482,7 @@ type metricPostgresqlRowsFetched struct {
 // init fills postgresql.rows_fetched metric with initial data.
 func (m *metricPostgresqlRowsFetched) init() {
 	m.data.SetName("postgresql.rows_fetched")
-	m.data.SetDescription("The number of rows fetched by queries in this database. This metric is tagged with db.")
+	m.data.SetDescription("Rows fetched by queries in this db, tagged with relation name.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
@@ -1533,7 +1533,7 @@ type metricPostgresqlRowsInserted struct {
 // init fills postgresql.rows_inserted metric with initial data.
 func (m *metricPostgresqlRowsInserted) init() {
 	m.data.SetName("postgresql.rows_inserted")
-	m.data.SetDescription("Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.")
+	m.data.SetDescription("Rows inserted by queries in the db, tagged with relation name.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
@@ -1584,7 +1584,7 @@ type metricPostgresqlRowsUpdated struct {
 // init fills postgresql.rows_updated metric with initial data.
 func (m *metricPostgresqlRowsUpdated) init() {
 	m.data.SetName("postgresql.rows_updated")
-	m.data.SetDescription("Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.")
+	m.data.SetDescription("Rows updated by queries in the db, tagged with relation name.")
 	m.data.SetUnit("{row}/s")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)

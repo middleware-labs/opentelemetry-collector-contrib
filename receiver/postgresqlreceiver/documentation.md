@@ -94,7 +94,7 @@ The number of blocks read.
 
 ### postgresql.buffer_hit
 
-The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.
+The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -116,7 +116,7 @@ The number of commits.
 
 ### postgresql.connection.count
 
-The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+The count of active connections to this database.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -164,7 +164,7 @@ The size of the index on disk.
 
 ### postgresql.live_rows
 
-Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
+The approximate number of live rows, tagged with relation name.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -192,7 +192,7 @@ The number of db row operations.
 
 ### postgresql.query.count
 
-Number of times the statement was executed
+Number of times the statement was executed.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
@@ -207,7 +207,7 @@ Number of times the statement was executed
 
 ### postgresql.query.total_exec_time
 
-The total wait time of the summarized timed events in nanaoseconds.
+Total wait time of the normalised timed events in nanaoseconds.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
@@ -258,7 +258,7 @@ The number of rows in the database.
 
 ### postgresql.rows_deleted
 
-Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
+Rows deleted by queries in this db, tagged with relation name.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -272,7 +272,7 @@ Enabled with `relations`. The number of rows deleted by queries in this database
 
 ### postgresql.rows_fetched
 
-The number of rows fetched by queries in this database. This metric is tagged with db.
+Rows fetched by queries in this db, tagged with relation name.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -286,7 +286,7 @@ The number of rows fetched by queries in this database. This metric is tagged wi
 
 ### postgresql.rows_inserted
 
-Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
+Rows inserted by queries in the db, tagged with relation name.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -300,7 +300,7 @@ Enabled with `relations`. The number of rows inserted by queries in this databas
 
 ### postgresql.rows_updated
 
-Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
+Rows updated by queries in the db, tagged with relation name.
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |

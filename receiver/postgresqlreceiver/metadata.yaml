@@ -302,7 +302,7 @@ metrics:
   #DBM METRICS:
   postgresql.query.total_exec_time:
     enabled: true
-    description: The total wait time of the summarized timed events in nanaoseconds.
+    description: Total wait time of the normalised timed events in nanaoseconds.
     unit: ns
     sum:
       value_type: int
@@ -312,7 +312,7 @@ metrics:
 
   postgresql.query.count:
     enabled: true
-    description: Number of times the statement was executed 
+    description: Number of times the statement was executed.
     unit: 1
     sum:
       value_type: int
@@ -324,8 +324,7 @@ metrics:
     attributes:
       - relation_name
     enabled: true 
-    description: Enabled with `relations`. The number of rows deleted by queries in
-      this database. This metric is tagged with db.
+    description: Rows deleted by queries in this db, tagged with relation name.
     unit: '{row}/s'
     gauge:
       value_type: int
@@ -334,8 +333,7 @@ metrics:
     attributes:
       - relation_name
     enabled: true 
-    description: The number of rows fetched by queries in this database. This metric
-      is tagged with db.
+    description: Rows fetched by queries in this db, tagged with relation name.
     unit: '{row}/s'
     gauge:
       value_type: int
@@ -344,8 +342,7 @@ metrics:
     attributes:
       - relation_name
     enabled: true 
-    description: Enabled with `relations`. The number of rows updated by queries in
-      this database. This metric is tagged with db.
+    description: Rows updated by queries in the db, tagged with relation name.
     unit: '{row}/s'
     gauge:
       value_type: int
@@ -354,8 +351,7 @@ metrics:
     attributes:
       - relation_name
     enabled: true
-    description: Enabled with `relations`. The number of rows inserted by queries in
-      this database. This metric is tagged with db.
+    description: Rows inserted by queries in the db, tagged with relation name. 
     unit: '{row}/s'
     gauge:
       value_type: int
@@ -364,8 +360,7 @@ metrics:
     attributes:
       - relation_name
     enabled: true
-    description: Enabled with `relations`. The estimated number of live rows. This metric
-      is tagged with db, schema, table.
+    description: The approximate number of live rows, tagged with relation name. 
     unit: '{row}'
     gauge:
       value_type: int
@@ -374,16 +369,14 @@ metrics:
     attributes:
       - dbname
     enabled: true 
-    description: The number of times disk blocks were found in the buffer cache, preventing
-      the need to read from the database. This metric is tagged with db.
+    description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
     unit: '{hit}/s'
     gauge:
       value_type: int
       
   postgresql.connection.count:
     enabled: true
-    description: The number of active connections to this database. If DBM is enabled,
-      this metric is tagged with state, app, db and user
+    description: The count of active connections to this database. 
     unit: '{connection}'
     gauge:
       value_type: int

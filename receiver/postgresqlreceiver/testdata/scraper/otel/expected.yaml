@@ -115,7 +115,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.connection.max
             unit: '{connection}'
-          - description: The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+          - description: The count of active connections to this database. 
             gauge:
               dataPoints:
                 - asInt: "1"
@@ -123,7 +123,7 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.connection.count
             unit: '{connection}'
-          - description: The total wait time of the summarized timed events in nanaoseconds.
+          - description: Total wait time of the normalised timed events in nanaoseconds. 
             name: postgresql.query.total_exec_time
             sum:
               aggregationTemporality: 2
@@ -159,7 +159,7 @@ resourceMetrics:
                       value:
                         stringValue: "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)"
             unit: ns
-          - description: Number of times the statement was executed
+          - description: Number of times the statement was executed.
             name: postgresql.query.count
             sum:
               aggregationTemporality: 2
@@ -195,7 +195,7 @@ resourceMetrics:
                       value:
                         stringValue: "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)"
             unit: "1"
-          - description: The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.
+          - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
             gauge: 
               dataPoints:
                 - asInt: "2148"
@@ -220,7 +220,7 @@ resourceMetrics:
                         stringValue: "template0"
             name: postgresql.buffer_hit
             unit: '{hit}/s'
-          - description: Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.
+          - description: Rows deleted by queries in this db, tagged with relation name. 
             gauge:
               dataPoints:
               - asInt: "88"
@@ -230,7 +230,7 @@ resourceMetrics:
                       stringValue: public.table1
             name: postgresql.rows_deleted
             unit: '{row}/s'
-          - description: The number of rows fetched by queries in this database. This metric is tagged with db.
+          - description: Rows fetched by queries in this db, tagged with relation name. 
             gauge:
               dataPoints:
               - asInt: "0"
@@ -240,7 +240,7 @@ resourceMetrics:
                       stringValue: public.table1
             name: postgresql.rows_fetched
             unit: '{row}/s'
-          - description: Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.
+          - description: Rows inserted by queries in the db, tagged with relation name. 
             gauge:
               dataPoints:
               - asInt: "165"
@@ -250,7 +250,7 @@ resourceMetrics:
                       stringValue: public.table1
             name: postgresql.rows_inserted
             unit: '{row}/s'
-          - description: Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.
+          - description: Rows updated by queries in the db, tagged with relation name. 
             gauge:
               dataPoints:
               - asInt: "2"
@@ -260,7 +260,7 @@ resourceMetrics:
                       stringValue: public.table1
             name: postgresql.rows_updated
             unit: '{row}/s'
-          - description: Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.
+          - description: The approximate number of live rows, tagged with relation name. 
             gauge:
               dataPoints:
               - asInt: "77"

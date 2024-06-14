@@ -329,7 +329,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.buffer_hit"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of times disk blocks were found in the buffer cache, preventing the need to read from the database. This metric is tagged with db.", ms.At(i).Description())
+					assert.Equal(t, "The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.", ms.At(i).Description())
 					assert.Equal(t, "{hit}/s", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -358,7 +358,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.connection.count"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user", ms.At(i).Description())
+					assert.Equal(t, "The count of active connections to this database.", ms.At(i).Description())
 					assert.Equal(t, "{connection}", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -450,7 +450,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.live_rows"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "Enabled with `relations`. The estimated number of live rows. This metric is tagged with db, schema, table.", ms.At(i).Description())
+					assert.Equal(t, "The approximate number of live rows, tagged with relation name.", ms.At(i).Description())
 					assert.Equal(t, "{row}", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -482,7 +482,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.query.count"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
-					assert.Equal(t, "Number of times the statement was executed", ms.At(i).Description())
+					assert.Equal(t, "Number of times the statement was executed.", ms.At(i).Description())
 					assert.Equal(t, "1", ms.At(i).Unit())
 					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
@@ -502,7 +502,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.query.total_exec_time"] = true
 					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
-					assert.Equal(t, "The total wait time of the summarized timed events in nanaoseconds.", ms.At(i).Description())
+					assert.Equal(t, "Total wait time of the normalised timed events in nanaoseconds.", ms.At(i).Description())
 					assert.Equal(t, "ns", ms.At(i).Unit())
 					assert.Equal(t, false, ms.At(i).Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
@@ -568,7 +568,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.rows_deleted"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "Enabled with `relations`. The number of rows deleted by queries in this database. This metric is tagged with db.", ms.At(i).Description())
+					assert.Equal(t, "Rows deleted by queries in this db, tagged with relation name.", ms.At(i).Description())
 					assert.Equal(t, "{row}/s", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -583,7 +583,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.rows_fetched"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of rows fetched by queries in this database. This metric is tagged with db.", ms.At(i).Description())
+					assert.Equal(t, "Rows fetched by queries in this db, tagged with relation name.", ms.At(i).Description())
 					assert.Equal(t, "{row}/s", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -598,7 +598,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.rows_inserted"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "Enabled with `relations`. The number of rows inserted by queries in this database. This metric is tagged with db.", ms.At(i).Description())
+					assert.Equal(t, "Rows inserted by queries in the db, tagged with relation name.", ms.At(i).Description())
 					assert.Equal(t, "{row}/s", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -613,7 +613,7 @@ func TestMetricsBuilder(t *testing.T) {
 					validatedMetrics["postgresql.rows_updated"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
-					assert.Equal(t, "Enabled with `relations`. The number of rows updated by queries in this database. This metric is tagged with db.", ms.At(i).Description())
+					assert.Equal(t, "Rows updated by queries in the db, tagged with relation name.", ms.At(i).Description())
 					assert.Equal(t, "{row}/s", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
