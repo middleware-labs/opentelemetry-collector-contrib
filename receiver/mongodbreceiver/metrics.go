@@ -759,49 +759,49 @@ func (s *mongodbScraper) recordMongodbAssertsWarningps(now pcommon.Timestamp, do
 	s.mb.RecordMongodbAssertsWarningpsDataPoint(now, val, database)
 }
 
-// func (s *mongodbScraper) recordMongodbBackgroundflushingAverageMs(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"backgroundFlushing", "average_ms"}
-// 	metricName := "mongodb.backgroundflushing.average_ms"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbBackgroundflushingAverageMsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbBackgroundflushingAverageMs(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"backgroundFlushing", "average_ms"}
+	metricName := "mongodb.backgroundflushing.average_ms"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbBackgroundflushingAverageMsDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbBackgroundflushingFlushesps(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"backgroundFlushing", "flushes"}
-// 	metricName := "mongodb.backgroundflushing.flushesps"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbBackgroundflushingFlushespsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbBackgroundflushingFlushesps(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"backgroundFlushing", "flushes"}
+	metricName := "mongodb.backgroundflushing.flushesps"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbBackgroundflushingFlushespsDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbBackgroundflushingLastMs(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"backgroundFlushing", "last_ms"}
-// 	metricName := "mongodb.backgroundflushing.last_ms"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbBackgroundflushingLastMsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbBackgroundflushingLastMs(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"backgroundFlushing", "last_ms"}
+	metricName := "mongodb.backgroundflushing.last_ms"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbBackgroundflushingLastMsDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbBackgroundflushingTotalMs(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"backgroundFlushing", "total_ms"}
-// 	metricName := "mongodb.backgroundflushing.total_ms"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbBackgroundflushingTotalMsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbBackgroundflushingTotalMs(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"backgroundFlushing", "total_ms"}
+	metricName := "mongodb.backgroundflushing.total_ms"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbBackgroundflushingTotalMsDataPoint(now, val, database)
+}
 
 func (s *mongodbScraper) recordMongodbChunksJumbo(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"jumbo"}
@@ -1073,14 +1073,18 @@ func (s *mongodbScraper) recordMongodbConnectionsExhaustismaster(now pcommon.Tim
 }
 
 func (s *mongodbScraper) recordMongodbConnectionsLoadbalanced(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-	metricPath := []string{"connections", "loadBalanced"}
-	metricName := "mongodb.connections.loadbalanced"
-	val, err := collectMetric(doc, metricPath)
-	if err != nil {
-		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-		return
+	// Mongo version 7.0+ only has loadbalanced connections
+	mongo70, _ := version.NewVersion("7.0")
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo70) {
+		metricPath := []string{"connections", "loadBalanced"}
+		metricName := "mongodb.connections.loadbalanced"
+		val, err := collectMetric(doc, metricPath)
+		if err != nil {
+			errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+			return
+		}
+		s.mb.RecordMongodbConnectionsLoadbalancedDataPoint(now, val, database)
 	}
-	s.mb.RecordMongodbConnectionsLoadbalancedDataPoint(now, val, database)
 }
 
 func (s *mongodbScraper) recordMongodbConnectionsRejected(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
@@ -1106,7 +1110,7 @@ func (s *mongodbScraper) recordMongodbConnectionsThreaded(now pcommon.Timestamp,
 }
 
 func (s *mongodbScraper) recordMongodbConnectionsTotalcreated(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-	metricPath := []string{"connections", "totalcreated"}
+	metricPath := []string{"connections", "totalCreated"}
 	metricName := "mongodb.connections.totalcreated"
 	val, err := collectMetric(doc, metricPath)
 	if err != nil {
@@ -1138,159 +1142,159 @@ func (s *mongodbScraper) recordMongodbCursorsTotalopen(now pcommon.Timestamp, do
 	s.mb.RecordMongodbCursorsTotalopenDataPoint(now, val, database)
 }
 
-// func (s *mongodbScraper) recordMongodbDurCommits(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "commits"}
-// 	metricName := "mongodb.dur.commits"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurCommitsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurCommits(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "commits"}
+	metricName := "mongodb.dur.commits"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurCommitsDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurCommitsinwritelock(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "commitsinwritelock"}
-// 	metricName := "mongodb.dur.commitsinwritelock"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurCommitsinwritelockDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurCommitsinwritelock(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "commitsInWriteLock"}
+	metricName := "mongodb.dur.commitsinwritelock"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurCommitsinwritelockDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurCompression(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "compression"}
-// 	metricName := "mongodb.dur.compression"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurCompressionDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurCompression(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "compression"}
+	metricName := "mongodb.dur.compression"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurCompressionDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurEarlycommits(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "earlycommits"}
-// 	metricName := "mongodb.dur.earlycommits"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurEarlycommitsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurEarlycommits(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "earlyCommits"}
+	metricName := "mongodb.dur.earlycommits"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurEarlycommitsDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurJournaledmb(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "journaledmb"}
-// 	metricName := "mongodb.dur.journaledmb"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurJournaledmbDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurJournaledmb(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "journaledMB"}
+	metricName := "mongodb.dur.journaledmb"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurJournaledmbDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsCommits(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "commits"}
-// 	metricName := "mongodb.dur.timems.commits"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsCommitsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsCommits(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "commits"}
+	metricName := "mongodb.dur.timems.commits"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsCommitsDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsCommitsinwritelock(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "commitsinwritelock"}
-// 	metricName := "mongodb.dur.timems.commitsinwritelock"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsCommitsinwritelockDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsCommitsinwritelock(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "commitsInWriteLock"}
+	metricName := "mongodb.dur.timems.commitsinwritelock"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsCommitsinwritelockDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsDt(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "dt"}
-// 	metricName := "mongodb.dur.timems.dt"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsDtDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsDt(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "dt"}
+	metricName := "mongodb.dur.timems.dt"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsDtDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsPreplogbuffer(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "preplogbuffer"}
-// 	metricName := "mongodb.dur.timems.preplogbuffer"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsPreplogbufferDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsPreplogbuffer(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "prepLogBuffer"}
+	metricName := "mongodb.dur.timems.preplogbuffer"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsPreplogbufferDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsRemapprivateview(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "remapprivateview"}
-// 	metricName := "mongodb.dur.timems.remapprivateview"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsRemapprivateviewDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsRemapprivateview(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "remapPrivateView"}
+	metricName := "mongodb.dur.timems.remapprivateview"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsRemapprivateviewDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsWritetodatafiles(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "writetodatafiles"}
-// 	metricName := "mongodb.dur.timems.writetodatafiles"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsWritetodatafilesDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsWritetodatafiles(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "writeToDataFiles"}
+	metricName := "mongodb.dur.timems.writetodatafiles"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsWritetodatafilesDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurTimemsWritetojournal(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "timems", "writetojournal"}
-// 	metricName := "mongodb.dur.timems.writetojournal"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurTimemsWritetojournalDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurTimemsWritetojournal(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "timeMs", "writeToJournal"}
+	metricName := "mongodb.dur.timems.writetojournal"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurTimemsWritetojournalDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbDurWritetodatafilesmb(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"dur", "writetodatafilesmb"}
-// 	metricName := "mongodb.dur.writetodatafilesmb"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbDurWritetodatafilesmbDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbDurWritetodatafilesmb(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"dur", "writeToDataFilesMB"}
+	metricName := "mongodb.dur.writetodatafilesmb"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbDurWritetodatafilesmbDataPoint(now, val, database)
+}
 
-// func (s *mongodbScraper) recordMongodbExtraInfoHeapUsageBytesps(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"extra_info", "heap_usage_bytes"}
-// 	metricName := "mongodb.extra_info.heap_usage_bytesps"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbExtraInfoHeapUsageBytespsDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbExtraInfoHeapUsageBytesps(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"extra_info", "heap_usage_bytes"}
+	metricName := "mongodb.extra_info.heap_usage_bytesps"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbExtraInfoHeapUsageBytespsDataPoint(now, val, database)
+}
 
 func (s *mongodbScraper) recordMongodbExtraInfoPageFaultsps(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"extra_info", "page_faults"}
@@ -1303,16 +1307,16 @@ func (s *mongodbScraper) recordMongodbExtraInfoPageFaultsps(now pcommon.Timestam
 	s.mb.RecordMongodbExtraInfoPageFaultspsDataPoint(now, val, database)
 }
 
-// func (s *mongodbScraper) recordMongodbFsynclocked(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-// 	metricPath := []string{"fsynclocked"}
-// 	metricName := "mongodb.fsynclocked"
-// 	val, err := collectMetric(doc, metricPath)
-// 	if err != nil {
-// 		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
-// 		return
-// 	}
-// 	s.mb.RecordMongodbFsynclockedDataPoint(now, val, database)
-// }
+func (s *mongodbScraper) recordMongodbFsynclocked(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"fsyncLocked"}
+	metricName := "mongodb.fsynclocked"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbFsynclockedDataPoint(now, val, database)
+}
 
 func (s *mongodbScraper) recordMongodbGloballockActiveclientsReaders(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"globalLock", "activeClients", "readers"}

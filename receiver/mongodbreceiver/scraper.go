@@ -117,6 +117,7 @@ func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.
 	s.collectOplogStats(ctx, now, errs)
 	s.collectReplSetStatus(ctx, now, errs)
 	s.collectReplSetConfig(ctx, now, errs)
+	s.collectFsyncLockStatus(ctx, now, errs)
 
 	for _, dbName := range dbNames {
 		s.collectDatabase(ctx, now, dbName, errs)
@@ -264,6 +265,26 @@ func (s *mongodbScraper) collectOplogStats(ctx context.Context, now pcommon.Time
 	)
 }
 
+func (s *mongodbScraper) collectFsyncLockStatus(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	//FsyncLock stats are scraped using admin database
+	databaseName := "admin"
+
+	fsyncLockStatus, err := s.client.GetFsyncLockInfo(ctx)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf("failed to fetch fsyncLockStatus metrics: %w", err))
+		return
+	}
+	s.recordMongodbFsynclocked(now, fsyncLockStatus, databaseName, errs)
+
+	rb := s.mb.NewResourceBuilder()
+	rb.SetDatabase(databaseName)
+	rb.SetMongodbDatabaseName(databaseName)
+
+	s.mb.EmitForResource(
+		metadata.WithResource(rb.Emit()),
+	)
+}
+
 func (s *mongodbScraper) collectCollectionStats(ctx context.Context, now pcommon.Timestamp, databaseName string, collectionName string, errs *scrapererror.ScrapeErrors) {
 	collStats, err := s.client.CollectionStats(ctx, databaseName, collectionName)
 	if err != nil {
@@ -380,6 +401,16 @@ func (s *mongodbScraper) recordNormalServerStats(now pcommon.Timestamp, doc bson
 	s.recordMongodbAssertsUserps(now, doc, dbName, errs)      // ps
 	s.recordMongodbAssertsWarningps(now, doc, dbName, errs)   // ps
 
+	// backgroundflushing
+	// Mongo version 4.4+ no longer returns backgroundflushing since it is part of the obsolete MMAPv1
+	mongo44, _ := version.NewVersion("4.4")
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
+		s.recordMongodbBackgroundflushingAverageMs(now, doc, dbName, errs)
+		s.recordMongodbBackgroundflushingFlushesps(now, doc, dbName, errs)
+		s.recordMongodbBackgroundflushingLastMs(now, doc, dbName, errs)
+		s.recordMongodbBackgroundflushingTotalMs(now, doc, dbName, errs)
+	}
+
 	// connections
 	s.recordMongodbConnectionsActive(now, doc, dbName, errs)
 	s.recordMongodbConnectionsAvailable(now, doc, dbName, errs)
@@ -396,8 +427,28 @@ func (s *mongodbScraper) recordNormalServerStats(now pcommon.Timestamp, doc bson
 	s.recordMongodbCursorsTimedout(now, doc, dbName, errs)
 	s.recordMongodbCursorsTotalopen(now, doc, dbName, errs)
 
+	// dur
+	// Mongo version 4.4+ no longer returns dur since it is part of the obsolete MMAPv1
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
+		s.recordMongodbDurCommits(now, doc, dbName, errs)
+		s.recordMongodbDurCommitsinwritelock(now, doc, dbName, errs)
+		s.recordMongodbDurCompression(now, doc, dbName, errs)
+		s.recordMongodbDurEarlycommits(now, doc, dbName, errs)
+		s.recordMongodbDurJournaledmb(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsCommits(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsCommitsinwritelock(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsDt(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsPreplogbuffer(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsRemapprivateview(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsWritetodatafiles(now, doc, dbName, errs)
+		s.recordMongodbDurTimemsWritetojournal(now, doc, dbName, errs)
+		s.recordMongodbDurWritetodatafilesmb(now, doc, dbName, errs)
+
+		// extra_info
+		s.recordMongodbExtraInfoHeapUsageBytesps(now, doc, dbName, errs)
+	}
+
 	// extra_info
-	// s.recordMongodbExtraInfoHeapUsageBytesps(now, doc, dbName, errs)
 	s.recordMongodbExtraInfoPageFaultsps(now, doc, dbName, errs) // ps
 
 	// globallock
@@ -407,69 +458,82 @@ func (s *mongodbScraper) recordNormalServerStats(now pcommon.Timestamp, doc bson
 	s.recordMongodbGloballockCurrentqueueReaders(now, doc, dbName, errs)
 	s.recordMongodbGloballockCurrentqueueTotal(now, doc, dbName, errs)
 	s.recordMongodbGloballockCurrentqueueWriters(now, doc, dbName, errs)
-	// s.recordMongodbGloballockLocktime(now, doc, dbName, errs)
-	// s.recordMongodbGloballockRatio(now, doc, dbName, errs)
+	// Mongo version 4.4+ no longer returns locktime and ratio since it is part of the obsolete MMAPv1
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
+		s.recordMongodbGloballockLocktime(now, doc, dbName, errs)
+		s.recordMongodbGloballockRatio(now, doc, dbName, errs)
+	}
 	s.recordMongodbGloballockTotaltime(now, doc, dbName, errs)
 
 	// indexcounters
-	// s.recordMongodbIndexcountersAccessesps(now, doc, dbName, errs)
-	// s.recordMongodbIndexcountersHitsps(now, doc, dbName, errs)
-	// s.recordMongodbIndexcountersMissesps(now, doc, dbName, errs)
-	// s.recordMongodbIndexcountersMissratio(now, doc, dbName, errs)
-	// s.recordMongodbIndexcountersResetsps(now, doc, dbName, errs)
+	// Mongo version 4.4+ no longer returns indexcounters since it is part of the obsolete MMAPv1
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
+		s.recordMongodbIndexcountersAccessesps(now, doc, dbName, errs) //ps
+		s.recordMongodbIndexcountersHitsps(now, doc, dbName, errs)     //ps
+		s.recordMongodbIndexcountersMissesps(now, doc, dbName, errs)   //ps
+		s.recordMongodbIndexcountersMissratio(now, doc, dbName, errs)
+		s.recordMongodbIndexcountersResetsps(now, doc, dbName, errs) //ps
+	}
 
 	// locks
-	s.recordMongodbLocksCollectionAcquirecountExclusiveps(now, doc, dbName, errs)                 // ps
-	s.recordMongodbLocksCollectionAcquirecountIntentExclusiveps(now, doc, dbName, errs)           // ps
-	s.recordMongodbLocksCollectionAcquirecountIntentSharedps(now, doc, dbName, errs)              // ps
-	s.recordMongodbLocksCollectionAcquirecountSharedps(now, doc, dbName, errs)                    // ps
-	s.recordMongodbLocksCollectionAcquirewaitcountExclusiveps(now, doc, dbName, errs)             // ps
-	s.recordMongodbLocksCollectionAcquirewaitcountSharedps(now, doc, dbName, errs)                // ps
-	s.recordMongodbLocksCollectionTimeacquiringmicrosExclusiveps(now, doc, dbName, errs)          // ps
-	s.recordMongodbLocksCollectionTimeacquiringmicrosSharedps(now, doc, dbName, errs)             // ps
-	s.recordMongodbLocksDatabaseAcquirecountExclusiveps(now, doc, dbName, errs)                   // ps
-	s.recordMongodbLocksDatabaseAcquirecountIntentExclusiveps(now, doc, dbName, errs)             // ps
-	s.recordMongodbLocksDatabaseAcquirecountIntentSharedps(now, doc, dbName, errs)                // ps
-	s.recordMongodbLocksDatabaseAcquirecountSharedps(now, doc, dbName, errs)                      // ps
-	s.recordMongodbLocksDatabaseAcquirewaitcountExclusiveps(now, doc, dbName, errs)               // ps
-	s.recordMongodbLocksDatabaseAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)         // ps
-	s.recordMongodbLocksDatabaseAcquirewaitcountIntentSharedps(now, doc, dbName, errs)            // ps
-	s.recordMongodbLocksDatabaseAcquirewaitcountSharedps(now, doc, dbName, errs)                  // ps
-	s.recordMongodbLocksDatabaseTimeacquiringmicrosExclusiveps(now, doc, dbName, errs)            // ps
-	s.recordMongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs)      // ps
-	s.recordMongodbLocksDatabaseTimeacquiringmicrosIntentSharedps(now, doc, dbName, errs)         // ps
-	s.recordMongodbLocksDatabaseTimeacquiringmicrosSharedps(now, doc, dbName, errs)               // ps
-	s.recordMongodbLocksGlobalAcquirecountExclusiveps(now, doc, dbName, errs)                     // ps
-	s.recordMongodbLocksGlobalAcquirecountIntentExclusiveps(now, doc, dbName, errs)               // ps
-	s.recordMongodbLocksGlobalAcquirecountIntentSharedps(now, doc, dbName, errs)                  // ps
-	s.recordMongodbLocksGlobalAcquirecountSharedps(now, doc, dbName, errs)                        // ps
-	s.recordMongodbLocksGlobalAcquirewaitcountExclusiveps(now, doc, dbName, errs)                 // ps
-	s.recordMongodbLocksGlobalAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)           // ps
-	s.recordMongodbLocksGlobalAcquirewaitcountIntentSharedps(now, doc, dbName, errs)              // ps
-	s.recordMongodbLocksGlobalAcquirewaitcountSharedps(now, doc, dbName, errs)                    // ps
-	s.recordMongodbLocksGlobalTimeacquiringmicrosExclusiveps(now, doc, dbName, errs)              // ps
-	s.recordMongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs)        // ps
-	s.recordMongodbLocksGlobalTimeacquiringmicrosIntentSharedps(now, doc, dbName, errs)           // ps
-	s.recordMongodbLocksGlobalTimeacquiringmicrosSharedps(now, doc, dbName, errs)                 // ps
-	s.recordMongodbLocksMetadataAcquirecountExclusiveps(now, doc, dbName, errs)                   // ps
-	s.recordMongodbLocksMetadataAcquirecountSharedps(now, doc, dbName, errs)                      // ps
-	s.recordMongodbLocksMmapv1journalAcquirecountIntentExclusiveps(now, doc, dbName, errs)        // ps
-	s.recordMongodbLocksMmapv1journalAcquirecountIntentSharedps(now, doc, dbName, errs)           // ps
-	s.recordMongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)    // ps
-	s.recordMongodbLocksMmapv1journalAcquirewaitcountIntentSharedps(now, doc, dbName, errs)       // ps
-	s.recordMongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs) // ps
-	s.recordMongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps(now, doc, dbName, errs)    // ps
-	s.recordMongodbLocksOplogAcquirecountIntentExclusiveps(now, doc, dbName, errs)                // ps
-	s.recordMongodbLocksOplogAcquirecountSharedps(now, doc, dbName, errs)                         // ps
-	s.recordMongodbLocksOplogAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)            // ps
-	s.recordMongodbLocksOplogAcquirewaitcountSharedps(now, doc, dbName, errs)                     // ps
-	s.recordMongodbLocksOplogTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs)         // ps
-	s.recordMongodbLocksOplogTimeacquiringmicrosSharedps(now, doc, dbName, errs)                  // ps
+	s.recordMongodbLocksCollectionAcquirecountExclusiveps(now, doc, dbName, errs)            // ps
+	s.recordMongodbLocksCollectionAcquirecountIntentExclusiveps(now, doc, dbName, errs)      // ps
+	s.recordMongodbLocksCollectionAcquirecountIntentSharedps(now, doc, dbName, errs)         // ps
+	s.recordMongodbLocksCollectionAcquirecountSharedps(now, doc, dbName, errs)               // ps
+	s.recordMongodbLocksCollectionAcquirewaitcountExclusiveps(now, doc, dbName, errs)        // ps
+	s.recordMongodbLocksCollectionAcquirewaitcountSharedps(now, doc, dbName, errs)           // ps
+	s.recordMongodbLocksCollectionTimeacquiringmicrosExclusiveps(now, doc, dbName, errs)     // ps
+	s.recordMongodbLocksCollectionTimeacquiringmicrosSharedps(now, doc, dbName, errs)        // ps
+	s.recordMongodbLocksDatabaseAcquirecountExclusiveps(now, doc, dbName, errs)              // ps
+	s.recordMongodbLocksDatabaseAcquirecountIntentExclusiveps(now, doc, dbName, errs)        // ps
+	s.recordMongodbLocksDatabaseAcquirecountIntentSharedps(now, doc, dbName, errs)           // ps
+	s.recordMongodbLocksDatabaseAcquirecountSharedps(now, doc, dbName, errs)                 // ps
+	s.recordMongodbLocksDatabaseAcquirewaitcountExclusiveps(now, doc, dbName, errs)          // ps
+	s.recordMongodbLocksDatabaseAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)    // ps
+	s.recordMongodbLocksDatabaseAcquirewaitcountIntentSharedps(now, doc, dbName, errs)       // ps
+	s.recordMongodbLocksDatabaseAcquirewaitcountSharedps(now, doc, dbName, errs)             // ps
+	s.recordMongodbLocksDatabaseTimeacquiringmicrosExclusiveps(now, doc, dbName, errs)       // ps
+	s.recordMongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs) // ps
+	s.recordMongodbLocksDatabaseTimeacquiringmicrosIntentSharedps(now, doc, dbName, errs)    // ps
+	s.recordMongodbLocksDatabaseTimeacquiringmicrosSharedps(now, doc, dbName, errs)          // ps
+	s.recordMongodbLocksGlobalAcquirecountExclusiveps(now, doc, dbName, errs)                // ps
+	s.recordMongodbLocksGlobalAcquirecountIntentExclusiveps(now, doc, dbName, errs)          // ps
+	s.recordMongodbLocksGlobalAcquirecountIntentSharedps(now, doc, dbName, errs)             // ps
+	s.recordMongodbLocksGlobalAcquirecountSharedps(now, doc, dbName, errs)                   // ps
+	s.recordMongodbLocksGlobalAcquirewaitcountExclusiveps(now, doc, dbName, errs)            // ps
+	s.recordMongodbLocksGlobalAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)      // ps
+	s.recordMongodbLocksGlobalAcquirewaitcountIntentSharedps(now, doc, dbName, errs)         // ps
+	s.recordMongodbLocksGlobalAcquirewaitcountSharedps(now, doc, dbName, errs)               // ps
+	s.recordMongodbLocksGlobalTimeacquiringmicrosExclusiveps(now, doc, dbName, errs)         // ps
+	s.recordMongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs)   // ps
+	s.recordMongodbLocksGlobalTimeacquiringmicrosIntentSharedps(now, doc, dbName, errs)      // ps
+	s.recordMongodbLocksGlobalTimeacquiringmicrosSharedps(now, doc, dbName, errs)            // ps
+	s.recordMongodbLocksMetadataAcquirecountExclusiveps(now, doc, dbName, errs)              // ps
+	s.recordMongodbLocksMetadataAcquirecountSharedps(now, doc, dbName, errs)                 // ps
+
+	// since it is part of the obsolete MMAPv1
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
+		s.recordMongodbLocksMmapv1journalAcquirecountIntentExclusiveps(now, doc, dbName, errs)        // ps
+		s.recordMongodbLocksMmapv1journalAcquirecountIntentSharedps(now, doc, dbName, errs)           // ps
+		s.recordMongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)    // ps
+		s.recordMongodbLocksMmapv1journalAcquirewaitcountIntentSharedps(now, doc, dbName, errs)       // ps
+		s.recordMongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs) // ps
+		s.recordMongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps(now, doc, dbName, errs)    // ps
+	}
+	s.recordMongodbLocksOplogAcquirecountIntentExclusiveps(now, doc, dbName, errs)        // ps
+	s.recordMongodbLocksOplogAcquirecountSharedps(now, doc, dbName, errs)                 // ps
+	s.recordMongodbLocksOplogAcquirewaitcountIntentExclusiveps(now, doc, dbName, errs)    // ps
+	s.recordMongodbLocksOplogAcquirewaitcountSharedps(now, doc, dbName, errs)             // ps
+	s.recordMongodbLocksOplogTimeacquiringmicrosIntentExclusiveps(now, doc, dbName, errs) // ps
+	s.recordMongodbLocksOplogTimeacquiringmicrosSharedps(now, doc, dbName, errs)          // ps
 
 	// mem
 	s.recordMongodbMemBits(now, doc, dbName, errs)
-	s.recordMongodbMemMapped(now, doc, dbName, errs)
-	s.recordMongodbMemMappedwithjournal(now, doc, dbName, errs)
+	// since it is part of the obsolete MMAPv1
+	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
+		s.recordMongodbMemMapped(now, doc, dbName, errs)
+		s.recordMongodbMemMappedwithjournal(now, doc, dbName, errs)
+	}
 	s.recordMongodbMemResident(now, doc, dbName, errs)
 	s.recordMongodbMemVirtual(now, doc, dbName, errs)
 
