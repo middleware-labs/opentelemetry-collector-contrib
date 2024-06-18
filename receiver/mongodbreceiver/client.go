@@ -24,6 +24,7 @@ type client interface {
 	Disconnect(context.Context) error
 	GetVersion(context.Context) (*version.Version, error)
 	GetReplicationInfo(context.Context) (bson.M, error)
+	GetFsyncLockInfo(context.Context) (bson.M, error)
 	ReplSetStatus(context.Context) (bson.M, error)
 	ReplSetConfig(context.Context) (bson.M, error)
 	ServerStatus(ctx context.Context, DBName string) (bson.M, error)
@@ -373,4 +374,26 @@ func (c *mongodbClient) ReplSetConfig(ctx context.Context) (bson.M, error) {
 		return nil, fmt.Errorf("error unmarshaling to bson.M: %w", err)
 	}
 	return bsonMap, nil
+}
+
+// GetFsyncLockInfo returns fsynclocked status using admin database
+func (c *mongodbClient) GetFsyncLockInfo(ctx context.Context) (bson.M, error) {
+	localdb := c.Database("admin")
+
+	// Get admin stats
+	adminStats := bson.M{}
+	err := localdb.RunCommand(ctx, bson.D{{"currentOp", 1}}).Decode(&adminStats)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get fsynclock info stats: %w", err)
+	}
+
+	fsynclockinfo := bson.M{}
+	fsyncLock, ok := adminStats["fsyncLock"]
+	if ok && fsyncLock.(bool) {
+		fsynclockinfo["fsyncLocked"] = 1
+	} else {
+		fsynclockinfo["fsyncLocked"] = 0
+	}
+
+	return fsynclockinfo, nil
 }
