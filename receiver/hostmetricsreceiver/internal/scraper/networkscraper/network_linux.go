@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/v4/common"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
-	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
 var allTCPStates = []string{

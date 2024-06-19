@@ -26,9 +26,8 @@ const (
 var (
 	_ internal.ResourceContext             = (*TransformContext)(nil)
 	_ internal.InstrumentationScopeContext = (*TransformContext)(nil)
-	_ zapcore.ObjectMarshaler              = (*TransformContext)(nil)
+	 _ zapcore.ObjectMarshaler = (*TransformContext)(nil)
 )
-
 const (
 	contextName = "DataPoint"
 )

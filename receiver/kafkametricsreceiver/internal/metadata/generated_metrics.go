@@ -877,6 +877,24 @@ type MetricsBuilder struct {
 // MetricBuilderOption applies changes to default metrics builder.
 type MetricBuilderOption interface {
 	apply(*MetricsBuilder)
+	config                             MetricsBuilderConfig // config of the metrics builder.
+	startTime                          pcommon.Timestamp    // start time that will be applied to all recorded data points.
+	metricsCapacity                    int                  // maximum observed number of metrics per resource.
+	metricsBuffer                      pmetric.Metrics      // accumulates metrics data before emitting.
+	buildInfo                          component.BuildInfo  // contains version information.
+	resourceAttributeIncludeFilter     map[string]filter.Filter
+	resourceAttributeExcludeFilter     map[string]filter.Filter
+	metricKafkaBrokers                 metricKafkaBrokers
+	metricKafkaConsumerGroupLag        metricKafkaConsumerGroupLag
+	metricKafkaConsumerGroupLagSum     metricKafkaConsumerGroupLagSum
+	metricKafkaConsumerGroupMembers    metricKafkaConsumerGroupMembers
+	metricKafkaConsumerGroupOffset     metricKafkaConsumerGroupOffset
+	metricKafkaConsumerGroupOffsetSum  metricKafkaConsumerGroupOffsetSum
+	metricKafkaPartitionCurrentOffset  metricKafkaPartitionCurrentOffset
+	metricKafkaPartitionOldestOffset   metricKafkaPartitionOldestOffset
+	metricKafkaPartitionReplicas       metricKafkaPartitionReplicas
+	metricKafkaPartitionReplicasInSync metricKafkaPartitionReplicasInSync
+	metricKafkaTopicPartitions         metricKafkaTopicPartitions
 }
 
 type metricBuilderOptionFunc func(mb *MetricsBuilder)
@@ -894,34 +912,29 @@ func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
 
 func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
-		config:                              mbc,
-		startTime:                           pcommon.NewTimestampFromTime(time.Now()),
-		metricsBuffer:                       pmetric.NewMetrics(),
-		buildInfo:                           settings.BuildInfo,
-		metricKafkaBrokerLogRetentionPeriod: newMetricKafkaBrokerLogRetentionPeriod(mbc.Metrics.KafkaBrokerLogRetentionPeriod),
-		metricKafkaBrokers:                  newMetricKafkaBrokers(mbc.Metrics.KafkaBrokers),
-		metricKafkaConsumerGroupLag:         newMetricKafkaConsumerGroupLag(mbc.Metrics.KafkaConsumerGroupLag),
-		metricKafkaConsumerGroupLagSum:      newMetricKafkaConsumerGroupLagSum(mbc.Metrics.KafkaConsumerGroupLagSum),
-		metricKafkaConsumerGroupMembers:     newMetricKafkaConsumerGroupMembers(mbc.Metrics.KafkaConsumerGroupMembers),
-		metricKafkaConsumerGroupOffset:      newMetricKafkaConsumerGroupOffset(mbc.Metrics.KafkaConsumerGroupOffset),
-		metricKafkaConsumerGroupOffsetSum:   newMetricKafkaConsumerGroupOffsetSum(mbc.Metrics.KafkaConsumerGroupOffsetSum),
-		metricKafkaPartitionCurrentOffset:   newMetricKafkaPartitionCurrentOffset(mbc.Metrics.KafkaPartitionCurrentOffset),
-		metricKafkaPartitionOldestOffset:    newMetricKafkaPartitionOldestOffset(mbc.Metrics.KafkaPartitionOldestOffset),
-		metricKafkaPartitionReplicas:        newMetricKafkaPartitionReplicas(mbc.Metrics.KafkaPartitionReplicas),
-		metricKafkaPartitionReplicasInSync:  newMetricKafkaPartitionReplicasInSync(mbc.Metrics.KafkaPartitionReplicasInSync),
-		metricKafkaTopicLogRetentionPeriod:  newMetricKafkaTopicLogRetentionPeriod(mbc.Metrics.KafkaTopicLogRetentionPeriod),
-		metricKafkaTopicLogRetentionSize:    newMetricKafkaTopicLogRetentionSize(mbc.Metrics.KafkaTopicLogRetentionSize),
-		metricKafkaTopicMinInsyncReplicas:   newMetricKafkaTopicMinInsyncReplicas(mbc.Metrics.KafkaTopicMinInsyncReplicas),
-		metricKafkaTopicPartitions:          newMetricKafkaTopicPartitions(mbc.Metrics.KafkaTopicPartitions),
-		metricKafkaTopicReplicationFactor:   newMetricKafkaTopicReplicationFactor(mbc.Metrics.KafkaTopicReplicationFactor),
-		resourceAttributeIncludeFilter:      make(map[string]filter.Filter),
-		resourceAttributeExcludeFilter:      make(map[string]filter.Filter),
+		config:                             mbc,
+		startTime:                          pcommon.NewTimestampFromTime(time.Now()),
+		metricsBuffer:                      pmetric.NewMetrics(),
+		buildInfo:                          settings.BuildInfo,
+		metricKafkaBrokers:                 newMetricKafkaBrokers(mbc.Metrics.KafkaBrokers),
+		metricKafkaConsumerGroupLag:        newMetricKafkaConsumerGroupLag(mbc.Metrics.KafkaConsumerGroupLag),
+		metricKafkaConsumerGroupLagSum:     newMetricKafkaConsumerGroupLagSum(mbc.Metrics.KafkaConsumerGroupLagSum),
+		metricKafkaConsumerGroupMembers:    newMetricKafkaConsumerGroupMembers(mbc.Metrics.KafkaConsumerGroupMembers),
+		metricKafkaConsumerGroupOffset:     newMetricKafkaConsumerGroupOffset(mbc.Metrics.KafkaConsumerGroupOffset),
+		metricKafkaConsumerGroupOffsetSum:  newMetricKafkaConsumerGroupOffsetSum(mbc.Metrics.KafkaConsumerGroupOffsetSum),
+		metricKafkaPartitionCurrentOffset:  newMetricKafkaPartitionCurrentOffset(mbc.Metrics.KafkaPartitionCurrentOffset),
+		metricKafkaPartitionOldestOffset:   newMetricKafkaPartitionOldestOffset(mbc.Metrics.KafkaPartitionOldestOffset),
+		metricKafkaPartitionReplicas:       newMetricKafkaPartitionReplicas(mbc.Metrics.KafkaPartitionReplicas),
+		metricKafkaPartitionReplicasInSync: newMetricKafkaPartitionReplicasInSync(mbc.Metrics.KafkaPartitionReplicasInSync),
+		metricKafkaTopicPartitions:         newMetricKafkaTopicPartitions(mbc.Metrics.KafkaTopicPartitions),
+		resourceAttributeIncludeFilter:     make(map[string]filter.Filter),
+		resourceAttributeExcludeFilter:     make(map[string]filter.Filter),
 	}
-	if mbc.ResourceAttributes.KafkaClusterAlias.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["kafka.cluster.alias"] = filter.CreateFilter(mbc.ResourceAttributes.KafkaClusterAlias.MetricsInclude)
+	if mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["runtime.metrics.kafka"] = filter.CreateFilter(mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsInclude)
 	}
-	if mbc.ResourceAttributes.KafkaClusterAlias.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["kafka.cluster.alias"] = filter.CreateFilter(mbc.ResourceAttributes.KafkaClusterAlias.MetricsExclude)
+	if mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["runtime.metrics.kafka"] = filter.CreateFilter(mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsExclude)
 	}
 
 	for _, op := range options {
@@ -1011,6 +1024,16 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 
 	for _, op := range options {
 		op.apply(rm)
+	}
+	for attr, filter := range mb.resourceAttributeIncludeFilter {
+		if val, ok := rm.Resource().Attributes().Get(attr); ok && !filter.Matches(val.AsString()) {
+			return
+		}
+	}
+	for attr, filter := range mb.resourceAttributeExcludeFilter {
+		if val, ok := rm.Resource().Attributes().Get(attr); ok && filter.Matches(val.AsString()) {
+			return
+		}
 	}
 	for attr, filter := range mb.resourceAttributeIncludeFilter {
 		if val, ok := rm.Resource().Attributes().Get(attr); ok && !filter.Matches(val.AsString()) {

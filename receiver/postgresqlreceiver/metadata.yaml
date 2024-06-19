@@ -377,3 +377,6 @@ tests:
     unit: '{connection}'
     gauge:
       value_type: int
+
+tests:
+  config:
