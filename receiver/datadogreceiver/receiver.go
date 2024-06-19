@@ -15,6 +15,10 @@ import (
 	"strings"
 
 	"github.com/DataDog/agent-payload/v5/gogen"
+	"io"
+	"net/http"
+	"strings"
+
 	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
 	"github.com/hashicorp/golang-lru/v2/simplelru"
 	"github.com/tinylib/msgp/msgp"
@@ -24,9 +28,6 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/receiver"
-	"io"
-	"net/http"
-	"strings"
 	"go.opentelemetry.io/collector/receiver/receiverhelper"
 	"go.uber.org/zap"
 

@@ -520,11 +520,6 @@ resource_attributes:
     type: string
     enabled: true
 
-  k8s.pod.start_time:
-    description: "The start time of the Pod."
-    enabled: true
-    type: string
-
   k8s.deployment.uid:
     description: The UID of the Deployment.
     type: string

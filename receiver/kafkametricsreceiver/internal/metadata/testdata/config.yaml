@@ -83,9 +83,17 @@ filter_set_include:
       enabled: true
       metrics_include:
         - regexp: ".*"
+    runtime.metrics.kafka:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
 filter_set_exclude:
   resource_attributes:
     kafka.cluster.alias:
       enabled: true
       metrics_exclude:
         - strict: "kafka.cluster.alias-val"
+    runtime.metrics.kafka:
+      enabled: true
+      metrics_exclude:
+        - strict: "runtime.metrics.kafka-val"

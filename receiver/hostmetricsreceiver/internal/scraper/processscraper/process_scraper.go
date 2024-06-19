@@ -140,9 +140,9 @@ func (s *processScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 			errs.AddPartial(cpuMetricsLen, fmt.Errorf("error reading cpu percent for process %q (pid %v): %w", md.executable.name, md.pid, err))
 		}
 
-        if err = s.scrapeAndAppendMemoryPercentMetric(ctx, now, md.handle); err != nil {
-            errs.AddPartial(memoryMetricsLen, fmt.Errorf("error reading memory percent for process %q (pid %v): %w", md.executable.name, md.pid, err))
-        }
+		if err = s.scrapeAndAppendMemoryPercentMetric(ctx, now, md.handle); err != nil {
+			errs.AddPartial(memoryMetricsLen, fmt.Errorf("error reading memory percent for process %q (pid %v): %w", md.executable.name, md.pid, err))
+		}
 
 		if err = s.scrapeAndAppendMemoryUsageMetrics(ctx, now, md.handle); err != nil {
 			errs.AddPartial(memoryMetricsLen, fmt.Errorf("error reading memory info for process %q (pid %v): %w", md.executable.name, md.pid, err))
@@ -274,9 +274,9 @@ func (s *processScraper) getProcessMetadata(ctx context.Context) ([]*processMeta
 		if s.config.ResourceAttributes.ProcessParentPid.Enabled {
 			parentProcessID, err = parentPid(ctx, handle, pid)
 		if err != nil {
-            if !s.config.AvoidSelectedErrors {
-                errs.AddPartial(0, fmt.Errorf("error reading parent pid for process %q (pid %v): %w", executable.name, pid, err))
-		    }
+			if !s.config.AvoidSelectedErrors {
+				errs.AddPartial(0, fmt.Errorf("error reading parent pid for process %q (pid %v): %w", executable.name, pid, err))
+			}
 		}
 
 		md := &processMetadata{
