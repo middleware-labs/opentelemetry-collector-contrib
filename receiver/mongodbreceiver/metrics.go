@@ -616,7 +616,10 @@ func digForCollectionPathNames(document bson.M) ([]string, error) {
 }
 
 func digForIndexNames(document bson.M) ([]string, error) {
-	docIndexes, ok := document["storageStats"].(bson.M)["indexSizes"].(bson.M)
+	docIndexes, ok := document["storageStats"].(bson.M)
+	if ok {
+		docIndexes, ok = docIndexes["indexSizes"].(bson.M)
+	}
 	if !ok {
 		return nil, errKeyNotFound
 	}
@@ -1451,7 +1454,7 @@ func (s *mongodbScraper) recordMongodbIndexcountersMissesps(now pcommon.Timestam
 }
 
 func (s *mongodbScraper) recordMongodbIndexcountersMissratio(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-	metricPath := []string{"indexCounters", "missratio"}
+	metricPath := []string{"indexCounters", "missRatio"}
 	metricName := "mongodb.indexcounters.missratio"
 	val, err := collectMetric(doc, metricPath)
 	if err != nil {
@@ -2001,7 +2004,7 @@ func (s *mongodbScraper) recordMongodbMemMapped(now pcommon.Timestamp, doc bson.
 }
 
 func (s *mongodbScraper) recordMongodbMemMappedwithjournal(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-	metricPath := []string{"mem", "mappedwithjournal"}
+	metricPath := []string{"mem", "mappedWithJournal"}
 	metricName := "mongodb.mem.mappedwithjournal"
 	val, err := collectMetric(doc, metricPath)
 	if err != nil {
@@ -2518,7 +2521,7 @@ func (s *mongodbScraper) recordMongodbMetricsReplPreloadDocsNumps(now pcommon.Ti
 }
 
 func (s *mongodbScraper) recordMongodbMetricsReplPreloadDocsTotalmillisps(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
-	metricPath := []string{"metrics", "repl", "preload", "docs", "totalmillis"}
+	metricPath := []string{"metrics", "repl", "preload", "docs", "totalMillis"}
 	metricName := "mongodb.metrics.repl.preload.docs.totalmillisps"
 	val, err := collectMetric(doc, metricPath)
 	if err != nil {
@@ -2921,7 +2924,7 @@ func (s *mongodbScraper) recordMongodbStatsFilesize(now pcommon.Timestamp, doc b
 	// Mongo version 4.4+ no longer returns filesize since it is part of the obsolete MMAPv1
 	mongo44, _ := version.NewVersion("4.4")
 	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
-		metricPath := []string{"stats", "filesize"}
+		metricPath := []string{"fileSize"}
 		metricName := "mongodb.stats.filesize"
 		val, err := collectMetric(doc, metricPath)
 		if err != nil {
@@ -2959,7 +2962,7 @@ func (s *mongodbScraper) recordMongodbStatsNumextents(now pcommon.Timestamp, doc
 	// https://www.mongodb.com/docs/manual/release-notes/4.4-compatibility/#mmapv1-cleanup
 	mongo44, _ := version.NewVersion("4.4")
 	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
-		metricPath := []string{"numextents"}
+		metricPath := []string{"numExtents"}
 		metricName := "mongodb.stats.numextents"
 		val, err := collectMetric(doc, metricPath)
 		if err != nil {
