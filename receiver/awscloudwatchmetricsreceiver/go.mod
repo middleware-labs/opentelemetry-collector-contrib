@@ -3,10 +3,11 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awsclo
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.21.0
-	github.com/aws/aws-sdk-go-v2/config v1.18.37
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.35
-	github.com/aws/aws-sdk-go-v2/service/sts v1.21.5
+	github.com/aws/aws-sdk-go-v2 v1.30.0
+	github.com/aws/aws-sdk-go-v2/config v1.27.21
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.21
+	github.com/aws/aws-sdk-go-v2/service/rds v1.80.1
+	github.com/aws/aws-sdk-go-v2/service/sts v1.29.1
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector/component v0.84.0
 	go.opentelemetry.io/collector/consumer v0.84.0
@@ -16,14 +17,15 @@ require (
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.11 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.41 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.35 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.42 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.35 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.13.5 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.15.5 // indirect
-	github.com/aws/smithy-go v1.14.2 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.8 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.21.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.25.1 // indirect
+	github.com/aws/smithy-go v1.20.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	go.opentelemetry.io/collector/config/configtelemetry v0.89.0 // indirect
@@ -31,7 +33,7 @@ require (
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2/service/cloudwatch v1.27.7
+	github.com/aws/aws-sdk-go-v2/service/cloudwatch v1.39.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

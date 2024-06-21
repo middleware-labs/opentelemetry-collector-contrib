@@ -19,6 +19,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatch"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatch/types"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscloudwatchmetricsreceiver/internal/extension"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -47,6 +48,7 @@ type metricReceiver struct {
 	nextStartTime time.Time
 	logger        *zap.Logger
 	client        client
+	extensions    []extension.Extension
 	autoDiscover  *AutoDiscoverConfig
 	requests      []request
 	consumer      consumer.Metrics
@@ -156,6 +158,10 @@ func newMetricReceiver(cfg *Config, logger *zap.Logger, consumer consumer.Metric
 		consumer:      consumer,
 		requests:      requests,
 		doneChan:      make(chan bool),
+		// make it configurable in the future
+		extensions: []extension.Extension{
+			&extension.RDSExtension{},
+		},
 	}
 }
 
@@ -181,8 +187,27 @@ func (m *metricReceiver) startPolling(ctx context.Context) {
 		return
 	}
 
-	t := time.NewTicker(m.pollInterval)
+	pollFunc := func() {
+		if m.autoDiscover != nil {
+			requests, err := m.autoDiscoverRequests(ctx, m.autoDiscover)
+			if err != nil {
+				m.logger.Debug("couldn't discover metrics", zap.Error(err))
+				return
+			}
+			m.requests = requests
+		}
+		if err := m.poll(ctx); err != nil {
+			m.logger.Error("there was an error during polling", zap.Error(err))
+		}
+	}
 
+	// Add a random sleep to avoid all instances polling at the same time
+	sleepDuration := time.Duration(rand.Intn(int(m.pollInterval.Seconds()))) * time.Second
+	time.Sleep(sleepDuration)
+
+	pollFunc()
+
+	t := time.NewTicker(m.pollInterval)
 	for {
 		select {
 		case <-ctx.Done():
@@ -190,17 +215,7 @@ func (m *metricReceiver) startPolling(ctx context.Context) {
 		case <-m.doneChan:
 			return
 		case <-t.C:
-			if m.autoDiscover != nil {
-				requests, err := m.autoDiscoverRequests(ctx, m.autoDiscover)
-				if err != nil {
-					m.logger.Debug("couldn't discover metrics", zap.Error(err))
-					continue
-				}
-				m.requests = requests
-			}
-			if err := m.poll(ctx); err != nil {
-				m.logger.Error("there was an error during polling", zap.Error(err))
-			}
+			pollFunc()
 		}
 	}
 }
@@ -251,10 +266,8 @@ func (m *metricReceiver) poll(ctx context.Context) error {
 
 func (m *metricReceiver) pollForMetrics(ctx context.Context, startTime, endTime time.Time) error {
 	select {
-	case _, ok := <-m.doneChan:
-		if !ok {
-			return nil
-		}
+	case <-ctx.Done():
+		return nil
 	default:
 		filters := m.request(startTime, endTime)
 		for _, filter := range filters {
@@ -267,7 +280,7 @@ func (m *metricReceiver) pollForMetrics(ctx context.Context, startTime, endTime 
 					continue
 				}
 				observedTime := pcommon.NewTimestampFromTime(time.Now())
-				metrics := m.parseMetrics(observedTime, m.requests, output)
+				metrics := m.parseMetrics(observedTime, m.requests, output.MetricDataResults)
 				if metrics.MetricCount() > 0 {
 					if err := m.consumer.ConsumeMetrics(ctx, metrics); err != nil {
 						m.logger.Error("unable to consume metrics", zap.Error(err))
@@ -276,6 +289,52 @@ func (m *metricReceiver) pollForMetrics(ctx context.Context, startTime, endTime 
 				}
 			}
 		}
+
+		outCh := make(chan extension.MetricDataResult, 2)
+		go func() {
+			for {
+				select {
+				case <-ctx.Done():
+					return
+
+				case out, ok := <-outCh:
+					if !ok {
+						return
+					}
+					if len(out.Metric) == 0 {
+						continue
+					}
+					observedTime := pcommon.NewTimestampFromTime(time.Now())
+					requests := make([]request, len(out.Metric))
+					for i, metric := range out.Metric {
+						requests[i] = request{
+							Namespace:  aws.ToString(metric.Namespace),
+							MetricName: aws.ToString(metric.MetricName),
+							Dimensions: metric.Dimensions,
+						}
+					}
+
+					metrics := m.parseMetrics(observedTime, requests, out.MetricDataResult)
+					if metrics.MetricCount() > 0 {
+						if err := m.consumer.ConsumeMetrics(ctx, metrics); err != nil {
+							m.logger.Error("unable to consume metrics", zap.Error(err))
+						}
+					}
+				}
+			}
+		}()
+
+		var wg sync.WaitGroup
+		for _, extension := range m.extensions {
+			wg.Add(1)
+			extension := extension
+			go func() {
+				defer wg.Done()
+				extension.GetMetricData(ctx, outCh)
+			}()
+		}
+		wg.Wait()
+		close(outCh)
 	}
 	return nil
 }
@@ -298,7 +357,8 @@ func convertValueAndUnit(value float64, standardUnit types.StandardUnit, otelUni
 	return value, otelUnit
 }
 
-func (m *metricReceiver) parseMetrics(nowts pcommon.Timestamp, nr []request, resp *cloudwatch.GetMetricDataOutput) pmetric.Metrics {
+func (m *metricReceiver) parseMetrics(nowts pcommon.Timestamp, nr []request,
+	metricDataResults []types.MetricDataResult) pmetric.Metrics {
 	pdm := pmetric.NewMetrics()
 	rms := pdm.ResourceMetrics()
 	rm := rms.AppendEmpty()
@@ -320,7 +380,7 @@ func (m *metricReceiver) parseMetrics(nowts pcommon.Timestamp, nr []request, res
 	ms := ilm.Metrics()
 	ms.EnsureCapacity(len(m.requests))
 
-	for idx, results := range resp.MetricDataResults {
+	for _, results := range metricDataResults {
 
 		reqIndex, err := strconv.Atoi(*results.Label)
 		if err != nil {
@@ -356,8 +416,8 @@ func (m *metricReceiver) parseMetrics(nowts pcommon.Timestamp, nr []request, res
 			dp.SetStartTimestamp(pcommon.NewTimestampFromTime(ts))
 			dp.SetDoubleValue(value)
 
-			for _, dim := range nr[idx].Dimensions {
-				dp.Attributes().PutStr(*dim.Name, *dim.Value)
+			for _, dim := range req.Dimensions {
+				dp.Attributes().PutStr(aws.ToString(dim.Name), aws.ToString(dim.Value))
 			}
 
 			dp.Attributes().PutStr("Namespace", req.Namespace)
@@ -452,9 +512,6 @@ func (m *metricReceiver) autoDiscoverRequests(ctx context.Context, auto *AutoDis
 }
 
 func (m *metricReceiver) configureAWSClient(ctx context.Context) error {
-	if m.client != nil {
-		return nil
-	}
 
 	var (
 		cfg aws.Config
@@ -469,6 +526,9 @@ func (m *metricReceiver) configureAWSClient(ctx context.Context) error {
 	case "role_delegation":
 		cfg, err = m.configureRoleDelegation(ctx)
 	case "access_keys":
+		if m.client != nil {
+			return nil
+		}
 		cfg, err = m.configureAccessKeys(ctx)
 	default:
 		return errors.New("incomplete AWS configuration: must define polling_approach as profiling | role_delegation | access_keys")
@@ -479,6 +539,10 @@ func (m *metricReceiver) configureAWSClient(ctx context.Context) error {
 	}
 
 	m.client = cloudwatch.NewFromConfig(cfg)
+	for _, extension := range m.extensions {
+		extension.SetAWSConfig(cfg)
+	}
+
 	return nil
 }
 

@@ -3,8 +3,9 @@ package awscloudwatchmetricsreceiver
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/service/cloudwatch/types"
 	"log"
+
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatch/types"
 )
 
 func PrintJson(data interface{}) {
@@ -2937,6 +2938,8 @@ var MetricsUnitMap = map[string]map[string]types.StandardUnit{
 		"QueryRequestsNoTLS":                        types.StandardUnitCount,
 		"QueryRequestsTLS":                          types.StandardUnitCount,
 		"QueryResponseLatency":                      types.StandardUnitMicroseconds,
+		"AllocatedStorage":                          StandardUnitGibibytes,
+		"MaxAllocatedStorage":                       StandardUnitGibibytes,
 	},
 	"AWS/Redshift": {
 		"CommitQueueLength":                       types.StandardUnitCount,
