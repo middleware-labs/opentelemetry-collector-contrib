@@ -175,8 +175,8 @@ func (s *mongodbScraper) collectAdminDatabase(ctx context.Context, now pcommon.T
 	s.recordAdminStats(now, serverStatus, errs)
 
 	rb := s.mb.NewResourceBuilder()
-	rb.SetDatabase("N/A")
-	rb.SetMongodbDatabaseName("N/A")
+	rb.SetDatabase("admin")
+	rb.SetMongodbDatabaseName("admin")
 
 	s.mb.EmitForResource(
 		metadata.WithResource(rb.Emit()),
@@ -192,8 +192,8 @@ func (s *mongodbScraper) collectTopStats(ctx context.Context, now pcommon.Timest
 	s.recordOperationTime(now, topStats, errs)
 	s.recordTopStats(now, topStats, errs)
 	rb := s.mb.NewResourceBuilder()
-	rb.SetDatabase("N/A")
-	rb.SetMongodbDatabaseName("N/A")
+	rb.SetDatabase("admin")
+	rb.SetMongodbDatabaseName("admin")
 
 	s.mb.EmitForResource(
 		metadata.WithResource(rb.Emit()),
@@ -212,8 +212,8 @@ func (s *mongodbScraper) collectIndexStats(ctx context.Context, now pcommon.Time
 	s.recordIndexStats(now, indexStats, databaseName, collectionName, errs)
 
 	rb := s.mb.NewResourceBuilder()
-	rb.SetDatabase("N/A")
-	rb.SetMongodbDatabaseName("N/A")
+	rb.SetDatabase(databaseName)
+	rb.SetMongodbDatabaseName(databaseName)
 
 	s.mb.EmitForResource(
 		metadata.WithResource(rb.Emit()),
@@ -310,20 +310,22 @@ func (s *mongodbScraper) collectReplSetStatus(ctx context.Context, now pcommon.T
 		errs.AddPartial(1, fmt.Errorf("failed to fetch repl set status metrics: %w", err))
 		return
 	}
-	replset := status["set"].(string)
+	replset, ok := status["set"].(string)
+	if ok {
 
-	for _, mem := range status["members"].(bson.A) {
-		member := mem.(bson.M)
-		member_name := member["name"].(string)
-		member_id := fmt.Sprint(member["_id"])
-		member_state := member["stateStr"].(string)
-		if member["state"].(int32) == 1 {
-			s.recordMongodbReplsetOptimeLag(now, member, database, replset, member_name, member_id, errs)
-		} else if member["state"].(int32) == 2 {
-			s.recordMongodbReplsetReplicationlag(now, member, database, replset, member_name, member_id, errs)
+		for _, mem := range status["members"].(bson.A) {
+			member := mem.(bson.M)
+			member_name := member["name"].(string)
+			member_id := fmt.Sprint(member["_id"])
+			member_state := member["stateStr"].(string)
+			if member["state"].(int32) == 1 {
+				s.recordMongodbReplsetOptimeLag(now, member, database, replset, member_name, member_id, errs)
+			} else if member["state"].(int32) == 2 {
+				s.recordMongodbReplsetReplicationlag(now, member, database, replset, member_name, member_id, errs)
+			}
+			s.recordMongodbReplsetHealth(now, member, database, replset, member_name, member_id, member_state, errs)
+			s.recordMongodbReplsetState(now, member, database, replset, member_name, member_id, member_state, errs)
 		}
-		s.recordMongodbReplsetHealth(now, member, database, replset, member_name, member_id, member_state, errs)
-		s.recordMongodbReplsetState(now, member, database, replset, member_name, member_id, member_state, errs)
 	}
 
 	rb := s.mb.NewResourceBuilder()
@@ -342,17 +344,20 @@ func (s *mongodbScraper) collectReplSetConfig(ctx context.Context, now pcommon.T
 		errs.AddPartial(1, fmt.Errorf("failed to fetch repl set get config metrics: %w", err))
 		return
 	}
-	config = config["config"].(bson.M)
-	replset := config["_id"].(string)
+	config, ok := config["config"].(bson.M)
+	if ok {
 
-	for _, mem := range config["members"].(bson.A) {
-		member := mem.(bson.M)
-		member_name := member["host"].(string)
-		member_id := fmt.Sprint(member["_id"])
+		replset := config["_id"].(string)
 
-		// replSetGetConfig
-		s.recordMongodbReplsetVotefraction(now, member, database, replset, member_name, member_id, errs)
-		s.recordMongodbReplsetVotes(now, member, database, replset, member_name, member_id, errs)
+		for _, mem := range config["members"].(bson.A) {
+			member := mem.(bson.M)
+			member_name := member["host"].(string)
+			member_id := fmt.Sprint(member["_id"])
+
+			// replSetGetConfig
+			s.recordMongodbReplsetVotefraction(now, member, database, replset, member_name, member_id, errs)
+			s.recordMongodbReplsetVotes(now, member, database, replset, member_name, member_id, errs)
+		}
 	}
 
 	rb := s.mb.NewResourceBuilder()
