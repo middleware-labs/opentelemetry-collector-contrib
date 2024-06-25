@@ -16,13 +16,17 @@ var (
 	defaultPollInterval  = time.Minute
 	defaultEventLimit    = 1000
 	defaultLogGroupLimit = 50
+
+	pollingApproachAccessKey      = "access_keys"
+	pollingApproachRoleDelegation = "role_delegation"
 )
 
 // Config is the overall config structure for the awscloudwatchreceiver
 type Config struct {
-	Region       string `mapstructure:"region"`
-	Profile      string `mapstructure:"profile"`
-	IMDSEndpoint string `mapstructure:"imds_endpoint"`
+	PollingApproach string `mapstructure:"polling_approach"`
+	Region          string `mapstructure:"region"`
+	Profile         string `mapstructure:"profile"`
+	IMDSEndpoint    string `mapstructure:"imds_endpoint"`
 
 	AwsAccountId string `mapstructure:"aws_account_id"`
 	AwsRoleArn   string `mapstructure:"aws_role_arn"`
@@ -72,6 +76,10 @@ var (
 func (c *Config) Validate() error {
 	if c.Region == "" {
 		return errNoRegion
+	}
+
+	if c.PollingApproach != pollingApproachAccessKey && c.PollingApproach != pollingApproachRoleDelegation {
+		return fmt.Errorf("invalid polling approach: %s", c.PollingApproach)
 	}
 
 	if c.IMDSEndpoint != "" {

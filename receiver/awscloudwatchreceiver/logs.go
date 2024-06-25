@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -131,11 +132,12 @@ func newLogsReceiver(cfg *Config, logger *zap.Logger, consumer consumer.Logs) *l
 		region:  cfg.Region,
 		profile: cfg.Profile,
 
-		awsAccountId: cfg.AwsAccountId,
-		awsRoleArn:   cfg.AwsRoleArn,
-		externalId:   cfg.ExternalId,
-		awsAccessKey: cfg.AwsAccessKey,
-		awsSecretKey: cfg.AwsSecretKey,
+		pollingApproach: cfg.PollingApproach,
+		awsAccountId:    cfg.AwsAccountId,
+		awsRoleArn:      cfg.AwsRoleArn,
+		externalId:      cfg.ExternalId,
+		awsAccessKey:    cfg.AwsAccessKey,
+		awsSecretKey:    cfg.AwsSecretKey,
 
 		consumer:            consumer,
 		maxEventsPerRequest: cfg.Logs.MaxEventsPerRequest,
@@ -167,7 +169,32 @@ func (l *logsReceiver) Shutdown(_ context.Context) error {
 func (l *logsReceiver) startPolling(ctx context.Context) {
 	defer l.wg.Done()
 
+	// Define the pollFunc here so we can call it immediately and then at intervals
+	pollFunc := func() {
+		if l.autodiscover != nil {
+			group, err := l.discoverGroups(ctx, l.autodiscover)
+			if err != nil {
+				l.logger.Error("unable to perform discovery of log groups", zap.Error(err))
+				return
+			}
+			l.groupRequests = group
+		}
+
+		err := l.poll(ctx)
+		if err != nil {
+			l.logger.Error("there was an error during the poll", zap.Error(err))
+		}
+	}
+
+	// Add a random sleep to avoid all instances polling at the same time
+	sleepDuration := time.Duration(rand.Intn(int(l.pollInterval.Seconds()))) * time.Second
+	time.Sleep(sleepDuration)
+
+	// Run the pollFunc immediately and then at intervals
+	pollFunc()
+
 	t := time.NewTicker(l.pollInterval)
+	defer t.Stop()
 	for {
 		select {
 		case <-ctx.Done():
@@ -175,19 +202,7 @@ func (l *logsReceiver) startPolling(ctx context.Context) {
 		case <-l.doneChan:
 			return
 		case <-t.C:
-			if l.autodiscover != nil {
-				group, err := l.discoverGroups(ctx, l.autodiscover)
-				if err != nil {
-					l.logger.Error("unable to perform discovery of log groups", zap.Error(err))
-					continue
-				}
-				l.groupRequests = group
-			}
-
-			err := l.poll(ctx)
-			if err != nil {
-				l.logger.Error("there was an error during the poll", zap.Error(err))
-			}
+			pollFunc()
 		}
 	}
 }
@@ -279,13 +294,20 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 			resourceAttributes := resourceLogs.Resource().Attributes()
 			resourceAttributes.PutStr(conventions.AttributeCloudProvider, conventions.AttributeCloudProviderAWS)
 			resourceAttributes.PutStr(conventions.AttributeCloudRegion, l.region)
-			resourceAttributes.PutStr("cloudwatch.log.group.name", logGroupName)
-			resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
+			resourceAttributes.PutStr(conventions.AttributeAWSLogGroupNames, logGroupName)
+			resourceAttributes.PutStr(conventions.AttributeAWSLogStreamNames, logStreamName)
 
 			//middleware.io specific attributes
 			resourceAttributes.PutStr("channel", conventions.AttributeCloudProviderAWS)
 			resourceAttributes.PutStr("aws.scraping_approach", "api_polling")
 			resourceAttributes.PutStr("aws.polling_approach", l.pollingApproach)
+			resourceAttributes.PutStr("aws.region", l.region)
+			resourceAttributes.PutStr("source", "cloudwatch-logs")
+			if l.awsAccountId != "" {
+				resourceAttributes.PutStr(conventions.AttributeCloudAccountID, l.awsAccountId)
+			} else {
+				resourceAttributes.PutStr(conventions.AttributeCloudAccountID, "unknown")
+			}
 			group[logStreamName] = resourceLogs
 
 			// Ensure one scopeLogs is initialized so we can handle in standardized way going forward.
