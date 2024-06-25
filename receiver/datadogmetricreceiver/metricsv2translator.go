@@ -105,6 +105,20 @@ func GetOtlpExportReqFromDatadogV2Metrics(origin, key string, ddReq metricsV2.Me
 	return pmetricotlp.NewExportRequestFromMetrics(metrics), nil
 }
 
+func tagsToMap(tags []string) map[string]string {
+	tagMap := make(map[string]string)
+
+	for _, tag := range tags {
+		parts := strings.Split(tag, ":")
+		if len(parts) == 2 {
+			tagMap[parts[0]] = parts[1]
+		}
+	}
+
+	return tagMap
+}
+
+
 func translateMetric(s *metricsV2.MetricPayload_MetricSeries, metricHost string, tagMap map[string]string, resourceAttributes, metricAttributes pcommon.Map) {
 	for _, translator := range translators {
 		if translator(s, metricHost, tagMap, resourceAttributes, metricAttributes) {
