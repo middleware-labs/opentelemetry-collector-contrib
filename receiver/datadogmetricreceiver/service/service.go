@@ -2,15 +2,13 @@ package service
 
 import (
 	"fmt"
-	"log"
-	"strings"
-	"time"
-
 	processv1 "github.com/DataDog/agent-payload/v5/process"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogmetricreceiver/helpers"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
+	"log"
+	"strings"
 )
 
 // Constants for Service metrics
@@ -66,13 +64,13 @@ func GetOtlpExportReqFromDatadogServiceData(origin string, key string, Body inte
 
 		scopeMetrics := helpers.AppendInstrScope(&rm)
 		setHostK8sAttributes(metricAttributes, clusterName, clusterID)
-		appendServiceMetrics(&scopeMetrics, resourceAttributes, metricAttributes, service)
+		appendServiceMetrics(&scopeMetrics, resourceAttributes, metricAttributes, service, timestamp)
 	}
 
 	return pmetricotlp.NewExportRequestFromMetrics(metrics), nil
 }
 
-func appendServiceMetrics(scopeMetrics *pmetric.ScopeMetrics, resourceAttributes pcommon.Map, metricAttributes pcommon.Map, service *processv1.Service) {
+func appendServiceMetrics(scopeMetrics *pmetric.ScopeMetrics, resourceAttributes pcommon.Map, metricAttributes pcommon.Map, service *processv1.Service, timestamp int64) {
 	scopeMetric := scopeMetrics.Metrics().AppendEmpty()
 	scopeMetric.SetName(serviceMetricPortCount)
 
@@ -94,16 +92,13 @@ func appendServiceMetrics(scopeMetrics *pmetric.ScopeMetrics, resourceAttributes
 	metricAttributes.PutStr(serviceMetricClusterIP, specDetails.GetClusterIP())
 	metricAttributes.PutStr(serviceMetricPortsList, convertPortRulesToString(specDetails.GetPorts()))
 
-	currentTime := time.Now()
-	milliseconds := (currentTime.UnixNano() / int64(time.Millisecond)) * 1000000
-	createTime := (milliseconds / 1000000000) - metadata.GetCreationTimestamp()
-	metricAttributes.PutInt(serviceMetricCreateTime, createTime)
+	metricAttributes.PutInt(serviceMetricCreateTime, helpers.CalculateCreateTime(metadata.GetCreationTimestamp()))
 
 	var dataPoints pmetric.NumberDataPointSlice
 	gauge := scopeMetric.SetEmptyGauge()
 	dataPoints = gauge.DataPoints()
 	dp := dataPoints.AppendEmpty()
-	dp.SetTimestamp(pcommon.Timestamp(milliseconds))
+	dp.SetTimestamp(pcommon.Timestamp(timestamp))
 	dp.SetIntValue(metricVal)
 
 	attributeMap := dp.Attributes()
