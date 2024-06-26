@@ -27,6 +27,7 @@ var (
 		translateKubernetes,
 		translateKubernetesStateContainer,
 		translatePostgresMetrics,
+		translateMysqlMetrics,
 	}
 )
 
@@ -45,6 +46,7 @@ const (
 	kubernetesPrefix               = "kubernetes."
 	containerPrefix                = "container."
 	postgresqlPrefix               = "postgresql."
+	mysqlPrefix                    = "mysql."
 	// Datadog Tags
 	nodeTag          = "node"
 	clusterNameTag   = "kube_cluster_name"
@@ -65,6 +67,7 @@ const (
 	serviceNameKey   = "ddk8s.service.name"
 	// Resource attribute to avoid conflicts between metrics of same name by mw-agent
 	ddPostgresMetric = "dd.postgresql"
+	ddMysqlMetric    = "dd.MysqlMetric"
 )
 
 // Main function to process Datadog metrics
@@ -381,6 +384,24 @@ func translatePostgresMetrics(
 		return false
 	}
 	resourceAttributes.PutBool(ddPostgresMetric, true)
+	for k, v := range tagMap {
+		metricAttributes.PutStr(k, v)
+	}
+	return true
+}
+
+func translateMysqlMetrics(
+	s *metricsV2.MetricPayload_MetricSeries,
+	metricHost string,
+	tagMap map[string]string,
+	resourceAttribtues, metricAttributes pcommon.Map,
+) bool {
+	metricName := s.GetMetric()
+	if !strings.Contains(metricName, mysqlPrefix) {
+		return false
+	}
+
+	resourceAttribtues.PutBool(ddMysqlMetric, true)
 	for k, v := range tagMap {
 		metricAttributes.PutStr(k, v)
 	}
