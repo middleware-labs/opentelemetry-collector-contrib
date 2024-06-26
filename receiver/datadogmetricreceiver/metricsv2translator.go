@@ -84,10 +84,6 @@ func GetOtlpExportReqFromDatadogV2Metrics(origin, key string, ddReq metricsV2.Me
 			continue
 		}
 
-		if !strings.Contains(s.GetMetric(), postgresqlPrefix) {
-			continue
-		}
-
 		rm := resourceMetrics.AppendEmpty()
 		resourceAttributes := rm.Resource().Attributes()
 		commonResourceAttributes := helpers.CommonResourceAttributes{
