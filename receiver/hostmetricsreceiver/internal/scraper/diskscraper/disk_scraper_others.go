@@ -46,7 +46,7 @@ type diskScraper struct {
 
 // newDiskScraper creates a Disk Scraper
 func newDiskScraper(_ context.Context, settings receiver.Settings, cfg *Config) (*diskScraper, error) {
-	scraper := &diskScraper{settings: settings, config: cfg, bootTime: host.BootTimeWithContext, ioCounters: disk.IOCountersWithContext}
+	scraper := &diskScraper{settings: settings, config: cfg, bootTime: host.BootTimeWithContext, ioCounters: disk.IOCountersWithContext, scal: &scal.DiskSpeedCalculator{}}
 
 	var err error
 
