@@ -1,14 +1,15 @@
 package datadogmetricreceiver
 
 import (
+	"log"
+	"math"
+	"strings"
+
 	metricsV2 "github.com/DataDog/agent-payload/v5/gogen"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogmetricreceiver/helpers"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
-	"log"
-	"math"
-	"strings"
 )
 
 // MetricTranslator function type
@@ -25,6 +26,7 @@ var (
 		translateKubernetesStateNode,
 		translateKubernetes,
 		translateKubernetesStateContainer,
+		translatePostgresMetrics,
 	}
 )
 
@@ -42,6 +44,7 @@ const (
 	systemCPUPrefix                = "system.cpu."
 	kubernetesPrefix               = "kubernetes."
 	containerPrefix                = "container."
+	postgresqlPrefix               = "postgresql."
 	// Datadog Tags
 	nodeTag          = "node"
 	clusterNameTag   = "kube_cluster_name"
@@ -60,6 +63,8 @@ const (
 	isKubeHost       = "ddk8s.is_kube_host"
 	containerTagsKey = "ddk8s.container.tags"
 	serviceNameKey   = "ddk8s.service.name"
+	// Resource attribute to avoid conflicts between metrics of same name by mw-agent
+	ddPostgresMetric = "dd.postgresql"
 )
 
 // Main function to process Datadog metrics
@@ -75,11 +80,14 @@ func GetOtlpExportReqFromDatadogV2Metrics(origin, key string, ddReq metricsV2.Me
 	resourceMetrics := metrics.ResourceMetrics()
 
 	for _, s := range ddReq.GetSeries() {
-		//log.Println("s.GetMetric()", s.GetMetric())
 		if helpers.SkipDatadogMetrics(s.GetMetric(), int32(s.GetType())) {
 			continue
 		}
-		
+
+		if !strings.Contains(s.GetMetric(), postgresqlPrefix) {
+			continue
+		}
+
 		rm := resourceMetrics.AppendEmpty()
 		resourceAttributes := rm.Resource().Attributes()
 		commonResourceAttributes := helpers.CommonResourceAttributes{
@@ -117,7 +125,6 @@ func tagsToMap(tags []string) map[string]string {
 
 	return tagMap
 }
-
 
 func translateMetric(s *metricsV2.MetricPayload_MetricSeries, metricHost string, tagMap map[string]string, resourceAttributes, metricAttributes pcommon.Map) {
 	for _, translator := range translators {
@@ -364,6 +371,23 @@ func translateKubernetesStateContainer(s *metricsV2.MetricPayload_MetricSeries, 
 		metricAttributes.PutStr(k, v)
 	}
 
+	return true
+}
+
+func translatePostgresMetrics(
+	s *metricsV2.MetricPayload_MetricSeries,
+	metricHost string,
+	tagMap map[string]string,
+	resourceAttributes, metricAttributes pcommon.Map,
+) bool {
+	metricName := s.GetMetric()
+	if !strings.Contains(metricName, postgresqlPrefix) {
+		return false
+	}
+	resourceAttributes.PutBool(ddPostgresMetric, true)
+	for k, v := range tagMap {
+		metricAttributes.PutStr(k, v)
+	}
 	return true
 }
 
