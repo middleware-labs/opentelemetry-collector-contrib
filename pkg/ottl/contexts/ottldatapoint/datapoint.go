@@ -42,6 +42,10 @@ var (
 )
 
 // TransformContext represents a Datapoint and all its hierarchy.
+var _ internal.ResourceContext = (*TransformContext)(nil)
+var _ internal.InstrumentationScopeContext = (*TransformContext)(nil)
+var _ zapcore.ObjectMarshaler = (*TransformContext)(nil)
+
 const (
 	contextName = "DataPoint"
 )
