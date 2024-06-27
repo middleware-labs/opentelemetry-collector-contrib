@@ -54,6 +54,8 @@ func RecordMetrics(mb *metadata.MetricsBuilder, node *corev1.Node, ts pcommon.Ti
 	e := metadata.NewK8sNodeEntity(string(node.UID))
 	e.SetK8sNodeName(node.Name)
 	e.SetK8sKubeletVersion(node.Status.NodeInfo.KubeletVersion)
+	e.SetK8sNodeStartTime(node.GetCreationTimestamp().String())
+    e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sNode(e)
 	for _, c := range node.Status.Conditions {
 		eb.RecordK8sNodeConditionDataPoint(ts, nodeConditionValues[c.Status], string(c.Type))
@@ -112,6 +114,7 @@ func CustomMetrics(set receiver.Settings, rb *metadata.ResourceBuilder, node *co
 	rb.SetK8sNodeName(node.Name)
 	rb.SetK8sKubeletVersion(node.Status.NodeInfo.KubeletVersion)
 	rb.SetK8sNodeStartTime(node.GetCreationTimestamp().String())
+	rb.SetK8sClusterName("unknown")
 	rb.SetOsType(node.Status.NodeInfo.OperatingSystem)
 
 	runtime, version := getContainerRuntimeInfo(node.Status.NodeInfo.ContainerRuntimeVersion)

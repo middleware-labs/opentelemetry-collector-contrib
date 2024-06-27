@@ -23,6 +23,8 @@ const (
 func RecordMetrics(mb *metadata.MetricsBuilder, ns *corev1.Namespace, ts pcommon.Timestamp) {
 	e := metadata.NewK8sNamespaceEntity(string(ns.UID))
 	e.SetK8sNamespaceName(ns.Name)
+	e.SetK8sNamespaceStartTime(ns.GetCreationTimestamp().String())
+    e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sNamespace(e)
 	eb.RecordK8sNamespacePhaseDataPoint(ts, int64(namespacePhaseValues[ns.Status.Phase]))
 	eb.Emit()
