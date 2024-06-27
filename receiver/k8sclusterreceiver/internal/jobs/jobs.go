@@ -17,6 +17,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, j *batchv1.Job, ts pcommon.Times
 	e.SetK8sJobName(j.Name)
 	e.SetK8sNamespaceName(j.Namespace)
 	e.SetK8sJobStartTime(j.GetCreationTimestamp().String())
+	e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sJob(e)
 	eb.RecordK8sJobActivePodsDataPoint(ts, int64(j.Status.Active))
 	eb.RecordK8sJobFailedPodsDataPoint(ts, int64(j.Status.Failed))

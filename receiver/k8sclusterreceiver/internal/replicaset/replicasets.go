@@ -31,6 +31,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, rs *appsv1.ReplicaSet, ts pcommo
 	e.SetK8sReplicasetName(rs.Name)
 	e.SetK8sNamespaceName(rs.Namespace)
 	e.SetK8sReplicasetStartTime(rs.GetCreationTimestamp().String())
+	e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sReplicaset(e)
 	if rs.Spec.Replicas != nil {
 		eb.RecordK8sReplicasetDesiredDataPoint(ts, int64(*rs.Spec.Replicas))
