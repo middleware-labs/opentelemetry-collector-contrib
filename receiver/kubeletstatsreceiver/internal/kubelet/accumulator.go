@@ -172,7 +172,6 @@ func (a *metricDataAccumulator) containerStats(sPod stats.PodStats, s stats.Cont
 
 	resourceKey := sPod.PodRef.UID + s.Name
 	currentTime := pcommon.NewTimestampFromTime(a.time)
-	resourceKey := sPod.PodRef.UID + s.Name
 	addUptimeMetric(a.mbs.ContainerMetricsBuilder, metadata.ContainerUptimeMetrics.Uptime, s.StartTime, currentTime)
 	addCPUMetrics(a.mbs.ContainerMetricsBuilder, metadata.ContainerCPUMetrics, s.CPU, currentTime, a.metadata.containerResources[resourceKey], a.metadata.nodeCapacity.CPUCapacity)
 	addMemoryMetrics(a.mbs.ContainerMetricsBuilder, metadata.ContainerMemoryMetrics, s.Memory, currentTime, a.metadata.containerResources[resourceKey], a.metadata.nodeCapacity.MemoryCapacity)

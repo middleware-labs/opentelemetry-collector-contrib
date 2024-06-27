@@ -56,7 +56,7 @@ type Metadata struct {
 	Labels                    map[MetadataLabel]bool
 	PodsMetadata              *v1.PodList
 	NodesMetadata             *v1.NodeList
-	DetailedPVCResourceSetter func(rb *metadata.ResourceBuilder, volCacheID, volumeClaim, namespace string) error
+	DetailedPVCResourceSetter func(rb *metadata.ResourceBuilder, volCacheID, volumeClaim, namespace string) ([]metadata.ResourceMetricsOption, error)
 	podResources              map[string]resources
 	containerResources        map[string]resources
 	nodeCapacity              NodeCapacity
@@ -90,7 +90,7 @@ func getContainerResources(r *v1.ResourceRequirements) resources {
 	}
 }
 
-func NewMetadata(labels []MetadataLabel, podsMetadata *v1.PodList, nodeCap NodeCapacity,
+func NewMetadata(labels []MetadataLabel, podsMetadata *v1.PodList, nodesMetadata *v1.NodeList, nodeCap NodeCapacity,
 	detailedPVCResourceSetter func(rb *metadata.ResourceBuilder, volCacheID, volumeClaim, namespace string) error,
 ) Metadata {
 	m := Metadata{
