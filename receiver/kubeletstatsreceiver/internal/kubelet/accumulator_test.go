@@ -275,7 +275,7 @@ func TestGetServiceName(t *testing.T) {
 	acc := metricDataAccumulator{
 		metadata: NewMetadata([]MetadataLabel{MetadataLabelContainerID}, &v1.PodList{
 			Items: pods,
-		}, nil, nil),
+		}, &v1.NodeList{Items: []v1.Node{}}, NodeLimits{}, nil),
 	}
 
 	// Create a Service with the same labels as the Pod
@@ -324,7 +324,7 @@ func TestGetServiceAccountName(t *testing.T) {
 	acc := metricDataAccumulator{
 		metadata: NewMetadata([]MetadataLabel{MetadataLabelContainerID}, &v1.PodList{
 			Items: pods,
-		}, nil, nil),
+		}, &v1.NodeList{Items: []v1.Node{}}, NodeLimits{}, nil),
 	}
 
 	// Call the getServiceName method
@@ -358,7 +358,7 @@ func TestGetJobInfo(t *testing.T) {
 	acc := metricDataAccumulator{
 		metadata: NewMetadata([]MetadataLabel{MetadataLabelContainerID}, &v1.PodList{
 			Items: pods,
-		}, nil, nil),
+		}, &v1.NodeList{Items: []v1.Node{}}, NodeLimits{}, nil),
 	}
 
 	// Create a Job with the same labels as the Pod
