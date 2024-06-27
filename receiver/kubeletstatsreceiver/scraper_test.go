@@ -867,3 +867,7 @@ func (f *fakeRestClient) Pods() ([]byte, error) {
 	}
 	return os.ReadFile("testdata/pods.json")
 }
+
+func (f *fakeRestClient) Nodes() ([]byte, error) {
+	return []byte{}, nil
+}
