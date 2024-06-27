@@ -23,11 +23,10 @@ const (
 	contextName = "DataPoint"
 )
 
-var (
-	_ internal.ResourceContext             = (*TransformContext)(nil)
-	_ internal.InstrumentationScopeContext = (*TransformContext)(nil)
-	 _ zapcore.ObjectMarshaler = (*TransformContext)(nil)
-)
+var _ internal.ResourceContext = (*TransformContext)(nil)
+var _ internal.InstrumentationScopeContext = (*TransformContext)(nil)
+var _ zapcore.ObjectMarshaler = (*TransformContext)(nil)
+
 const (
 	contextName = "DataPoint"
 )
