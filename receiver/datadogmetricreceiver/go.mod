@@ -9,11 +9,13 @@ require (
 	github.com/DataDog/datadog-api-client-go/v2 v2.25.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent v0.84.0
 	github.com/stretchr/testify v1.9.0
-	go.opentelemetry.io/collector/component v0.103.0
+	go.opentelemetry.io/collector/component v0.102.0
 	go.opentelemetry.io/collector/config/confighttp v0.84.0
-	go.opentelemetry.io/collector/consumer v0.103.0
+	go.opentelemetry.io/collector/confmap v0.102.0
+	go.opentelemetry.io/collector/consumer v0.102.0
 	go.opentelemetry.io/collector/pdata v1.10.0
-	go.opentelemetry.io/collector/receiver v0.103.0
+	go.opentelemetry.io/collector/receiver v0.102.0
+	go.uber.org/goleak v1.3.0
 )
 
 require (
@@ -47,14 +49,13 @@ require (
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.0 // indirect
 	github.com/rs/cors v1.9.0 // indirect
-	go.opentelemetry.io/collector v0.103.0 // indirect
+	go.opentelemetry.io/collector v0.102.0 // indirect
 	go.opentelemetry.io/collector/config/configauth v0.84.0 // indirect
 	go.opentelemetry.io/collector/config/configcompression v0.84.0 // indirect
 	go.opentelemetry.io/collector/config/configopaque v0.84.0 // indirect
-	go.opentelemetry.io/collector/config/configtelemetry v0.103.0 // indirect
+	go.opentelemetry.io/collector/config/configtelemetry v0.102.0 // indirect
 	go.opentelemetry.io/collector/config/configtls v0.84.0 // indirect
 	go.opentelemetry.io/collector/config/internal v0.84.0 // indirect
-	go.opentelemetry.io/collector/confmap v0.103.0 // indirect
 	go.opentelemetry.io/collector/extension v0.84.0 // indirect
 	go.opentelemetry.io/collector/extension/auth v0.84.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.10.0 // indirect

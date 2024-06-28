@@ -147,9 +147,6 @@ type FileInfo struct {
 }
 
 func newdatadogmetricreceiver(config *Config, nextConsumer consumer.Metrics, params receiver.CreateSettings) (receiver.Metrics, error) {
-	if nextConsumer == nil {
-		return nil, component.ErrNilNextConsumer
-	}
 
 	instance, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{LongLivedCtx: false, ReceiverID: params.ID, Transport: "http", ReceiverCreateSettings: params})
 	if err != nil {
@@ -167,7 +164,7 @@ func newdatadogmetricreceiver(config *Config, nextConsumer consumer.Metrics, par
 	}, nil
 }
 
-func (ddr *datadogmetricreceiver) Start(_ context.Context, host component.Host) error {
+func (ddr *datadogmetricreceiver) Start(ctx context.Context, host component.Host) error {
 	ddmux := http.NewServeMux()
 	ddmux.HandleFunc("/api/v2/series", ddr.handleV2Series)
 	ddmux.HandleFunc("/api/v1/metadata", ddr.handleMetaData)
@@ -191,7 +188,8 @@ func (ddr *datadogmetricreceiver) Start(_ context.Context, host component.Host) 
 	ddmux.HandleFunc("/api/v2/orchmanif", ddr.handleNotImplemenetedAPI)
 
 	var err error
-	ddr.server, err = ddr.config.HTTPServerSettings.ToServer(
+	ddr.server, err = ddr.config.ServerConfig.ToServer(
+		ctx,
 		host,
 		ddr.params.TelemetrySettings,
 		ddmux,
@@ -199,7 +197,7 @@ func (ddr *datadogmetricreceiver) Start(_ context.Context, host component.Host) 
 	if err != nil {
 		return fmt.Errorf("failed to create server definition: %w", err)
 	}
-	hln, err := ddr.config.HTTPServerSettings.ToListener()
+	hln, err := ddr.config.ServerConfig.ToListener(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to create datadog listener: %w", err)
 	}
@@ -208,7 +206,7 @@ func (ddr *datadogmetricreceiver) Start(_ context.Context, host component.Host) 
 
 	go func() {
 		if err := ddr.server.Serve(hln); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			host.ReportFatalError(fmt.Errorf("error starting datadog receiver: %w", err))
+			ddr.params.TelemetrySettings.ReportStatus(component.NewFatalErrorEvent(fmt.Errorf("error starting datadog receiver: %w", err)))
 		}
 	}()
 	return nil
@@ -441,7 +439,7 @@ func (ddr *datadogmetricreceiver) handleCollector(w http.ResponseWriter, req *ht
 		http.Error(w, "error in getOtlpExportReqFromDatadogProcessesData", http.StatusBadRequest)
 		return
 	}
-	
+
 	obsCtx := ddr.tReceiver.StartLogsOp(req.Context())
 	errs := ddr.nextConsumer.ConsumeMetrics(obsCtx, otlpReq.Metrics())
 	if errs != nil {
@@ -467,7 +465,7 @@ func (ddr *datadogmetricreceiver) handleOrchestrator(w http.ResponseWriter, req 
 		http.Error(w, "error in decoding request body", http.StatusBadRequest)
 		return
 	}
-	
+
 	timestamp := reqBody.Header.Timestamp
 	resourceType := reqBody.Header.Type
 
