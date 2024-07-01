@@ -1,7 +1,6 @@
 package job
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -61,8 +60,6 @@ func GetOtlpExportReqFromDatadogJobData(origin, key string, Body interface{}, ti
 
 	clusterName := ddReq.GetClusterName()
 	clusterID := ddReq.GetClusterId()
-	fmt.Println("clusterName",clusterID)
-	fmt.Println("clusterID",clusterName)
 	for _, metricName := range jobMetricsToExtract {
 		for _, job := range jobs {
 			rm := resourceMetrics.AppendEmpty()
@@ -78,7 +75,6 @@ func GetOtlpExportReqFromDatadogJobData(origin, key string, Body interface{}, ti
 			scopeMetrics := helpers.AppendInstrScope(&rm)
 			setHostK8sAttributes(metricAttributes, clusterName, clusterID)
 			appendJobMetrics(&scopeMetrics, resourceAttributes, metricAttributes, metricName, job, timestamp)
-			//fmt.Println(metricAttributes.AsRaw())
 		}
 	}
 
