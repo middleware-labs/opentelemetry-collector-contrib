@@ -1,14 +1,15 @@
 package datadogmetricreceiver
 
 import (
+	"log"
+	"math"
+	"strings"
+
 	metricsV2 "github.com/DataDog/agent-payload/v5/gogen"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogmetricreceiver/helpers"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
-	"log"
-	"math"
-	"strings"
 )
 
 // MetricTranslator function type
@@ -82,6 +83,9 @@ func GetOtlpExportReqFromDatadogV2Metrics(origin, key string, ddReq metricsV2.Me
 
 		rm := resourceMetrics.AppendEmpty()
 		resourceAttributes := rm.Resource().Attributes()
+		tagMap := tagsToMap(s.GetTags())
+		metricHost = getHostName(tagMap, metricHost)
+
 		commonResourceAttributes := helpers.CommonResourceAttributes{
 			Origin:   origin,
 			ApiKey:   key,
@@ -95,9 +99,6 @@ func GetOtlpExportReqFromDatadogV2Metrics(origin, key string, ddReq metricsV2.Me
 		metricAttributes := pcommon.NewMap()
 		// Currently This is added to Classify If A Metric is Datadog . Useful For Front Side
 		metricAttributes.PutBool("datadog_metric", true)
-
-		tagMap := tagsToMap(s.GetTags())
-
 		translateMetric(s, metricHost, tagMap, resourceAttributes, metricAttributes)
 		setDataPoints(s, &scopeMetric, metricAttributes)
 	}
@@ -125,6 +126,33 @@ func translateMetric(s *metricsV2.MetricPayload_MetricSeries, metricHost string,
 		}
 	}
 	defaultTranslator(s, metricAttributes)
+}
+
+// extractHostName extracts the hostname if it's in the format HOSTNAME-CLUSTERNAME (for K8s screens)
+// This is needed for middleware UI
+func getHostName(tagMap map[string]string, metricHost string) string {
+	if metricHost == "" {
+		return ""
+	}
+
+	if clusterName := tagMap[ddClusterNameTag]; clusterName != "" {
+		return extractHostName(metricHost, clusterName)
+	}
+
+	if clusterName := tagMap[clusterNameTag]; clusterName != "" {
+		return extractHostName(metricHost, clusterName)
+	}
+
+	return metricHost
+}
+
+func extractHostName(metricHost string, clusterName string) string {
+	strToMatch := "-" + clusterName
+	idx := strings.LastIndex(metricHost, strToMatch)
+	if idx != -1 {
+		return metricHost[0:idx]
+	}
+	return metricHost
 }
 
 func getMetricHost(metricSeries []*metricsV2.MetricPayload_MetricSeries) string {
@@ -204,7 +232,6 @@ func translateContainerMetrics(s *metricsV2.MetricPayload_MetricSeries, metricHo
 	}
 
 	//kubeClusterName := tagMap[clusterNameTag]
-	kubeNamespace := tagMap[namespaceTag]
 	containerID := tagMap["container_id"]
 
 	if containerID == "" {
@@ -221,7 +248,9 @@ func translateContainerMetrics(s *metricsV2.MetricPayload_MetricSeries, metricHo
 	resourceAttributes.PutStr(nodeNameKey, nodeName)
 
 	metricAttributes.PutStr(clusterNameKey, tagMap[ddClusterNameTag])
-	metricAttributes.PutStr(namespaceNameKey, kubeNamespace)
+	if kubeNamespace, ok := tagMap[namespaceTag]; ok {
+		metricAttributes.PutStr(namespaceNameKey, kubeNamespace)
+	}
 	metricAttributes.PutStr(containerTagsKey, strings.Join(s.GetTags(), "&"))
 
 	if kubeService := tagMap[kubeServiceTag]; kubeService != "" {
@@ -281,6 +310,9 @@ func translateKubernetesStatePod(s *metricsV2.MetricPayload_MetricSeries, metric
 	}
 
 	for k, v := range tagMap {
+		if v == "" {
+			continue
+		}
 		metricAttributes.PutStr(k, v)
 	}
 
@@ -351,7 +383,7 @@ func translateKubernetesStateContainer(s *metricsV2.MetricPayload_MetricSeries, 
 		resourceAttributes.PutStr(nodeNameKey, metricHost)
 	}
 
-	metricAttributes.PutStr(clusterNameKey, tagMap[ddClusterNameTag])
+	metricAttributes.PutStr(clusterNameKey, tagMap[clusterNameTag])
 	metricAttributes.PutStr(namespaceNameKey, kubeNamespace)
 	metricAttributes.PutStr(containerTagsKey, strings.Join(s.GetTags(), "&"))
 
