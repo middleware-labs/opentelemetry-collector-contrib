@@ -26,6 +26,8 @@ var (
 		translateKubernetesStateNode,
 		translateKubernetes,
 		translateKubernetesStateContainer,
+		translatePostgresMetrics,
+		translateMysqlMetrics,
 	}
 )
 
@@ -43,6 +45,8 @@ const (
 	systemCPUPrefix                = "system.cpu."
 	kubernetesPrefix               = "kubernetes."
 	containerPrefix                = "container."
+	postgresqlPrefix               = "postgresql."
+	mysqlPrefix                    = "mysql."
 	// Datadog Tags
 	nodeTag          = "node"
 	clusterNameTag   = "kube_cluster_name"
@@ -61,6 +65,9 @@ const (
 	isKubeHost       = "ddk8s.is_kube_host"
 	containerTagsKey = "ddk8s.container.tags"
 	serviceNameKey   = "ddk8s.service.name"
+	// Resource attribute to avoid conflicts between metrics of same name by mw-agent
+	ddPostgresMetric = "dd.postgresql"
+	ddMysqlMetric    = "dd.mysql"
 )
 
 // Main function to process Datadog metrics
@@ -78,6 +85,11 @@ func GetOtlpExportReqFromDatadogV2Metrics(origin, key string, ddReq metricsV2.Me
 	for _, s := range ddReq.GetSeries() {
 		//log.Println("s.GetMetric()", s.GetMetric())
 		if helpers.SkipDatadogMetrics(s.GetMetric(), int32(s.GetType())) {
+			continue
+		}
+
+		// Ignores other metrics, SHOULD NOT BE IN PROD
+		if !strings.Contains(s.GetMetric(), postgresqlPrefix) && !strings.Contains(s.GetMetric(), mysqlPrefix) {
 			continue
 		}
 
@@ -395,6 +407,41 @@ func translateKubernetesStateContainer(s *metricsV2.MetricPayload_MetricSeries, 
 		metricAttributes.PutStr(k, v)
 	}
 
+	return true
+}
+
+func translatePostgresMetrics(
+	s *metricsV2.MetricPayload_MetricSeries,
+	metricHost string,
+	tagMap map[string]string,
+	resourceAttributes, metricAttributes pcommon.Map,
+) bool {
+	metricName := s.GetMetric()
+	if !strings.Contains(metricName, postgresqlPrefix) {
+		return false
+	}
+	resourceAttributes.PutBool(ddPostgresMetric, true)
+	for k, v := range tagMap {
+		metricAttributes.PutStr(k, v)
+	}
+	return true
+}
+
+func translateMysqlMetrics(
+	s *metricsV2.MetricPayload_MetricSeries,
+	metricHost string,
+	tagMap map[string]string,
+	resourceAttribtues, metricAttributes pcommon.Map,
+) bool {
+	metricName := s.GetMetric()
+	if !strings.Contains(metricName, mysqlPrefix) {
+		return false
+	}
+
+	resourceAttribtues.PutBool(ddMysqlMetric, true)
+	for k, v := range tagMap {
+		metricAttributes.PutStr(k, v)
+	}
 	return true
 }
 
