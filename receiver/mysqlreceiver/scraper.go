@@ -559,7 +559,6 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 		errs.AddPartial(8, err)
 		return
 	}
-
 	for i := 0; i < len(statementEventsStats); i++ {
 		s := statementEventsStats[i]
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countCreatedTmpDiskTables, s.schema, s.digest, s.digestText, metadata.AttributeEventStateCreatedTmpDiskTables)

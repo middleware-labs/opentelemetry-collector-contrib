@@ -444,10 +444,23 @@ func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
 	var stats []StatementEventStats
 	for rows.Next() {
 		var s StatementEventStats
-		err := rows.Scan(&s.schema, &s.digest, &s.digestText,
-			&s.sumTimerWait, &s.countErrors, &s.countWarnings,
-			&s.countRowsAffected, &s.countRowsSent, &s.countRowsExamined, &s.countCreatedTmpDiskTables,
-			&s.countCreatedTmpTables, &s.countSortMergePasses, &s.countSortRows, &s.countNoIndexUsed, &s.countStar)
+		err := rows.Scan(
+			&s.schema,
+			&s.digest,
+			&s.digestText,
+			&s.sumTimerWait,
+			&s.countErrors,
+			&s.countWarnings,
+			&s.countRowsAffected,
+			&s.countRowsSent,
+			&s.countRowsExamined,
+			&s.countCreatedTmpDiskTables,
+			&s.countCreatedTmpTables,
+			&s.countSortMergePasses,
+			&s.countSortRows,
+			&s.countNoIndexUsed,
+			&s.countStar,
+		)
 		if err != nil {
 			return nil, err
 		}
