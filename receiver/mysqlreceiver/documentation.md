@@ -84,6 +84,20 @@ The number of bytes in the InnoDB buffer pool.
 | ---- | ----------- | ------ | -------- |
 | status | The status of buffer pool data. | Str: ``dirty``, ``clean`` | Recommended |
 
+### mysql.commands
+
+The number of times each type of command has been executed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| command | The command types. | Str: ``delete``, ``insert``, ``select``, ``update`` |
+
 ### mysql.double_writes
 
 The number of writes to the InnoDB doublewrite buffer.
@@ -145,6 +159,38 @@ The total time of I/O wait events for an index.
 | table | Table name for event or process. | Any Str | Recommended |
 | schema | The schema of the object. | Any Str | Recommended |
 | index | The name of the index. | Any Str | Recommended |
+
+### mysql.innodb.rows_deleted
+
+Rate at which rows are being deleted in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_inserted
+
+Rate at which rows are being inserted in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_read
+
+Rate at which rows are being read in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
+
+### mysql.innodb.rows_updated
+
+Rate at which rows are being updated in InnoDB.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false |
 
 ### mysql.locks
 
@@ -246,6 +292,30 @@ The number of times each type of prepared statement command has been issued.
 | ---- | ----------- | ------ | -------- |
 | command | The prepare statement command types. | Str: ``execute``, ``close``, ``fetch``, ``prepare``, ``reset``, ``send_long_data`` | Recommended |
 
+### mysql.query.count
+
+The number of statements executed by the server.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### mysql.query.slow.count
+
+The number of slow queries.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
+### mysql.query.total_errors
+
+The total number of errors while performing queries in the database
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
 ### mysql.row_locks
 
 The number of InnoDB row locks.
@@ -312,6 +382,22 @@ The total count of executed queries per normalized query and schema.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | 1 | Sum | Int | Cumulative | false |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| schema | The schema of the object. | Any Str |
+| digest | Digest. | Any Str |
+| digest_text | Text before digestion. | Any Str |
+
+### mysql.statement_event.errors
+
+the error count of the summarized events
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
 
 #### Attributes
 
@@ -396,6 +482,20 @@ The number of created temporary resources.
 | Name | Description | Values | Requirement Level |
 | ---- | ----------- | ------ | -------- |
 | resource | The kind of temporary resources. | Str: ``disk_tables``, ``files``, ``tables`` | Recommended |
+
+### mysql.total_rows
+
+Total rows in the mysql db
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| dbname | The name of the database | Any Str |
 
 ### mysql.uptime
 
@@ -775,4 +875,5 @@ This provides insights into query performance and resource usage, helping users 
 
 | Name | Description | Values | Enabled |
 | ---- | ----------- | ------ | ------- |
+| mysql.db.version | version of the mysql database | Any Str | true |
 | mysql.instance.endpoint | Endpoint of the MySQL instance. | Any Str | true |
