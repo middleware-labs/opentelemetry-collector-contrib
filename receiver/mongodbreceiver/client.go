@@ -22,17 +22,18 @@ type client interface {
 	ListCollectionNames(ctx context.Context, DBName string) ([]string, error)
 	Disconnect(context.Context) error
 	GetVersion(context.Context) (*version.Version, error)
+	GetReplicationInfo(context.Context) (bson.M, error)
+	GetFsyncLockInfo(context.Context) (bson.M, error)
+	ReplSetStatus(context.Context) (bson.M, error)
+	ReplSetConfig(context.Context) (bson.M, error)
 	ServerStatus(ctx context.Context, DBName string) (bson.M, error)
 	DBStats(ctx context.Context, DBName string) (bson.M, error)
 	TopStats(ctx context.Context) (bson.M, error)
 	IndexStats(ctx context.Context, DBName, collectionName string) ([]bson.M, error)
-	OplogStats(ctx context.Context) (bson.M, error)
-	OplogBounds(ctx context.Context) (bson.Timestamp, bson.Timestamp, error)
-	// RunCommand accepts any BSON-serializable command (bson.M or bson.D).
-	RunCommand(ctx context.Context, db string, command any) (bson.M, error)
-	CurrentOp(ctx context.Context) ([]bson.M, error)
-	FindProfileDocs(ctx context.Context, dbName string, sinceTime, upperBound time.Time, maxRows int64) ([]slowQueryEntry, error)
-	GetLog(ctx context.Context) (bson.A, error)
+	RunCommand(ctx context.Context, db string, command bson.M) (bson.M, error)
+	JumboStats(ctx context.Context, DBName string) (bson.M, error)
+	CollectionStats(ctx context.Context, DBName, collectionName string) (bson.M, error)
+	ConnPoolStats(ctx context.Context, DBName string) (bson.M, error)
 }
 
 // mongodbClient is a mongodb metric scraper client
@@ -56,9 +57,8 @@ var newClient = func(_ context.Context, config *Config, logger *zap.Logger, seco
 	}, nil
 }
 
-// RunCommand executes a command against a database. Accepts bson.M or bson.D —
-// use bson.D when key ordering matters (e.g. the explain command wrapping a bson.D value).
-func (c *mongodbClient) RunCommand(ctx context.Context, database string, command any) (bson.M, error) {
+// RunCommand executes a query against a database. Relies on connection to be established via `Connect()`
+func (c *mongodbClient) RunCommand(ctx context.Context, database string, command bson.M) (bson.M, error) {
 	db := c.Database(database)
 	result := db.RunCommand(ctx, command)
 
@@ -112,154 +112,23 @@ func (c *mongodbClient) IndexStats(ctx context.Context, database, collectionName
 	return indexStats, nil
 }
 
-const (
-	oplogDatabase   = "local"
-	oplogCollection = "oplog.rs"
-)
-
-// OplogStats returns the storage statistics of the oplog collection
+// CollectionStats returns the collection stats per collection for a given database
 // more information can be found here: https://www.mongodb.com/docs/manual/reference/operator/aggregation/collStats/
-func (c *mongodbClient) OplogStats(ctx context.Context) (bson.M, error) {
-	collection := c.Database(oplogDatabase).Collection(oplogCollection)
-	pipeline := mongo.Pipeline{bson.D{bson.E{Key: "$collStats", Value: bson.M{"storageStats": bson.M{}}}}}
-	cursor, err := collection.Aggregate(ctx, pipeline)
+func (c *mongodbClient) CollectionStats(ctx context.Context, database, collectionName string) (bson.M, error) {
+	db := c.Client.Database(database)
+	collection := db.Collection(collectionName)
+	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{
+		{{"$collStats", bson.D{{"storageStats", bson.D{}}}}},
+	})
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-
-	if !cursor.Next(ctx) {
-		if err := cursor.Err(); err != nil {
-			return nil, err
-		}
-		return nil, mongo.ErrNoDocuments
-	}
-	var document bson.M
-	if err := cursor.Decode(&document); err != nil {
+	var collectionStats []bson.M
+	if err = cursor.All(context.Background(), &collectionStats); err != nil {
 		return nil, err
 	}
-	return document, nil
-}
-
-// OplogBounds returns the timestamps of the oldest and the newest entry currently retained in
-// the oplog. Both are read in natural order, which is insertion order on a capped collection.
-func (c *mongodbClient) OplogBounds(ctx context.Context) (bson.Timestamp, bson.Timestamp, error) {
-	oldest, err := c.oplogEntryTimestamp(ctx, 1)
-	if err != nil {
-		return bson.Timestamp{}, bson.Timestamp{}, err
-	}
-	newest, err := c.oplogEntryTimestamp(ctx, -1)
-	if err != nil {
-		return bson.Timestamp{}, bson.Timestamp{}, err
-	}
-	return oldest, newest, nil
-}
-
-func (c *mongodbClient) oplogEntryTimestamp(ctx context.Context, order int) (bson.Timestamp, error) {
-	opts := options.FindOne().
-		SetSort(bson.D{bson.E{Key: "$natural", Value: order}}).
-		SetProjection(bson.D{bson.E{Key: "ts", Value: 1}})
-
-	var entry struct {
-		Timestamp bson.Timestamp `bson:"ts"`
-	}
-	if err := c.Database(oplogDatabase).Collection(oplogCollection).FindOne(ctx, bson.D{}, opts).Decode(&entry); err != nil {
-		return bson.Timestamp{}, err
-	}
-	return entry.Timestamp, nil
-}
-
-const currentOpNamespaceFilterRegex = `^(?:admin|local)(?:\.|$)`
-
-func currentOpPipeline() mongo.Pipeline {
-	return mongo.Pipeline{
-		bson.D{
-			{Key: "$currentOp", Value: bson.M{
-				"allUsers":        true,
-				"idleConnections": false,
-				"idleCursors":     false,
-				"idleSessions":    false,
-				"localOps":        true,
-			}},
-		},
-		bson.D{
-			{Key: "$match", Value: bson.M{
-				"ns": bson.M{
-					"$exists": true,
-					"$ne":     "",
-					"$not":    bson.M{"$regex": currentOpNamespaceFilterRegex},
-				},
-				"command":          bson.M{"$exists": true},
-				"command.hello":    bson.M{"$exists": false},
-				"command.ping":     bson.M{"$exists": false},
-				"command.isMaster": bson.M{"$exists": false},
-			}},
-		},
-	}
-}
-
-// CurrentOp returns the result of
-// db.aggregate([{$currentOp: {...}}, {$match: {...}}]).
-// More information: https://www.mongodb.com/docs/manual/reference/operator/aggregation/currentOp/
-func (c *mongodbClient) CurrentOp(ctx context.Context) ([]bson.M, error) {
-	cursor, err := c.Database("admin").Aggregate(ctx, currentOpPipeline())
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-
-	var operations []bson.M
-	err = cursor.All(ctx, &operations)
-	if err != nil {
-		return nil, err
-	}
-	return operations, nil
-}
-
-// FindProfileDocs queries system.profile in the given database for docs whose
-// `ts` falls in (sinceTime, upperBound], sorts them by `millis` descending
-// server-side, and returns at most maxRows documents.
-func (c *mongodbClient) FindProfileDocs(ctx context.Context, dbName string, sinceTime, upperBound time.Time, maxRows int64) ([]slowQueryEntry, error) {
-	coll := c.Database(dbName).Collection("system.profile")
-	pipeline := mongo.Pipeline{
-		{{Key: "$match", Value: bson.D{
-			{Key: "ts", Value: bson.D{
-				{Key: "$gt", Value: sinceTime},
-				{Key: "$lte", Value: upperBound},
-			}},
-		}}},
-		{{Key: "$sort", Value: bson.D{{Key: "millis", Value: -1}}}},
-		{{Key: "$limit", Value: maxRows}},
-	}
-	cursor, err := coll.Aggregate(ctx, pipeline)
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(ctx)
-	var docs []slowQueryEntry
-	if err := cursor.All(ctx, &docs); err != nil {
-		return nil, err
-	}
-	return docs, nil
-}
-
-// GetLog returns the raw log entries from the MongoDB diagnostic ring buffer (getLog "global").
-// Returns bson.A directly — each element is a string — avoiding a full []string copy.
-// The caller iterates in reverse for early exit on out-of-window entries.
-func (c *mongodbClient) GetLog(ctx context.Context) (bson.A, error) {
-	result, err := c.RunCommand(ctx, "admin", bson.M{"getLog": "global"})
-	if err != nil {
-		return nil, err
-	}
-	raw, ok := result["log"]
-	if !ok {
-		return nil, nil
-	}
-	arr, ok := raw.(bson.A)
-	if !ok {
-		return nil, fmt.Errorf("unexpected log type: %T", raw)
-	}
-	return arr, nil
+	return collectionStats[0], nil
 }
 
 // GetVersion returns a result of the version of mongo the client is connected to so adjustments in collection protocol can
@@ -276,4 +145,255 @@ func (c *mongodbClient) GetVersion(ctx context.Context) (*version.Version, error
 	}
 
 	return version.NewVersion(v)
+}
+
+// ReplicationInfo
+type ReplicationInfo struct {
+	LogSizeMB  float64 `bson:"logSizeMb"`
+	UsedSizeMB float64 `bson:"usedSizeMb"`
+	TimeDiff   int64   `bson:"timeDiff"`
+}
+
+// GetReplicationInfo returns same as db.getReplicationInfo() stats using local database
+func (c *mongodbClient) GetReplicationInfo(ctx context.Context) (bson.M, error) {
+	localdb := c.Database("local")
+	collectionNames := []string{"oplog.rs", "oplog.$main"}
+	var oplogCollection *mongo.Collection
+
+	for _, name := range collectionNames {
+		collection := localdb.Collection(name)
+		_, err := collection.EstimatedDocumentCount(ctx)
+		if err == nil {
+			oplogCollection = collection
+			break
+		}
+	}
+
+	if oplogCollection == nil {
+		return nil, fmt.Errorf("unable to find oplog collection")
+	}
+
+	// Get oplog collection stats
+	collStats := bson.M{}
+	err := localdb.RunCommand(ctx, bson.D{{"collStats", oplogCollection.Name()}}).Decode(&collStats)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get collection stats: %w", err)
+	}
+	replicationInfo := &ReplicationInfo{}
+	if size, ok := collStats["size"].(int32); ok {
+		replicationInfo.UsedSizeMB = float64(size) / float64(1024*1024)
+	}
+
+	if cappedSize, ok := collStats["maxSize"].(int64); ok {
+		replicationInfo.LogSizeMB = float64(cappedSize) / (1024 * 1024)
+	} else if cappedSize, ok := collStats["storageSize"].(int64); ok {
+		replicationInfo.LogSizeMB = float64(cappedSize) / (1024 * 1024)
+	} else {
+		return nil, fmt.Errorf("unable to determine the oplog size")
+	}
+
+	// Get time difference between first and last oplog entry
+	firstEntry := bson.M{}
+	lastEntry := bson.M{}
+
+	err = oplogCollection.FindOne(ctx, bson.M{"ts": bson.M{"$exists": true}}, options.FindOne().SetSort(bson.D{{"$natural", 1}})).Decode(&firstEntry)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get first oplog entry: %w", err)
+	}
+
+	err = oplogCollection.FindOne(ctx, bson.M{"ts": bson.M{"$exists": true}}, options.FindOne().SetSort(bson.D{{"$natural", -1}})).Decode(&lastEntry)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get last oplog entry: %w", err)
+	}
+
+	firstTimestamp, firstOk := firstEntry["ts"].(primitive.Timestamp)
+	lastTimestamp, lastOk := lastEntry["ts"].(primitive.Timestamp)
+
+	if firstOk && lastOk {
+		firstTime := time.Unix(int64(firstTimestamp.T), 0)
+		lastTime := time.Unix(int64(lastTimestamp.T), 0)
+		timeDiff := lastTime.Sub(firstTime).Seconds()
+		replicationInfo.TimeDiff = int64(timeDiff)
+	}
+
+	// Convert struct to BSON bytes
+	bsonBytes, err := bson.Marshal(replicationInfo)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling struct: %w", err)
+	}
+
+	// Unmarshal BSON bytes to bson.M
+	var bsonMap bson.M
+	err = bson.Unmarshal(bsonBytes, &bsonMap)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshaling to bson.M: %w", err)
+	}
+
+	return bsonMap, nil
+}
+
+// JumboStats returns the total and jumbo chunk stats for all collections within the specified database
+func (c *mongodbClient) JumboStats(ctx context.Context, database string) (bson.M, error) {
+	db := c.Client.Database(database)
+	total_chunks_res := db.RunCommand(ctx, bson.D{{"count", "chunks"}, {"query", bson.D{}}})
+	jumbo_chunks_res := db.RunCommand(ctx, bson.D{{"count", "chunks"}, {"query", bson.D{{"jumbo", true}}}})
+
+	var total_chunks, jumbo_chunks bson.M
+	total_chunks_res.Decode(&total_chunks)
+	jumbo_chunks_res.Decode(&jumbo_chunks)
+
+	result := bson.M{
+		"total": total_chunks["n"],
+		"jumbo": jumbo_chunks["n"],
+	}
+	return result, nil
+}
+
+// ConnPoolStats returns the result of db.runCommand({ connPoolStats: 1 })
+// more information can be found here: https://docs.mongodb.com/manual/reference/command/connPoolStats/
+func (c *mongodbClient) ConnPoolStats(ctx context.Context, database string) (bson.M, error) {
+	return c.RunCommand(ctx, database, bson.M{"connPoolStats": 1})
+}
+
+type ReplSetStatus struct {
+	SetName string   `bson:"set"`
+	Members []Member `bson:"members"`
+}
+
+type Member struct {
+	Id             int       `bson:"_id"`
+	Name           string    `bson:"name"`
+	State          int       `bson:"state"`
+	StateStr       string    `bson:"stateStr"`
+	Health         int       `bson:"health"`
+	OptimeDate     time.Time `bson:"optimeDate"`
+	Self           bool      `bson:"self"`
+	OptimeLag      int       `bson:"optimeLag"`
+	ReplicationLag int       `bson:"replicationLag"`
+}
+
+func (c *mongodbClient) ReplSetStatus(ctx context.Context) (bson.M, error) {
+	database := "admin"
+
+	var status *ReplSetStatus
+	db := c.Database(database)
+	err := db.RunCommand(ctx, bson.M{"replSetGetStatus": 1}).Decode(&status)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get repl set status: %w", err)
+	}
+
+	var primary *Member
+	var optimeLag float64
+
+	for _, member := range status.Members {
+		if member.State == 1 {
+			primary = &member
+		}
+	}
+
+	if primary == nil {
+		return nil, fmt.Errorf("primary not found in replica set status: %w", err)
+	}
+
+	optimeLag = 0.0
+
+	for _, member := range status.Members {
+		if member.State != 1 && !primary.OptimeDate.IsZero() && !member.OptimeDate.IsZero() {
+			lag := primary.OptimeDate.Sub(member.OptimeDate).Seconds()
+			member.ReplicationLag = int(lag)
+
+			// Update max optime lag if this lag is greater
+			if lag > optimeLag {
+				optimeLag = lag
+			}
+		}
+	}
+	primary.OptimeLag = int(optimeLag)
+
+	// Convert struct to BSON bytes
+	bsonBytes, err := bson.Marshal(status)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling struct: %w", err)
+	}
+
+	// Unmarshal BSON bytes to bson.M
+	var bsonMap bson.M
+	err = bson.Unmarshal(bsonBytes, &bsonMap)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshaling to bson.M: %w", err)
+	}
+	return bsonMap, nil
+}
+
+type ReplSetConfig struct {
+	Cfg Cfg `bson:"config"`
+}
+
+type Cfg struct {
+	SetName string       `bson:"_id"`
+	Members []*CfgMember `bson:"members"`
+}
+type CfgMember struct {
+	Id           int     `bson:"_id"`
+	Name         string  `bson:"host"`
+	Votes        int     `bson:"votes"`
+	VoteFraction float64 `bson:"voteFraction"`
+}
+
+func (c *mongodbClient) ReplSetConfig(ctx context.Context) (bson.M, error) {
+	database := "admin"
+
+	var (
+		config     *ReplSetConfig
+		totalVotes int
+	)
+
+	db := c.Database(database)
+	err := db.RunCommand(ctx, bson.M{"replSetGetConfig": 1}).Decode(&config)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get repl set get config: %w", err)
+	}
+	for _, member := range config.Cfg.Members {
+		totalVotes += member.Votes
+	}
+
+	for _, member := range config.Cfg.Members {
+		member.VoteFraction = (float64(member.Votes) / float64(totalVotes))
+	}
+
+	// Convert struct to BSON bytes
+	bsonBytes, err := bson.Marshal(&config)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling struct: %w", err)
+	}
+
+	// Unmarshal BSON bytes to bson.M
+	var bsonMap bson.M
+	err = bson.Unmarshal(bsonBytes, &bsonMap)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshaling to bson.M: %w", err)
+	}
+	return bsonMap, nil
+}
+
+// GetFsyncLockInfo returns fsynclocked status using admin database
+func (c *mongodbClient) GetFsyncLockInfo(ctx context.Context) (bson.M, error) {
+	localdb := c.Database("admin")
+
+	// Get admin stats
+	adminStats := bson.M{}
+	err := localdb.RunCommand(ctx, bson.D{{"currentOp", 1}}).Decode(&adminStats)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get fsynclock info stats: %w", err)
+	}
+
+	fsynclockinfo := bson.M{}
+	fsyncLock, ok := adminStats["fsyncLock"]
+	if ok && fsyncLock.(bool) {
+		fsynclockinfo["fsyncLocked"] = 1
+	} else {
+		fsynclockinfo["fsyncLocked"] = 0
+	}
+
+	return fsynclockinfo, nil
 }
