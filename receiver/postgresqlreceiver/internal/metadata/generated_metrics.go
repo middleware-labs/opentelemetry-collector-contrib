@@ -10,7 +10,6 @@ import (
 	"go.opentelemetry.io/collector/filter"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
-	"go.opentelemetry.io/collector/pdata/xpdata/xhash"
 	"go.opentelemetry.io/collector/receiver"
 )
 
@@ -20,15 +19,6 @@ const (
 	AggregationStrategyMin = "min"
 	AggregationStrategyMax = "max"
 )
-
-// dataPointKey hashes dp's attributes and timestamps for O(1) dedup lookup.
-func dataPointKey(dp pmetric.NumberDataPoint) uint64 {
-	return xhash.Hash64(
-		xhash.WithMap(dp.Attributes()),
-		xhash.WithValue(pcommon.NewValueInt(int64(dp.StartTimestamp()))),
-		xhash.WithValue(pcommon.NewValueInt(int64(dp.Timestamp()))),
-	)
-}
 
 // AttributeBgBufferSource specifies the value bg_buffer_source attribute.
 type AttributeBgBufferSource int
@@ -172,86 +162,6 @@ var MapAttributeOperation = map[string]AttributeOperation{
 	"hot_upd": AttributeOperationHotUpd,
 }
 
-// AttributePostgresqlConflictType specifies the value postgresql.conflict.type attribute.
-type AttributePostgresqlConflictType int
-
-const (
-	_ AttributePostgresqlConflictType = iota
-	AttributePostgresqlConflictTypeTablespace
-	AttributePostgresqlConflictTypeLock
-	AttributePostgresqlConflictTypeSnapshot
-	AttributePostgresqlConflictTypeBufferpin
-	AttributePostgresqlConflictTypeDeadlock
-)
-
-// String returns the string representation of the AttributePostgresqlConflictType.
-func (av AttributePostgresqlConflictType) String() string {
-	switch av {
-	case AttributePostgresqlConflictTypeTablespace:
-		return "tablespace"
-	case AttributePostgresqlConflictTypeLock:
-		return "lock"
-	case AttributePostgresqlConflictTypeSnapshot:
-		return "snapshot"
-	case AttributePostgresqlConflictTypeBufferpin:
-		return "bufferpin"
-	case AttributePostgresqlConflictTypeDeadlock:
-		return "deadlock"
-	}
-	return ""
-}
-
-// MapAttributePostgresqlConflictType is a helper map of string to AttributePostgresqlConflictType attribute value.
-var MapAttributePostgresqlConflictType = map[string]AttributePostgresqlConflictType{
-	"tablespace": AttributePostgresqlConflictTypeTablespace,
-	"lock":       AttributePostgresqlConflictTypeLock,
-	"snapshot":   AttributePostgresqlConflictTypeSnapshot,
-	"bufferpin":  AttributePostgresqlConflictTypeBufferpin,
-	"deadlock":   AttributePostgresqlConflictTypeDeadlock,
-}
-
-// AttributePostgresqlDistanceFunctionName specifies the value postgresql.distance.function.name attribute.
-type AttributePostgresqlDistanceFunctionName int
-
-const (
-	_ AttributePostgresqlDistanceFunctionName = iota
-	AttributePostgresqlDistanceFunctionNameCosine
-	AttributePostgresqlDistanceFunctionNameL2
-	AttributePostgresqlDistanceFunctionNameInnerProduct
-	AttributePostgresqlDistanceFunctionNameL1
-	AttributePostgresqlDistanceFunctionNameHamming
-	AttributePostgresqlDistanceFunctionNameJaccard
-)
-
-// String returns the string representation of the AttributePostgresqlDistanceFunctionName.
-func (av AttributePostgresqlDistanceFunctionName) String() string {
-	switch av {
-	case AttributePostgresqlDistanceFunctionNameCosine:
-		return "cosine"
-	case AttributePostgresqlDistanceFunctionNameL2:
-		return "l2"
-	case AttributePostgresqlDistanceFunctionNameInnerProduct:
-		return "inner_product"
-	case AttributePostgresqlDistanceFunctionNameL1:
-		return "l1"
-	case AttributePostgresqlDistanceFunctionNameHamming:
-		return "hamming"
-	case AttributePostgresqlDistanceFunctionNameJaccard:
-		return "jaccard"
-	}
-	return ""
-}
-
-// MapAttributePostgresqlDistanceFunctionName is a helper map of string to AttributePostgresqlDistanceFunctionName attribute value.
-var MapAttributePostgresqlDistanceFunctionName = map[string]AttributePostgresqlDistanceFunctionName{
-	"cosine":        AttributePostgresqlDistanceFunctionNameCosine,
-	"l2":            AttributePostgresqlDistanceFunctionNameL2,
-	"inner_product": AttributePostgresqlDistanceFunctionNameInnerProduct,
-	"l1":            AttributePostgresqlDistanceFunctionNameL1,
-	"hamming":       AttributePostgresqlDistanceFunctionNameHamming,
-	"jaccard":       AttributePostgresqlDistanceFunctionNameJaccard,
-}
-
 // AttributeSource specifies the value source attribute.
 type AttributeSource int
 
@@ -360,42 +270,34 @@ var MapAttributeWalOperationLag = map[string]AttributeWalOperationLag{
 
 var MetricsInfo = metricsInfo{
 	PostgresqlBackends: metricInfo{
-		Name:       "postgresql.backends",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.backends",
 	},
 	PostgresqlBgwriterBuffersAllocated: metricInfo{
 		Name: "postgresql.bgwriter.buffers.allocated",
 	},
 	PostgresqlBgwriterBuffersWrites: metricInfo{
-		Name:       "postgresql.bgwriter.buffers.writes",
-		Attributes: []string{"bg_buffer_source"},
+		Name: "postgresql.bgwriter.buffers.writes",
 	},
 	PostgresqlBgwriterCheckpointCount: metricInfo{
-		Name:       "postgresql.bgwriter.checkpoint.count",
-		Attributes: []string{"bg_checkpoint_type"},
+		Name: "postgresql.bgwriter.checkpoint.count",
 	},
 	PostgresqlBgwriterDuration: metricInfo{
-		Name:       "postgresql.bgwriter.duration",
-		Attributes: []string{"bg_duration_type"},
+		Name: "postgresql.bgwriter.duration",
 	},
 	PostgresqlBgwriterMaxwritten: metricInfo{
 		Name: "postgresql.bgwriter.maxwritten",
 	},
 	PostgresqlBlksHit: metricInfo{
-		Name:       "postgresql.blks_hit",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.blks_hit",
 	},
 	PostgresqlBlksRead: metricInfo{
-		Name:       "postgresql.blks_read",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.blks_read",
 	},
 	PostgresqlBlocksRead: metricInfo{
-		Name:       "postgresql.blocks_read",
-		Attributes: []string{"source", "db.namespace", "db.collection.name"},
+		Name: "postgresql.blocks_read",
 	},
 	PostgresqlCommits: metricInfo{
-		Name:       "postgresql.commits",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.commits",
 	},
 	PostgresqlConnectionMax: metricInfo{
 		Name: "postgresql.connection.max",
@@ -404,127 +306,76 @@ var MetricsInfo = metricsInfo{
 		Name: "postgresql.database.count",
 	},
 	PostgresqlDatabaseLocks: metricInfo{
-		Name:       "postgresql.database.locks",
-		Attributes: []string{"relation", "mode", "lock_type", "db.namespace"},
+		Name: "postgresql.database.locks",
 	},
 	PostgresqlDbSize: metricInfo{
-		Name:       "postgresql.db_size",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.db_size",
 	},
 	PostgresqlDeadlocks: metricInfo{
-		Name:       "postgresql.deadlocks",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.deadlocks",
 	},
 	PostgresqlFunctionCalls: metricInfo{
-		Name:       "postgresql.function.calls",
-		Attributes: []string{"function", "db.namespace"},
+		Name: "postgresql.function.calls",
 	},
 	PostgresqlIndexScans: metricInfo{
-		Name:       "postgresql.index.scans",
-		Attributes: []string{"db.namespace", "db.collection.name", "postgresql.index.name"},
+		Name: "postgresql.index.scans",
 	},
 	PostgresqlIndexSize: metricInfo{
-		Name:       "postgresql.index.size",
-		Attributes: []string{"db.namespace", "db.collection.name", "postgresql.index.name"},
+		Name: "postgresql.index.size",
 	},
 	PostgresqlOperations: metricInfo{
-		Name:       "postgresql.operations",
-		Attributes: []string{"operation", "db.namespace", "db.collection.name"},
-	},
-	PostgresqlQueryConflicts: metricInfo{
-		Name:       "postgresql.query.conflicts",
-		Attributes: []string{"postgresql.conflict.type", "db.namespace"},
-	},
-	PostgresqlQueryExecutionTime: metricInfo{
-		Name:       "postgresql.query.execution.time",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.operations",
 	},
 	PostgresqlReplicationDataDelay: metricInfo{
-		Name:       "postgresql.replication.data_delay",
-		Attributes: []string{"replication_client"},
+		Name: "postgresql.replication.data_delay",
 	},
 	PostgresqlRollbacks: metricInfo{
-		Name:       "postgresql.rollbacks",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.rollbacks",
 	},
 	PostgresqlRows: metricInfo{
-		Name:       "postgresql.rows",
-		Attributes: []string{"state", "db.namespace", "db.collection.name"},
+		Name: "postgresql.rows",
 	},
 	PostgresqlSequentialScans: metricInfo{
-		Name:       "postgresql.sequential_scans",
-		Attributes: []string{"db.namespace", "db.collection.name"},
+		Name: "postgresql.sequential_scans",
 	},
 	PostgresqlTableCount: metricInfo{
-		Name:       "postgresql.table.count",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.table.count",
 	},
 	PostgresqlTableSize: metricInfo{
-		Name:       "postgresql.table.size",
-		Attributes: []string{"db.namespace", "db.collection.name"},
+		Name: "postgresql.table.size",
 	},
 	PostgresqlTableVacuumCount: metricInfo{
-		Name:       "postgresql.table.vacuum.count",
-		Attributes: []string{"db.namespace", "db.collection.name"},
+		Name: "postgresql.table.vacuum.count",
 	},
 	PostgresqlTempIo: metricInfo{
-		Name:       "postgresql.temp.io",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.temp.io",
 	},
 	PostgresqlTempFiles: metricInfo{
-		Name:       "postgresql.temp_files",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.temp_files",
 	},
 	PostgresqlTupDeleted: metricInfo{
-		Name:       "postgresql.tup_deleted",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.tup_deleted",
 	},
 	PostgresqlTupFetched: metricInfo{
-		Name:       "postgresql.tup_fetched",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.tup_fetched",
 	},
 	PostgresqlTupInserted: metricInfo{
-		Name:       "postgresql.tup_inserted",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.tup_inserted",
 	},
 	PostgresqlTupReturned: metricInfo{
-		Name:       "postgresql.tup_returned",
-		Attributes: []string{"db.namespace"},
+		Name: "postgresql.tup_returned",
 	},
 	PostgresqlTupUpdated: metricInfo{
-		Name:       "postgresql.tup_updated",
-		Attributes: []string{"db.namespace"},
-	},
-	PostgresqlVectorInsertDuration: metricInfo{
-		Name:       "postgresql.vector.insert.duration",
-		Attributes: []string{"db.namespace"},
-	},
-	PostgresqlVectorInsertRows: metricInfo{
-		Name:       "postgresql.vector.insert.rows",
-		Attributes: []string{"db.namespace"},
-	},
-	PostgresqlVectorSearchCalls: metricInfo{
-		Name:       "postgresql.vector.search.calls",
-		Attributes: []string{"postgresql.distance.function.name", "db.namespace"},
-	},
-	PostgresqlVectorSearchDuration: metricInfo{
-		Name:       "postgresql.vector.search.duration",
-		Attributes: []string{"postgresql.distance.function.name", "db.namespace"},
-	},
-	PostgresqlVectorSearchRowsReturned: metricInfo{
-		Name:       "postgresql.vector.search.rows_returned",
-		Attributes: []string{"postgresql.distance.function.name", "db.namespace"},
+		Name: "postgresql.tup_updated",
 	},
 	PostgresqlWalAge: metricInfo{
 		Name: "postgresql.wal.age",
 	},
 	PostgresqlWalDelay: metricInfo{
-		Name:       "postgresql.wal.delay",
-		Attributes: []string{"wal_operation_lag", "replication_client"},
+		Name: "postgresql.wal.delay",
 	},
 	PostgresqlWalLag: metricInfo{
-		Name:       "postgresql.wal.lag",
-		Attributes: []string{"wal_operation_lag", "replication_client"},
+		Name: "postgresql.wal.lag",
 	},
 }
 
@@ -548,8 +399,6 @@ type metricsInfo struct {
 	PostgresqlIndexScans               metricInfo
 	PostgresqlIndexSize                metricInfo
 	PostgresqlOperations               metricInfo
-	PostgresqlQueryConflicts           metricInfo
-	PostgresqlQueryExecutionTime       metricInfo
 	PostgresqlReplicationDataDelay     metricInfo
 	PostgresqlRollbacks                metricInfo
 	PostgresqlRows                     metricInfo
@@ -564,81 +413,39 @@ type metricsInfo struct {
 	PostgresqlTupInserted              metricInfo
 	PostgresqlTupReturned              metricInfo
 	PostgresqlTupUpdated               metricInfo
-	PostgresqlVectorInsertDuration     metricInfo
-	PostgresqlVectorInsertRows         metricInfo
-	PostgresqlVectorSearchCalls        metricInfo
-	PostgresqlVectorSearchDuration     metricInfo
-	PostgresqlVectorSearchRowsReturned metricInfo
 	PostgresqlWalAge                   metricInfo
 	PostgresqlWalDelay                 metricInfo
 	PostgresqlWalLag                   metricInfo
 }
 
 type metricInfo struct {
-	Name       string
-	Attributes []string
+	Name string
 }
 
 type metricPostgresqlBackends struct {
-	data          pmetric.Metric                 // data buffer for generated metric.
-	config        PostgresqlBackendsMetricConfig // metric config provided by user.
-	capacity      int                            // max observed number of data points added to the metric.
-	aggDataPoints []int64                        // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                 // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                 // data buffer for generated metric.
+	config   PostgresqlBackendsMetricConfig // metric config provided by user.
+	capacity int                            // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.backends metric with initial data.
 func (m *metricPostgresqlBackends) init() {
 	m.data.SetName("postgresql.backends")
-	m.data.SetDescription("The number of backend processes associated with each database. Counts backends across all connection states (active, idle, idle-in-transaction) and all backend types, including non-client backends such as autovacuum and parallel workers.")
+	m.data.SetDescription("The number of backends.")
 	m.data.SetUnit("1")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlBackends) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlBackends) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlBackendsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -651,11 +458,6 @@ func (m *metricPostgresqlBackends) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlBackends) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -729,7 +531,6 @@ type metricPostgresqlBgwriterBuffersWrites struct {
 	config        PostgresqlBgwriterBuffersWritesMetricConfig // metric config provided by user.
 	capacity      int                                         // max observed number of data points added to the metric.
 	aggDataPoints []int64                                     // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                              // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.bgwriter.buffers.writes metric with initial data.
@@ -742,7 +543,6 @@ func (m *metricPostgresqlBgwriterBuffersWrites) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricPostgresqlBgwriterBuffersWrites) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, bgBufferSourceAttributeValue string) {
@@ -758,31 +558,31 @@ func (m *metricPostgresqlBgwriterBuffersWrites) recordDataPoint(start pcommon.Ti
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -822,7 +622,6 @@ type metricPostgresqlBgwriterCheckpointCount struct {
 	config        PostgresqlBgwriterCheckpointCountMetricConfig // metric config provided by user.
 	capacity      int                                           // max observed number of data points added to the metric.
 	aggDataPoints []int64                                       // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                                // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.bgwriter.checkpoint.count metric with initial data.
@@ -835,7 +634,6 @@ func (m *metricPostgresqlBgwriterCheckpointCount) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricPostgresqlBgwriterCheckpointCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, bgCheckpointTypeAttributeValue string) {
@@ -851,31 +649,31 @@ func (m *metricPostgresqlBgwriterCheckpointCount) recordDataPoint(start pcommon.
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -915,7 +713,6 @@ type metricPostgresqlBgwriterDuration struct {
 	config        PostgresqlBgwriterDurationMetricConfig // metric config provided by user.
 	capacity      int                                    // max observed number of data points added to the metric.
 	aggDataPoints []float64                              // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                         // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.bgwriter.duration metric with initial data.
@@ -928,7 +725,6 @@ func (m *metricPostgresqlBgwriterDuration) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricPostgresqlBgwriterDuration) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, bgDurationTypeAttributeValue string) {
@@ -944,31 +740,31 @@ func (m *metricPostgresqlBgwriterDuration) recordDataPoint(start pcommon.Timesta
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetDoubleValue(dpi.DoubleValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.DoubleValue() > val {
-				dpi.SetDoubleValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetDoubleValue(dpi.DoubleValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.DoubleValue() > val {
+					dpi.SetDoubleValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.DoubleValue() < val {
+					dpi.SetDoubleValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.DoubleValue() < val {
-				dpi.SetDoubleValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetDoubleValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -1056,11 +852,9 @@ func newMetricPostgresqlBgwriterMaxwritten(cfg PostgresqlBgwriterMaxwrittenMetri
 }
 
 type metricPostgresqlBlksHit struct {
-	data          pmetric.Metric                // data buffer for generated metric.
-	config        PostgresqlBlksHitMetricConfig // metric config provided by user.
-	capacity      int                           // max observed number of data points added to the metric.
-	aggDataPoints []int64                       // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                // data buffer for generated metric.
+	config   PostgresqlBlksHitMetricConfig // metric config provided by user.
+	capacity int                           // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.blks_hit metric with initial data.
@@ -1071,50 +865,16 @@ func (m *metricPostgresqlBlksHit) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlBlksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlBlksHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlBlksHitMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -1127,11 +887,6 @@ func (m *metricPostgresqlBlksHit) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlBlksHit) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -1149,11 +904,9 @@ func newMetricPostgresqlBlksHit(cfg PostgresqlBlksHitMetricConfig) metricPostgre
 }
 
 type metricPostgresqlBlksRead struct {
-	data          pmetric.Metric                 // data buffer for generated metric.
-	config        PostgresqlBlksReadMetricConfig // metric config provided by user.
-	capacity      int                            // max observed number of data points added to the metric.
-	aggDataPoints []int64                        // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                 // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                 // data buffer for generated metric.
+	config   PostgresqlBlksReadMetricConfig // metric config provided by user.
+	capacity int                            // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.blks_read metric with initial data.
@@ -1164,50 +917,16 @@ func (m *metricPostgresqlBlksRead) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlBlksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlBlksReadMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -1220,11 +939,6 @@ func (m *metricPostgresqlBlksRead) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlBlksRead) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -1246,7 +960,6 @@ type metricPostgresqlBlocksRead struct {
 	config        PostgresqlBlocksReadMetricConfig // metric config provided by user.
 	capacity      int                              // max observed number of data points added to the metric.
 	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.blocks_read metric with initial data.
@@ -1259,10 +972,9 @@ func (m *metricPostgresqlBlocksRead) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlBlocksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, sourceAttributeValue string, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
+func (m *metricPostgresqlBlocksRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, sourceAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1273,39 +985,33 @@ func (m *metricPostgresqlBlocksRead) recordDataPoint(start pcommon.Timestamp, ts
 	if slices.Contains(m.config.EnabledAttributes, PostgresqlBlocksReadMetricAttributeKeySource) {
 		dp.Attributes().PutStr("source", sourceAttributeValue)
 	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlBlocksReadMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlBlocksReadMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -1340,12 +1046,61 @@ func newMetricPostgresqlBlocksRead(cfg PostgresqlBlocksReadMetricConfig) metricP
 	return m
 }
 
+type metricPostgresqlBufferHit struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.buffer_hit metric with initial data.
+func (m *metricPostgresqlBufferHit) init() {
+	m.data.SetName("postgresql.buffer_hit")
+	m.data.SetDescription("The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.")
+	m.data.SetUnit("{hit}/s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricPostgresqlBufferHit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbnameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("dbname", dbnameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlBufferHit) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlBufferHit) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlBufferHit(cfg MetricConfig) metricPostgresqlBufferHit {
+	m := metricPostgresqlBufferHit{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricPostgresqlCommits struct {
-	data          pmetric.Metric                // data buffer for generated metric.
-	config        PostgresqlCommitsMetricConfig // metric config provided by user.
-	capacity      int                           // max observed number of data points added to the metric.
-	aggDataPoints []int64                       // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                // data buffer for generated metric.
+	config   PostgresqlCommitsMetricConfig // metric config provided by user.
+	capacity int                           // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.commits metric with initial data.
@@ -1356,50 +1111,16 @@ func (m *metricPostgresqlCommits) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlCommits) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlCommits) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlCommitsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -1412,11 +1133,6 @@ func (m *metricPostgresqlCommits) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlCommits) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -1492,7 +1208,7 @@ type metricPostgresqlConnectionMax struct {
 func (m *metricPostgresqlConnectionMax) init() {
 	m.data.SetName("postgresql.connection.max")
 	m.data.SetDescription("Configured maximum number of client connections allowed")
-	m.data.SetUnit("{connections}")
+	m.data.SetUnit("{connection}")
 	m.data.SetEmptyGauge()
 }
 
@@ -1589,21 +1305,19 @@ type metricPostgresqlDatabaseLocks struct {
 	config        PostgresqlDatabaseLocksMetricConfig // metric config provided by user.
 	capacity      int                                 // max observed number of data points added to the metric.
 	aggDataPoints []int64                             // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                      // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.database.locks metric with initial data.
 func (m *metricPostgresqlDatabaseLocks) init() {
 	m.data.SetName("postgresql.database.locks")
-	m.data.SetDescription("The number of database locks, including those held by the receiver's own connections.")
+	m.data.SetDescription("The number of database locks.")
 	m.data.SetUnit("{lock}")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlDatabaseLocks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationAttributeValue string, modeAttributeValue string, lockTypeAttributeValue string, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlDatabaseLocks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationAttributeValue string, modeAttributeValue string, lockTypeAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1620,36 +1334,33 @@ func (m *metricPostgresqlDatabaseLocks) recordDataPoint(start pcommon.Timestamp,
 	if slices.Contains(m.config.EnabledAttributes, PostgresqlDatabaseLocksMetricAttributeKeyLockType) {
 		dp.Attributes().PutStr("lock_type", lockTypeAttributeValue)
 	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlDatabaseLocksMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Gauge().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -1685,11 +1396,9 @@ func newMetricPostgresqlDatabaseLocks(cfg PostgresqlDatabaseLocksMetricConfig) m
 }
 
 type metricPostgresqlDbSize struct {
-	data          pmetric.Metric               // data buffer for generated metric.
-	config        PostgresqlDbSizeMetricConfig // metric config provided by user.
-	capacity      int                          // max observed number of data points added to the metric.
-	aggDataPoints []int64                      // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int               // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric               // data buffer for generated metric.
+	config   PostgresqlDbSizeMetricConfig // metric config provided by user.
+	capacity int                          // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.db_size metric with initial data.
@@ -1700,50 +1409,16 @@ func (m *metricPostgresqlDbSize) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlDbSize) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlDbSize) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlDbSizeMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -1756,11 +1431,6 @@ func (m *metricPostgresqlDbSize) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlDbSize) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -1778,11 +1448,9 @@ func newMetricPostgresqlDbSize(cfg PostgresqlDbSizeMetricConfig) metricPostgresq
 }
 
 type metricPostgresqlDeadlocks struct {
-	data          pmetric.Metric                  // data buffer for generated metric.
-	config        PostgresqlDeadlocksMetricConfig // metric config provided by user.
-	capacity      int                             // max observed number of data points added to the metric.
-	aggDataPoints []int64                         // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                  // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                  // data buffer for generated metric.
+	config   PostgresqlDeadlocksMetricConfig // metric config provided by user.
+	capacity int                             // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.deadlocks metric with initial data.
@@ -1793,50 +1461,16 @@ func (m *metricPostgresqlDeadlocks) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlDeadlocks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlDeadlocks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlDeadlocksMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -1849,11 +1483,6 @@ func (m *metricPostgresqlDeadlocks) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlDeadlocks) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -1875,7 +1504,6 @@ type metricPostgresqlFunctionCalls struct {
 	config        PostgresqlFunctionCallsMetricConfig // metric config provided by user.
 	capacity      int                                 // max observed number of data points added to the metric.
 	aggDataPoints []int64                             // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                      // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.function.calls metric with initial data.
@@ -1888,10 +1516,9 @@ func (m *metricPostgresqlFunctionCalls) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlFunctionCalls) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, functionAttributeValue string, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlFunctionCalls) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, functionAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1902,36 +1529,33 @@ func (m *metricPostgresqlFunctionCalls) recordDataPoint(start pcommon.Timestamp,
 	if slices.Contains(m.config.EnabledAttributes, PostgresqlFunctionCallsMetricAttributeKeyFunction) {
 		dp.Attributes().PutStr("function", functionAttributeValue)
 	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlFunctionCallsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -1967,11 +1591,9 @@ func newMetricPostgresqlFunctionCalls(cfg PostgresqlFunctionCallsMetricConfig) m
 }
 
 type metricPostgresqlIndexScans struct {
-	data          pmetric.Metric                   // data buffer for generated metric.
-	config        PostgresqlIndexScansMetricConfig // metric config provided by user.
-	capacity      int                              // max observed number of data points added to the metric.
-	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                   // data buffer for generated metric.
+	config   PostgresqlIndexScansMetricConfig // metric config provided by user.
+	capacity int                              // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.index.scans metric with initial data.
@@ -1982,56 +1604,16 @@ func (m *metricPostgresqlIndexScans) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlIndexScans) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string, postgresqlIndexNameAttributeValue string) {
+func (m *metricPostgresqlIndexScans) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlIndexScansMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlIndexScansMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlIndexScansMetricAttributeKeyPostgresqlIndexName) {
-		dp.Attributes().PutStr("postgresql.index.name", postgresqlIndexNameAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2044,11 +1626,6 @@ func (m *metricPostgresqlIndexScans) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlIndexScans) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -2066,11 +1643,9 @@ func newMetricPostgresqlIndexScans(cfg PostgresqlIndexScansMetricConfig) metricP
 }
 
 type metricPostgresqlIndexSize struct {
-	data          pmetric.Metric                  // data buffer for generated metric.
-	config        PostgresqlIndexSizeMetricConfig // metric config provided by user.
-	capacity      int                             // max observed number of data points added to the metric.
-	aggDataPoints []int64                         // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                  // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                  // data buffer for generated metric.
+	config   PostgresqlIndexSizeMetricConfig // metric config provided by user.
+	capacity int                             // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.index.size metric with initial data.
@@ -2079,56 +1654,16 @@ func (m *metricPostgresqlIndexSize) init() {
 	m.data.SetDescription("The size of the index on disk.")
 	m.data.SetUnit("By")
 	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlIndexSize) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string, postgresqlIndexNameAttributeValue string) {
+func (m *metricPostgresqlIndexSize) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlIndexSizeMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlIndexSizeMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlIndexSizeMetricAttributeKeyPostgresqlIndexName) {
-		dp.Attributes().PutStr("postgresql.index.name", postgresqlIndexNameAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Gauge().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2141,11 +1676,6 @@ func (m *metricPostgresqlIndexSize) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlIndexSize) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Gauge().DataPoints().At(i).SetIntValue(m.data.Gauge().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -2162,12 +1692,62 @@ func newMetricPostgresqlIndexSize(cfg PostgresqlIndexSizeMetricConfig) metricPos
 	return m
 }
 
+type metricPostgresqlLiveRows struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.live_rows metric with initial data.
+func (m *metricPostgresqlLiveRows) init() {
+	m.data.SetName("postgresql.live_rows")
+	m.data.SetDescription("The approximate number of live rows, tagged with relation name.")
+	m.data.SetUnit("{row}")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricPostgresqlLiveRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlLiveRows) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlLiveRows) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlLiveRows(cfg MetricConfig) metricPostgresqlLiveRows {
+	m := metricPostgresqlLiveRows{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricPostgresqlOperations struct {
 	data          pmetric.Metric                   // data buffer for generated metric.
 	config        PostgresqlOperationsMetricConfig // metric config provided by user.
 	capacity      int                              // max observed number of data points added to the metric.
 	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.operations metric with initial data.
@@ -2180,10 +1760,9 @@ func (m *metricPostgresqlOperations) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlOperations) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, operationAttributeValue string, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
+func (m *metricPostgresqlOperations) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, operationAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2194,39 +1773,33 @@ func (m *metricPostgresqlOperations) recordDataPoint(start pcommon.Timestamp, ts
 	if slices.Contains(m.config.EnabledAttributes, PostgresqlOperationsMetricAttributeKeyOperation) {
 		dp.Attributes().PutStr("operation", operationAttributeValue)
 	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlOperationsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlOperationsMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -2261,95 +1834,53 @@ func newMetricPostgresqlOperations(cfg PostgresqlOperationsMetricConfig) metricP
 	return m
 }
 
-type metricPostgresqlQueryConflicts struct {
-	data          pmetric.Metric                       // data buffer for generated metric.
-	config        PostgresqlQueryConflictsMetricConfig // metric config provided by user.
-	capacity      int                                  // max observed number of data points added to the metric.
-	aggDataPoints []int64                              // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                       // maps a data point's hash to its index, for O(1) dedup lookup.
+type metricPostgresqlQueryCount struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
 }
 
-// init fills postgresql.query.conflicts metric with initial data.
-func (m *metricPostgresqlQueryConflicts) init() {
-	m.data.SetName("postgresql.query.conflicts")
-	m.data.SetDescription("Number of queries canceled due to conflicts with recovery on this database. Conflicts only occur on standby servers; this metric will be zero on primary servers.")
-	m.data.SetUnit("{query}")
+// init fills postgresql.query.count metric with initial data.
+func (m *metricPostgresqlQueryCount) init() {
+	m.data.SetName("postgresql.query.count")
+	m.data.SetDescription("Number of times the statement was executed.")
+	m.data.SetUnit("1")
 	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlQueryConflicts) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, postgresqlConflictTypeAttributeValue string, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlQueryCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryTextAttributeValue string, queryIDAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlQueryConflictsMetricAttributeKeyPostgresqlConflictType) {
-		dp.Attributes().PutStr("postgresql.conflict.type", postgresqlConflictTypeAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlQueryConflictsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
+	dp.Attributes().PutStr("query_text", queryTextAttributeValue)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlQueryConflicts) updateCapacity() {
+func (m *metricPostgresqlQueryCount) updateCapacity() {
 	if m.data.Sum().DataPoints().Len() > m.capacity {
 		m.capacity = m.data.Sum().DataPoints().Len()
 	}
 }
 
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlQueryConflicts) emit(metrics pmetric.MetricSlice) {
+func (m *metricPostgresqlQueryCount) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
 	}
 }
 
-func newMetricPostgresqlQueryConflicts(cfg PostgresqlQueryConflictsMetricConfig) metricPostgresqlQueryConflicts {
-	m := metricPostgresqlQueryConflicts{config: cfg}
-
+func newMetricPostgresqlQueryCount(cfg MetricConfig) metricPostgresqlQueryCount {
+	m := metricPostgresqlQueryCount{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2357,92 +1888,53 @@ func newMetricPostgresqlQueryConflicts(cfg PostgresqlQueryConflictsMetricConfig)
 	return m
 }
 
-type metricPostgresqlQueryExecutionTime struct {
-	data          pmetric.Metric                           // data buffer for generated metric.
-	config        PostgresqlQueryExecutionTimeMetricConfig // metric config provided by user.
-	capacity      int                                      // max observed number of data points added to the metric.
-	aggDataPoints []float64                                // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                           // maps a data point's hash to its index, for O(1) dedup lookup.
+type metricPostgresqlQueryTotalExecTime struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
 }
 
-// init fills postgresql.query.execution.time metric with initial data.
-func (m *metricPostgresqlQueryExecutionTime) init() {
-	m.data.SetName("postgresql.query.execution.time")
-	m.data.SetDescription("The total execution time of SQL statements currently tracked by pg_stat_statements for the database.")
-	m.data.SetUnit("s")
+// init fills postgresql.query.total_exec_time metric with initial data.
+func (m *metricPostgresqlQueryTotalExecTime) init() {
+	m.data.SetName("postgresql.query.total_exec_time")
+	m.data.SetDescription("Total wait time of the normalised timed events in nanaoseconds.")
+	m.data.SetUnit("ns")
 	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlQueryExecutionTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlQueryTotalExecTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryTextAttributeValue string, queryIDAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlQueryExecutionTimeMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetDoubleValue(dpi.DoubleValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.DoubleValue() > val {
-				dpi.SetDoubleValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.DoubleValue() < val {
-				dpi.SetDoubleValue(val)
-			}
-			return
-		}
-	}
-
-	dp.SetDoubleValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_text", queryTextAttributeValue)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlQueryExecutionTime) updateCapacity() {
+func (m *metricPostgresqlQueryTotalExecTime) updateCapacity() {
 	if m.data.Sum().DataPoints().Len() > m.capacity {
 		m.capacity = m.data.Sum().DataPoints().Len()
 	}
 }
 
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlQueryExecutionTime) emit(metrics pmetric.MetricSlice) {
+func (m *metricPostgresqlQueryTotalExecTime) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetDoubleValue(m.data.Sum().DataPoints().At(i).DoubleValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
 	}
 }
 
-func newMetricPostgresqlQueryExecutionTime(cfg PostgresqlQueryExecutionTimeMetricConfig) metricPostgresqlQueryExecutionTime {
-	m := metricPostgresqlQueryExecutionTime{config: cfg}
-
+func newMetricPostgresqlQueryTotalExecTime(cfg MetricConfig) metricPostgresqlQueryTotalExecTime {
+	m := metricPostgresqlQueryTotalExecTime{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2455,7 +1947,6 @@ type metricPostgresqlReplicationDataDelay struct {
 	config        PostgresqlReplicationDataDelayMetricConfig // metric config provided by user.
 	capacity      int                                        // max observed number of data points added to the metric.
 	aggDataPoints []int64                                    // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                             // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.replication.data_delay metric with initial data.
@@ -2466,7 +1957,6 @@ func (m *metricPostgresqlReplicationDataDelay) init() {
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricPostgresqlReplicationDataDelay) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, replicationClientAttributeValue string) {
@@ -2482,31 +1972,31 @@ func (m *metricPostgresqlReplicationDataDelay) recordDataPoint(start pcommon.Tim
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Gauge().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -2542,11 +2032,9 @@ func newMetricPostgresqlReplicationDataDelay(cfg PostgresqlReplicationDataDelayM
 }
 
 type metricPostgresqlRollbacks struct {
-	data          pmetric.Metric                  // data buffer for generated metric.
-	config        PostgresqlRollbacksMetricConfig // metric config provided by user.
-	capacity      int                             // max observed number of data points added to the metric.
-	aggDataPoints []int64                         // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                  // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                  // data buffer for generated metric.
+	config   PostgresqlRollbacksMetricConfig // metric config provided by user.
+	capacity int                             // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.rollbacks metric with initial data.
@@ -2557,50 +2045,16 @@ func (m *metricPostgresqlRollbacks) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlRollbacks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlRollbacks) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlRollbacksMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2613,11 +2067,6 @@ func (m *metricPostgresqlRollbacks) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlRollbacks) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -2639,7 +2088,6 @@ type metricPostgresqlRows struct {
 	config        PostgresqlRowsMetricConfig // metric config provided by user.
 	capacity      int                        // max observed number of data points added to the metric.
 	aggDataPoints []int64                    // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int             // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.rows metric with initial data.
@@ -2652,10 +2100,9 @@ func (m *metricPostgresqlRows) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, stateAttributeValue string, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
+func (m *metricPostgresqlRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, stateAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -2666,39 +2113,33 @@ func (m *metricPostgresqlRows) recordDataPoint(start pcommon.Timestamp, ts pcomm
 	if slices.Contains(m.config.EnabledAttributes, PostgresqlRowsMetricAttributeKeyState) {
 		dp.Attributes().PutStr("state", stateAttributeValue)
 	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlRowsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlRowsMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -2733,12 +2174,214 @@ func newMetricPostgresqlRows(cfg PostgresqlRowsMetricConfig) metricPostgresqlRow
 	return m
 }
 
+type metricPostgresqlRowsDeleted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.rows_deleted metric with initial data.
+func (m *metricPostgresqlRowsDeleted) init() {
+	m.data.SetName("postgresql.rows_deleted")
+	m.data.SetDescription("Rows deleted by queries in this db, tagged with relation name.")
+	m.data.SetUnit("{row}/s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricPostgresqlRowsDeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlRowsDeleted) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlRowsDeleted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlRowsDeleted(cfg MetricConfig) metricPostgresqlRowsDeleted {
+	m := metricPostgresqlRowsDeleted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlRowsFetched struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.rows_fetched metric with initial data.
+func (m *metricPostgresqlRowsFetched) init() {
+	m.data.SetName("postgresql.rows_fetched")
+	m.data.SetDescription("Rows fetched by queries in this db, tagged with relation name.")
+	m.data.SetUnit("{row}/s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricPostgresqlRowsFetched) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlRowsFetched) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlRowsFetched) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlRowsFetched(cfg MetricConfig) metricPostgresqlRowsFetched {
+	m := metricPostgresqlRowsFetched{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlRowsInserted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.rows_inserted metric with initial data.
+func (m *metricPostgresqlRowsInserted) init() {
+	m.data.SetName("postgresql.rows_inserted")
+	m.data.SetDescription("Rows inserted by queries in the db, tagged with relation name.")
+	m.data.SetUnit("{row}/s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricPostgresqlRowsInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlRowsInserted) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlRowsInserted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlRowsInserted(cfg MetricConfig) metricPostgresqlRowsInserted {
+	m := metricPostgresqlRowsInserted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricPostgresqlRowsUpdated struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.rows_updated metric with initial data.
+func (m *metricPostgresqlRowsUpdated) init() {
+	m.data.SetName("postgresql.rows_updated")
+	m.data.SetDescription("Rows updated by queries in the db, tagged with relation name.")
+	m.data.SetUnit("{row}/s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricPostgresqlRowsUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("relation_name", relationNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlRowsUpdated) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlRowsUpdated) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlRowsUpdated(cfg MetricConfig) metricPostgresqlRowsUpdated {
+	m := metricPostgresqlRowsUpdated{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricPostgresqlSequentialScans struct {
-	data          pmetric.Metric                        // data buffer for generated metric.
-	config        PostgresqlSequentialScansMetricConfig // metric config provided by user.
-	capacity      int                                   // max observed number of data points added to the metric.
-	aggDataPoints []int64                               // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                        // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                        // data buffer for generated metric.
+	config   PostgresqlSequentialScansMetricConfig // metric config provided by user.
+	capacity int                                   // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.sequential_scans metric with initial data.
@@ -2749,53 +2392,16 @@ func (m *metricPostgresqlSequentialScans) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlSequentialScans) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
+func (m *metricPostgresqlSequentialScans) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlSequentialScansMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlSequentialScansMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2808,11 +2414,6 @@ func (m *metricPostgresqlSequentialScans) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlSequentialScans) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -2830,11 +2431,9 @@ func newMetricPostgresqlSequentialScans(cfg PostgresqlSequentialScansMetricConfi
 }
 
 type metricPostgresqlTableCount struct {
-	data          pmetric.Metric                   // data buffer for generated metric.
-	config        PostgresqlTableCountMetricConfig // metric config provided by user.
-	capacity      int                              // max observed number of data points added to the metric.
-	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                   // data buffer for generated metric.
+	config   PostgresqlTableCountMetricConfig // metric config provided by user.
+	capacity int                              // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.table.count metric with initial data.
@@ -2845,50 +2444,16 @@ func (m *metricPostgresqlTableCount) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTableCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTableCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTableCountMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2901,11 +2466,6 @@ func (m *metricPostgresqlTableCount) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTableCount) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -2923,68 +2483,29 @@ func newMetricPostgresqlTableCount(cfg PostgresqlTableCountMetricConfig) metricP
 }
 
 type metricPostgresqlTableSize struct {
-	data          pmetric.Metric                  // data buffer for generated metric.
-	config        PostgresqlTableSizeMetricConfig // metric config provided by user.
-	capacity      int                             // max observed number of data points added to the metric.
-	aggDataPoints []int64                         // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                  // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                  // data buffer for generated metric.
+	config   PostgresqlTableSizeMetricConfig // metric config provided by user.
+	capacity int                             // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.table.size metric with initial data.
 func (m *metricPostgresqlTableSize) init() {
 	m.data.SetName("postgresql.table.size")
-	m.data.SetDescription("Total disk space used by a table, including its indexes and TOAST data.")
+	m.data.SetDescription("Disk space used by a table.")
 	m.data.SetUnit("By")
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(false)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTableSize) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
+func (m *metricPostgresqlTableSize) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTableSizeMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTableSizeMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -2997,11 +2518,6 @@ func (m *metricPostgresqlTableSize) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTableSize) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3019,11 +2535,9 @@ func newMetricPostgresqlTableSize(cfg PostgresqlTableSizeMetricConfig) metricPos
 }
 
 type metricPostgresqlTableVacuumCount struct {
-	data          pmetric.Metric                         // data buffer for generated metric.
-	config        PostgresqlTableVacuumCountMetricConfig // metric config provided by user.
-	capacity      int                                    // max observed number of data points added to the metric.
-	aggDataPoints []int64                                // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                         // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                         // data buffer for generated metric.
+	config   PostgresqlTableVacuumCountMetricConfig // metric config provided by user.
+	capacity int                                    // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.table.vacuum.count metric with initial data.
@@ -3034,53 +2548,16 @@ func (m *metricPostgresqlTableVacuumCount) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTableVacuumCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
+func (m *metricPostgresqlTableVacuumCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTableVacuumCountMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTableVacuumCountMetricAttributeKeyDbCollectionName) {
-		dp.Attributes().PutStr("db.collection.name", dbCollectionNameAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3093,11 +2570,6 @@ func (m *metricPostgresqlTableVacuumCount) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTableVacuumCount) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3115,11 +2587,9 @@ func newMetricPostgresqlTableVacuumCount(cfg PostgresqlTableVacuumCountMetricCon
 }
 
 type metricPostgresqlTempIo struct {
-	data          pmetric.Metric               // data buffer for generated metric.
-	config        PostgresqlTempIoMetricConfig // metric config provided by user.
-	capacity      int                          // max observed number of data points added to the metric.
-	aggDataPoints []int64                      // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int               // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric               // data buffer for generated metric.
+	config   PostgresqlTempIoMetricConfig // metric config provided by user.
+	capacity int                          // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.temp.io metric with initial data.
@@ -3130,50 +2600,16 @@ func (m *metricPostgresqlTempIo) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTempIo) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTempIo) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTempIoMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3186,11 +2622,6 @@ func (m *metricPostgresqlTempIo) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTempIo) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3208,11 +2639,9 @@ func newMetricPostgresqlTempIo(cfg PostgresqlTempIoMetricConfig) metricPostgresq
 }
 
 type metricPostgresqlTempFiles struct {
-	data          pmetric.Metric                  // data buffer for generated metric.
-	config        PostgresqlTempFilesMetricConfig // metric config provided by user.
-	capacity      int                             // max observed number of data points added to the metric.
-	aggDataPoints []int64                         // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                  // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                  // data buffer for generated metric.
+	config   PostgresqlTempFilesMetricConfig // metric config provided by user.
+	capacity int                             // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.temp_files metric with initial data.
@@ -3223,50 +2652,16 @@ func (m *metricPostgresqlTempFiles) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTempFiles) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTempFiles) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTempFilesMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3279,11 +2674,6 @@ func (m *metricPostgresqlTempFiles) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTempFiles) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3301,11 +2691,9 @@ func newMetricPostgresqlTempFiles(cfg PostgresqlTempFilesMetricConfig) metricPos
 }
 
 type metricPostgresqlTupDeleted struct {
-	data          pmetric.Metric                   // data buffer for generated metric.
-	config        PostgresqlTupDeletedMetricConfig // metric config provided by user.
-	capacity      int                              // max observed number of data points added to the metric.
-	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                   // data buffer for generated metric.
+	config   PostgresqlTupDeletedMetricConfig // metric config provided by user.
+	capacity int                              // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.tup_deleted metric with initial data.
@@ -3316,50 +2704,16 @@ func (m *metricPostgresqlTupDeleted) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTupDeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTupDeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTupDeletedMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3372,11 +2726,6 @@ func (m *metricPostgresqlTupDeleted) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTupDeleted) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3394,11 +2743,9 @@ func newMetricPostgresqlTupDeleted(cfg PostgresqlTupDeletedMetricConfig) metricP
 }
 
 type metricPostgresqlTupFetched struct {
-	data          pmetric.Metric                   // data buffer for generated metric.
-	config        PostgresqlTupFetchedMetricConfig // metric config provided by user.
-	capacity      int                              // max observed number of data points added to the metric.
-	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                   // data buffer for generated metric.
+	config   PostgresqlTupFetchedMetricConfig // metric config provided by user.
+	capacity int                              // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.tup_fetched metric with initial data.
@@ -3409,50 +2756,16 @@ func (m *metricPostgresqlTupFetched) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTupFetched) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTupFetched) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTupFetchedMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3465,11 +2778,6 @@ func (m *metricPostgresqlTupFetched) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTupFetched) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3487,11 +2795,9 @@ func newMetricPostgresqlTupFetched(cfg PostgresqlTupFetchedMetricConfig) metricP
 }
 
 type metricPostgresqlTupInserted struct {
-	data          pmetric.Metric                    // data buffer for generated metric.
-	config        PostgresqlTupInsertedMetricConfig // metric config provided by user.
-	capacity      int                               // max observed number of data points added to the metric.
-	aggDataPoints []int64                           // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                    // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                    // data buffer for generated metric.
+	config   PostgresqlTupInsertedMetricConfig // metric config provided by user.
+	capacity int                               // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.tup_inserted metric with initial data.
@@ -3502,50 +2808,16 @@ func (m *metricPostgresqlTupInserted) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTupInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTupInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTupInsertedMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3558,11 +2830,6 @@ func (m *metricPostgresqlTupInserted) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTupInserted) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3580,11 +2847,9 @@ func newMetricPostgresqlTupInserted(cfg PostgresqlTupInsertedMetricConfig) metri
 }
 
 type metricPostgresqlTupReturned struct {
-	data          pmetric.Metric                    // data buffer for generated metric.
-	config        PostgresqlTupReturnedMetricConfig // metric config provided by user.
-	capacity      int                               // max observed number of data points added to the metric.
-	aggDataPoints []int64                           // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                    // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                    // data buffer for generated metric.
+	config   PostgresqlTupReturnedMetricConfig // metric config provided by user.
+	capacity int                               // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.tup_returned metric with initial data.
@@ -3595,50 +2860,16 @@ func (m *metricPostgresqlTupReturned) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTupReturned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTupReturned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTupReturnedMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3651,11 +2882,6 @@ func (m *metricPostgresqlTupReturned) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTupReturned) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3673,11 +2899,9 @@ func newMetricPostgresqlTupReturned(cfg PostgresqlTupReturnedMetricConfig) metri
 }
 
 type metricPostgresqlTupUpdated struct {
-	data          pmetric.Metric                   // data buffer for generated metric.
-	config        PostgresqlTupUpdatedMetricConfig // metric config provided by user.
-	capacity      int                              // max observed number of data points added to the metric.
-	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
+	data     pmetric.Metric                   // data buffer for generated metric.
+	config   PostgresqlTupUpdatedMetricConfig // metric config provided by user.
+	capacity int                              // max observed number of data points added to the metric.
 }
 
 // init fills postgresql.tup_updated metric with initial data.
@@ -3688,50 +2912,16 @@ func (m *metricPostgresqlTupUpdated) init() {
 	m.data.SetEmptySum()
 	m.data.Sum().SetIsMonotonic(true)
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
-func (m *metricPostgresqlTupUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
+func (m *metricPostgresqlTupUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
 	if !m.config.Enabled {
 		return
 	}
-
-	dp := pmetric.NewNumberDataPoint()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlTupUpdatedMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
 	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -3744,11 +2934,6 @@ func (m *metricPostgresqlTupUpdated) updateCapacity() {
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricPostgresqlTupUpdated) emit(metrics pmetric.MetricSlice) {
 	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -3757,480 +2942,6 @@ func (m *metricPostgresqlTupUpdated) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTupUpdated(cfg PostgresqlTupUpdatedMetricConfig) metricPostgresqlTupUpdated {
 	m := metricPostgresqlTupUpdated{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricPostgresqlVectorInsertDuration struct {
-	data          pmetric.Metric                             // data buffer for generated metric.
-	config        PostgresqlVectorInsertDurationMetricConfig // metric config provided by user.
-	capacity      int                                        // max observed number of data points added to the metric.
-	aggDataPoints []float64                                  // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                             // maps a data point's hash to its index, for O(1) dedup lookup.
-}
-
-// init fills postgresql.vector.insert.duration metric with initial data.
-func (m *metricPostgresqlVectorInsertDuration) init() {
-	m.data.SetName("postgresql.vector.insert.duration")
-	m.data.SetDescription("The cumulative execution time of statements that insert vectors into pgvector tables.")
-	m.data.SetUnit("s")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
-}
-
-func (m *metricPostgresqlVectorInsertDuration) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-
-	dp := pmetric.NewNumberDataPoint()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorInsertDurationMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetDoubleValue(dpi.DoubleValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.DoubleValue() > val {
-				dpi.SetDoubleValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.DoubleValue() < val {
-				dpi.SetDoubleValue(val)
-			}
-			return
-		}
-	}
-
-	dp.SetDoubleValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlVectorInsertDuration) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlVectorInsertDuration) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetDoubleValue(m.data.Sum().DataPoints().At(i).DoubleValue() / aggCount)
-			}
-		}
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricPostgresqlVectorInsertDuration(cfg PostgresqlVectorInsertDurationMetricConfig) metricPostgresqlVectorInsertDuration {
-	m := metricPostgresqlVectorInsertDuration{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricPostgresqlVectorInsertRows struct {
-	data          pmetric.Metric                         // data buffer for generated metric.
-	config        PostgresqlVectorInsertRowsMetricConfig // metric config provided by user.
-	capacity      int                                    // max observed number of data points added to the metric.
-	aggDataPoints []int64                                // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                         // maps a data point's hash to its index, for O(1) dedup lookup.
-}
-
-// init fills postgresql.vector.insert.rows metric with initial data.
-func (m *metricPostgresqlVectorInsertRows) init() {
-	m.data.SetName("postgresql.vector.insert.rows")
-	m.data.SetDescription("The number of vectors inserted into pgvector tables.")
-	m.data.SetUnit("{vectors}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
-}
-
-func (m *metricPostgresqlVectorInsertRows) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-
-	dp := pmetric.NewNumberDataPoint()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorInsertRowsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
-	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlVectorInsertRows) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlVectorInsertRows) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricPostgresqlVectorInsertRows(cfg PostgresqlVectorInsertRowsMetricConfig) metricPostgresqlVectorInsertRows {
-	m := metricPostgresqlVectorInsertRows{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricPostgresqlVectorSearchCalls struct {
-	data          pmetric.Metric                          // data buffer for generated metric.
-	config        PostgresqlVectorSearchCallsMetricConfig // metric config provided by user.
-	capacity      int                                     // max observed number of data points added to the metric.
-	aggDataPoints []int64                                 // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                          // maps a data point's hash to its index, for O(1) dedup lookup.
-}
-
-// init fills postgresql.vector.search.calls metric with initial data.
-func (m *metricPostgresqlVectorSearchCalls) init() {
-	m.data.SetName("postgresql.vector.search.calls")
-	m.data.SetDescription("The number of vector similarity search operations executed, grouped by the distance function used.")
-	m.data.SetUnit("{search}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
-}
-
-func (m *metricPostgresqlVectorSearchCalls) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, postgresqlDistanceFunctionNameAttributeValue string, dbNamespaceAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-
-	dp := pmetric.NewNumberDataPoint()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorSearchCallsMetricAttributeKeyPostgresqlDistanceFunctionName) {
-		dp.Attributes().PutStr("postgresql.distance.function.name", postgresqlDistanceFunctionNameAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorSearchCallsMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
-	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlVectorSearchCalls) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlVectorSearchCalls) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricPostgresqlVectorSearchCalls(cfg PostgresqlVectorSearchCallsMetricConfig) metricPostgresqlVectorSearchCalls {
-	m := metricPostgresqlVectorSearchCalls{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricPostgresqlVectorSearchDuration struct {
-	data          pmetric.Metric                             // data buffer for generated metric.
-	config        PostgresqlVectorSearchDurationMetricConfig // metric config provided by user.
-	capacity      int                                        // max observed number of data points added to the metric.
-	aggDataPoints []float64                                  // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                             // maps a data point's hash to its index, for O(1) dedup lookup.
-}
-
-// init fills postgresql.vector.search.duration metric with initial data.
-func (m *metricPostgresqlVectorSearchDuration) init() {
-	m.data.SetName("postgresql.vector.search.duration")
-	m.data.SetDescription("The cumulative execution time of vector similarity searches, grouped by the distance function used.")
-	m.data.SetUnit("s")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
-}
-
-func (m *metricPostgresqlVectorSearchDuration) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, postgresqlDistanceFunctionNameAttributeValue string, dbNamespaceAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-
-	dp := pmetric.NewNumberDataPoint()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorSearchDurationMetricAttributeKeyPostgresqlDistanceFunctionName) {
-		dp.Attributes().PutStr("postgresql.distance.function.name", postgresqlDistanceFunctionNameAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorSearchDurationMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetDoubleValue(dpi.DoubleValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.DoubleValue() > val {
-				dpi.SetDoubleValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.DoubleValue() < val {
-				dpi.SetDoubleValue(val)
-			}
-			return
-		}
-	}
-
-	dp.SetDoubleValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlVectorSearchDuration) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlVectorSearchDuration) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetDoubleValue(m.data.Sum().DataPoints().At(i).DoubleValue() / aggCount)
-			}
-		}
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricPostgresqlVectorSearchDuration(cfg PostgresqlVectorSearchDurationMetricConfig) metricPostgresqlVectorSearchDuration {
-	m := metricPostgresqlVectorSearchDuration{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricPostgresqlVectorSearchRowsReturned struct {
-	data          pmetric.Metric                                 // data buffer for generated metric.
-	config        PostgresqlVectorSearchRowsReturnedMetricConfig // metric config provided by user.
-	capacity      int                                            // max observed number of data points added to the metric.
-	aggDataPoints []int64                                        // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                                 // maps a data point's hash to its index, for O(1) dedup lookup.
-}
-
-// init fills postgresql.vector.search.rows_returned metric with initial data.
-func (m *metricPostgresqlVectorSearchRowsReturned) init() {
-	m.data.SetName("postgresql.vector.search.rows_returned")
-	m.data.SetDescription("The cumulative number of rows returned by vector similarity searches, grouped by the distance function used.")
-	m.data.SetUnit("{rows}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
-	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
-}
-
-func (m *metricPostgresqlVectorSearchRowsReturned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, postgresqlDistanceFunctionNameAttributeValue string, dbNamespaceAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-
-	dp := pmetric.NewNumberDataPoint()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorSearchRowsReturnedMetricAttributeKeyPostgresqlDistanceFunctionName) {
-		dp.Attributes().PutStr("postgresql.distance.function.name", postgresqlDistanceFunctionNameAttributeValue)
-	}
-	if slices.Contains(m.config.EnabledAttributes, PostgresqlVectorSearchRowsReturnedMetricAttributeKeyDbNamespace) {
-		dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
-	}
-
-	var s string
-	key := dataPointKey(dp)
-	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
-		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
-			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
-		}
-	}
-
-	dp.SetIntValue(val)
-	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
-	dp.MoveTo(dps.AppendEmpty())
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricPostgresqlVectorSearchRowsReturned) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricPostgresqlVectorSearchRowsReturned) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		if m.config.AggregationStrategy == AggregationStrategyAvg {
-			for i, aggCount := range m.aggDataPoints {
-				m.data.Sum().DataPoints().At(i).SetIntValue(m.data.Sum().DataPoints().At(i).IntValue() / aggCount)
-			}
-		}
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricPostgresqlVectorSearchRowsReturned(cfg PostgresqlVectorSearchRowsReturnedMetricConfig) metricPostgresqlVectorSearchRowsReturned {
-	m := metricPostgresqlVectorSearchRowsReturned{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -4294,7 +3005,6 @@ type metricPostgresqlWalDelay struct {
 	config        PostgresqlWalDelayMetricConfig // metric config provided by user.
 	capacity      int                            // max observed number of data points added to the metric.
 	aggDataPoints []float64                      // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                 // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.wal.delay metric with initial data.
@@ -4305,7 +3015,6 @@ func (m *metricPostgresqlWalDelay) init() {
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricPostgresqlWalDelay) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, walOperationLagAttributeValue string, replicationClientAttributeValue string) {
@@ -4324,31 +3033,31 @@ func (m *metricPostgresqlWalDelay) recordDataPoint(start pcommon.Timestamp, ts p
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Gauge().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetDoubleValue(dpi.DoubleValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.DoubleValue() > val {
-				dpi.SetDoubleValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetDoubleValue(dpi.DoubleValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.DoubleValue() > val {
+					dpi.SetDoubleValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.DoubleValue() < val {
+					dpi.SetDoubleValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.DoubleValue() < val {
-				dpi.SetDoubleValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetDoubleValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -4388,7 +3097,6 @@ type metricPostgresqlWalLag struct {
 	config        PostgresqlWalLagMetricConfig // metric config provided by user.
 	capacity      int                          // max observed number of data points added to the metric.
 	aggDataPoints []int64                      // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int               // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills postgresql.wal.lag metric with initial data.
@@ -4399,7 +3107,6 @@ func (m *metricPostgresqlWalLag) init() {
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricPostgresqlWalLag) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, walOperationLagAttributeValue string, replicationClientAttributeValue string) {
@@ -4418,31 +3125,31 @@ func (m *metricPostgresqlWalLag) recordDataPoint(start pcommon.Timestamp, ts pco
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Gauge().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -4496,6 +3203,7 @@ type MetricsBuilder struct {
 	metricPostgresqlBlksHit                  metricPostgresqlBlksHit
 	metricPostgresqlBlksRead                 metricPostgresqlBlksRead
 	metricPostgresqlBlocksRead               metricPostgresqlBlocksRead
+	metricPostgresqlBufferHit                metricPostgresqlBufferHit
 	metricPostgresqlCommits                  metricPostgresqlCommits
 	metricPostgresqlConnectionCount          metricPostgresqlConnectionCount
 	metricPostgresqlConnectionMax            metricPostgresqlConnectionMax
@@ -4506,12 +3214,17 @@ type MetricsBuilder struct {
 	metricPostgresqlFunctionCalls            metricPostgresqlFunctionCalls
 	metricPostgresqlIndexScans               metricPostgresqlIndexScans
 	metricPostgresqlIndexSize                metricPostgresqlIndexSize
+	metricPostgresqlLiveRows                 metricPostgresqlLiveRows
 	metricPostgresqlOperations               metricPostgresqlOperations
-	metricPostgresqlQueryConflicts           metricPostgresqlQueryConflicts
-	metricPostgresqlQueryExecutionTime       metricPostgresqlQueryExecutionTime
+	metricPostgresqlQueryCount               metricPostgresqlQueryCount
+	metricPostgresqlQueryTotalExecTime       metricPostgresqlQueryTotalExecTime
 	metricPostgresqlReplicationDataDelay     metricPostgresqlReplicationDataDelay
 	metricPostgresqlRollbacks                metricPostgresqlRollbacks
 	metricPostgresqlRows                     metricPostgresqlRows
+	metricPostgresqlRowsDeleted              metricPostgresqlRowsDeleted
+	metricPostgresqlRowsFetched              metricPostgresqlRowsFetched
+	metricPostgresqlRowsInserted             metricPostgresqlRowsInserted
+	metricPostgresqlRowsUpdated              metricPostgresqlRowsUpdated
 	metricPostgresqlSequentialScans          metricPostgresqlSequentialScans
 	metricPostgresqlTableCount               metricPostgresqlTableCount
 	metricPostgresqlTableSize                metricPostgresqlTableSize
@@ -4523,11 +3236,6 @@ type MetricsBuilder struct {
 	metricPostgresqlTupInserted              metricPostgresqlTupInserted
 	metricPostgresqlTupReturned              metricPostgresqlTupReturned
 	metricPostgresqlTupUpdated               metricPostgresqlTupUpdated
-	metricPostgresqlVectorInsertDuration     metricPostgresqlVectorInsertDuration
-	metricPostgresqlVectorInsertRows         metricPostgresqlVectorInsertRows
-	metricPostgresqlVectorSearchCalls        metricPostgresqlVectorSearchCalls
-	metricPostgresqlVectorSearchDuration     metricPostgresqlVectorSearchDuration
-	metricPostgresqlVectorSearchRowsReturned metricPostgresqlVectorSearchRowsReturned
 	metricPostgresqlWalAge                   metricPostgresqlWalAge
 	metricPostgresqlWalDelay                 metricPostgresqlWalDelay
 	metricPostgresqlWalLag                   metricPostgresqlWalLag
@@ -4565,6 +3273,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricPostgresqlBlksHit:                  newMetricPostgresqlBlksHit(mbc.Metrics.PostgresqlBlksHit),
 		metricPostgresqlBlksRead:                 newMetricPostgresqlBlksRead(mbc.Metrics.PostgresqlBlksRead),
 		metricPostgresqlBlocksRead:               newMetricPostgresqlBlocksRead(mbc.Metrics.PostgresqlBlocksRead),
+		metricPostgresqlBufferHit:                newMetricPostgresqlBufferHit(mbc.Metrics.PostgresqlBufferHit),
 		metricPostgresqlCommits:                  newMetricPostgresqlCommits(mbc.Metrics.PostgresqlCommits),
 		metricPostgresqlConnectionCount:          newMetricPostgresqlConnectionCount(mbc.Metrics.PostgresqlConnectionCount),
 		metricPostgresqlConnectionMax:            newMetricPostgresqlConnectionMax(mbc.Metrics.PostgresqlConnectionMax),
@@ -4575,12 +3284,17 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricPostgresqlFunctionCalls:            newMetricPostgresqlFunctionCalls(mbc.Metrics.PostgresqlFunctionCalls),
 		metricPostgresqlIndexScans:               newMetricPostgresqlIndexScans(mbc.Metrics.PostgresqlIndexScans),
 		metricPostgresqlIndexSize:                newMetricPostgresqlIndexSize(mbc.Metrics.PostgresqlIndexSize),
+		metricPostgresqlLiveRows:                 newMetricPostgresqlLiveRows(mbc.Metrics.PostgresqlLiveRows),
 		metricPostgresqlOperations:               newMetricPostgresqlOperations(mbc.Metrics.PostgresqlOperations),
-		metricPostgresqlQueryConflicts:           newMetricPostgresqlQueryConflicts(mbc.Metrics.PostgresqlQueryConflicts),
-		metricPostgresqlQueryExecutionTime:       newMetricPostgresqlQueryExecutionTime(mbc.Metrics.PostgresqlQueryExecutionTime),
+		metricPostgresqlQueryCount:               newMetricPostgresqlQueryCount(mbc.Metrics.PostgresqlQueryCount),
+		metricPostgresqlQueryTotalExecTime:       newMetricPostgresqlQueryTotalExecTime(mbc.Metrics.PostgresqlQueryTotalExecTime),
 		metricPostgresqlReplicationDataDelay:     newMetricPostgresqlReplicationDataDelay(mbc.Metrics.PostgresqlReplicationDataDelay),
 		metricPostgresqlRollbacks:                newMetricPostgresqlRollbacks(mbc.Metrics.PostgresqlRollbacks),
 		metricPostgresqlRows:                     newMetricPostgresqlRows(mbc.Metrics.PostgresqlRows),
+		metricPostgresqlRowsDeleted:              newMetricPostgresqlRowsDeleted(mbc.Metrics.PostgresqlRowsDeleted),
+		metricPostgresqlRowsFetched:              newMetricPostgresqlRowsFetched(mbc.Metrics.PostgresqlRowsFetched),
+		metricPostgresqlRowsInserted:             newMetricPostgresqlRowsInserted(mbc.Metrics.PostgresqlRowsInserted),
+		metricPostgresqlRowsUpdated:              newMetricPostgresqlRowsUpdated(mbc.Metrics.PostgresqlRowsUpdated),
 		metricPostgresqlSequentialScans:          newMetricPostgresqlSequentialScans(mbc.Metrics.PostgresqlSequentialScans),
 		metricPostgresqlTableCount:               newMetricPostgresqlTableCount(mbc.Metrics.PostgresqlTableCount),
 		metricPostgresqlTableSize:                newMetricPostgresqlTableSize(mbc.Metrics.PostgresqlTableSize),
@@ -4592,28 +3306,23 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricPostgresqlTupInserted:              newMetricPostgresqlTupInserted(mbc.Metrics.PostgresqlTupInserted),
 		metricPostgresqlTupReturned:              newMetricPostgresqlTupReturned(mbc.Metrics.PostgresqlTupReturned),
 		metricPostgresqlTupUpdated:               newMetricPostgresqlTupUpdated(mbc.Metrics.PostgresqlTupUpdated),
-		metricPostgresqlVectorInsertDuration:     newMetricPostgresqlVectorInsertDuration(mbc.Metrics.PostgresqlVectorInsertDuration),
-		metricPostgresqlVectorInsertRows:         newMetricPostgresqlVectorInsertRows(mbc.Metrics.PostgresqlVectorInsertRows),
-		metricPostgresqlVectorSearchCalls:        newMetricPostgresqlVectorSearchCalls(mbc.Metrics.PostgresqlVectorSearchCalls),
-		metricPostgresqlVectorSearchDuration:     newMetricPostgresqlVectorSearchDuration(mbc.Metrics.PostgresqlVectorSearchDuration),
-		metricPostgresqlVectorSearchRowsReturned: newMetricPostgresqlVectorSearchRowsReturned(mbc.Metrics.PostgresqlVectorSearchRowsReturned),
 		metricPostgresqlWalAge:                   newMetricPostgresqlWalAge(mbc.Metrics.PostgresqlWalAge),
 		metricPostgresqlWalDelay:                 newMetricPostgresqlWalDelay(mbc.Metrics.PostgresqlWalDelay),
 		metricPostgresqlWalLag:                   newMetricPostgresqlWalLag(mbc.Metrics.PostgresqlWalLag),
 		resourceAttributeIncludeFilter:           make(map[string]filter.Filter),
 		resourceAttributeExcludeFilter:           make(map[string]filter.Filter),
 	}
-	if mbc.ResourceAttributes.DbSystemVersion.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["db.system.version"] = filter.CreateFilter(mbc.ResourceAttributes.DbSystemVersion.MetricsInclude)
-	}
-	if mbc.ResourceAttributes.DbSystemVersion.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["db.system.version"] = filter.CreateFilter(mbc.ResourceAttributes.DbSystemVersion.MetricsExclude)
-	}
 	if mbc.ResourceAttributes.PostgresqlDatabaseName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["postgresql.database.name"] = filter.CreateFilter(mbc.ResourceAttributes.PostgresqlDatabaseName.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.PostgresqlDatabaseName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["postgresql.database.name"] = filter.CreateFilter(mbc.ResourceAttributes.PostgresqlDatabaseName.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.PostgresqlDbVersion.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["postgresql.db.version"] = filter.CreateFilter(mbc.ResourceAttributes.PostgresqlDbVersion.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.PostgresqlDbVersion.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["postgresql.db.version"] = filter.CreateFilter(mbc.ResourceAttributes.PostgresqlDbVersion.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.PostgresqlIndexName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["postgresql.index.name"] = filter.CreateFilter(mbc.ResourceAttributes.PostgresqlIndexName.MetricsInclude)
@@ -4633,35 +3342,11 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.PostgresqlTableName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["postgresql.table.name"] = filter.CreateFilter(mbc.ResourceAttributes.PostgresqlTableName.MetricsExclude)
 	}
-	if mbc.ResourceAttributes.ServerAddress.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["server.address"] = filter.CreateFilter(mbc.ResourceAttributes.ServerAddress.MetricsInclude)
-	}
-	if mbc.ResourceAttributes.ServerAddress.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["server.address"] = filter.CreateFilter(mbc.ResourceAttributes.ServerAddress.MetricsExclude)
-	}
-	if mbc.ResourceAttributes.ServerPort.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["server.port"] = filter.CreateFilter(mbc.ResourceAttributes.ServerPort.MetricsInclude)
-	}
-	if mbc.ResourceAttributes.ServerPort.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["server.port"] = filter.CreateFilter(mbc.ResourceAttributes.ServerPort.MetricsExclude)
-	}
 	if mbc.ResourceAttributes.ServiceInstanceID.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["service.instance.id"] = filter.CreateFilter(mbc.ResourceAttributes.ServiceInstanceID.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.ServiceInstanceID.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["service.instance.id"] = filter.CreateFilter(mbc.ResourceAttributes.ServiceInstanceID.MetricsExclude)
-	}
-	if mbc.ResourceAttributes.ServiceName.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["service.name"] = filter.CreateFilter(mbc.ResourceAttributes.ServiceName.MetricsInclude)
-	}
-	if mbc.ResourceAttributes.ServiceName.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["service.name"] = filter.CreateFilter(mbc.ResourceAttributes.ServiceName.MetricsExclude)
-	}
-	if mbc.ResourceAttributes.ServiceNamespace.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["service.namespace"] = filter.CreateFilter(mbc.ResourceAttributes.ServiceNamespace.MetricsInclude)
-	}
-	if mbc.ResourceAttributes.ServiceNamespace.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["service.namespace"] = filter.CreateFilter(mbc.ResourceAttributes.ServiceNamespace.MetricsExclude)
 	}
 
 	for _, op := range options {
@@ -4741,6 +3426,7 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricPostgresqlBlksHit.emit(ils.Metrics())
 	mb.metricPostgresqlBlksRead.emit(ils.Metrics())
 	mb.metricPostgresqlBlocksRead.emit(ils.Metrics())
+	mb.metricPostgresqlBufferHit.emit(ils.Metrics())
 	mb.metricPostgresqlCommits.emit(ils.Metrics())
 	mb.metricPostgresqlConnectionCount.emit(ils.Metrics())
 	mb.metricPostgresqlConnectionMax.emit(ils.Metrics())
@@ -4751,12 +3437,17 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricPostgresqlFunctionCalls.emit(ils.Metrics())
 	mb.metricPostgresqlIndexScans.emit(ils.Metrics())
 	mb.metricPostgresqlIndexSize.emit(ils.Metrics())
+	mb.metricPostgresqlLiveRows.emit(ils.Metrics())
 	mb.metricPostgresqlOperations.emit(ils.Metrics())
-	mb.metricPostgresqlQueryConflicts.emit(ils.Metrics())
-	mb.metricPostgresqlQueryExecutionTime.emit(ils.Metrics())
+	mb.metricPostgresqlQueryCount.emit(ils.Metrics())
+	mb.metricPostgresqlQueryTotalExecTime.emit(ils.Metrics())
 	mb.metricPostgresqlReplicationDataDelay.emit(ils.Metrics())
 	mb.metricPostgresqlRollbacks.emit(ils.Metrics())
 	mb.metricPostgresqlRows.emit(ils.Metrics())
+	mb.metricPostgresqlRowsDeleted.emit(ils.Metrics())
+	mb.metricPostgresqlRowsFetched.emit(ils.Metrics())
+	mb.metricPostgresqlRowsInserted.emit(ils.Metrics())
+	mb.metricPostgresqlRowsUpdated.emit(ils.Metrics())
 	mb.metricPostgresqlSequentialScans.emit(ils.Metrics())
 	mb.metricPostgresqlTableCount.emit(ils.Metrics())
 	mb.metricPostgresqlTableSize.emit(ils.Metrics())
@@ -4768,11 +3459,6 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricPostgresqlTupInserted.emit(ils.Metrics())
 	mb.metricPostgresqlTupReturned.emit(ils.Metrics())
 	mb.metricPostgresqlTupUpdated.emit(ils.Metrics())
-	mb.metricPostgresqlVectorInsertDuration.emit(ils.Metrics())
-	mb.metricPostgresqlVectorInsertRows.emit(ils.Metrics())
-	mb.metricPostgresqlVectorSearchCalls.emit(ils.Metrics())
-	mb.metricPostgresqlVectorSearchDuration.emit(ils.Metrics())
-	mb.metricPostgresqlVectorSearchRowsReturned.emit(ils.Metrics())
 	mb.metricPostgresqlWalAge.emit(ils.Metrics())
 	mb.metricPostgresqlWalDelay.emit(ils.Metrics())
 	mb.metricPostgresqlWalLag.emit(ils.Metrics())
@@ -4808,8 +3494,8 @@ func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics
 }
 
 // RecordPostgresqlBackendsDataPoint adds a data point to postgresql.backends metric.
-func (mb *MetricsBuilder) RecordPostgresqlBackendsDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlBackends.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlBackendsDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlBackends.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlBgwriterBuffersAllocatedDataPoint adds a data point to postgresql.bgwriter.buffers.allocated metric.
@@ -4838,23 +3524,28 @@ func (mb *MetricsBuilder) RecordPostgresqlBgwriterMaxwrittenDataPoint(ts pcommon
 }
 
 // RecordPostgresqlBlksHitDataPoint adds a data point to postgresql.blks_hit metric.
-func (mb *MetricsBuilder) RecordPostgresqlBlksHitDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlBlksHit.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlBlksHitDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlBlksHit.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlBlksReadDataPoint adds a data point to postgresql.blks_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlBlksReadDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlBlksRead.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlBlksReadDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlBlksRead.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlBlocksReadDataPoint adds a data point to postgresql.blocks_read metric.
-func (mb *MetricsBuilder) RecordPostgresqlBlocksReadDataPoint(ts pcommon.Timestamp, val int64, sourceAttributeValue AttributeSource, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
-	mb.metricPostgresqlBlocksRead.recordDataPoint(mb.startTime, ts, val, sourceAttributeValue.String(), dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlBlocksReadDataPoint(ts pcommon.Timestamp, val int64, sourceAttributeValue AttributeSource) {
+	mb.metricPostgresqlBlocksRead.recordDataPoint(mb.startTime, ts, val, sourceAttributeValue.String())
+}
+
+// RecordPostgresqlBufferHitDataPoint adds a data point to postgresql.buffer_hit metric.
+func (mb *MetricsBuilder) RecordPostgresqlBufferHitDataPoint(ts pcommon.Timestamp, val int64, dbnameAttributeValue string) {
+	mb.metricPostgresqlBufferHit.recordDataPoint(mb.startTime, ts, val, dbnameAttributeValue)
 }
 
 // RecordPostgresqlCommitsDataPoint adds a data point to postgresql.commits metric.
-func (mb *MetricsBuilder) RecordPostgresqlCommitsDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlCommits.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlCommitsDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlCommits.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlConnectionCountDataPoint adds a data point to postgresql.connection.count metric.
@@ -4873,48 +3564,53 @@ func (mb *MetricsBuilder) RecordPostgresqlDatabaseCountDataPoint(ts pcommon.Time
 }
 
 // RecordPostgresqlDatabaseLocksDataPoint adds a data point to postgresql.database.locks metric.
-func (mb *MetricsBuilder) RecordPostgresqlDatabaseLocksDataPoint(ts pcommon.Timestamp, val int64, relationAttributeValue string, modeAttributeValue string, lockTypeAttributeValue string, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlDatabaseLocks.recordDataPoint(mb.startTime, ts, val, relationAttributeValue, modeAttributeValue, lockTypeAttributeValue, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlDatabaseLocksDataPoint(ts pcommon.Timestamp, val int64, relationAttributeValue string, modeAttributeValue string, lockTypeAttributeValue string) {
+	mb.metricPostgresqlDatabaseLocks.recordDataPoint(mb.startTime, ts, val, relationAttributeValue, modeAttributeValue, lockTypeAttributeValue)
 }
 
 // RecordPostgresqlDbSizeDataPoint adds a data point to postgresql.db_size metric.
-func (mb *MetricsBuilder) RecordPostgresqlDbSizeDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlDbSize.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlDbSizeDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlDbSize.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlDeadlocksDataPoint adds a data point to postgresql.deadlocks metric.
-func (mb *MetricsBuilder) RecordPostgresqlDeadlocksDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlDeadlocks.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlDeadlocksDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlDeadlocks.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlFunctionCallsDataPoint adds a data point to postgresql.function.calls metric.
-func (mb *MetricsBuilder) RecordPostgresqlFunctionCallsDataPoint(ts pcommon.Timestamp, val int64, functionAttributeValue string, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlFunctionCalls.recordDataPoint(mb.startTime, ts, val, functionAttributeValue, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlFunctionCallsDataPoint(ts pcommon.Timestamp, val int64, functionAttributeValue string) {
+	mb.metricPostgresqlFunctionCalls.recordDataPoint(mb.startTime, ts, val, functionAttributeValue)
 }
 
 // RecordPostgresqlIndexScansDataPoint adds a data point to postgresql.index.scans metric.
-func (mb *MetricsBuilder) RecordPostgresqlIndexScansDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string, postgresqlIndexNameAttributeValue string) {
-	mb.metricPostgresqlIndexScans.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, dbCollectionNameAttributeValue, postgresqlIndexNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlIndexScansDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlIndexScans.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlIndexSizeDataPoint adds a data point to postgresql.index.size metric.
-func (mb *MetricsBuilder) RecordPostgresqlIndexSizeDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string, postgresqlIndexNameAttributeValue string) {
-	mb.metricPostgresqlIndexSize.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, dbCollectionNameAttributeValue, postgresqlIndexNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlIndexSizeDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlIndexSize.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordPostgresqlLiveRowsDataPoint adds a data point to postgresql.live_rows metric.
+func (mb *MetricsBuilder) RecordPostgresqlLiveRowsDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlLiveRows.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlOperationsDataPoint adds a data point to postgresql.operations metric.
-func (mb *MetricsBuilder) RecordPostgresqlOperationsDataPoint(ts pcommon.Timestamp, val int64, operationAttributeValue AttributeOperation, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
-	mb.metricPostgresqlOperations.recordDataPoint(mb.startTime, ts, val, operationAttributeValue.String(), dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlOperationsDataPoint(ts pcommon.Timestamp, val int64, operationAttributeValue AttributeOperation) {
+	mb.metricPostgresqlOperations.recordDataPoint(mb.startTime, ts, val, operationAttributeValue.String())
 }
 
-// RecordPostgresqlQueryConflictsDataPoint adds a data point to postgresql.query.conflicts metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueryConflictsDataPoint(ts pcommon.Timestamp, val int64, postgresqlConflictTypeAttributeValue AttributePostgresqlConflictType, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlQueryConflicts.recordDataPoint(mb.startTime, ts, val, postgresqlConflictTypeAttributeValue.String(), dbNamespaceAttributeValue)
+// RecordPostgresqlQueryCountDataPoint adds a data point to postgresql.query.count metric.
+func (mb *MetricsBuilder) RecordPostgresqlQueryCountDataPoint(ts pcommon.Timestamp, val int64, queryTextAttributeValue string, queryIDAttributeValue string) {
+	mb.metricPostgresqlQueryCount.recordDataPoint(mb.startTime, ts, val, queryTextAttributeValue, queryIDAttributeValue)
 }
 
-// RecordPostgresqlQueryExecutionTimeDataPoint adds a data point to postgresql.query.execution.time metric.
-func (mb *MetricsBuilder) RecordPostgresqlQueryExecutionTimeDataPoint(ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlQueryExecutionTime.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+// RecordPostgresqlQueryTotalExecTimeDataPoint adds a data point to postgresql.query.total_exec_time metric.
+func (mb *MetricsBuilder) RecordPostgresqlQueryTotalExecTimeDataPoint(ts pcommon.Timestamp, val int64, queryTextAttributeValue string, queryIDAttributeValue string) {
+	mb.metricPostgresqlQueryTotalExecTime.recordDataPoint(mb.startTime, ts, val, queryTextAttributeValue, queryIDAttributeValue)
 }
 
 // RecordPostgresqlReplicationDataDelayDataPoint adds a data point to postgresql.replication.data_delay metric.
@@ -4923,93 +3619,88 @@ func (mb *MetricsBuilder) RecordPostgresqlReplicationDataDelayDataPoint(ts pcomm
 }
 
 // RecordPostgresqlRollbacksDataPoint adds a data point to postgresql.rollbacks metric.
-func (mb *MetricsBuilder) RecordPostgresqlRollbacksDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlRollbacks.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlRollbacksDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlRollbacks.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlRowsDataPoint adds a data point to postgresql.rows metric.
-func (mb *MetricsBuilder) RecordPostgresqlRowsDataPoint(ts pcommon.Timestamp, val int64, stateAttributeValue AttributeState, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
-	mb.metricPostgresqlRows.recordDataPoint(mb.startTime, ts, val, stateAttributeValue.String(), dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlRowsDataPoint(ts pcommon.Timestamp, val int64, stateAttributeValue AttributeState) {
+	mb.metricPostgresqlRows.recordDataPoint(mb.startTime, ts, val, stateAttributeValue.String())
+}
+
+// RecordPostgresqlRowsDeletedDataPoint adds a data point to postgresql.rows_deleted metric.
+func (mb *MetricsBuilder) RecordPostgresqlRowsDeletedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsDeleted.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
+}
+
+// RecordPostgresqlRowsFetchedDataPoint adds a data point to postgresql.rows_fetched metric.
+func (mb *MetricsBuilder) RecordPostgresqlRowsFetchedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsFetched.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
+}
+
+// RecordPostgresqlRowsInsertedDataPoint adds a data point to postgresql.rows_inserted metric.
+func (mb *MetricsBuilder) RecordPostgresqlRowsInsertedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsInserted.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
+}
+
+// RecordPostgresqlRowsUpdatedDataPoint adds a data point to postgresql.rows_updated metric.
+func (mb *MetricsBuilder) RecordPostgresqlRowsUpdatedDataPoint(ts pcommon.Timestamp, val int64, relationNameAttributeValue string) {
+	mb.metricPostgresqlRowsUpdated.recordDataPoint(mb.startTime, ts, val, relationNameAttributeValue)
 }
 
 // RecordPostgresqlSequentialScansDataPoint adds a data point to postgresql.sequential_scans metric.
-func (mb *MetricsBuilder) RecordPostgresqlSequentialScansDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
-	mb.metricPostgresqlSequentialScans.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlSequentialScansDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlSequentialScans.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTableCountDataPoint adds a data point to postgresql.table.count metric.
-func (mb *MetricsBuilder) RecordPostgresqlTableCountDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTableCount.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTableCountDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTableCount.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTableSizeDataPoint adds a data point to postgresql.table.size metric.
-func (mb *MetricsBuilder) RecordPostgresqlTableSizeDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
-	mb.metricPostgresqlTableSize.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTableSizeDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTableSize.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTableVacuumCountDataPoint adds a data point to postgresql.table.vacuum.count metric.
-func (mb *MetricsBuilder) RecordPostgresqlTableVacuumCountDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string, dbCollectionNameAttributeValue string) {
-	mb.metricPostgresqlTableVacuumCount.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue, dbCollectionNameAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTableVacuumCountDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTableVacuumCount.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTempIoDataPoint adds a data point to postgresql.temp.io metric.
-func (mb *MetricsBuilder) RecordPostgresqlTempIoDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTempIo.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTempIoDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTempIo.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTempFilesDataPoint adds a data point to postgresql.temp_files metric.
-func (mb *MetricsBuilder) RecordPostgresqlTempFilesDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTempFiles.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTempFilesDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTempFiles.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTupDeletedDataPoint adds a data point to postgresql.tup_deleted metric.
-func (mb *MetricsBuilder) RecordPostgresqlTupDeletedDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTupDeleted.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTupDeletedDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTupDeleted.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTupFetchedDataPoint adds a data point to postgresql.tup_fetched metric.
-func (mb *MetricsBuilder) RecordPostgresqlTupFetchedDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTupFetched.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTupFetchedDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTupFetched.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTupInsertedDataPoint adds a data point to postgresql.tup_inserted metric.
-func (mb *MetricsBuilder) RecordPostgresqlTupInsertedDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTupInserted.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTupInsertedDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTupInserted.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTupReturnedDataPoint adds a data point to postgresql.tup_returned metric.
-func (mb *MetricsBuilder) RecordPostgresqlTupReturnedDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTupReturned.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTupReturnedDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTupReturned.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlTupUpdatedDataPoint adds a data point to postgresql.tup_updated metric.
-func (mb *MetricsBuilder) RecordPostgresqlTupUpdatedDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlTupUpdated.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
-}
-
-// RecordPostgresqlVectorInsertDurationDataPoint adds a data point to postgresql.vector.insert.duration metric.
-func (mb *MetricsBuilder) RecordPostgresqlVectorInsertDurationDataPoint(ts pcommon.Timestamp, val float64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlVectorInsertDuration.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
-}
-
-// RecordPostgresqlVectorInsertRowsDataPoint adds a data point to postgresql.vector.insert.rows metric.
-func (mb *MetricsBuilder) RecordPostgresqlVectorInsertRowsDataPoint(ts pcommon.Timestamp, val int64, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlVectorInsertRows.recordDataPoint(mb.startTime, ts, val, dbNamespaceAttributeValue)
-}
-
-// RecordPostgresqlVectorSearchCallsDataPoint adds a data point to postgresql.vector.search.calls metric.
-func (mb *MetricsBuilder) RecordPostgresqlVectorSearchCallsDataPoint(ts pcommon.Timestamp, val int64, postgresqlDistanceFunctionNameAttributeValue AttributePostgresqlDistanceFunctionName, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlVectorSearchCalls.recordDataPoint(mb.startTime, ts, val, postgresqlDistanceFunctionNameAttributeValue.String(), dbNamespaceAttributeValue)
-}
-
-// RecordPostgresqlVectorSearchDurationDataPoint adds a data point to postgresql.vector.search.duration metric.
-func (mb *MetricsBuilder) RecordPostgresqlVectorSearchDurationDataPoint(ts pcommon.Timestamp, val float64, postgresqlDistanceFunctionNameAttributeValue AttributePostgresqlDistanceFunctionName, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlVectorSearchDuration.recordDataPoint(mb.startTime, ts, val, postgresqlDistanceFunctionNameAttributeValue.String(), dbNamespaceAttributeValue)
-}
-
-// RecordPostgresqlVectorSearchRowsReturnedDataPoint adds a data point to postgresql.vector.search.rows_returned metric.
-func (mb *MetricsBuilder) RecordPostgresqlVectorSearchRowsReturnedDataPoint(ts pcommon.Timestamp, val int64, postgresqlDistanceFunctionNameAttributeValue AttributePostgresqlDistanceFunctionName, dbNamespaceAttributeValue string) {
-	mb.metricPostgresqlVectorSearchRowsReturned.recordDataPoint(mb.startTime, ts, val, postgresqlDistanceFunctionNameAttributeValue.String(), dbNamespaceAttributeValue)
+func (mb *MetricsBuilder) RecordPostgresqlTupUpdatedDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlTupUpdated.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlWalAgeDataPoint adds a data point to postgresql.wal.age metric.
