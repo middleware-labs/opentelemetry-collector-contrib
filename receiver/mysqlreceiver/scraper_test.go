@@ -285,10 +285,7 @@ func (c *mockClient) getTotalRows() ([]NRows, error) {
 		fmt.Println(text[0])
 		fmt.Println(text[1])
 		s.dbname = text[0]
-		s.totalRows, err = strconv.ParseInt(text[1], 10, 64)
-		if err != nil {
-			return nil, err
-		}
+		s.totalRows = parseNullInt64(text[1])
 		stats = append(stats, s)
 	}
 
@@ -309,10 +306,14 @@ func (c *mockClient) getTableStats() ([]TableStats, error) {
 		text := strings.Split(scanner.Text(), "\t")
 		s.schema = text[0]
 		s.name = text[1]
-		s.rows, _ = parseInt(text[2])
-		s.averageRowLength, _ = parseInt(text[3])
-		s.dataLength, _ = parseInt(text[4])
-		s.indexLength, _ = parseInt(text[5])
+		s.rows = parseNullInt64(text[2])
+		s.averageRowLength = parseNullInt64(text[3])
+		s.dataLength = parseNullInt64(text[4])
+		s.indexLength = parseNullInt64(text[5])
+		// s.rows, _ = parseInt(text[2])
+		// s.averageRowLength, _ = parseInt(text[3])
+		// s.dataLength, _ = parseInt(text[4])
+		// s.indexLength, _ = parseInt(text[5])
 
 		stats = append(stats, s)
 	}
@@ -537,4 +538,15 @@ func (c *mockClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 
 func (c *mockClient) Close() error {
 	return nil
+}
+
+func parseNullInt64(value string) sql.NullInt64 {
+	if value == "" {
+		return sql.NullInt64{Int64: 0, Valid: false}
+	}
+	i, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return sql.NullInt64{Int64: 0, Valid: false}
+	}
+	return sql.NullInt64{Int64: i, Valid: true}
 }
