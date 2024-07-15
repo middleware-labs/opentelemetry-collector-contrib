@@ -1,7 +1,4 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
-
-package mysqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver"
+package mysqlreceiver
 
 import (
 	"context"
@@ -10,30 +7,12 @@ import (
 	"strings"
 	"time"
 
-	// registers the mysql driver
 	"github.com/go-sql-driver/mysql"
 	"github.com/k0kubun/pp"
 	parser "github.com/middleware-labs/innoParser/pkg/metricParser"
 )
 
-type client interface {
-	Connect() error
-	getVersion() (string, error)
-	getGlobalStats() (map[string]string, error)
-	getInnodbStats() (map[string]string, error)
-	getTableStats() ([]TableStats, error)
-	getTableIoWaitsStats() ([]TableIoWaitsStats, error)
-	getIndexIoWaitsStats() ([]IndexIoWaitsStats, error)
-	getStatementEventsStats() ([]StatementEventStats, error)
-	getTableLockWaitEventStats() ([]tableLockWaitEventStats, error)
-	getReplicaStatusStats() ([]ReplicaStatusStats, error)
-	getInnodbStatusStats() (map[string]int64, error, int)
-	getTotalRows() ([]NRows, error)
-	getTotalErrors() (int64, error)
-	Close() error
-}
-
-type mySQLClient struct {
+type mariaDBClient struct {
 	connStr                        string
 	client                         *sql.DB
 	statementEventsDigestTextLimit int
@@ -41,146 +20,9 @@ type mySQLClient struct {
 	statementEventsTimeLimit       time.Duration
 }
 
-type IoWaitsStats struct {
-	schema      string
-	name        string
-	countDelete int64
-	countFetch  int64
-	countInsert int64
-	countUpdate int64
-	timeDelete  int64
-	timeFetch   int64
-	timeInsert  int64
-	timeUpdate  int64
-}
+var _ client = (*mariaDBClient)(nil)
 
-type TableIoWaitsStats struct {
-	IoWaitsStats
-}
-
-type IndexIoWaitsStats struct {
-	IoWaitsStats
-	index string
-}
-
-type TableStats struct {
-	schema           string
-	name             string
-	rows             int64
-	averageRowLength int64
-	dataLength       int64
-	indexLength      int64
-}
-
-type StatementEventStats struct {
-	schema                    string
-	digest                    string
-	digestText                string
-	sumTimerWait              int64
-	countErrors               int64
-	countWarnings             int64
-	countRowsAffected         int64
-	countRowsSent             int64
-	countRowsExamined         int64
-	countCreatedTmpDiskTables int64
-	countCreatedTmpTables     int64
-	countSortMergePasses      int64
-	countSortRows             int64
-	countNoIndexUsed          int64
-	countStar                 int64
-}
-
-type tableLockWaitEventStats struct {
-	schema                        string
-	name                          string
-	countReadNormal               int64
-	countReadWithSharedLocks      int64
-	countReadHighPriority         int64
-	countReadNoInsert             int64
-	countReadExternal             int64
-	countWriteAllowWrite          int64
-	countWriteConcurrentInsert    int64
-	countWriteLowPriority         int64
-	countWriteNormal              int64
-	countWriteExternal            int64
-	sumTimerReadNormal            int64
-	sumTimerReadWithSharedLocks   int64
-	sumTimerReadHighPriority      int64
-	sumTimerReadNoInsert          int64
-	sumTimerReadExternal          int64
-	sumTimerWriteAllowWrite       int64
-	sumTimerWriteConcurrentInsert int64
-	sumTimerWriteLowPriority      int64
-	sumTimerWriteNormal           int64
-	sumTimerWriteExternal         int64
-}
-
-type ReplicaStatusStats struct {
-	replicaIOState            string
-	sourceHost                string
-	sourceUser                string
-	sourcePort                int64
-	connectRetry              int64
-	sourceLogFile             string
-	readSourceLogPos          int64
-	relayLogFile              string
-	relayLogPos               int64
-	relaySourceLogFile        string
-	replicaIORunning          string
-	replicaSQLRunning         string
-	replicateDoDB             string
-	replicateIgnoreDB         string
-	replicateDoTable          string
-	replicateIgnoreTable      string
-	replicateWildDoTable      string
-	replicateWildIgnoreTable  string
-	lastErrno                 int64
-	lastError                 string
-	skipCounter               int64
-	execSourceLogPos          int64
-	relayLogSpace             int64
-	untilCondition            string
-	untilLogFile              string
-	untilLogPos               string
-	sourceSSLAllowed          string
-	sourceSSLCAFile           string
-	sourceSSLCAPath           string
-	sourceSSLCert             string
-	sourceSSLCipher           string
-	sourceSSLKey              string
-	secondsBehindSource       sql.NullInt64
-	sourceSSLVerifyServerCert string
-	lastIOErrno               int64
-	lastIOError               string
-	lastSQLErrno              int64
-	lastSQLError              string
-	replicateIgnoreServerIDs  string
-	sourceServerID            int64
-	sourceUUID                string
-	sourceInfoFile            string
-	sqlDelay                  int64
-	sqlRemainingDelay         sql.NullInt64
-	replicaSQLRunningState    string
-	sourceRetryCount          int64
-	sourceBind                string
-	lastIOErrorTimestamp      string
-	lastSQLErrorTimestamp     string
-	sourceSSLCrl              string
-	sourceSSLCrlpath          string
-	retrievedGtidSet          string
-	executedGtidSet           string
-	autoPosition              string
-	replicateRewriteDB        string
-	channelName               string
-	sourceTLSVersion          string
-	sourcePublicKeyPath       string
-	getSourcePublicKey        int64
-	networkNamespace          string
-}
-
-var _ client = (*mySQLClient)(nil)
-
-func newMySQLClient(conf *Config) (client, error) {
+func newMariaDBClient(conf *Config) (client, error) {
 	tls, err := conf.TLS.LoadTLSConfig(context.Background())
 	if err != nil {
 		return nil, err
@@ -206,7 +48,7 @@ func newMySQLClient(conf *Config) (client, error) {
 	}
 	connStr := driverConf.FormatDSN()
 
-	return &mySQLClient{
+	return &mariaDBClient{
 		connStr:                        connStr,
 		statementEventsDigestTextLimit: conf.StatementEvents.DigestTextLimit,
 		statementEventsLimit:           conf.StatementEvents.Limit,
@@ -214,7 +56,7 @@ func newMySQLClient(conf *Config) (client, error) {
 	}, nil
 }
 
-func (c *mySQLClient) Connect() error {
+func (c *mariaDBClient) Connect() error {
 	clientDB, err := sql.Open("mysql", c.connStr)
 	if err != nil {
 		return fmt.Errorf("unable to connect to database: %w", err)
@@ -223,8 +65,7 @@ func (c *mySQLClient) Connect() error {
 	return nil
 }
 
-// getVersion queries the db for the version.
-func (c *mySQLClient) getVersion() (string, error) {
+func (c *mariaDBClient) getVersion() (string, error) {
 	pp.Println("GETTING VERSION--------------------")
 	query := "SELECT VERSION();"
 	var version string
@@ -237,20 +78,20 @@ func (c *mySQLClient) getVersion() (string, error) {
 }
 
 // getGlobalStats queries the db for global status metrics.
-func (c *mySQLClient) getGlobalStats() (map[string]string, error) {
+func (c *mariaDBClient) getGlobalStats() (map[string]string, error) {
 	pp.Println("GETTING GLOBAL STATS --------------------")
 	q := "SHOW GLOBAL STATUS;"
-	return query(*c, q)
+	return queryMariaDB(*c, q)
 }
 
 // getInnodbStats queries the db for innodb metrics.
-func (c *mySQLClient) getInnodbStats() (map[string]string, error) {
+func (c *mariaDBClient) getInnodbStats() (map[string]string, error) {
 	pp.Println("GETTING INNODB STATS -------------------------------")
 	q := "SELECT name, count FROM information_schema.innodb_metrics WHERE name LIKE '%buffer_pool_size%';"
-	return query(*c, q)
+	return queryMariaDB(*c, q)
 }
 
-func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
+func (c *mariaDBClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	pp.Println("GETTING INNODB STATUS STATS -------------------------------------")
 	/*
 		RETURNS:
@@ -316,12 +157,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	return metrics, parserErrs, total_errs
 }
 
-type NRows struct {
-	dbname    string
-	totalRows int64
-}
-
-func (c *mySQLClient) getTotalRows() ([]NRows, error) {
+func (c *mariaDBClient) getTotalRows() ([]NRows, error) {
 	pp.Println("GETTING TOTAL ROWS -------------------------------------")
 	query := `SELECT TABLE_SCHEMA AS DatabaseName, SUM(TABLE_ROWS) AS TotalRows
 	FROM INFORMATION_SCHEMA.TABLES
@@ -351,7 +187,7 @@ func (c *mySQLClient) getTotalRows() ([]NRows, error) {
 }
 
 // getTableStats queries the db for information_schema table size metrics.
-func (c *mySQLClient) getTableStats() ([]TableStats, error) {
+func (c *mariaDBClient) getTableStats() ([]TableStats, error) {
 	pp.Println("GETTING TABLE STATS--------------------------")
 	query := "SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_ROWS, " +
 		"AVG_ROW_LENGTH, DATA_LENGTH, INDEX_LENGTH " +
@@ -359,6 +195,7 @@ func (c *mySQLClient) getTableStats() ([]TableStats, error) {
 		"WHERE TABLE_SCHEMA NOT in ('information_schema', 'sys');"
 	rows, err := c.client.Query(query)
 	if err != nil {
+
 		pp.Println(err)
 		return nil, err
 	}
@@ -366,14 +203,9 @@ func (c *mySQLClient) getTableStats() ([]TableStats, error) {
 	var stats []TableStats
 	for rows.Next() {
 		var s TableStats
-		err := rows.Scan(
-			&s.schema,
-			&s.name,
-			&s.rows,
-			&s.averageRowLength,
-			&s.dataLength,
-			&s.indexLength,
-		)
+		err := rows.Scan(&s.schema, &s.name,
+			&s.rows, &s.averageRowLength,
+			&s.dataLength, &s.indexLength)
 		if err != nil {
 
 			pp.Println(err)
@@ -386,7 +218,7 @@ func (c *mySQLClient) getTableStats() ([]TableStats, error) {
 }
 
 // getTableIoWaitsStats queries the db for table_io_waits metrics.
-func (c *mySQLClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
+func (c *mariaDBClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 	pp.Println("GETTING TABLE IO WAIT STATS  ---------------------------")
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, " +
 		"COUNT_DELETE, COUNT_FETCH, COUNT_INSERT, COUNT_UPDATE," +
@@ -418,7 +250,7 @@ func (c *mySQLClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 }
 
 // getIndexIoWaitsStats queries the db for index_io_waits metrics.
-func (c *mySQLClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
+func (c *mariaDBClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 	pp.Println("INDEX IO WAITS STATS ------------------------------------------------")
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, ifnull(INDEX_NAME, 'NONE') as INDEX_NAME," +
 		"COUNT_FETCH, COUNT_INSERT, COUNT_UPDATE, COUNT_DELETE," +
@@ -450,7 +282,7 @@ func (c *mySQLClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 	return stats, nil
 }
 
-func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
+func (c *mariaDBClient) getStatementEventsStats() ([]StatementEventStats, error) {
 	pp.Println("STATEMENT EVENT STATS -----------------------------------------------")
 	query := fmt.Sprintf("SELECT ifnull(SCHEMA_NAME, 'NONE') as SCHEMA_NAME, DIGEST,"+
 		"LEFT(DIGEST_TEXT, %d) as DIGEST_TEXT, SUM_TIMER_WAIT, SUM_ERRORS,"+
@@ -507,7 +339,7 @@ func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
 	return stats, nil
 }
 
-func (c *mySQLClient) getTotalErrors() (int64, error) {
+func (c *mariaDBClient) getTotalErrors() (int64, error) {
 	pp.Println("TOTAL ERRORS --------------------------------------------------")
 	query := `SELECT SUM_ERRORS FROM performance_schema.events_statements_summary_by_digest;`
 
@@ -535,7 +367,7 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 	return nerrors, nil
 }
 
-func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {
+func (c *mariaDBClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {
 	pp.Println("TABLE LOCK WAIT EVENT STATS --------------------------------------")
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, COUNT_READ_NORMAL, COUNT_READ_WITH_SHARED_LOCKS," +
 		"COUNT_READ_HIGH_PRIORITY, COUNT_READ_NO_INSERT, COUNT_READ_EXTERNAL, COUNT_WRITE_ALLOW_WRITE," +
@@ -574,7 +406,7 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 	return stats, nil
 }
 
-func (c *mySQLClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
+func (c *mariaDBClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 	pp.Println("REPLICATION STATS ------------------------------------------")
 	version, err := c.getVersion()
 	if err != nil {
@@ -749,7 +581,7 @@ func (c *mySQLClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 	return stats, nil
 }
 
-func query(c mySQLClient, query string) (map[string]string, error) {
+func queryMariaDB(c mariaDBClient, query string) (map[string]string, error) {
 	rows, err := c.client.Query(query)
 	if err != nil {
 		return nil, err
@@ -763,25 +595,13 @@ func query(c mySQLClient, query string) (map[string]string, error) {
 		}
 		stats[key] = val
 	}
-
+	pp.Println(stats)
 	return stats, nil
 }
 
-func (c *mySQLClient) Close() error {
+func (c *mariaDBClient) Close() error {
 	if c.client != nil {
 		return c.client.Close()
 	}
 	return nil
-}
-
-func flattenErrorMap(errs map[string][]error) string {
-	var errorMessages []string
-	for key, errors := range errs {
-		for _, err := range errors {
-			errorMessage := fmt.Sprintf("%s: %s", key, err.Error())
-			errorMessages = append(errorMessages, errorMessage)
-		}
-	}
-	result := strings.Join(errorMessages, "\n")
-	return result
 }
