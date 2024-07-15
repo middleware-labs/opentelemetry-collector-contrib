@@ -161,6 +161,7 @@ func TestMetricsBuilder(t *testing.T) {
 				mb.RecordMysqlCommandsDataPoint(ts, "3", AttributeCommandDeleteMulti)
 			}
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlConnectionCountDataPoint(ts, "1")
 
