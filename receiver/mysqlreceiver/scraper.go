@@ -47,24 +47,6 @@ func newMySQLScraper(
 
 // start starts the scraper by initializing the db client connection.
 func (m *mySQLScraper) start(_ context.Context, _ component.Host) error {
-	// mysqlFlavour, err := m.getMysqlFlavour()
-
-	// if err != nil {
-	// 	return err
-	// }
-
-	// var sqlclient client
-	// var newClientErr error
-
-	// if mysqlFlavour == "MariaDB" {
-	// sqlclient, newClientErr = newMariaDBClient(m.config)
-	// } else {
-	// sqlclient, newClientErr = newMySQLClient(m.config)
-	// }
-	// if newClientErr != nil {
-	// return newClientErr
-	// }
-
 	sqlclient, err := newMySQLClient(m.config)
 	if err != nil {
 		return err
@@ -451,6 +433,7 @@ func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererr
 func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	nrows, err := m.sqlclient.getTotalRows()
 	pp.Println(nrows)
+	pp.Println(err)
 	if err != nil {
 		m.logger.Error("Failed to fetch Total Rows", zap.Error(err))
 		errs.AddPartial(1, err)
@@ -492,7 +475,6 @@ func (m *mySQLScraper) scraperInnodbMetricsForDBM(now pcommon.Timestamp, errs *s
 
 func (m *mySQLScraper) scrapeTableStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	tableStats, err := m.sqlclient.getTableStats()
-	pp.Println(tableStats)
 	if err != nil {
 		m.logger.Error("Failed to fetch table size stats", zap.Error(err))
 		errs.AddPartial(8, err)
@@ -502,10 +484,18 @@ func (m *mySQLScraper) scrapeTableStats(now pcommon.Timestamp, errs *scrapererro
 	for i := 0; i < len(tableStats); i++ {
 		s := tableStats[i]
 		// counts
-		m.mb.RecordMysqlTableRowsDataPoint(now, s.rows, s.name, s.schema)
-		m.mb.RecordMysqlTableAverageRowLengthDataPoint(now, s.averageRowLength, s.name, s.schema)
-		m.mb.RecordMysqlTableSizeDataPoint(now, s.dataLength, s.name, s.schema, metadata.AttributeTableSizeTypeData)
-		m.mb.RecordMysqlTableSizeDataPoint(now, s.indexLength, s.name, s.schema, metadata.AttributeTableSizeTypeIndex)
+		if s.rows.Valid {
+			m.mb.RecordMysqlTableRowsDataPoint(now, s.rows.Int64, s.name, s.schema)
+		}
+		if s.averageRowLength.Valid {
+			m.mb.RecordMysqlTableAverageRowLengthDataPoint(now, s.averageRowLength.Int64, s.name, s.schema)
+		}
+		if s.dataLength.Valid {
+			m.mb.RecordMysqlTableSizeDataPoint(now, s.dataLength.Int64, s.name, s.schema, metadata.AttributeTableSizeTypeData)
+		}
+		if s.indexLength.Valid {
+			m.mb.RecordMysqlTableSizeDataPoint(now, s.indexLength.Int64, s.name, s.schema, metadata.AttributeTableSizeTypeIndex)
+		}
 	}
 }
 
@@ -601,6 +591,7 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 
 func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	totalErrors, err := m.sqlclient.getTotalErrors()
+	pp.Println("Total errors: ", totalErrors)
 	if err != nil {
 		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
 		errs.AddPartial(1, err)
@@ -705,41 +696,6 @@ func (m *mySQLScraper) recordDataUsage(now pcommon.Timestamp, globalStats map[st
 	}
 	m.mb.RecordMysqlBufferPoolUsageDataPoint(now, data-dirty, metadata.AttributeBufferPoolDataClean)
 }
-
-// func (m *mySQLScraper) getMysqlFlavour() (string, error) {
-
-// 	driverConf := mysql.Config{
-// 		User:                 m.config.Username,
-// 		Passwd:               string(m.config.Password),
-// 		Net:                  string(m.config.Transport),
-// 		Addr:                 m.config.Endpoint,
-// 		DBName:               m.config.Database,
-// 		AllowNativePasswords: m.config.AllowNativePasswords,
-// 	}
-// 	connStr := driverConf.FormatDSN()
-
-// 	db, err := sql.Open("mysql", connStr)
-
-// 	if err != nil {
-// 		return "", fmt.Errorf("unable to connect to database: %w", err)
-// 	}
-
-// 	defer db.Close()
-
-// 	var version string
-
-// 	err = db.QueryRow("SELECT VERSION();").Scan(&version)
-
-// 	if err != nil {
-// 		return "", fmt.Errorf("error getting database flavour: %w", err)
-// 	}
-
-// 	if strings.Contains(version, "MariaDB") {
-// 		return "MariaDB", nil
-// 	} else {
-// 		return "Mysql", nil
-// 	}
-// }
 
 // parseInt converts string to int64.
 func parseInt(value string) (int64, error) {

@@ -65,10 +65,10 @@ type IndexIoWaitsStats struct {
 type TableStats struct {
 	schema           string
 	name             string
-	rows             int64
-	averageRowLength int64
-	dataLength       int64
-	indexLength      int64
+	rows             sql.NullInt64
+	averageRowLength sql.NullInt64
+	dataLength       sql.NullInt64
+	indexLength      sql.NullInt64
 }
 
 type StatementEventStats struct {
