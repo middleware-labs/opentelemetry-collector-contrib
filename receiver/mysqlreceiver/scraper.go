@@ -151,7 +151,6 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	globalStats, err := m.sqlclient.getGlobalStats()
-	// pp.Println(globalStats)
 	if err != nil {
 		m.logger.Error("Failed to fetch global stats", zap.Error(err))
 		errs.AddPartial(66, err)
@@ -464,7 +463,6 @@ func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror
 
 func (m *mySQLScraper) scraperInnodbMetricsForDBM(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	innodbStatusStats, err, nfailedMetrics := m.sqlclient.getInnodbStatusStats()
-	// pp.Println(innodbStatusStats)
 	if err != nil {
 		if nfailedMetrics == 0 {
 			m.logger.Error("Failed to fetch innodb status stats", zap.Error(err))
@@ -513,7 +511,6 @@ func (m *mySQLScraper) scrapeTableStats(now pcommon.Timestamp, errs *scrapererro
 
 func (m *mySQLScraper) scrapeTableIoWaitsStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	tableIoWaitsStats, err := m.sqlclient.getTableIoWaitsStats()
-	// pp.Println(tableIoWaitsStats)
 	if err != nil {
 		m.logger.Error("Failed to fetch table io_waits stats", zap.Error(err))
 		errs.AddPartial(8, err)
@@ -546,7 +543,6 @@ func (m *mySQLScraper) scrapeTableIoWaitsStats(now pcommon.Timestamp, errs *scra
 
 func (m *mySQLScraper) scrapeIndexIoWaitsStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	indexIoWaitsStats, err := m.sqlclient.getIndexIoWaitsStats()
-	// pp.Println(indexIoWaitsStats)
 	if err != nil {
 		m.logger.Error("Failed to fetch index io_waits stats", zap.Error(err))
 		errs.AddPartial(8, err)
@@ -579,7 +575,6 @@ func (m *mySQLScraper) scrapeIndexIoWaitsStats(now pcommon.Timestamp, errs *scra
 
 func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	statementEventsStats, err := m.sqlclient.getStatementEventsStats()
-	pp.Println(statementEventsStats)
 	if err != nil {
 		m.logger.Error("Failed to fetch index io_waits stats", zap.Error(err))
 		errs.AddPartial(8, err)
@@ -606,7 +601,6 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 
 func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	totalErrors, err := m.sqlclient.getTotalErrors()
-	// pp.Println(totalErrors)
 	if err != nil {
 		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
 		errs.AddPartial(1, err)
@@ -617,7 +611,6 @@ func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererr
 
 func (m *mySQLScraper) scrapeTableLockWaitEventStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	tableLockWaitEventStats, err := m.sqlclient.getTableLockWaitEventStats()
-	// pp.Println(tableLockWaitEventStats)
 	if err != nil {
 		m.logger.Error("Failed to fetch index io_waits stats", zap.Error(err))
 		errs.AddPartial(8, err)
@@ -658,7 +651,6 @@ func (m *mySQLScraper) scrapeTableLockWaitEventStats(now pcommon.Timestamp, errs
 
 func (m *mySQLScraper) scrapeReplicaStatusStats(now pcommon.Timestamp) {
 	replicaStatusStats, err := m.sqlclient.getReplicaStatusStats()
-	// pp.Println(replicaStatusStats)
 	if err != nil {
 		m.logger.Info("Failed to fetch replica status stats", zap.Error(err))
 		return
@@ -684,7 +676,6 @@ func addPartialIfError(errors *scrapererror.ScrapeErrors, err error) {
 
 func (m *mySQLScraper) recordDataPages(now pcommon.Timestamp, globalStats map[string]string, errors *scrapererror.ScrapeErrors) {
 	dirty, err := parseInt(globalStats["Innodb_buffer_pool_pages_dirty"])
-	// pp.Println(dirty)
 	if err != nil {
 		errors.AddPartial(2, err) // we need dirty to calculate free, so 2 data points lost here
 		return
@@ -701,7 +692,6 @@ func (m *mySQLScraper) recordDataPages(now pcommon.Timestamp, globalStats map[st
 
 func (m *mySQLScraper) recordDataUsage(now pcommon.Timestamp, globalStats map[string]string, errors *scrapererror.ScrapeErrors) {
 	dirty, err := parseInt(globalStats["Innodb_buffer_pool_bytes_dirty"])
-	// pp.Println(dirty)
 	if err != nil {
 		errors.AddPartial(2, err) // we need dirty to calculate free, so 2 data points lost here
 		return

@@ -12,7 +12,6 @@ import (
 
 	// registers the mysql driver
 	"github.com/go-sql-driver/mysql"
-	"github.com/k0kubun/pp"
 	parser "github.com/middleware-labs/innoParser/pkg/metricParser"
 )
 
@@ -225,33 +224,28 @@ func (c *mySQLClient) Connect() error {
 
 // getVersion queries the db for the version.
 func (c *mySQLClient) getVersion() (string, error) {
-	pp.Println("GETTING VERSION--------------------")
 	query := "SELECT VERSION();"
 	var version string
 	err := c.client.QueryRow(query).Scan(&version)
 	if err != nil {
 		return "", err
 	}
-	pp.Println(version)
 	return version, nil
 }
 
 // getGlobalStats queries the db for global status metrics.
 func (c *mySQLClient) getGlobalStats() (map[string]string, error) {
-	pp.Println("GETTING GLOBAL STATS --------------------")
 	q := "SHOW GLOBAL STATUS;"
 	return query(*c, q)
 }
 
 // getInnodbStats queries the db for innodb metrics.
 func (c *mySQLClient) getInnodbStats() (map[string]string, error) {
-	pp.Println("GETTING INNODB STATS -------------------------------")
 	q := "SELECT name, count FROM information_schema.innodb_metrics WHERE name LIKE '%buffer_pool_size%';"
 	return query(*c, q)
 }
 
 func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
-	pp.Println("GETTING INNODB STATUS STATS -------------------------------------")
 	/*
 		RETURNS:
 			map[string]int64 :
@@ -271,7 +265,6 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	*/
 	innodbParser, err := parser.NewInnodbStatusParser()
 	if err != nil {
-		pp.Println(err)
 		err := fmt.Errorf("could not create parser for innodb stats, %s", err)
 		return nil, err, 0
 	}
@@ -288,7 +281,6 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	// TODO: Suggest better value if there's an error for the metric.
 	if mysqlErr != nil {
 
-		pp.Println(err)
 		err := fmt.Errorf("error querying the mysql db for innodb status %v", mysqlErr)
 		return nil, err, 0
 	}
@@ -322,7 +314,6 @@ type NRows struct {
 }
 
 func (c *mySQLClient) getTotalRows() ([]NRows, error) {
-	pp.Println("GETTING TOTAL ROWS -------------------------------------")
 	query := `SELECT TABLE_SCHEMA AS DatabaseName, SUM(TABLE_ROWS) AS TotalRows
 	FROM INFORMATION_SCHEMA.TABLES
 	GROUP BY TABLE_SCHEMA;
@@ -331,7 +322,6 @@ func (c *mySQLClient) getTotalRows() ([]NRows, error) {
 	rows, err := c.client.Query(query)
 
 	if err != nil {
-		pp.Println(err)
 		return nil, err
 	}
 
@@ -342,7 +332,6 @@ func (c *mySQLClient) getTotalRows() ([]NRows, error) {
 		err := rows.Scan(&r.dbname, &r.totalRows)
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		nr = append(nr, r)
@@ -352,14 +341,12 @@ func (c *mySQLClient) getTotalRows() ([]NRows, error) {
 
 // getTableStats queries the db for information_schema table size metrics.
 func (c *mySQLClient) getTableStats() ([]TableStats, error) {
-	pp.Println("GETTING TABLE STATS--------------------------")
 	query := "SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_ROWS, " +
 		"AVG_ROW_LENGTH, DATA_LENGTH, INDEX_LENGTH " +
 		"FROM information_schema.TABLES " +
 		"WHERE TABLE_SCHEMA NOT in ('information_schema', 'sys');"
 	rows, err := c.client.Query(query)
 	if err != nil {
-		pp.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -376,7 +363,6 @@ func (c *mySQLClient) getTableStats() ([]TableStats, error) {
 		)
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -387,7 +373,6 @@ func (c *mySQLClient) getTableStats() ([]TableStats, error) {
 
 // getTableIoWaitsStats queries the db for table_io_waits metrics.
 func (c *mySQLClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
-	pp.Println("GETTING TABLE IO WAIT STATS  ---------------------------")
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, " +
 		"COUNT_DELETE, COUNT_FETCH, COUNT_INSERT, COUNT_UPDATE," +
 		"SUM_TIMER_DELETE, SUM_TIMER_FETCH, SUM_TIMER_INSERT, SUM_TIMER_UPDATE " +
@@ -396,7 +381,6 @@ func (c *mySQLClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 	rows, err := c.client.Query(query)
 	if err != nil {
 
-		pp.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -408,7 +392,6 @@ func (c *mySQLClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 			&s.timeDelete, &s.timeFetch, &s.timeInsert, &s.timeUpdate)
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -419,7 +402,6 @@ func (c *mySQLClient) getTableIoWaitsStats() ([]TableIoWaitsStats, error) {
 
 // getIndexIoWaitsStats queries the db for index_io_waits metrics.
 func (c *mySQLClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
-	pp.Println("INDEX IO WAITS STATS ------------------------------------------------")
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, ifnull(INDEX_NAME, 'NONE') as INDEX_NAME," +
 		"COUNT_FETCH, COUNT_INSERT, COUNT_UPDATE, COUNT_DELETE," +
 		"SUM_TIMER_FETCH, SUM_TIMER_INSERT, SUM_TIMER_UPDATE, SUM_TIMER_DELETE " +
@@ -429,7 +411,6 @@ func (c *mySQLClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 	rows, err := c.client.Query(query)
 	if err != nil {
 
-		pp.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -441,7 +422,6 @@ func (c *mySQLClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 			&s.timeDelete, &s.timeFetch, &s.timeInsert, &s.timeUpdate)
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -451,26 +431,35 @@ func (c *mySQLClient) getIndexIoWaitsStats() ([]IndexIoWaitsStats, error) {
 }
 
 func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
-	pp.Println("STATEMENT EVENT STATS -----------------------------------------------")
-	query := fmt.Sprintf("SELECT ifnull(SCHEMA_NAME, 'NONE') as SCHEMA_NAME, DIGEST,"+
-		"LEFT(DIGEST_TEXT, %d) as DIGEST_TEXT, SUM_TIMER_WAIT, SUM_ERRORS,"+
-		"SUM_WARNINGS, SUM_ROWS_AFFECTED, SUM_ROWS_SENT, SUM_ROWS_EXAMINED,"+
-		"SUM_CREATED_TMP_DISK_TABLES, SUM_CREATED_TMP_TABLES, SUM_SORT_MERGE_PASSES,"+
-		"SUM_SORT_ROWS, SUM_NO_INDEX_USED , COUNT_STAR "+
-		"FROM performance_schema.events_statements_summary_by_digest "+
-		"WHERE SCHEMA_NAME NOT IN ('mysql', 'performance_schema', 'information_schema') "+
-		"AND last_seen > DATE_SUB(NOW(), INTERVAL %d SECOND) "+
-		"ORDER BY SUM_TIMER_WAIT DESC "+
-		"LIMIT %d",
-		c.statementEventsDigestTextLimit,
-		int64(c.statementEventsTimeLimit.Seconds()),
-		c.statementEventsLimit)
-
-	pp.Println(query)
+	query := fmt.Sprintf(`
+	SELECT
+		IFNULL(SCHEMA_NAME, 'NONE') AS SCHEMA_NAME,
+		DIGEST,
+		LEFT(DIGEST_TEXT, %d) AS DIGEST_TEXT,
+		SUM_TIMER_WAIT,
+		SUM_ERRORS,
+		SUM_WARNINGS,
+		SUM_ROWS_AFFECTED,
+		SUM_ROWS_SENT,
+		SUM_ROWS_EXAMINED,
+		SUM_CREATED_TMP_DISK_TABLES,
+		SUM_CREATED_TMP_TABLES,
+		SUM_SORT_MERGE_PASSES,
+		SUM_SORT_ROWS,
+		SUM_NO_INDEX_USED,
+		COUNT_STAR
+	FROM
+		performance_schema.events_statements_summary_by_digest
+	WHERE
+		SCHEMA_NAME NOT IN ('performance_schema', 'information_schema')
+		AND last_seen > DATE_SUB(NOW(), INTERVAL %d SECOND)
+	ORDER BY
+		SUM_TIMER_WAIT DESC
+	LIMIT %d;
+	`, c.statementEventsDigestTextLimit, int64(c.statementEventsTimeLimit.Seconds()), c.statementEventsLimit)
 
 	rows, err := c.client.Query(query)
 	if err != nil {
-		pp.Println(err)
 		fmt.Println(err.Error())
 		return nil, err
 	}
@@ -498,23 +487,19 @@ func (c *mySQLClient) getStatementEventsStats() ([]StatementEventStats, error) {
 		)
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		stats = append(stats, s)
 	}
-	pp.Print(stats)
 	return stats, nil
 }
 
 func (c *mySQLClient) getTotalErrors() (int64, error) {
-	pp.Println("TOTAL ERRORS --------------------------------------------------")
 	query := `SELECT SUM_ERRORS FROM performance_schema.events_statements_summary_by_digest;`
 
 	rows, err := c.client.Query(query)
 	if err != nil {
 
-		pp.Println(err)
 		return -1, err
 	}
 
@@ -526,7 +511,6 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 		err := rows.Scan(&ec)
 		if err != nil {
 
-			pp.Println(err)
 			return -1, err
 		}
 		nerrors += ec
@@ -536,7 +520,6 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 }
 
 func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {
-	pp.Println("TABLE LOCK WAIT EVENT STATS --------------------------------------")
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, COUNT_READ_NORMAL, COUNT_READ_WITH_SHARED_LOCKS," +
 		"COUNT_READ_HIGH_PRIORITY, COUNT_READ_NO_INSERT, COUNT_READ_EXTERNAL, COUNT_WRITE_ALLOW_WRITE," +
 		"COUNT_WRITE_CONCURRENT_INSERT, COUNT_WRITE_LOW_PRIORITY, COUNT_WRITE_NORMAL," +
@@ -550,7 +533,6 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 	rows, err := c.client.Query(query)
 	if err != nil {
 
-		pp.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -565,7 +547,6 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 			&s.sumTimerWriteAllowWrite, &s.sumTimerWriteConcurrentInsert, &s.sumTimerWriteLowPriority, &s.sumTimerWriteNormal, &s.sumTimerWriteExternal)
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -575,17 +556,14 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 }
 
 func (c *mySQLClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
-	pp.Println("REPLICATION STATS ------------------------------------------")
 	version, err := c.getVersion()
 	if err != nil {
 
-		pp.Println(err)
 		return nil, err
 	}
 
 	if version < "8.0.22" {
 
-		pp.Println(err)
 		return nil, nil
 	}
 
@@ -594,7 +572,6 @@ func (c *mySQLClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 
 	if err != nil {
 
-		pp.Println(err)
 		return nil, err
 	}
 
@@ -602,7 +579,6 @@ func (c *mySQLClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 	cols, err := rows.Columns()
 	if err != nil {
 
-		pp.Println(err)
 		return nil, err
 	}
 
@@ -740,7 +716,6 @@ func (c *mySQLClient) getReplicaStatusStats() ([]ReplicaStatusStats, error) {
 
 		if err != nil {
 
-			pp.Println(err)
 			return nil, err
 		}
 		stats = append(stats, s)

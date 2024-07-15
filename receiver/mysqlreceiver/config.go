@@ -4,7 +4,6 @@
 package mysqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver"
 
 import (
-	"math"
 	"time"
 
 	"go.opentelemetry.io/collector/config/confignet"
@@ -17,9 +16,9 @@ import (
 )
 
 const (
-	defaultStatementEventsDigestTextLimit = 120
+	defaultStatementEventsDigestTextLimit = 1024
 	defaultStatementEventsLimit           = 250
-	defaultStatementEventsTimeLimit       = time.Duration(math.MaxInt64)
+	defaultStatementEventsTimeLimit       = 24 * time.Hour
 )
 
 type Config struct {
