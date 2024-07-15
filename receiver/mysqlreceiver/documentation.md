@@ -84,6 +84,14 @@ The number of bytes in the InnoDB buffer pool.
 | ---- | ----------- | ------ | ----------------- | ------------------- |
 | status | The status of buffer pool data. | Str: ``dirty``, ``clean`` | Recommended | - |
 
+### mysql.connection.count
+
+The number of connection attempts (successful or not) to the MySQL server.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
 ### mysql.double_writes
 
 The number of writes to the InnoDB doublewrite buffer.

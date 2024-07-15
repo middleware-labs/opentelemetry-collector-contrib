@@ -178,6 +178,7 @@ func TestMetricsBuilder(t *testing.T) {
 				assert.Equal(t, 2, mb.metricMysqlCommands.data.Sum().DataPoints().Len())
 			}
 
+			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordMysqlConnectionCountDataPoint(ts, "1")
 
