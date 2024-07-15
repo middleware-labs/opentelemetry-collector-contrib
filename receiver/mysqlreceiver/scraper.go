@@ -16,7 +16,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver/internal/metadata"
 )
 
@@ -432,8 +431,6 @@ func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererr
 
 func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	nrows, err := m.sqlclient.getTotalRows()
-	pp.Println(nrows)
-	pp.Println(err)
 	if err != nil {
 		m.logger.Error("Failed to fetch Total Rows", zap.Error(err))
 		errs.AddPartial(1, err)
@@ -593,7 +590,6 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 
 func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	totalErrors, err := m.sqlclient.getTotalErrors()
-	pp.Println("Total errors: ", totalErrors)
 	if err != nil {
 		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
 		errs.AddPartial(1, err)
