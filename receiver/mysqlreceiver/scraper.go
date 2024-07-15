@@ -440,7 +440,9 @@ func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror
 		return
 	}
 	for _, r := range nrows {
-		m.mb.RecordMysqlTotalRowsDataPoint(now, r.totalRows, r.dbname)
+		if r.totalRows.Valid {
+			m.mb.RecordMysqlTotalRowsDataPoint(now, r.totalRows.Int64, r.dbname)
+		}
 	}
 }
 

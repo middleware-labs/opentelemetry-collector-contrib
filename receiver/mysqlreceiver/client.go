@@ -310,7 +310,7 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 
 type NRows struct {
 	dbname    string
-	totalRows int64
+	totalRows sql.NullInt64
 }
 
 func (c *mySQLClient) getTotalRows() ([]NRows, error) {
