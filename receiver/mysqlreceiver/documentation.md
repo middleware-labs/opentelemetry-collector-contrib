@@ -98,6 +98,14 @@ The number of times each type of command has been executed.
 | ---- | ----------- | ------ |
 | command | The command types. | Str: ``delete``, ``insert``, ``select``, ``update`` |
 
+### mysql.connection.count
+
+The number of connection attempts (successful or not) to the MySQL server.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| 1 | Sum | Int | Cumulative | true |
+
 ### mysql.double_writes
 
 The number of writes to the InnoDB doublewrite buffer.
