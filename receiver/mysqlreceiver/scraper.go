@@ -437,7 +437,9 @@ func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror
 		return
 	}
 	for _, r := range nrows {
-		m.mb.RecordMysqlTotalRowsDataPoint(now, r.totalRows, r.dbname)
+		if r.totalRows.Valid {
+			m.mb.RecordMysqlTotalRowsDataPoint(now, r.totalRows.Int64, r.dbname)
+		}
 	}
 }
 
@@ -481,10 +483,18 @@ func (m *mySQLScraper) scrapeTableStats(now pcommon.Timestamp, errs *scrapererro
 	for i := 0; i < len(tableStats); i++ {
 		s := tableStats[i]
 		// counts
-		m.mb.RecordMysqlTableRowsDataPoint(now, s.rows, s.name, s.schema)
-		m.mb.RecordMysqlTableAverageRowLengthDataPoint(now, s.averageRowLength, s.name, s.schema)
-		m.mb.RecordMysqlTableSizeDataPoint(now, s.dataLength, s.name, s.schema, metadata.AttributeTableSizeTypeData)
-		m.mb.RecordMysqlTableSizeDataPoint(now, s.indexLength, s.name, s.schema, metadata.AttributeTableSizeTypeIndex)
+		if s.rows.Valid {
+			m.mb.RecordMysqlTableRowsDataPoint(now, s.rows.Int64, s.name, s.schema)
+		}
+		if s.averageRowLength.Valid {
+			m.mb.RecordMysqlTableAverageRowLengthDataPoint(now, s.averageRowLength.Int64, s.name, s.schema)
+		}
+		if s.dataLength.Valid {
+			m.mb.RecordMysqlTableSizeDataPoint(now, s.dataLength.Int64, s.name, s.schema, metadata.AttributeTableSizeTypeData)
+		}
+		if s.indexLength.Valid {
+			m.mb.RecordMysqlTableSizeDataPoint(now, s.indexLength.Int64, s.name, s.schema, metadata.AttributeTableSizeTypeIndex)
+		}
 	}
 }
 
@@ -580,7 +590,6 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 
 func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	totalErrors, err := m.sqlclient.getTotalErrors()
-
 	if err != nil {
 		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
 		errs.AddPartial(1, err)
