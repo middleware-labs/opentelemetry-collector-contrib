@@ -631,7 +631,7 @@ metrics:
       aggregation_temporality: cumulative
 
 
-    #DBM metrics
+  #DBM metrics
   mysql.innodb.rows_deleted:
     enabled: true 
     description: Rate at which rows are being deleted in InnoDB.
@@ -670,6 +670,47 @@ metrics:
       value_type: int
       input_type: string
       monotonic: false
+      aggregation_temporality: cumulative
+
+  # Row opertation metrics from performance schema, as innodb stats are proved to be unreliable
+  mysql.performance.rows_inserted:
+    enabled: true
+    description: The number of rows inserted in the database as per the performance schema.
+    unit: '{row}'
+    sum:
+      value_type: int
+      input_type: string
+      monotonic: true 
+      aggregation_temporality: cumulative
+
+  mysql.performance.rows_read:
+    enabled: true
+    description: The number of rows read in the database as per the performance schema.
+    unit: '{row}'
+    sum:
+      value_type: int
+      input_type: string
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  mysql.performance.rows_updated:
+    enabled: true
+    description: The number of rows updated in the database as per the performance schema.
+    unit: '{row}'
+    sum:
+      value_type: int
+      input_type: string
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  mysql.performance.rows_deleted:
+    enabled: true
+    description: The number of rows deleted in the database as per the performance schema.
+    unit: '{row}'
+    sum:
+      value_type: int
+      input_type: string
+      monotonic: true 
       aggregation_temporality: cumulative
 
   mysql.total_rows:

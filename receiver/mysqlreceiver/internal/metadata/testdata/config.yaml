@@ -53,6 +53,14 @@ all_set:
       enabled: true
     mysql.page_operations:
       enabled: true
+    mysql.performance.rows_deleted:
+      enabled: true
+    mysql.performance.rows_inserted:
+      enabled: true
+    mysql.performance.rows_read:
+      enabled: true
+    mysql.performance.rows_updated:
+      enabled: true
     mysql.prepared_statements:
       enabled: true
     mysql.query.client.count:
@@ -167,6 +175,14 @@ none_set:
     mysql.operations:
       enabled: false
     mysql.page_operations:
+      enabled: false
+    mysql.performance.rows_deleted:
+      enabled: false
+    mysql.performance.rows_inserted:
+      enabled: false
+    mysql.performance.rows_read:
+      enabled: false
+    mysql.performance.rows_updated:
       enabled: false
     mysql.prepared_statements:
       enabled: false
