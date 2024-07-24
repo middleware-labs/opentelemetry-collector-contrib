@@ -106,6 +106,9 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	// collect global status metrics.
 	m.scrapeGlobalStats(now, errs)
 
+	// collect row operation stats from performance schema as sometimes
+	// innodb row stats are unreliable
+	m.scrapeRowOperationStats(now, errs)
 	// colect replicas status metrics.
 	m.scrapeReplicaStatusStats(now)
 
@@ -113,10 +116,6 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 	// collect total errors
 	m.scrapeTotalErrors(now, errs)
-
-	// collect row operation stats from performance schema as sometimes
-	// innodb row stats are unreliable
-	m.scrapeRowOperationStats(now, errs)
 
 	m.scraperInnodbMetricsForDBM(now, errs)
 
