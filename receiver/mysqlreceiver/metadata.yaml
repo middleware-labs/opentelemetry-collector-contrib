@@ -722,7 +722,7 @@ metrics:
     attributes: [dbname]
 
   mysql.statement_event.errors:
-    enabled: true
+    enabled: true 
     description: the error count of the summarized events
     unit: 1
     sum:

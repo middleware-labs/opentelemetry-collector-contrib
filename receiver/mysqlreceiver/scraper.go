@@ -16,7 +16,6 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver/internal/metadata"
 )
 
@@ -136,7 +135,6 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 func (m *mySQLScraper) scrapeRowOperationStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	rowOperationStats, err := m.sqlclient.getRowOperationStats()
 	if err != nil {
-		pp.Print(err)
 		m.logger.Error("Failed to fetch row operation stats from performance schema", zap.Error(err))
 		errs.AddPartial(4, err)
 		return
@@ -145,11 +143,6 @@ func (m *mySQLScraper) scrapeRowOperationStats(now pcommon.Timestamp, errs *scra
 	rowsInserted := strconv.FormatInt(rowOperationStats.rowsInserted, 10)
 	rowsUpdated := strconv.FormatInt(rowOperationStats.rowsUpdated, 10)
 	rowsRead := strconv.FormatInt(rowOperationStats.rowsInserted, 10)
-
-	pp.Println(rowsDeleted)
-	pp.Println(rowsInserted)
-	pp.Println(rowsUpdated)
-	pp.Println(rowsRead)
 
 	m.mb.RecordMysqlPerformanceRowsDeletedDataPoint(now, rowsDeleted)
 	m.mb.RecordMysqlPerformanceRowsInsertedDataPoint(now, rowsInserted)

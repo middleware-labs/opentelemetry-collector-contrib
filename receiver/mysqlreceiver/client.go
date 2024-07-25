@@ -253,16 +253,7 @@ func (c *mySQLClient) getRowOperationStats() (RowOperationStats, error) {
 
 	rows, err := c.client.Query(query)
 	rowOpsStats := new(RowOperationStats)
-	/*
-		+----------------+-----------------+---------------+-----------+---------------+
-		| statement_type | execution_count | rows_affected | rows_sent | rows_examined |
-		+----------------+-----------------+---------------+-----------+---------------+
-		| SELECT         |            4862 |             0 |    246533 |      43871844 |
-		| UPDATE         |            2800 |           395 |         0 |        480395 |
-		| DELETE         |             400 |             0 |         0 |         79800 |
-		| INSERT         |             800 |           400 |         0 |         80200 |
-		+----------------+-----------------+---------------+-----------+---------------+
-	*/
+
 	if err != nil {
 		return *rowOpsStats, err
 	}

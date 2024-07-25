@@ -72,6 +72,7 @@ func TestScrape(t *testing.T) {
 			innodbStatusStatsFile:       "innodb_status_stats",
 			totalRowsFile:               "total_rows_stats",
 			totalErrorsFile:             "total_error_stats",
+			rowOperationsStatsFile:      "row_operations_status",
 		}
 
 		scraper.renameCommands = true
@@ -119,6 +120,7 @@ func TestScrape(t *testing.T) {
 			innodbStatusStatsFile:       "innodb_status_stats_empty",
 			totalRowsFile:               "total_rows_empty",
 			totalErrorsFile:             "total_errors_empty",
+			rowOperationsStatsFile:      "row_operations_status_empty",
 		}
 
 		actualMetrics, scrapeErr := scraper.scrape(context.Background())
@@ -127,9 +129,15 @@ func TestScrape(t *testing.T) {
 		expectedFile := filepath.Join("testdata", "scraper", "expected_partial.yaml")
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
-		assert.NoError(t, pmetrictest.CompareMetrics(actualMetrics, expectedMetrics,
-			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp()))
+		assert.NoError(t, pmetrictest.CompareMetrics(
+			actualMetrics,
+			expectedMetrics,
+			pmetrictest.IgnoreMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(),
+			pmetrictest.IgnoreStartTimestamp(),
+			pmetrictest.IgnoreTimestamp(),
+		),
+		)
 
 		var partialError scrapererror.PartialScrapeError
 		require.True(t, errors.As(scrapeErr, &partialError), "returned error was not PartialScrapeError")
@@ -154,6 +162,7 @@ type mockClient struct {
 	innodbStatusStatsFile       string
 	totalRowsFile               string
 	totalErrorsFile             string
+	rowOperationsStatsFile      string
 }
 
 func readFile(fname string) (map[string]string, error) {
@@ -186,6 +195,45 @@ func (c *mockClient) getGlobalStats() (map[string]string, error) {
 
 func (c *mockClient) getInnodbStats() (map[string]string, error) {
 	return readFile(c.innodbStatsFile)
+}
+
+func (c *mockClient) getRowOperationStats() (RowOperationStats, error) {
+	rowOpsStats := new(RowOperationStats)
+	file, err := os.Open(filepath.Join("testdata", "scraper", c.rowOperationsStatsFile+".txt"))
+
+	if err != nil {
+		return *rowOpsStats, err
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+
+		text := strings.Fields(scanner.Text())
+		rowsInserted, err := strconv.Atoi(text[0])
+		if err != nil {
+			return *rowOpsStats, err
+		}
+		rowsUpdated, err := strconv.Atoi(text[1])
+		if err != nil {
+			return *rowOpsStats, err
+		}
+		rowsRead, err := strconv.Atoi(text[2])
+		if err != nil {
+			return *rowOpsStats, err
+		}
+		rowsDeleted, err := strconv.Atoi(text[3])
+		if err != nil {
+			return *rowOpsStats, err
+		}
+
+		rowOpsStats.rowsDeleted = int64(rowsDeleted)
+		rowOpsStats.rowsInserted = int64(rowsInserted)
+		rowOpsStats.rowsRead = int64(rowsRead)
+		rowOpsStats.rowsUpdated = int64(rowsUpdated)
+	}
+	return *rowOpsStats, nil
 }
 
 func (c *mockClient) getInnodbStatusStats() (map[string]int64, error, int) {
