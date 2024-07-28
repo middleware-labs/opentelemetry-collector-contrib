@@ -305,6 +305,7 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sClusterrolebindingType("k8s.clusterrolebinding.type-val")
 			rb.SetK8sClusterrolebindingUID("k8s.clusterrolebinding.uid-val")
 			rb.SetK8sContainerName("k8s.container.name-val")
+			rb.SetK8sContainerStatusCurrentWaitingReason("k8s.container.status.current_waiting_reason-val")
 			rb.SetK8sContainerStatusLastTerminatedReason("k8s.container.status.last_terminated_reason-val")
 			rb.SetK8sCronjobName("k8s.cronjob.name-val")
 			rb.SetK8sCronjobStartTime("k8s.cronjob.start_time-val")

@@ -35,6 +35,7 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sClusterrolebindingType("k8s.clusterrolebinding.type-val")
 			rb.SetK8sClusterrolebindingUID("k8s.clusterrolebinding.uid-val")
 			rb.SetK8sContainerName("k8s.container.name-val")
+			rb.SetK8sContainerStatusCurrentWaitingReason("k8s.container.status.current_waiting_reason-val")
 			rb.SetK8sContainerStatusLastTerminatedReason("k8s.container.status.last_terminated_reason-val")
 			rb.SetK8sCronjobName("k8s.cronjob.name-val")
 			rb.SetK8sCronjobStartTime("k8s.cronjob.start_time-val")
@@ -149,9 +150,9 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch test {
 			case "default":
-				assert.Equal(t, 124, res.Attributes().Len())
+				assert.Equal(t, 125, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 130, res.Attributes().Len())
+				assert.Equal(t, 131, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -268,6 +269,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "k8s.container.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.container.status.current_waiting_reason")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.container.status.current_waiting_reason-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.container.status.last_terminated_reason")
 			assert.True(t, ok)
