@@ -110,7 +110,6 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.scrapeIndexIoWaitsStats(now, errs)
 
 	// collect table size metrics.
-
 	m.scrapeTableStats(now, errs)
 
 	// collect performance event statements metrics.
@@ -122,6 +121,10 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.scrapeGlobalStats(now, errs)
 
 	// collect replicas status metrics.
+	// collect row operation stats from performance schema as sometimes
+	// innodb row stats are unreliable
+	m.scrapeRowOperationStats(now, errs)
+	// colect replicas status metrics.
 	m.scrapeReplicaStatusStats(now)
 
 	m.scrapeTotalRows(now, errs)
@@ -174,6 +177,24 @@ func (m *mySQLScraper) scrapeQuerySampleFunc(ctx context.Context) (plog.Logs, er
 	m.scrapeQuerySamples(ctx, now, errs)
 
 	return m.lb.Emit(), errs.Combine()
+}
+
+func (m *mySQLScraper) scrapeRowOperationStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	rowOperationStats, err := m.sqlclient.getRowOperationStats()
+	if err != nil {
+		m.logger.Error("Failed to fetch row operation stats from performance schema", zap.Error(err))
+		errs.AddPartial(4, err)
+		return
+	}
+	rowsDeleted := strconv.FormatInt(rowOperationStats.rowsDeleted, 10)
+	rowsInserted := strconv.FormatInt(rowOperationStats.rowsInserted, 10)
+	rowsUpdated := strconv.FormatInt(rowOperationStats.rowsUpdated, 10)
+	rowsRead := strconv.FormatInt(rowOperationStats.rowsInserted, 10)
+
+	m.mb.RecordMysqlPerformanceRowsDeletedDataPoint(now, rowsDeleted)
+	m.mb.RecordMysqlPerformanceRowsInsertedDataPoint(now, rowsInserted)
+	m.mb.RecordMysqlPerformanceRowsUpdatedDataPoint(now, rowsUpdated)
+	m.mb.RecordMysqlPerformanceRowsReadDataPoint(now, rowsRead)
 }
 
 func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {

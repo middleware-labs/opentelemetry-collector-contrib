@@ -2,15 +2,13 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlr
 
 go 1.24.2
 
-toolchain go1.22.4
-
 require (
 	github.com/DataDog/datadog-agent/pkg/obfuscate v0.73.0-devel.0.20251030121902-cd89eab046d6
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/golang-lru/v2 v2.0.7
+	github.com/middleware-labs/innoParser v0.0.0-20240729092319-ddbdd8e42266
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.139.0
-	github.com/middleware-labs/innoParser v0.0.0-20240508090457-8c2fa2246395
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.139.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.139.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.139.0
