@@ -8,7 +8,9 @@ module github.com/open-telemetry/opentelemetry-collector-contrib
 // For the OpenTelemetry Collector Contrib distribution specifically, see
 // https://github.com/open-telemetry/opentelemetry-collector-releases/tree/main/distributions/otelcol-contrib
 
-go 1.22.0
+go 1.22.2
+
+toolchain go1.22.5
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/connector/countconnector v0.102.0
@@ -511,6 +513,7 @@ require (
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
+	github.com/k0kubun/pp v3.0.1+incompatible // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
@@ -539,6 +542,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/microsoft/ApplicationInsights-Go v0.4.4 // indirect
 	github.com/microsoft/go-mssqldb v1.7.2 // indirect
+	github.com/middleware-labs/innoParser v0.0.0-20240508090457-8c2fa2246395 // indirect
 	github.com/miekg/dns v1.1.58 // indirect
 	github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect

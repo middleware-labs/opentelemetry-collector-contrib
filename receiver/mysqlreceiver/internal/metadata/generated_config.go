@@ -56,6 +56,10 @@ type MetricsConfig struct {
 	MysqlOperations               MetricConfig `mapstructure:"mysql.operations"`
 	MysqlPageOperations           MetricConfig `mapstructure:"mysql.page_operations"`
 	MysqlPageSize                MetricConfig `mapstructure:"mysql.page_size"`
+	MysqlPerformanceRowsDeleted   MetricConfig `mapstructure:"mysql.performance.rows_deleted"`
+	MysqlPerformanceRowsInserted  MetricConfig `mapstructure:"mysql.performance.rows_inserted"`
+	MysqlPerformanceRowsRead      MetricConfig `mapstructure:"mysql.performance.rows_read"`
+	MysqlPerformanceRowsUpdated   MetricConfig `mapstructure:"mysql.performance.rows_updated"`
 	MysqlPreparedStatements       MetricConfig `mapstructure:"mysql.prepared_statements"`
 	MysqlQueryClientCount         MetricConfig `mapstructure:"mysql.query.client.count"`
 	MysqlQueryCount               MetricConfig `mapstructure:"mysql.query.count"`
@@ -167,6 +171,18 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MysqlPageOperations: MetricConfig{
+			Enabled: true,
+		},
+		MysqlPerformanceRowsDeleted: MetricConfig{
+			Enabled: true,
+		},
+		MysqlPerformanceRowsInserted: MetricConfig{
+			Enabled: true,
+		},
+		MysqlPerformanceRowsRead: MetricConfig{
+			Enabled: true,
+		},
+		MysqlPerformanceRowsUpdated: MetricConfig{
 			Enabled: true,
 		},
 		MysqlPageSize: MetricConfig{
