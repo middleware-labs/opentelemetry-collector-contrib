@@ -2380,6 +2380,210 @@ func newMetricMysqlPageOperations(cfg MetricConfig) metricMysqlPageOperations {
 	return m
 }
 
+type metricMysqlPerformanceRowsDeleted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.performance.rows_deleted metric with initial data.
+func (m *metricMysqlPerformanceRowsDeleted) init() {
+	m.data.SetName("mysql.performance.rows_deleted")
+	m.data.SetDescription("The number of rows deleted in the database as per the performance schema.")
+	m.data.SetUnit("{row}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMysqlPerformanceRowsDeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlPerformanceRowsDeleted) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlPerformanceRowsDeleted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlPerformanceRowsDeleted(cfg MetricConfig) metricMysqlPerformanceRowsDeleted {
+	m := metricMysqlPerformanceRowsDeleted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMysqlPerformanceRowsInserted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.performance.rows_inserted metric with initial data.
+func (m *metricMysqlPerformanceRowsInserted) init() {
+	m.data.SetName("mysql.performance.rows_inserted")
+	m.data.SetDescription("The number of rows inserted in the database as per the performance schema.")
+	m.data.SetUnit("{row}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMysqlPerformanceRowsInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlPerformanceRowsInserted) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlPerformanceRowsInserted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlPerformanceRowsInserted(cfg MetricConfig) metricMysqlPerformanceRowsInserted {
+	m := metricMysqlPerformanceRowsInserted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMysqlPerformanceRowsRead struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.performance.rows_read metric with initial data.
+func (m *metricMysqlPerformanceRowsRead) init() {
+	m.data.SetName("mysql.performance.rows_read")
+	m.data.SetDescription("The number of rows read in the database as per the performance schema.")
+	m.data.SetUnit("{row}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMysqlPerformanceRowsRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlPerformanceRowsRead) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlPerformanceRowsRead) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlPerformanceRowsRead(cfg MetricConfig) metricMysqlPerformanceRowsRead {
+	m := metricMysqlPerformanceRowsRead{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMysqlPerformanceRowsUpdated struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.performance.rows_updated metric with initial data.
+func (m *metricMysqlPerformanceRowsUpdated) init() {
+	m.data.SetName("mysql.performance.rows_updated")
+	m.data.SetDescription("The number of rows updated in the database as per the performance schema.")
+	m.data.SetUnit("{row}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMysqlPerformanceRowsUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlPerformanceRowsUpdated) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlPerformanceRowsUpdated) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlPerformanceRowsUpdated(cfg MetricConfig) metricMysqlPerformanceRowsUpdated {
+	m := metricMysqlPerformanceRowsUpdated{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMysqlPreparedStatements struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3909,6 +4113,10 @@ type MetricsBuilder struct {
 	metricMysqlOpenedResources          metricMysqlOpenedResources
 	metricMysqlOperations               metricMysqlOperations
 	metricMysqlPageOperations           metricMysqlPageOperations
+	metricMysqlPerformanceRowsDeleted   metricMysqlPerformanceRowsDeleted
+	metricMysqlPerformanceRowsInserted  metricMysqlPerformanceRowsInserted
+	metricMysqlPerformanceRowsRead      metricMysqlPerformanceRowsRead
+	metricMysqlPerformanceRowsUpdated   metricMysqlPerformanceRowsUpdated
 	metricMysqlPreparedStatements       metricMysqlPreparedStatements
 	metricMysqlQueryClientCount         metricMysqlQueryClientCount
 	metricMysqlQueryCount               metricMysqlQueryCount
@@ -3989,6 +4197,10 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMysqlOpenedResources:          newMetricMysqlOpenedResources(mbc.Metrics.MysqlOpenedResources),
 		metricMysqlOperations:               newMetricMysqlOperations(mbc.Metrics.MysqlOperations),
 		metricMysqlPageOperations:           newMetricMysqlPageOperations(mbc.Metrics.MysqlPageOperations),
+		metricMysqlPerformanceRowsDeleted:   newMetricMysqlPerformanceRowsDeleted(mbc.Metrics.MysqlPerformanceRowsDeleted),
+		metricMysqlPerformanceRowsInserted:  newMetricMysqlPerformanceRowsInserted(mbc.Metrics.MysqlPerformanceRowsInserted),
+		metricMysqlPerformanceRowsRead:      newMetricMysqlPerformanceRowsRead(mbc.Metrics.MysqlPerformanceRowsRead),
+		metricMysqlPerformanceRowsUpdated:   newMetricMysqlPerformanceRowsUpdated(mbc.Metrics.MysqlPerformanceRowsUpdated),
 		metricMysqlPreparedStatements:       newMetricMysqlPreparedStatements(mbc.Metrics.MysqlPreparedStatements),
 		metricMysqlQueryClientCount:         newMetricMysqlQueryClientCount(mbc.Metrics.MysqlQueryClientCount),
 		metricMysqlQueryCount:               newMetricMysqlQueryCount(mbc.Metrics.MysqlQueryCount),
@@ -4127,6 +4339,10 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricMysqlOpenedResources.emit(ils.Metrics())
 	mb.metricMysqlOperations.emit(ils.Metrics())
 	mb.metricMysqlPageOperations.emit(ils.Metrics())
+	mb.metricMysqlPerformanceRowsDeleted.emit(ils.Metrics())
+	mb.metricMysqlPerformanceRowsInserted.emit(ils.Metrics())
+	mb.metricMysqlPerformanceRowsRead.emit(ils.Metrics())
+	mb.metricMysqlPerformanceRowsUpdated.emit(ils.Metrics())
 	mb.metricMysqlPreparedStatements.emit(ils.Metrics())
 	mb.metricMysqlQueryClientCount.emit(ils.Metrics())
 	mb.metricMysqlQueryCount.emit(ils.Metrics())
@@ -4423,6 +4639,46 @@ func (mb *MetricsBuilder) RecordMysqlPageOperationsDataPoint(ts pcommon.Timestam
 		return fmt.Errorf("failed to parse int64 for MysqlPageOperations, value was %s: %w", inputVal, err)
 	}
 	mb.metricMysqlPageOperations.recordDataPoint(mb.startTime, ts, val, pageOperationsAttributeValue.String())
+	return nil
+}
+
+// RecordMysqlPerformanceRowsDeletedDataPoint adds a data point to mysql.performance.rows_deleted metric.
+func (mb *MetricsBuilder) RecordMysqlPerformanceRowsDeletedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+	val, err := strconv.ParseInt(inputVal, 10, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse int64 for MysqlPerformanceRowsDeleted, value was %s: %w", inputVal, err)
+	}
+	mb.metricMysqlPerformanceRowsDeleted.recordDataPoint(mb.startTime, ts, val)
+	return nil
+}
+
+// RecordMysqlPerformanceRowsInsertedDataPoint adds a data point to mysql.performance.rows_inserted metric.
+func (mb *MetricsBuilder) RecordMysqlPerformanceRowsInsertedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+	val, err := strconv.ParseInt(inputVal, 10, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse int64 for MysqlPerformanceRowsInserted, value was %s: %w", inputVal, err)
+	}
+	mb.metricMysqlPerformanceRowsInserted.recordDataPoint(mb.startTime, ts, val)
+	return nil
+}
+
+// RecordMysqlPerformanceRowsReadDataPoint adds a data point to mysql.performance.rows_read metric.
+func (mb *MetricsBuilder) RecordMysqlPerformanceRowsReadDataPoint(ts pcommon.Timestamp, inputVal string) error {
+	val, err := strconv.ParseInt(inputVal, 10, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse int64 for MysqlPerformanceRowsRead, value was %s: %w", inputVal, err)
+	}
+	mb.metricMysqlPerformanceRowsRead.recordDataPoint(mb.startTime, ts, val)
+	return nil
+}
+
+// RecordMysqlPerformanceRowsUpdatedDataPoint adds a data point to mysql.performance.rows_updated metric.
+func (mb *MetricsBuilder) RecordMysqlPerformanceRowsUpdatedDataPoint(ts pcommon.Timestamp, inputVal string) error {
+	val, err := strconv.ParseInt(inputVal, 10, 64)
+	if err != nil {
+		return fmt.Errorf("failed to parse int64 for MysqlPerformanceRowsUpdated, value was %s: %w", inputVal, err)
+	}
+	mb.metricMysqlPerformanceRowsUpdated.recordDataPoint(mb.startTime, ts, val)
 	return nil
 }
 

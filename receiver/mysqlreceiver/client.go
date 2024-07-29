@@ -30,6 +30,7 @@ type client interface {
 	getInnodbStatusStats() (map[string]int64, error, int)
 	getTotalRows() ([]NRows, error)
 	getTotalErrors() (int64, error)
+	getRowOperationStats() (RowOperationStats, error)
 	Close() error
 }
 
@@ -41,6 +42,12 @@ type mySQLClient struct {
 	statementEventsTimeLimit       time.Duration
 }
 
+type RowOperationStats struct {
+	rowsRead     int64
+	rowsUpdated  int64
+	rowsDeleted  int64
+	rowsInserted int64
+}
 type IoWaitsStats struct {
 	schema      string
 	name        string
@@ -250,6 +257,50 @@ func (c *mySQLClient) getVersion() (*version.Version, error) {
 	}
 version, err := version.NewVersion(versionStr)
 	return version, err
+}
+
+func (c *mySQLClient) getRowOperationStats() (RowOperationStats, error) {
+	// TODO: Improve this logic for complex queries. Cases where INSERT/UPDATE/READ/DELETES are a part of a sub-operation.
+	query := "SELECT SUBSTRING_INDEX(DIGEST_TEXT, ' ', 1) AS statement_type, " +
+		"SUM(SUM_ROWS_AFFECTED) AS rows_affected, " +
+		"SUM(SUM_ROWS_SENT) AS rows_sent " +
+		"FROM performance_schema.events_statements_summary_by_digest " +
+		"WHERE DIGEST_TEXT LIKE 'SELECT% '" +
+		"OR DIGEST_TEXT LIKE 'INSERT%' " +
+		"OR DIGEST_TEXT LIKE 'UPDATE%' " +
+		"OR DIGEST_TEXT LIKE 'DELETE%' " +
+		"GROUP BY statement_type; "
+
+	rows, err := c.client.Query(query)
+	rowOpsStats := new(RowOperationStats)
+
+	if err != nil {
+		return *rowOpsStats, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var rowsAffected int64
+		var rowsSent int64
+		var statementType string
+		err := rows.Scan(&statementType, &rowsAffected, &rowsSent)
+
+		if err != nil {
+			return *rowOpsStats, err
+		}
+
+		if statementType == "SELECT" {
+			rowOpsStats.rowsRead = rowsSent
+		} else if statementType == "UPDATE" {
+			rowOpsStats.rowsUpdated = rowsAffected
+		} else if statementType == "DELETE" {
+			rowOpsStats.rowsDeleted = rowsAffected
+		} else if statementType == "INSERT" {
+			rowOpsStats.rowsInserted = rowsAffected
+		}
+	}
+	return *rowOpsStats, nil
 }
 
 // getGlobalStats queries the db for global status metrics.
