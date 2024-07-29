@@ -49,6 +49,46 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true 
             unit: "1"
+          - description: The number of rows inserted in the database as per the performance schema. 
+            name: mysql.performance.rows_inserted
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "100"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true 
+            unit: '{row}'
+          - description: The number of rows read in the database as per the performance schema. 
+            name: mysql.performance.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "100"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true
+            unit: '{row}'
+          - description: The number of rows updated in the database as per the performance schema. 
+            name: mysql.performance.rows_updated
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "100"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true
+            unit: '{row}'
+          - description: The number of rows deleted in the database as per the performance schema. 
+            name: mysql.performance.rows_deleted
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "100"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true 
+            unit: '{row}'
           - description: Rate at which rows are being deleted in InnoDB.
             name: mysql.innodb.rows_deleted
             sum:
