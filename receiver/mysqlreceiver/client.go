@@ -241,6 +241,7 @@ func (c *mySQLClient) getVersion() (string, error) {
 }
 
 func (c *mySQLClient) getRowOperationStats() (RowOperationStats, error) {
+	// TODO: Improve this logic for complex queries. Cases where INSERT/UPDATE/READ/DELETES are a part of a sub-operation.
 	query := "SELECT SUBSTRING_INDEX(DIGEST_TEXT, ' ', 1) AS statement_type, " +
 		"SUM(SUM_ROWS_AFFECTED) AS rows_affected, " +
 		"SUM(SUM_ROWS_SENT) AS rows_sent " +
