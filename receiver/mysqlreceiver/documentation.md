@@ -286,6 +286,38 @@ The number of InnoDB page operations.
 | ---- | ----------- | ------ |
 | operation | The page operation types. | Str: ``created``, ``read``, ``written`` |
 
+### mysql.performance.rows_deleted
+
+The number of rows deleted in the database as per the performance schema.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row} | Sum | Int | Cumulative | true |
+
+### mysql.performance.rows_inserted
+
+The number of rows inserted in the database as per the performance schema.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row} | Sum | Int | Cumulative | true |
+
+### mysql.performance.rows_read
+
+The number of rows read in the database as per the performance schema.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row} | Sum | Int | Cumulative | true |
+
+### mysql.performance.rows_updated
+
+The number of rows updated in the database as per the performance schema.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| {row} | Sum | Int | Cumulative | true |
+
 ### mysql.prepared_statements
 
 The number of times each type of prepared statement command has been issued.

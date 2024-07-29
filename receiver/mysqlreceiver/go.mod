@@ -7,7 +7,7 @@ toolchain go1.22.4
 require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/google/go-cmp v0.6.0
-	github.com/middleware-labs/innoParser v0.0.0-20240508090457-8c2fa2246395
+	github.com/middleware-labs/innoParser v0.0.0-20240729092319-ddbdd8e42266
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.102.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.102.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.102.0
