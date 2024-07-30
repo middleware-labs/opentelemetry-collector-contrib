@@ -623,6 +623,11 @@ resource_attributes:
     type: string
     enabled: true
 
+  k8s.container.status.current_waiting_reason:
+    description: Current waiting reason of the Container.
+    type: string
+    enabled: true
+
   k8s.daemonset.start_time:
     description: "The start time of the Daemonset."
     enabled: true
