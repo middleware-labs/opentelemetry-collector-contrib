@@ -128,6 +128,11 @@ func RecordSpecMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, c corev1
 			mb.RecordK8sContainerStatusReasonDataPoint(ts, val, attrVal)
 		}
 		break
+			if cs.State.Waiting != nil {
+				rb.SetK8sContainerStatusCurrentWaitingReason(cs.State.Waiting.Reason)
+			}
+			break
+		}
 	}
 
 	rb.SetK8sPodUID(string(pod.UID))

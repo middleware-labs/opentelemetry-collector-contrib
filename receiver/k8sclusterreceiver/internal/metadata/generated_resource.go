@@ -175,6 +175,13 @@ func (rb *ResourceBuilder) SetK8sContainerName(val string) {
 	}
 }
 
+// SetK8sContainerStatusCurrentWaitingReason sets provided value as "k8s.container.status.current_waiting_reason" attribute.
+func (rb *ResourceBuilder) SetK8sContainerStatusCurrentWaitingReason(val string) {
+	if rb.config.K8sContainerStatusCurrentWaitingReason.Enabled {
+		rb.res.Attributes().PutStr("k8s.container.status.current_waiting_reason", val)
+	}
+}
+
 // SetK8sContainerStatusLastTerminatedReason sets provided value as "k8s.container.status.last_terminated_reason" attribute.
 func (rb *ResourceBuilder) SetK8sContainerStatusLastTerminatedReason(val string) {
 	if rb.config.K8sContainerStatusLastTerminatedReason.Enabled {
