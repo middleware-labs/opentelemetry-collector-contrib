@@ -148,6 +148,12 @@ func RecordSpecMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, c corev1
 			}
 			eb.RecordK8sContainerStatusReasonDataPoint(ts, val, attrVal)
 		}
+		break
+			if cs.State.Waiting != nil {
+				rb.SetK8sContainerStatusCurrentWaitingReason(cs.State.Waiting.Reason)
+			}
+			break
+		}
 	}
 
 	eb.Emit()

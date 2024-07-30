@@ -3,7 +3,6 @@
 package k8sclusterreceiver
 
 import (
-	"os"
 	"testing"
 )
 
