@@ -524,6 +524,7 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.clusterrolebinding.type | The type of the Cluster Role Binding. | Any Str | true |
 | k8s.clusterrolebinding.uid | The UID of the Cluster Role Binding. | Any Str | true |
 | k8s.container.name | The k8s container name | Any Str | true |
+| k8s.container.status.current_waiting_reason | Current waiting reason of the Container. | Any Str | true |
 | k8s.container.status.last_terminated_reason | Last terminated reason of a container. | Any Str | true |
 | k8s.cronjob.name | The k8s CronJob name | Any Str | true |
 | k8s.cronjob.start_time | The start time of the Cronjob. | Any Str | true |

@@ -2946,6 +2946,12 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sContainerName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.container.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sContainerStatusCurrentWaitingReason.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.container.status.current_waiting_reason"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerStatusCurrentWaitingReason.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sContainerStatusCurrentWaitingReason.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.container.status.current_waiting_reason"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerStatusCurrentWaitingReason.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sContainerStatusLastTerminatedReason.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.container.status.last_terminated_reason"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerStatusLastTerminatedReason.MetricsInclude)
 	}

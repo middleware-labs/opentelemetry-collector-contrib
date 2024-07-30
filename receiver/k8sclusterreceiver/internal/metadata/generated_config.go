@@ -301,6 +301,7 @@ type ResourceAttributesConfig struct {
 	K8sClusterrolebindingType                     ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.type"`
 	K8sClusterrolebindingUID                      ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.uid"`
 	K8sContainerName                              ResourceAttributeConfig `mapstructure:"k8s.container.name"`
+	K8sContainerStatusCurrentWaitingReason        ResourceAttributeConfig `mapstructure:"k8s.container.status.current_waiting_reason"`
 	K8sContainerStatusLastTerminatedReason        ResourceAttributeConfig `mapstructure:"k8s.container.status.last_terminated_reason"`
 	K8sCronjobName                                ResourceAttributeConfig `mapstructure:"k8s.cronjob.name"`
 	K8sCronjobStartTime                           ResourceAttributeConfig `mapstructure:"k8s.cronjob.start_time"`
@@ -477,6 +478,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sContainerName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sContainerStatusCurrentWaitingReason: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sContainerStatusLastTerminatedReason: ResourceAttributeConfig{
