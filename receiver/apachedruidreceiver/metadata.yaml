@@ -1,0 +1,10 @@
+type: apachedruid 
+
+status:
+  class: receiver
+  stability:
+    alpha: [traces]
+  distributions: [contrib, sumo]
+  codeowners:
+    active: [naman47vyas]
+

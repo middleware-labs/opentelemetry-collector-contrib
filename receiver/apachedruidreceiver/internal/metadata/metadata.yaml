@@ -1,0 +1,845 @@
+druid.ingest.events.duplicate:
+  enabled: true
+  description: Number of events rejected because the events are duplicated.
+  unit: '{event}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.events.processed:
+  enabled: true
+  description: Number of events successfully processed per emission period.
+  unit: '{event}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.events.thrownAway:
+  enabled: true
+  description: Number of events rejected because they are outside the windowPeriod.
+  unit: '{event}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.events.unparseable:
+  enabled: true
+  description: Number of events rejected because the events are unparsable.
+  unit: '{event}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.handoff.failed:
+  enabled: true
+  description: Number of handoffs that failed.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.persists.count:
+  enabled: true
+  description: Number of times persist occurred.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.persists.failed:
+  enabled: true
+  description: Number of persists that failed.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.ingest.rows.output:
+  enabled: true
+  description: Number of Druid rows persisted.
+  unit: '{row}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.jvm.gc.count:
+  enabled: true
+  description: Garbage collection count.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.bytes:
+  enabled: true
+  description: Number of bytes returned in query response.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.averageBytes:
+  enabled: true
+  description: Delta average cache entry byte size.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.errors:
+  enabled: true
+  description: Delta number of cache errors.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.evictions:
+  enabled: true
+  description: Delta number of cache evictions.
+  unit: '{eviction}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.hitRate:
+  enabled: true
+  description: Delta cache hit rate.
+  unit: '{fraction}'
+  sum:
+    value_type: double 
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.query.cache.delta.hits:
+  enabled: true
+  description: Delta number of cache hits.
+  unit: '{hit}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.misses:
+  enabled: true
+  description: Delta number of cache misses.
+  unit: '{miss}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.numEntries:
+  enabled: true
+  description: Delta number of cache entries.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.sizeBytes:
+  enabled: true
+  description: Delta size in bytes of cache entries.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.cache.delta.timeouts:
+  enabled: true
+  description: Delta number of cache timeouts.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.count:
+  enabled: true
+  description: Number of total queries.
+  unit: '{query}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.failed.count:
+  enabled: true
+  description: Number of failed queries.
+  unit: '{query}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.interrupted.count:
+  enabled: true
+  description: Number of queries interrupted due to cancellation or timeout.
+  unit: '{query}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.node.bytes:
+  enabled: true
+  description: Number of bytes returned from querying individual historical/realtime
+    processes.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.query.success.count:
+  enabled: true
+  description: Number of queries successfully processed.
+  unit: '{query}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.added.bytes:
+  enabled: true
+  description: Size in bytes of new segments created.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.assigned.count:
+  enabled: true
+  description: Number of segments assigned to be loaded in the cluster.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.cost.normalization:
+  enabled: true
+  description: Used in cost balancing. The normalization of hosting segments.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.segment.cost.normalized:
+  enabled: true
+  description: Used in cost balancing. The normalized cost of hosting segments.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.segment.cost.raw:
+  enabled: true
+  description: Used in cost balancing. The raw cost of hosting segments.
+  unit: "1"
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.segment.deleted.count:
+  enabled: true
+  description: Number of segments dropped due to rules.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.dropped.count:
+  enabled: true
+  description: Number of segments dropped due to being overshadowed.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.moved.bytes:
+  enabled: true
+  description: Size in bytes of segments moved/archived via the Move Task.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.moved.count:
+  enabled: true
+  description: Number of segments moved in the cluster.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.nuked.bytes:
+  enabled: true
+  description: Size in bytes of segments deleted via the Kill Task.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.unavailable.count:
+  enabled: true
+  description: Number of segments (not including replicas) left to load until segments
+    that should be loaded in the cluster are available for queries.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.underReplicated.count:
+  enabled: true
+  description: Number of segments (including replicas) left to load until segments
+    that should be loaded in the cluster are available for queries.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.segment.unneeded.count:
+  enabled: true
+  description: Number of segments dropped due to being marked as unused.
+  unit: '{segment}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.sys.disk.read.count:
+  enabled: true
+  description: Reads from disk.
+  unit: '{read}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.sys.disk.read.size:
+  enabled: true
+  description: Bytes read from disk. Can we used to determine how much paging is occurring
+    with regards to segments.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.sys.disk.write.count:
+  enabled: true
+  description: Writes to disk.
+  unit: '{write}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.sys.disk.write.size:
+  enabled: true
+  description: Bytes written to disk. Can we used to determine how much paging is
+    occurring with regards to segments.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.sys.net.read.size:
+  enabled: true
+  description: Bytes read from the network.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.sys.net.write.size:
+  enabled: true
+  description: Bytes written to the network.
+  unit: By
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.task.failed.count:
+  enabled: true
+  description: Number of failed tasks per emission period. This metric is only available
+    if the TaskCountStatsMonitor module is included.
+  unit: '{task}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.task.pending.count:
+  enabled: true
+  description: Number of current pending tasks. This metric is only available if the
+    TaskCountStatsMonitor module is included.
+  unit: '{task}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.task.running.count:
+  enabled: true
+  description: Number of current running tasks. This metric is only available if the
+    TaskCountStatsMonitor module is included.
+  unit: '{task}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.task.success.count:
+  enabled: true
+  description: Number of successful tasks per emission period. This metric is only
+    available if the TaskCountStatsMonitor module is included.
+  unit: '{task}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: true
+    aggregation_temporality: cumulative
+druid.task.waiting.count:
+  enabled: true
+  description: Number of current waiting tasks. This metric is only available if the
+    TaskCountStatsMonitor module is included.
+  unit: '{task}'
+  sum:
+    value_type: int
+    input_type: string
+    monotonic: false
+    aggregation_temporality: cumulative
+druid.coordinator.segment.count:
+  enabled: true
+  description: Coordinator segment count.
+  unit: '{segment}'
+  gauge:
+    value_type: int
+druid.historical.segment.count:
+  enabled: true
+  description: Historical segment count.
+  unit: '{segment}'
+  gauge:
+    value_type: int
+druid.ingest.events.buffered:
+  enabled: true
+  description: Number of events queued in the EventReceiverFirehose's buffer.
+  unit: '{event}'
+  gauge:
+    value_type: int
+druid.ingest.events.messageGap:
+  enabled: true
+  description: Time gap between the data time in event and current system time.
+  unit: ms
+  gauge:
+    value_type: int
+druid.ingest.kafka.avgLag:
+  enabled: true
+  description: Average lag between the offsets consumed by the Kafka indexing tasks
+    and latest offsets in Kafka brokers across all partitions. Minimum emission period
+    for this metric is a Minute.
+  unit: '{offset}'
+  gauge:
+    value_type: int
+druid.ingest.kafka.lag:
+  enabled: true
+  description: Total lag between the offsets consumed by the Kafka indexing tasks
+    and latest offsets in Kafka brokers across all partitions. Minimum emission period
+    for this metric is a Minute.
+  unit: '{offset}'
+  gauge:
+    value_type: int
+druid.ingest.kafka.maxLag:
+  enabled: true
+  description: Max lag between the offsets consumed by the Kafka indexing tasks and
+    latest offsets in Kafka brokers across all partitions. Minimum emission period
+    for this metric is a Minute.
+  unit: '{offset}'
+  gauge:
+    value_type: int
+druid.ingest.merge.cpu:
+  enabled: true
+  description: Cpu time in Nanoseconds spent on merging intermediate segments.
+  unit: ns
+  gauge:
+    value_type: int
+druid.ingest.merge.time:
+  enabled: true
+  description: Milliseconds spent merging intermediate segments.
+  unit: ms
+  gauge:
+    value_type: int
+druid.ingest.persists.backPressure:
+  enabled: true
+  description: Milliseconds spent creating persist tasks and blocking waiting for
+    them to finish.
+  unit: ms
+  gauge:
+    value_type: int
+druid.ingest.persists.cpu:
+  enabled: true
+  description: Cpu time in Nanoseconds spent on doing intermediate persist.
+  unit: ns
+  gauge:
+    value_type: int
+druid.ingest.persists.time:
+  enabled: true
+  description: Milliseconds spent doing intermediate persist.
+  unit: ms
+  gauge:
+    value_type: int
+druid.jvm.bufferpool.capacity:
+  enabled: true
+  description: Bufferpool capacity in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.bufferpool.count:
+  enabled: true
+  description: Bufferpool count in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.bufferpool.used:
+  enabled: true
+  description: Bufferpool used in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.gc.cpu:
+  enabled: true
+  description: Cpu time in Nanoseconds spent on garbage collection.
+  unit: ns
+  gauge:
+    value_type: int
+druid.jvm.mem.committed:
+  enabled: true
+  description: Committed memory in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.mem.init:
+  enabled: true
+  description: Initial memory in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.mem.max:
+  enabled: true
+  description: Max memory in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.mem.used:
+  enabled: true
+  description: Used memory in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.pool.committed:
+  enabled: true
+  description: Committed pool in byte.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.pool.init:
+  enabled: true
+  description: Initial pool in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.pool.max:
+  enabled: true
+  description: Max pool in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.jvm.pool.used:
+  enabled: true
+  description: Pool used in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.query.cache.total.averageBytes:
+  enabled: true
+  description: Total average cache entry byte size.
+  unit: By
+  gauge:
+    value_type: int
+druid.query.cache.total.errors:
+  enabled: true
+  description: Total number of cache errors.
+  unit: "1"
+  gauge:
+    value_type: int
+druid.query.cache.total.evictions:
+  enabled: true
+  description: Total number of cache evictions.
+  unit: '{eviction}'
+  gauge:
+    value_type: int
+druid.query.cache.total.hitRate:
+  enabled: true
+  description: Total cache hit rate.
+  unit: '{fraction}'
+  gauge:
+    value_type: double 
+druid.query.cache.total.hits:
+  enabled: true
+  description: Total number of cache hits.
+  unit: '{hit}'
+  gauge:
+    value_type: int
+druid.query.cache.total.misses:
+  enabled: true
+  description: Total number of cache misses.
+  unit: '{miss}'
+  gauge:
+    value_type: int
+druid.query.cache.total.numEntries:
+  enabled: true
+  description: Total number of cache entries.
+  unit: "1"
+  gauge:
+    value_type: int
+druid.query.cache.total.sizeBytes:
+  enabled: true
+  description: Total size in bytes of cache entries.
+  unit: By
+  gauge:
+    value_type: int
+druid.query.cache.total.timeouts:
+  enabled: true
+  description: Total number of cache timeouts.
+  unit: "1"
+  gauge:
+    value_type: int
+druid.query.cpu.time:
+  enabled: true
+  description: Microseconds of CPU time taken to complete a query.
+  unit: '{microsecond}'
+  gauge:
+    value_type: int
+druid.query.intervalChunk.time:
+  enabled: true
+  description: Only emitted if interval chunking is enabled. Milliseconds required
+    to query an interval chunk. This metric is deprecated and will be removed in the
+    future because interval Chunking is deprecated. See Query Context.
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.node.backpressure:
+  enabled: true
+  description: Milliseconds that the channel to this process has spent suspended due
+    to backpressure.
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.node.time:
+  enabled: true
+  description: Milliseconds taken to query individual historical/realtime processes.
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.node.ttfb:
+  enabled: true
+  description: Time to first byte. Milliseconds elapsed until Broker starts receiving
+    the response from individual historical/realtime processes.
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.segment.time:
+  enabled: true
+  description: Milliseconds taken to query individual segment. Includes time to page
+    in the segment from disk.
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.segmentAndCache.time:
+  enabled: true
+  description: Milliseconds taken to query individual segment or hit the cache (if
+    it is enabled on the Historical process).
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.time:
+  enabled: true
+  description: Milliseconds taken to complete a query.
+  unit: ms
+  gauge:
+    value_type: int
+druid.query.wait.time:
+  enabled: true
+  description: Milliseconds spent waiting for a segment to be scanned.
+  unit: ms
+  gauge:
+    value_type: int
+druid.segment.dropQueue.count:
+  enabled: true
+  description: Number of segments to drop.
+  unit: '{segment}'
+  gauge:
+    value_type: int
+druid.segment.loadQueue.count:
+  enabled: true
+  description: Number of segments to load.
+  unit: '{segment}'
+  gauge:
+    value_type: int
+druid.segment.loadQueue.failed:
+  enabled: true
+  description: Number of segments that failed to load.
+  unit: '{segment}'
+  gauge:
+    value_type: int
+druid.segment.loadQueue.size:
+  enabled: true
+  description: Size in bytes of segments to load.
+  unit: By
+  gauge:
+    value_type: int
+druid.segment.max:
+  enabled: true
+  description: Maximum byte limit available for segments.
+  unit: By
+  gauge:
+    value_type: int
+druid.segment.overShadowed.count:
+  enabled: true
+  description: Number of overShadowed segments.
+  unit: '{segment}'
+  gauge:
+    value_type: int
+druid.segment.pendingDelete:
+  enabled: true
+  description: On-disk size in bytes of segments that are waiting to be cleared out.
+  unit: By
+  gauge:
+    value_type: int
+druid.segment.scan.pending:
+  enabled: true
+  description: Number of segments in queue waiting to be scanned.
+  unit: '{unit}'
+  gauge:
+    value_type: int
+druid.segment.size:
+  enabled: true
+  description: Size in bytes of available segments.
+  unit: By
+  gauge:
+    value_type: int
+druid.segment.used:
+  enabled: true
+  description: Bytes used for served segments.
+  unit: By
+  gauge:
+    value_type: int
+druid.segment.usedPercent:
+  enabled: true
+  description: Percentage of space used by served segments.
+  unit: '{fraction}'
+  gauge:
+    value_type: double 
+druid.service.health:
+  enabled: true
+  description: 1 if the service is healthy, 0 otherwise
+  unit: "1"
+  gauge:
+    value_type: int
+druid.sys.cpu:
+  enabled: true
+  description: CPU used.
+  unit: '{percent}'
+  gauge:
+    value_type: int
+druid.sys.fs.max:
+  enabled: true
+  description: Filesystesm bytes max.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.fs.used:
+  enabled: true
+  description: Filesystem bytes used.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.mem.max:
+  enabled: true
+  description: Memory max.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.mem.used:
+  enabled: true
+  description: Memory used.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.storage.used:
+  enabled: true
+  description: Disk space used.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.swap.free:
+  enabled: true
+  description: Free swap in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.swap.max:
+  enabled: true
+  description: Max swap in bytes.
+  unit: By
+  gauge:
+    value_type: int
+druid.sys.swap.pageIn:
+  enabled: true
+  description: Paged in swap.
+  unit: '{page}'
+  gauge:
+    value_type: int
+druid.sys.swap.pageOut:
+  enabled: true
+  description: Paged out swap.
+  unit: '{page}'
+  gauge:
+    value_type: int
+druid.task.run.time:
+  enabled: true
+  description: Milliseconds taken to run a task.
+  unit: ms
+  gauge:
+    value_type: int
