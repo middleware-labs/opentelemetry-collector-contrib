@@ -40,7 +40,6 @@ func getOtlpExportReqFromDruidMetrics(
 			}
 
 		}
-		scopeMetric := scopeMetrics.Metrics().AppendEmpty()
 		var otelMetricName string
 		if druidMetricName, ok := metric["metric"]; ok {
 			otelMetricName = metadata.DruidToOtelName(druidMetricName.(string))
@@ -50,14 +49,16 @@ func getOtlpExportReqFromDruidMetrics(
 		//Check if a metric with that name exists in our metadata
 		if metadata, ok := otelMetadata[otelMetricName]; ok {
 
+			scopeMetric := scopeMetrics.Metrics().AppendEmpty()
 			// For returning in case of error
 			emptyRequest := getEmptyReq()
 
-			// pp.Println("Found Metadata for metric ", otelMetricName)
+			pp.Println("Found Metadata for metric ", otelMetricName)
 			// pp.Print(metadata)
 
 			scopeMetric.SetName(otelMetricName)
 			scopeMetric.SetUnit(metadata.Unit)
+			scopeMetric.SetDescription(metadata.Description)
 
 			// Set metric attributes
 			metricAttributes := pcommon.NewMap()
@@ -98,6 +99,7 @@ func getOtlpExportReqFromDruidMetrics(
 				if metadata.Sum.ValueType == "int" {
 					metricDataPointValue, err := metricValue.Int64()
 					if err != nil {
+						pp.Println("couldn't convert json.Number to int64: %v", err)
 						return emptyRequest, fmt.Errorf("couldn't convert json.Number to int64: %v", err)
 					}
 					dp.SetIntValue(int64(metricDataPointValue))
@@ -106,6 +108,7 @@ func getOtlpExportReqFromDruidMetrics(
 				} else if metadata.Sum.ValueType == "double" {
 					metricDataPointValue, err := metricValue.Float64()
 					if err != nil {
+						pp.Println("couldn't convert json.Number to int64: %v", err)
 						return emptyRequest, fmt.Errorf("couldn't convert json.Number to int64: %v", err)
 					}
 					dp.SetDoubleValue(float64(metricDataPointValue))
@@ -123,6 +126,7 @@ func getOtlpExportReqFromDruidMetrics(
 				if metadata.Gauge.ValueType == "int" {
 					metricDataPointValue, err := metricValue.Int64()
 					if err != nil {
+						pp.Println("couldn't convert json.Number to int64: %v", err)
 						return emptyRequest, fmt.Errorf("couldn't convert json.Number to int64: %v", err)
 					}
 					dp.SetIntValue(int64(metricDataPointValue))
@@ -131,6 +135,7 @@ func getOtlpExportReqFromDruidMetrics(
 				} else if metadata.Gauge.ValueType == "double" {
 					metricDataPointValue, err := metricValue.Float64()
 					if err != nil {
+						pp.Println("couldn't convert json.Number to int64: %v", err)
 						return emptyRequest, fmt.Errorf("couldn't convert json.Number to int64: %v", err)
 					}
 					dp.SetDoubleValue(float64(metricDataPointValue))
