@@ -51,7 +51,7 @@ func processMetric(metric map[string]interface{}, otelMetadata metadata.Metrics,
 func extractMetricInfo(metric map[string]interface{}) (json.Number, string, error) {
 	value, ok := metric["value"]
 	if !ok {
-		return json.Number(""), "", fmt.Errorf("metric value missing, what the fuck?")
+		return json.Number(""), "", fmt.Errorf("metric value missing")
 	}
 
 	metricValue, err := convertToJsonNumber(value)
@@ -61,7 +61,7 @@ func extractMetricInfo(metric map[string]interface{}) (json.Number, string, erro
 
 	druidMetricName, ok := metric["metric"].(string)
 	if !ok {
-		return json.Number(""), "", fmt.Errorf("invalid metric name, you fuckin' moron")
+		return json.Number(""), "", fmt.Errorf("invalid metric name")
 	}
 
 	return metricValue, metadata.DruidToOtelName(druidMetricName), nil
@@ -78,7 +78,7 @@ func convertToJsonNumber(value interface{}) (json.Number, error) {
 			return json.Number(v), nil
 		}
 	}
-	return json.Number(""), fmt.Errorf("invalid metric value type, you dumb fuck")
+	return json.Number(""), fmt.Errorf("invalid metric value type")
 }
 
 func setMetricMetadata(scopeMetric pmetric.Metric, name string, metadata metadata.Metric) {
