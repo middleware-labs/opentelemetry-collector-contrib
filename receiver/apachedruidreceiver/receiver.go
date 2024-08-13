@@ -12,7 +12,6 @@ import (
 	"github.com/k0kubun/pp"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
-	"go.opentelemetry.io/collector/pdata/pmetric/pmetricotlp"
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/receiver/receiverhelper"
 
@@ -29,7 +28,11 @@ type ApacheDruidMetricReceiver struct {
 	OtelMetadata metadata.Metrics
 }
 
-func newApacheDruidMetricReceiver(config *Config, nextConsumer consumer.Metrics, params receiver.CreateSettings) (receiver.Metrics, error) {
+func NewApacheDruidMetricReceiver(
+	config *Config,
+	nextConsumer consumer.Metrics,
+	params receiver.CreateSettings,
+) (receiver.Metrics, error) {
 	instance, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{
 		LongLivedCtx:           false,
 		ReceiverID:             params.ID,
@@ -123,20 +126,24 @@ func (adr *ApacheDruidMetricReceiver) handleMetrics(w http.ResponseWriter, r *ht
 	fmt.Println("Received raw body:")
 	// fmt.Println(string(body))
 
-	var otlpReq pmetricotlp.ExportRequest
 	var payloadMetrics []map[string]interface{}
-
 	if err := json.Unmarshal(body, &payloadMetrics); err != nil {
 		log.Printf("Error parsing JSON: %v", err)
 		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
 		return
 	}
 
-	otlpReq, err = getOtlpExportReqFromDruidMetrics(
+	// Validate the payload
+	if err := validatePayload(payloadMetrics); err != nil {
+		log.Printf("Invalid payload: %v", err)
+		http.Error(w, fmt.Sprintf("Invalid payload: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	otlpReq, err := getOtlpExportReqFromDruidMetrics(
 		payloadMetrics,
 		adr.OtelMetadata,
 	)
-
 	if err != nil {
 		http.Error(w, "Metrics consumer errored out", http.StatusInternalServerError)
 		return
@@ -144,12 +151,35 @@ func (adr *ApacheDruidMetricReceiver) handleMetrics(w http.ResponseWriter, r *ht
 
 	obsCtx := adr.tReceiver.StartLogsOp(r.Context())
 	errs := adr.nextConsumer.ConsumeMetrics(obsCtx, otlpReq.Metrics())
-
 	if errs != nil {
 		http.Error(w, "Logs consumer errored out", http.StatusInternalServerError)
 		adr.params.Logger.Error("Logs consumer errored out")
 	} else {
-
 		_, _ = w.Write([]byte("OK"))
 	}
+}
+
+func validatePayload(payload []map[string]interface{}) error {
+	if len(payload) == 0 {
+		return fmt.Errorf("payload is empty")
+	}
+
+	for i, metric := range payload {
+		if _, ok := metric["metric"]; !ok {
+			return fmt.Errorf("metric %d is missing 'metric' field", i)
+		}
+		if _, ok := metric["value"]; !ok {
+			return fmt.Errorf("metric %d is missing 'value' field", i)
+		}
+
+		// Optional: Check if value is a number (float64 or int)
+		switch metric["value"].(type) {
+		case float64, int, int64:
+			// These types are okay
+		default:
+			return fmt.Errorf("metric %d has non-numeric 'value' field", i)
+		}
+	}
+
+	return nil
 }

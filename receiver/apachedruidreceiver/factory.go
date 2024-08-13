@@ -18,7 +18,7 @@ func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		metadata.Type,
 		createDefaultConfig,
-		receiver.WithMetrics(createMetricsReceiver, metadata.MetricStability))
+		receiver.WithMetrics(CreateDruidMetricsReceiver, metadata.MetricStability))
 
 }
 
@@ -31,10 +31,10 @@ func createDefaultConfig() component.Config {
 	}
 }
 
-func createMetricsReceiver(_ context.Context, params receiver.CreateSettings, cfg component.Config, consumer consumer.Metrics) (r receiver.Metrics, err error) {
+func CreateDruidMetricsReceiver(_ context.Context, params receiver.CreateSettings, cfg component.Config, consumer consumer.Metrics) (r receiver.Metrics, err error) {
 	rcfg := cfg.(*Config)
 	r = receivers.GetOrAdd(cfg, func() component.Component {
-		dd, _ := newApacheDruidMetricReceiver(rcfg, consumer, params)
+		dd, _ := NewApacheDruidMetricReceiver(rcfg, consumer, params)
 		return dd
 	})
 	return r, nil

@@ -1,0 +1,56 @@
+[
+    {
+      "feed": "metrics",
+      "metric": "segment/scan/active",
+      "service": "druid/historical",
+      "host": "localhost:8093",
+      "version": "30.0.0",
+      "value": 0,
+      "timestamp": "2024-08-07T08:54:12.610Z"
+    },
+    {
+      "feed": "metrics",
+      "metric": "query/cache/delta/numEntries",
+      "service": "druid/historical",
+      "host": "localhost:8093",
+      "version": "30.0.0",
+      "value": 0,
+      "timestamp": "2024-08-07T08:54:12.610Z"
+    },
+    {
+      "feed": "metrics",
+      "metric": "query/cache/delta/sizeBytes",
+      "service": "druid/historical",
+      "host": "localhost:8093",
+      "version": "30.0.0",
+      "value": 0,
+      "timestamp": "2024-08-07T08:54:12.610Z"
+    },
+    {
+      "feed": "metrics",
+      "metric": "query/cache/delta/hits",
+      "service": "druid/historical",
+      "host": "localhost:8093",
+      "version": "30.0.0",
+      "value": 0,
+      "timestamp": "2024-08-07T08:54:12.610Z"
+    },
+    {
+      "feed": "metrics",
+      "metric": "query/cache/delta/misses",
+      "service": "druid/historical",
+      "host": "localhost:8093",
+      "version": "30.0.0",
+      "value": 0,
+      "timestamp": "2024-08-07T08:54:12.610Z"
+    },
+    {
+      "feed": "metrics",
+      "metric": "query/cache/delta/evictions",
+      "service": "druid/historical",
+      "host": "localhost:8093",
+      "version": "30.0.0",
+      "value": 0,
+      "timestamp": "2024-08-07T08:54:12.610Z"
+    }
+]
