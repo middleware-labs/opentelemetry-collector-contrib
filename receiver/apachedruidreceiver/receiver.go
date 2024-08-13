@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/k0kubun/pp"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
@@ -46,18 +45,14 @@ func NewApacheDruidMetricReceiver(
 	filename := "metadata.yaml"
 	yamlData, err := metadata.ReadYamlFile(filename)
 	if err != nil {
-		pp.Printf("error reading YAML file: %v \n", err)
 		return nil, fmt.Errorf("error reading YAML file: %v", err)
 	}
 
 	metricsMetadata, err := metadata.ParseMetrics(yamlData)
 
 	if err != nil {
-		pp.Printf("failed to load Druid metrics: %w", err)
 		return nil, fmt.Errorf("failed to load Druid metrics: %w", err)
 	}
-
-	// pp.Println(*druidMetadata)
 
 	return &ApacheDruidMetricReceiver{
 		params:       params,
@@ -73,7 +68,6 @@ func NewApacheDruidMetricReceiver(
 
 // Start implements receiver.Metrics.
 func (adr *ApacheDruidMetricReceiver) Start(ctx context.Context, host component.Host) error {
-	pp.Println("HELLO STARTING DRUID RECEIVER")
 	mux := http.NewServeMux()
 	mux.HandleFunc("/metrics", adr.handleMetrics)
 
@@ -122,9 +116,6 @@ func (adr *ApacheDruidMetricReceiver) handleMetrics(w http.ResponseWriter, r *ht
 		http.Error(w, "Unable to read request body", http.StatusBadRequest)
 		return
 	}
-
-	fmt.Println("Received raw body:")
-	// fmt.Println(string(body))
 
 	var payloadMetrics []map[string]interface{}
 	if err := json.Unmarshal(body, &payloadMetrics); err != nil {
