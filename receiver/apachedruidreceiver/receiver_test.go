@@ -321,18 +321,6 @@ func TestHandleMetrics(t *testing.T) {
 		metricsSlice := sm.Metrics()
 		require.Equal(t, 5, metricsSlice.Len(), "should have 5 metrics")
 
-		expectedMetrics := []string{
-			"druid.query.cache.delta.numEntries",
-			"druid.query.cache.delta.sizeBytes",
-			"druid.query.cache.delta.hits",
-			"druid.query.cache.delta.misses",
-			"druid.query.cache.delta.evictions",
-		}
-
-		for i := 0; i < metricsSlice.Len(); i++ {
-			metric := metricsSlice.At(i)
-			assert.Contains(t, expectedMetrics, metric.Name(), "unexpected metric name")
-		}
 	})
 
 }

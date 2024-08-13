@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent v0.0.0-00010101000000-000000000000
+	github.com/stretchr/testify v1.9.0
 	github.com/tj/assert v0.0.3
 	go.opentelemetry.io/collector/component v0.102.2-0.20240606174409-6888f8f7a45f
 	go.opentelemetry.io/collector/config/confighttp v0.102.0
@@ -24,7 +25,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.54.0 // indirect
 	github.com/prometheus/procfs v0.15.0 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
 	go.opentelemetry.io/otel/exporters/prometheus v0.49.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.27.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.27.0 // indirect
