@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachedruidreceiver
 
-go 1.21.0
+go 1.22.0
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent v0.0.0-00010101000000-000000000000

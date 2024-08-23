@@ -9,12 +9,14 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 
+	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/sharedcomponent"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachedruidreceiver/internal/metadata"
 )
 
-// NewFactory creates a factory for DataDog receiver.
+// NewFactory creates a factory for Druid receiver.
 func NewFactory() receiver.Factory {
+	pp.Println("factory getting created")
 	return receiver.NewFactory(
 		metadata.Type,
 		createDefaultConfig,

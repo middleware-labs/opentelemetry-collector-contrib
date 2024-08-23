@@ -16,6 +16,9 @@ import (
 func initializeMetrics() pmetric.Metrics {
 	metrics := pmetric.NewMetrics()
 	rm := metrics.ResourceMetrics().AppendEmpty()
+
+	rm.Resource().Attributes().PutStr("receiver.name", "apachedruid")
+
 	sm := rm.ScopeMetrics().AppendEmpty()
 	sm.Scope().SetName("mw")
 	sm.Scope().SetVersion("v0.0.1")
