@@ -58,9 +58,21 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, pv *corev1.PersistentVolume, ts
 	rb.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
 	rb.SetK8sPersistentvolumeStorageClass(pv.Spec.StorageClassName)
 	rb.SetK8sPersistentvolumeType("PersistentVolume")
-	rb.SetK8sPersistentvolumeVolumeMode(string(*pv.Spec.VolumeMode))
-	rb.SetK8sPersistentvolumeclaimUID(string((*pv.Spec.ClaimRef).UID))
-	rb.SetK8sPersistentvolumeclaimName((pv.Spec.ClaimRef).Name)
+
+	volumeMode := "unknown"
+	if pv.Spec.VolumeMode != nil {
+		volumeMode = string(*pv.Spec.VolumeMode)
+	}
+	rb.SetK8sPersistentvolumeVolumeMode(string(volumeMode))
+
+	volumeClaimRefUID := "unknown"
+	volumeClaimRefName := "unknown"
+	if pv.Spec.ClaimRef != nil {
+		volumeClaimRefUID = string((*pv.Spec.ClaimRef).UID)
+		volumeClaimRefName = (*pv.Spec.ClaimRef).Name
+	}
+	rb.SetK8sPersistentvolumeclaimUID(volumeClaimRefUID)
+	rb.SetK8sPersistentvolumeclaimName(volumeClaimRefName)
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
