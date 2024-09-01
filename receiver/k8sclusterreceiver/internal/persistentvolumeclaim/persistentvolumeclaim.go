@@ -72,6 +72,25 @@ func RecordMetrics(mb *metadata.MetricsBuilder, pvc *corev1.PersistentVolumeClai
 	}
     e.SetK8sClusterName("unknown")
     e.SetK8sPersistentvolumeclaimStartTime(pvc.GetCreationTimestamp().String())
+
+	storageClassName := "unknown"
+    if pvc.Spec.StorageClassName != nil {
+        storageClassName = *pvc.Spec.StorageClassName
+    }
+    rb.SetK8sPersistentvolumeclaimStorageClass(storageClassName)
+
+    volumeMode := "unknown"
+    if pvc.Spec.VolumeMode != nil {
+        volumeMode = string(*pvc.Spec.VolumeMode)
+    }
+    e.SetK8sPersistentvolumeclaimVolumeMode(string(volumeMode))
+    e.SetK8sPersistentvolumeclaimAccessModes(sliceToString(pvc.Spec.AccessModes, ","))
+    e.SetK8sPersistentvolumeclaimFinalizers(strings.Join(pvc.Finalizers, ","))
+    e.SetK8sPersistentvolumeclaimStartTime(pvc.GetCreationTimestamp().String())
+    e.SetK8sPersistentvolumeclaimAnnotations(mapToString(pvc.GetAnnotations(), "&"))
+    e.SetK8sPersistentvolumeclaimVolumeName(pvc.Spec.VolumeName)
+    e.SetK8sPersistentvolumeclaimType("PersistentVolumeClaim")
+
 	eb := mb.ForK8sPersistentvolumeclaim(e)
 	for phaseStr, phaseAttr := range metadata.MapAttributeK8sPersistentvolumeclaimStatusPhase {
 		val := int64(0)
