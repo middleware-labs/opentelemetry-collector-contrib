@@ -61,8 +61,18 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, pvc *corev1.PersistentVolumeCla
 	rb.SetK8sPersistentvolumeclaimLabels(mapToString(pvc.GetLabels(), "&"))
 	rb.SetK8sPersistentvolumeclaimPhase(string(pvc.Status.Phase))
 	rb.SetK8sPersistentvolumeclaimSelector("")
-	rb.SetK8sPersistentvolumeclaimStorageClass(*pvc.Spec.StorageClassName)
-	rb.SetK8sPersistentvolumeclaimVolumeMode(string(*pvc.Spec.VolumeMode))
+
+	storageClassName := "unknown"
+	if pvc.Spec.StorageClassName != nil {
+		storageClassName = *pvc.Spec.StorageClassName
+	}
+	rb.SetK8sPersistentvolumeclaimStorageClass(storageClassName)
+
+	volumeMode := "unknown"
+	if pvc.Spec.VolumeMode != nil {
+		volumeMode = string(*pvc.Spec.VolumeMode)
+	}
+	rb.SetK8sPersistentvolumeclaimVolumeMode(string(volumeMode))
 	rb.SetK8sPersistentvolumeclaimAccessModes(sliceToString(pvc.Spec.AccessModes, ","))
 	rb.SetK8sPersistentvolumeclaimFinalizers(strings.Join(pvc.Finalizers, ","))
 	rb.SetK8sPersistentvolumeclaimStartTime(pvc.GetCreationTimestamp().String())
