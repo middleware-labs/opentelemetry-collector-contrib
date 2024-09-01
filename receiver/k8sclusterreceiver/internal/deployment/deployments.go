@@ -29,7 +29,11 @@ func Transform(deployment *appsv1.Deployment) *appsv1.Deployment {
 }
 
 func RecordMetrics(mb *imetadata.MetricsBuilder, dep *appsv1.Deployment, ts pcommon.Timestamp) {
-	mb.RecordK8sDeploymentDesiredDataPoint(ts, int64(*dep.Spec.Replicas))
+	replicas := int64(0)
+	if dep.Spec.Replicas != nil {
+		replicas = int64(*dep.Spec.Replicas)
+	}
+	mb.RecordK8sDeploymentDesiredDataPoint(ts, replicas)
 	mb.RecordK8sDeploymentAvailableDataPoint(ts, int64(dep.Status.AvailableReplicas))
 	rb := mb.NewResourceBuilder()
 	rb.SetK8sDeploymentName(dep.Name)
