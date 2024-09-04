@@ -453,6 +453,9 @@ func (c *WatchClient) GetNode(nodeName string) (*Node, bool) {
 
 func (c *WatchClient) extractPodAttributes(pod *api_v1.Pod) map[string]string {
 	tags := map[string]string{}
+
+	tags["k8s.pod.ip"] = pod.Status.PodIP
+
 	if c.Rules.PodName {
 		tags[conventions.AttributeK8SPodName] = pod.Name
 	}
