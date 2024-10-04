@@ -11455,6 +11455,108 @@ func newMetricMongodbOplogUsedsizemb(cfg MetricConfig) metricMongodbOplogUsedsiz
 	return m
 }
 
+type metricMongodbProfilingLevel struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.profiling.level metric with initial data.
+func (m *metricMongodbProfilingLevel) init() {
+	m.data.SetName("mongodb.profiling.level")
+	m.data.SetDescription("Specifies which operations should be profiled.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbProfilingLevel) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbProfilingLevel) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbProfilingLevel) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbProfilingLevel(cfg MetricConfig) metricMongodbProfilingLevel {
+	m := metricMongodbProfilingLevel{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbProfilingSlowms struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.profiling.slowms metric with initial data.
+func (m *metricMongodbProfilingSlowms) init() {
+	m.data.SetName("mongodb.profiling.slowms")
+	m.data.SetDescription("Specifies which operations should be profiled based on slowms in milliseconds. Works only for profile level '1',")
+	m.data.SetUnit("ms")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbProfilingSlowms) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbProfilingSlowms) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbProfilingSlowms) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbProfilingSlowms(cfg MetricConfig) metricMongodbProfilingSlowms {
+	m := metricMongodbProfilingSlowms{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMongodbReplsetHealth struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -11825,6 +11927,96 @@ func (m *metricMongodbSessionCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbSessionCount(cfg MetricConfig) metricMongodbSessionCount {
 	m := metricMongodbSessionCount{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationTime struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.time metric with initial data.
+func (m *metricMongodbSlowOperationTime) init() {
+	m.data.SetName("mongodb.slow_operation.time")
+	m.data.SetDescription("The total time spent performing operations with slowms. Works only for profile level '1' & '2',")
+	m.data.SetUnit("ms")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, timestampAttributeValue int64, databaseAttributeValue string, operationAttributeValue string, nsAttributeValue string, planSummaryAttributeValue string, querySignatureAttributeValue string, userAttributeValue string, applicationAttributeValue string, statementAttributeValue string, rawQueryAttributeValue string, queryHashAttributeValue string, queryShapeHashAttributeValue string, planCacheKeyAttributeValue string, queryFrameworkAttributeValue string, commentAttributeValue string, millsAttributeValue int64, numYieldsAttributeValue int64, responseLengthAttributeValue int64, nreturnedAttributeValue int64, nmatchedAttributeValue int64, nmodifiedAttributeValue int64, ninsertedAttributeValue int64, ndeletedAttributeValue int64, keysExaminedAttributeValue int64, docsExaminedAttributeValue int64, keysInsertedAttributeValue int64, writeConflictsAttributeValue int64, cpuNanosAttributeValue int64, planningTimeMicrosAttributeValue int64, cursorExhaustedAttributeValue bool, upsertAttributeValue bool, hasSortStageAttributeValue bool, usedDiskAttributeValue string, fromMultiPlannerAttributeValue string, replannedAttributeValue string, replanReasonAttributeValue string, clientAttributeValue string, cursorAttributeValue string, lockStatsAttributeValue string, flowControlStatsAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutInt("timestamp", timestampAttributeValue)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("operation", operationAttributeValue)
+	dp.Attributes().PutStr("ns", nsAttributeValue)
+	dp.Attributes().PutStr("plan_summary", planSummaryAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+	dp.Attributes().PutStr("user", userAttributeValue)
+	dp.Attributes().PutStr("application", applicationAttributeValue)
+	dp.Attributes().PutStr("statement", statementAttributeValue)
+	dp.Attributes().PutStr("raw_query", rawQueryAttributeValue)
+	dp.Attributes().PutStr("query_hash", queryHashAttributeValue)
+	dp.Attributes().PutStr("query_shape_hash", queryShapeHashAttributeValue)
+	dp.Attributes().PutStr("plan_cache_key", planCacheKeyAttributeValue)
+	dp.Attributes().PutStr("query_framework", queryFrameworkAttributeValue)
+	dp.Attributes().PutStr("comment", commentAttributeValue)
+	dp.Attributes().PutInt("mills", millsAttributeValue)
+	dp.Attributes().PutInt("num_yields", numYieldsAttributeValue)
+	dp.Attributes().PutInt("response_length", responseLengthAttributeValue)
+	dp.Attributes().PutInt("nreturned", nreturnedAttributeValue)
+	dp.Attributes().PutInt("nmatched", nmatchedAttributeValue)
+	dp.Attributes().PutInt("nmodified", nmodifiedAttributeValue)
+	dp.Attributes().PutInt("ninserted", ninsertedAttributeValue)
+	dp.Attributes().PutInt("ndeleted", ndeletedAttributeValue)
+	dp.Attributes().PutInt("keys_examined", keysExaminedAttributeValue)
+	dp.Attributes().PutInt("docs_examined", docsExaminedAttributeValue)
+	dp.Attributes().PutInt("keys_inserted", keysInsertedAttributeValue)
+	dp.Attributes().PutInt("write_conflicts", writeConflictsAttributeValue)
+	dp.Attributes().PutInt("cpu_nanos", cpuNanosAttributeValue)
+	dp.Attributes().PutInt("planning_time_micros", planningTimeMicrosAttributeValue)
+	dp.Attributes().PutBool("cursor_exhausted", cursorExhaustedAttributeValue)
+	dp.Attributes().PutBool("upsert", upsertAttributeValue)
+	dp.Attributes().PutBool("has_sort_stage", hasSortStageAttributeValue)
+	dp.Attributes().PutStr("used_disk", usedDiskAttributeValue)
+	dp.Attributes().PutStr("from_multi_planner", fromMultiPlannerAttributeValue)
+	dp.Attributes().PutStr("replanned", replannedAttributeValue)
+	dp.Attributes().PutStr("replan_reason", replanReasonAttributeValue)
+	dp.Attributes().PutStr("client", clientAttributeValue)
+	dp.Attributes().PutStr("cursor", cursorAttributeValue)
+	dp.Attributes().PutStr("lock_stats", lockStatsAttributeValue)
+	dp.Attributes().PutStr("flow_control_stats", flowControlStatsAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationTime) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationTime) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationTime(cfg MetricConfig) metricMongodbSlowOperationTime {
+	m := metricMongodbSlowOperationTime{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -15556,6 +15748,8 @@ type MetricsBuilder struct {
 	metricMongodbOplogLogsizemb                                                    metricMongodbOplogLogsizemb
 	metricMongodbOplogTimediff                                                     metricMongodbOplogTimediff
 	metricMongodbOplogUsedsizemb                                                   metricMongodbOplogUsedsizemb
+	metricMongodbProfilingLevel                                                    metricMongodbProfilingLevel
+	metricMongodbProfilingSlowms                                                   metricMongodbProfilingSlowms
 	metricMongodbReplsetHealth                                                     metricMongodbReplsetHealth
 	metricMongodbReplsetOptimeLag                                                  metricMongodbReplsetOptimeLag
 	metricMongodbReplsetReplicationlag                                             metricMongodbReplsetReplicationlag
@@ -15563,6 +15757,7 @@ type MetricsBuilder struct {
 	metricMongodbReplsetVotefraction                                               metricMongodbReplsetVotefraction
 	metricMongodbReplsetVotes                                                      metricMongodbReplsetVotes
 	metricMongodbSessionCount                                                      metricMongodbSessionCount
+	metricMongodbSlowOperationTime                                                 metricMongodbSlowOperationTime
 	metricMongodbStatsAvgobjsize                                                   metricMongodbStatsAvgobjsize
 	metricMongodbStatsCollections                                                  metricMongodbStatsCollections
 	metricMongodbStatsDatasize                                                     metricMongodbStatsDatasize
@@ -15868,6 +16063,8 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbOplogLogsizemb:                                                    newMetricMongodbOplogLogsizemb(mbc.Metrics.MongodbOplogLogsizemb),
 		metricMongodbOplogTimediff:                                                     newMetricMongodbOplogTimediff(mbc.Metrics.MongodbOplogTimediff),
 		metricMongodbOplogUsedsizemb:                                                   newMetricMongodbOplogUsedsizemb(mbc.Metrics.MongodbOplogUsedsizemb),
+		metricMongodbProfilingLevel:                                                    newMetricMongodbProfilingLevel(mbc.Metrics.MongodbProfilingLevel),
+		metricMongodbProfilingSlowms:                                                   newMetricMongodbProfilingSlowms(mbc.Metrics.MongodbProfilingSlowms),
 		metricMongodbReplsetHealth:                                                     newMetricMongodbReplsetHealth(mbc.Metrics.MongodbReplsetHealth),
 		metricMongodbReplsetOptimeLag:                                                  newMetricMongodbReplsetOptimeLag(mbc.Metrics.MongodbReplsetOptimeLag),
 		metricMongodbReplsetReplicationlag:                                             newMetricMongodbReplsetReplicationlag(mbc.Metrics.MongodbReplsetReplicationlag),
@@ -15875,6 +16072,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbReplsetVotefraction:                                               newMetricMongodbReplsetVotefraction(mbc.Metrics.MongodbReplsetVotefraction),
 		metricMongodbReplsetVotes:                                                      newMetricMongodbReplsetVotes(mbc.Metrics.MongodbReplsetVotes),
 		metricMongodbSessionCount:                                                      newMetricMongodbSessionCount(mbc.Metrics.MongodbSessionCount),
+		metricMongodbSlowOperationTime:                                                 newMetricMongodbSlowOperationTime(mbc.Metrics.MongodbSlowOperationTime),
 		metricMongodbStatsAvgobjsize:                                                   newMetricMongodbStatsAvgobjsize(mbc.Metrics.MongodbStatsAvgobjsize),
 		metricMongodbStatsCollections:                                                  newMetricMongodbStatsCollections(mbc.Metrics.MongodbStatsCollections),
 		metricMongodbStatsDatasize:                                                     newMetricMongodbStatsDatasize(mbc.Metrics.MongodbStatsDatasize),
@@ -16238,6 +16436,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbOplogLogsizemb.emit(ils.Metrics())
 	mb.metricMongodbOplogTimediff.emit(ils.Metrics())
 	mb.metricMongodbOplogUsedsizemb.emit(ils.Metrics())
+	mb.metricMongodbProfilingLevel.emit(ils.Metrics())
+	mb.metricMongodbProfilingSlowms.emit(ils.Metrics())
 	mb.metricMongodbReplsetHealth.emit(ils.Metrics())
 	mb.metricMongodbReplsetOptimeLag.emit(ils.Metrics())
 	mb.metricMongodbReplsetReplicationlag.emit(ils.Metrics())
@@ -16245,6 +16445,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbReplsetVotefraction.emit(ils.Metrics())
 	mb.metricMongodbReplsetVotes.emit(ils.Metrics())
 	mb.metricMongodbSessionCount.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationTime.emit(ils.Metrics())
 	mb.metricMongodbStatsAvgobjsize.emit(ils.Metrics())
 	mb.metricMongodbStatsCollections.emit(ils.Metrics())
 	mb.metricMongodbStatsDatasize.emit(ils.Metrics())
@@ -17439,6 +17640,16 @@ func (mb *MetricsBuilder) RecordMongodbOplogUsedsizembDataPoint(ts pcommon.Times
 	mb.metricMongodbOplogUsedsizemb.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
 }
 
+// RecordMongodbProfilingLevelDataPoint adds a data point to mongodb.profiling.level metric.
+func (mb *MetricsBuilder) RecordMongodbProfilingLevelDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
+	mb.metricMongodbProfilingLevel.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
+}
+
+// RecordMongodbProfilingSlowmsDataPoint adds a data point to mongodb.profiling.slowms metric.
+func (mb *MetricsBuilder) RecordMongodbProfilingSlowmsDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
+	mb.metricMongodbProfilingSlowms.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
+}
+
 // RecordMongodbReplsetHealthDataPoint adds a data point to mongodb.replset.health metric.
 func (mb *MetricsBuilder) RecordMongodbReplsetHealthDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string, memberStateAttributeValue string) {
 	mb.metricMongodbReplsetHealth.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue, replicaSetAttributeValue, memberNameAttributeValue, memberIDAttributeValue, memberStateAttributeValue)
@@ -17472,6 +17683,11 @@ func (mb *MetricsBuilder) RecordMongodbReplsetVotesDataPoint(ts pcommon.Timestam
 // RecordMongodbSessionCountDataPoint adds a data point to mongodb.session.count metric.
 func (mb *MetricsBuilder) RecordMongodbSessionCountDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricMongodbSessionCount.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbSlowOperationTimeDataPoint adds a data point to mongodb.slow_operation.time metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationTimeDataPoint(ts pcommon.Timestamp, val int64, timestampAttributeValue int64, databaseAttributeValue string, operationAttributeValue AttributeOperation, nsAttributeValue string, planSummaryAttributeValue string, querySignatureAttributeValue string, userAttributeValue string, applicationAttributeValue string, statementAttributeValue string, rawQueryAttributeValue string, queryHashAttributeValue string, queryShapeHashAttributeValue string, planCacheKeyAttributeValue string, queryFrameworkAttributeValue string, commentAttributeValue string, millsAttributeValue int64, numYieldsAttributeValue int64, responseLengthAttributeValue int64, nreturnedAttributeValue int64, nmatchedAttributeValue int64, nmodifiedAttributeValue int64, ninsertedAttributeValue int64, ndeletedAttributeValue int64, keysExaminedAttributeValue int64, docsExaminedAttributeValue int64, keysInsertedAttributeValue int64, writeConflictsAttributeValue int64, cpuNanosAttributeValue int64, planningTimeMicrosAttributeValue int64, cursorExhaustedAttributeValue bool, upsertAttributeValue bool, hasSortStageAttributeValue bool, usedDiskAttributeValue string, fromMultiPlannerAttributeValue string, replannedAttributeValue string, replanReasonAttributeValue string, clientAttributeValue string, cursorAttributeValue string, lockStatsAttributeValue string, flowControlStatsAttributeValue string) {
+	mb.metricMongodbSlowOperationTime.recordDataPoint(mb.startTime, ts, val, timestampAttributeValue, databaseAttributeValue, operationAttributeValue.String(), nsAttributeValue, planSummaryAttributeValue, querySignatureAttributeValue, userAttributeValue, applicationAttributeValue, statementAttributeValue, rawQueryAttributeValue, queryHashAttributeValue, queryShapeHashAttributeValue, planCacheKeyAttributeValue, queryFrameworkAttributeValue, commentAttributeValue, millsAttributeValue, numYieldsAttributeValue, responseLengthAttributeValue, nreturnedAttributeValue, nmatchedAttributeValue, nmodifiedAttributeValue, ninsertedAttributeValue, ndeletedAttributeValue, keysExaminedAttributeValue, docsExaminedAttributeValue, keysInsertedAttributeValue, writeConflictsAttributeValue, cpuNanosAttributeValue, planningTimeMicrosAttributeValue, cursorExhaustedAttributeValue, upsertAttributeValue, hasSortStageAttributeValue, usedDiskAttributeValue, fromMultiPlannerAttributeValue, replannedAttributeValue, replanReasonAttributeValue, clientAttributeValue, cursorAttributeValue, lockStatsAttributeValue, flowControlStatsAttributeValue)
 }
 
 // RecordMongodbStatsAvgobjsizeDataPoint adds a data point to mongodb.stats.avgobjsize metric.

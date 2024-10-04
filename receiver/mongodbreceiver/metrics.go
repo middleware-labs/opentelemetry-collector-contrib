@@ -3739,3 +3739,78 @@ func (s *mongodbScraper) recordMongodbWiredtigerConcurrenttransactionsWriteTotal
 	}
 	s.mb.RecordMongodbWiredtigerConcurrenttransactionsWriteTotalticketsDataPoint(now, val, database)
 }
+
+func (s *mongodbScraper) recordMongodbProflilingLevel(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"level"}
+	metricName := "mongodb.profiling.level"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbProfilingLevelDataPoint(now, val, database)
+}
+
+func (s *mongodbScraper) recordMongodbProflilingSlowms(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	metricPath := []string{"slowms"}
+	metricName := "mongodb.profiling.slowms"
+	val, err := collectMetric(doc, metricPath)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
+		return
+	}
+	s.mb.RecordMongodbProfilingSlowmsDataPoint(now, val, database)
+}
+func (s *mongodbScraper) RecordMongodbSlowOperationTime(now pcommon.Timestamp, doc []SlowOperationEvent, database string, errs *scrapererror.ScrapeErrors) {
+	metricName := "mongodb.slow_operation.time"
+	if doc == nil {
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, "error no slow operation event found"))
+		return
+	}
+	for _, ops := range doc {
+		s.mb.RecordMongodbSlowOperationTimeDataPoint(
+			now,
+			ops.Millis,
+			ops.Timestamp,
+			ops.Database,
+			metadata.AttributeOperation(metadata.MapAttributeOperation[ops.Operation]),
+			ops.NS,
+			ops.PlanSummary,
+			ops.QuerySignature,
+			ops.User,
+			ops.Application,
+			ConvertToJSONString(ops.Statement),
+			ConvertToJSONString(ops.RawQuery),
+			ops.QueryHash,
+			ops.QueryShapeHash,
+			ops.PlanCacheKey,
+			ops.QueryFramework,
+			ops.Comment,
+			ops.Millis,
+			ops.NumYields,
+			ops.ResponseLength,
+			ops.NReturned,
+			ops.NMatched,
+			ops.NModified,
+			ops.NInserted,
+			ops.NDeleted,
+			ops.KeysExamined,
+			ops.DocsExamined,
+			ops.KeysInserted,
+			ops.WriteConflicts,
+			ops.CpuNanos,
+			ops.PlanningTimeMicros,
+			ops.CursorExhausted,
+			ops.Upsert,
+			ops.HasSortStage,
+			ops.UsedDisk,
+			ops.FromMultiPlanner,
+			ops.Replanned,
+			ops.ReplanReason,
+			ops.Client,
+			ConvertToJSONString(ops.Cursor),
+			ConvertToJSONString(ops.LockStats),
+			ConvertToJSONString(ops.FlowControlStats),
+		)
+	}
+}

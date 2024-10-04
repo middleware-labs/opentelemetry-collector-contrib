@@ -247,6 +247,8 @@ type MetricsConfig struct {
 	MongodbOplogLogsizemb                                                    MetricConfig `mapstructure:"mongodb.oplog.logsizemb"`
 	MongodbOplogTimediff                                                     MetricConfig `mapstructure:"mongodb.oplog.timediff"`
 	MongodbOplogUsedsizemb                                                   MetricConfig `mapstructure:"mongodb.oplog.usedsizemb"`
+	MongodbProfilingLevel                                                    MetricConfig `mapstructure:"mongodb.profiling.level"`
+	MongodbProfilingSlowms                                                   MetricConfig `mapstructure:"mongodb.profiling.slowms"`
 	MongodbReplsetHealth                                                     MetricConfig `mapstructure:"mongodb.replset.health"`
 	MongodbReplsetOptimeLag                                                  MetricConfig `mapstructure:"mongodb.replset.optime_lag"`
 	MongodbReplsetReplicationlag                                             MetricConfig `mapstructure:"mongodb.replset.replicationlag"`
@@ -254,6 +256,7 @@ type MetricsConfig struct {
 	MongodbReplsetVotefraction                                               MetricConfig `mapstructure:"mongodb.replset.votefraction"`
 	MongodbReplsetVotes                                                      MetricConfig `mapstructure:"mongodb.replset.votes"`
 	MongodbSessionCount                                                      MetricConfig `mapstructure:"mongodb.session.count"`
+	MongodbSlowOperationTime                                                 MetricConfig `mapstructure:"mongodb.slow_operation.time"`
 	MongodbStatsAvgobjsize                                                   MetricConfig `mapstructure:"mongodb.stats.avgobjsize"`
 	MongodbStatsCollections                                                  MetricConfig `mapstructure:"mongodb.stats.collections"`
 	MongodbStatsDatasize                                                     MetricConfig `mapstructure:"mongodb.stats.datasize"`
@@ -983,6 +986,12 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbOplogUsedsizemb: MetricConfig{
 			Enabled: true,
 		},
+		MongodbProfilingLevel: MetricConfig{
+			Enabled: true,
+		},
+		MongodbProfilingSlowms: MetricConfig{
+			Enabled: true,
+		},
 		MongodbReplsetHealth: MetricConfig{
 			Enabled: true,
 		},
@@ -1002,6 +1011,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MongodbSessionCount: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationTime: MetricConfig{
 			Enabled: true,
 		},
 		MongodbStatsAvgobjsize: MetricConfig{
