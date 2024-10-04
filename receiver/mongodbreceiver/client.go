@@ -15,6 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 )
 
 // client is an interface that exposes functionality towards a mongo environment
@@ -34,6 +35,8 @@ type client interface {
 	JumboStats(ctx context.Context, DBName string) (bson.M, error)
 	CollectionStats(ctx context.Context, DBName, collectionName string) (bson.M, error)
 	ConnPoolStats(ctx context.Context, DBName string) (bson.M, error)
+	ProfilingStats(ctx context.Context, DBName string) (bson.M, error)
+	QueryStats(ctx context.Context, DBName string) ([]SlowOperationEvent, error)
 }
 
 // mongodbClient is a mongodb metric scraper client
@@ -396,4 +399,88 @@ func (c *mongodbClient) GetFsyncLockInfo(ctx context.Context) (bson.M, error) {
 	}
 
 	return fsynclockinfo, nil
+}
+
+type ProfilingStatus struct {
+	Level int32 `bson:"level"`
+	Slow  int32 `bson:"slowms"`
+}
+
+// ProfilingStats returns the result of db.runCommand({"profile":-1}) or db.getProfilingStatus()
+// more information can be found here: https://www.mongodb.com/docs/manual/tutorial/manage-the-database-profiler/
+func (c *mongodbClient) ProfilingStats(ctx context.Context, database string) (bson.M, error) {
+	excluded_dbs := []string{"local", "admin", "config", "test"}
+
+	if !slices.Contains(excluded_dbs, database) {
+
+		cfgLevel := c.cfg.ProfilingLevel
+		cfgSlowms := c.cfg.SlowMs
+		var result bson.M
+
+		db := c.Database(database)
+		err := db.RunCommand(ctx, bson.D{{"profile", -1}}).Decode(&result)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get profiling stats: %w", err)
+		}
+
+		level := (result["was"].(int32))
+		slowms := (result["slowms"].(int32))
+
+		if ((level != cfgLevel) && slices.Contains([]int32{0, 1, 2}, cfgLevel)) || (slowms != cfgSlowms) {
+			command := bson.D{
+				{"profile", cfgLevel},
+				{"slowms", cfgSlowms},
+			}
+			var profile bson.M
+			err = db.RunCommand(ctx, command).Decode(&profile)
+			if err != nil {
+				return nil, fmt.Errorf("unable to set for database:%s profiling: %w", database, err)
+			}
+
+			result = bson.M{
+				"level":  profile["was"],
+				"slowms": profile["slowms"],
+			}
+			return result, nil
+		} else {
+			result = bson.M{
+				"level":  level,
+				"slowms": slowms,
+			}
+			return result, nil
+		}
+
+	}
+
+	return nil, fmt.Errorf("this is excluded database:%s for stats", database)
+}
+
+// QueryStats returns the result of find on system.profile or db.getProfilingStatus()
+// more information can be found here: https://www.mongodb.com/docs/manual/tutorial/manage-the-database-profiler/
+func (c *mongodbClient) QueryStats(ctx context.Context, database string) ([]SlowOperationEvent, error) {
+	excluded_dbs := []string{"local", "admin", "config", "test"}
+
+	if !slices.Contains(excluded_dbs, database) {
+		var result bson.M
+
+		db := c.Database(database)
+		err := db.RunCommand(ctx, bson.D{{"profile", -1}}).Decode(&result)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get profiling stats: %w", err)
+		}
+
+		level := (result["was"].(int32))
+
+		if slices.Contains([]int32{1, 2}, level) {
+			lastTs := time.Now().Add(-c.cfg.CollectionInterval - time.Second)
+			events, err := collectSlowOperations(ctx, c.Client, database, lastTs)
+			if err != nil {
+				return nil, fmt.Errorf("unable to get query stats: %w", err)
+			}
+			return events, nil
+		}
+
+	}
+
+	return nil, fmt.Errorf("unable to get other database for stats")
 }

@@ -102,6 +102,14 @@ func (fc *fakeClient) ConnPoolStats(ctx context.Context, dbName string) (bson.M,
 	args := fc.Called(ctx, dbName)
 	return args.Get(0).(bson.M), args.Error(1)
 }
+func (fc *fakeClient) ProfilingStats(ctx context.Context, dbName string) (bson.M, error) {
+	args := fc.Called(ctx, dbName)
+	return args.Get(0).(bson.M), args.Error(1)
+}
+func (fc *fakeClient) QueryStats(ctx context.Context, dbName string) ([]SlowOperationEvent, error) {
+	args := fc.Called(ctx, dbName)
+	return args.Get(0).([]SlowOperationEvent), args.Error(1)
+}
 
 func TestListDatabaseNames(t *testing.T) {
 	mont := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))

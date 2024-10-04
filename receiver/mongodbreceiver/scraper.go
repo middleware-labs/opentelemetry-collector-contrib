@@ -156,6 +156,20 @@ func (s *mongodbScraper) collectDatabase(ctx context.Context, now pcommon.Timest
 		s.recordConnPoolStats(now, connPoolStats, databaseName, errs)
 	}
 
+	profilingStats, err := s.client.ProfilingStats(ctx, databaseName)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf("failed to fetch profilingStats metrics: %w", err))
+	} else {
+		s.recordProfilingStats(now, profilingStats, databaseName, errs)
+	}
+
+	queryStats, err := s.client.QueryStats(ctx, databaseName)
+	if err != nil {
+		errs.AddPartial(1, fmt.Errorf("failed to fetch queryStats metrics: %w", err))
+	} else {
+		s.recordQueryStats(now, queryStats, databaseName, errs)
+	}
+
 	s.recordNormalServerStats(now, serverStatus, databaseName, errs)
 
 	rb := s.mb.NewResourceBuilder()
@@ -714,4 +728,15 @@ func (s *mongodbScraper) recordConnPoolStats(now pcommon.Timestamp, doc bson.M, 
 	s.recordMongodbConnectionPoolTotalcreatedps(now, doc, database, errs)
 	s.recordMongodbConnectionPoolTotalinuse(now, doc, database, errs)
 	s.recordMongodbConnectionPoolTotalrefreshing(now, doc, database, errs)
+}
+
+func (s *mongodbScraper) recordProfilingStats(now pcommon.Timestamp, doc bson.M, database string, errs *scrapererror.ScrapeErrors) {
+	// profiling_stats
+	s.recordMongodbProflilingLevel(now, doc, database, errs)
+	s.recordMongodbProflilingSlowms(now, doc, database, errs)
+}
+
+func (s *mongodbScraper) recordQueryStats(now pcommon.Timestamp, doc []SlowOperationEvent, database string, errs *scrapererror.ScrapeErrors) {
+	// query_stats
+	s.RecordMongodbSlowOperationTime(now, doc, database, errs)
 }

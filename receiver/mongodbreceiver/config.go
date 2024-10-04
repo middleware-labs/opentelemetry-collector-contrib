@@ -26,11 +26,13 @@ type Config struct {
 	// MetricsBuilderConfig defines which metrics/attributes to enable for the scraper
 	metadata.MetricsBuilderConfig `mapstructure:",squash"`
 	// Deprecated - Transport option will be removed in v0.102.0
-	Hosts      []confignet.TCPAddrConfig `mapstructure:"hosts"`
-	Username   string                    `mapstructure:"username"`
-	Password   configopaque.String       `mapstructure:"password"`
-	ReplicaSet string                    `mapstructure:"replica_set,omitempty"`
-	Timeout    time.Duration             `mapstructure:"timeout"`
+	Hosts          []confignet.TCPAddrConfig `mapstructure:"hosts"`
+	Username       string                    `mapstructure:"username"`
+	Password       configopaque.String       `mapstructure:"password"`
+	ReplicaSet     string                    `mapstructure:"replica_set,omitempty"`
+	Timeout        time.Duration             `mapstructure:"timeout"`
+	ProfilingLevel int32                     `mapstructure:"profiling_level"`
+	SlowMs         int32                     `mapstructure:"slow_ms"`
 }
 
 func (c *Config) Validate() error {
@@ -79,9 +81,9 @@ func (c *Config) ClientOptions() *options.ClientOptions {
 	if c.Username != "" && c.Password != "" {
 		clientOptions.SetAuth(options.Credential{
 			AuthMechanism: "SCRAM-SHA-1",
-			Username: c.Username,
-			Password: string(c.Password),
-			AuthSource: "admin",
+			Username:      c.Username,
+			Password:      string(c.Password),
+			AuthSource:    "admin",
 		})
 	}
 
