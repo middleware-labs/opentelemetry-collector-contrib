@@ -106,7 +106,7 @@ attributes:
       - intent_shared
       - intent_exclusive
 
-  timestamp:
+  query_timestamp:
     description: The time when the slow operation occurred.
     type: int
   ns:
@@ -116,7 +116,10 @@ attributes:
     description: A summary of the execution plan used for the query.
     type: string
   query_signature:
-    description: A signature that uniquely identifies the query for performance analysis.
+    description: A signature that uniquely identifies same queries for performance analysis.
+    type: string
+  query_id:
+    description: Id that uniquely identifies the query for performance analysis.
     type: string
   user:
     description: The user who executed the operation (only available with profiling).
@@ -2471,12 +2474,13 @@ metrics:
     gauge:
       value_type: int
     attributes: [
-                  timestamp, 
+                  query_timestamp, 
                   database, 
                   operation, 
                   ns, 
                   plan_summary, 
                   query_signature, 
+                  query_id, 
                   user, 
                   application, 
                   statement, 
@@ -2512,6 +2516,97 @@ metrics:
                   lock_stats,
                   flow_control_stats
                 ]
+  mongodb.slow_operation.response_length:
+    enabled: true
+    description: Length of the response returned by the operation
+    unit: By
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.num_yields:
+    enabled: true
+    description: Number of times the operation yielded control (for long-running operations).
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.nreturned:
+    enabled: true
+    description: Number of documents returned by the query.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.nmatched:
+    enabled: true
+    description: Number of documents matched by the query.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.nmodified:
+    enabled: true
+    description: Number of documents modified by the operation.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.ninserted:
+    enabled: true
+    description: Number of documents inserted by the operation.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.ndeleted:
+    enabled: true
+    description: Number of documents deleted by the operation.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.keys_examined:
+    enabled: true
+    description: Number of index keys examined during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.docs_examined:
+    enabled: true
+    description: Number of documents examined during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.keys_inserted:
+    enabled: true
+    description: Number of index keys inserted during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.write_conflicts:
+    enabled: true
+    description: Number of write conflicts encountered during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.cpu_nanos:
+    enabled: true
+    description: CPU time consumed by the operation in nanoseconds.
+    unit: ns
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.planning_time_micros:
+    enabled: true
+    description: Time taken to plan the query in microseconds (only available with profiling).
+    unit: us
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
 # TODO: Update the receiver to pass the tests
 tests:
   skip_lifecycle: true    

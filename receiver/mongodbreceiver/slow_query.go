@@ -22,6 +22,7 @@ type SlowOperationEvent struct {
 	NS                 string `json:"ns,omitempty"`
 	PlanSummary        string `json:"plan_summary,omitempty"`
 	QuerySignature     string `json:"query_signature,omitempty"`
+	QueryID            string `json:"query_id,omitempty"`
 	User               string `json:"user,omitempty"`
 	Application        string `json:"application,omitempty"`
 	Statement          bson.M `json:"statement"`
@@ -69,6 +70,7 @@ func createSlowOperationEvent(slowOperation bson.M) SlowOperationEvent {
 	event.NS = getStringValue(slowOperation, "ns")
 	event.PlanSummary = getStringValue(slowOperation, "planSummary")
 	event.QuerySignature = getStringValue(slowOperation, "query_signature")
+	event.QueryID = getStringValue(slowOperation, "query_id")
 	event.User = getStringValue(slowOperation, "user")
 	event.Application = getStringValue(slowOperation, "appName")
 	event.Statement = slowOperation["obfuscated_command"].(bson.M)
@@ -322,16 +324,20 @@ func computeExecPlanSignature(normalizedJsonPlan string) string {
 // Function to obfuscate a slow operation
 func obfuscateSlowOperation(slowOperation bson.M, dbName string) bson.M {
 	// Obfuscate the command
-	obfuscatedCommand := obfuscateCommand(slowOperation["command"].(bson.M))
+	originalCommand := slowOperation["command"].(bson.M)
+	obfuscatedCommand := obfuscateCommand(originalCommand)
 
 	// Compute query signature
-	jsonCommand, _ := json.Marshal(obfuscatedCommand)
-	querySignature := computeExecPlanSignature(string(jsonCommand))
+	jsonOrgCommand, _ := json.Marshal(originalCommand)
+	jsonObsCommand, _ := json.Marshal(obfuscatedCommand)
+	querySignature := computeExecPlanSignature(string(jsonObsCommand))
+	queryID := computeExecPlanSignature(string(jsonOrgCommand))
 
 	// Update slow operation with new fields
 	slowOperation["dbname"] = dbName
 	slowOperation["obfuscated_command"] = obfuscatedCommand
 	slowOperation["query_signature"] = querySignature
+	slowOperation["query_id"] = queryID
 
 	// Handle originating command if it exists
 	if originatingCommand, ok := slowOperation["originatingCommand"]; ok {

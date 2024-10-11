@@ -975,7 +975,59 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordMongodbSlowOperationTimeDataPoint(ts, 1, 9, "database-val", AttributeOperationInsert, "ns-val", "plan_summary-val", "query_signature-val", "user-val", "application-val", "statement-val", "raw_query-val", "query_hash-val", "query_shape_hash-val", "plan_cache_key-val", "query_framework-val", "comment-val", 5, 10, 15, 9, 8, 9, 9, 8, 13, 13, 13, 15, 9, 20, true, true, true, "used_disk-val", "from_multi_planner-val", "replanned-val", "replan_reason-val", "client-val", "cursor-val", "lock_stats-val", "flow_control_stats-val")
+			mb.RecordMongodbSlowOperationCPUNanosDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationDocsExaminedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationKeysExaminedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationKeysInsertedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationNdeletedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationNinsertedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationNmatchedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationNmodifiedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationNreturnedDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationNumYieldsDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationPlanningTimeMicrosDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationResponseLengthDataPoint(ts, 1, "query_id-val", "query_signature-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationTimeDataPoint(ts, 1, 15, "database-val", AttributeOperationInsert, "ns-val", "plan_summary-val", "query_signature-val", "query_id-val", "user-val", "application-val", "statement-val", "raw_query-val", "query_hash-val", "query_shape_hash-val", "plan_cache_key-val", "query_framework-val", "comment-val", 5, 10, 15, 9, 8, 9, 9, 8, 13, 13, 13, 15, 9, 20, true, true, true, "used_disk-val", "from_multi_planner-val", "replanned-val", "replan_reason-val", "client-val", "cursor-val", "lock_stats-val", "flow_control_stats-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordMongodbSlowOperationWriteConflictsDataPoint(ts, 1, "query_id-val", "query_signature-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -4802,6 +4854,222 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "mongodb.slow_operation.cpu_nanos":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.cpu_nanos"], "Found a duplicate in the metrics slice: mongodb.slow_operation.cpu_nanos")
+					validatedMetrics["mongodb.slow_operation.cpu_nanos"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "CPU time consumed by the operation in nanoseconds.", ms.At(i).Description())
+					assert.Equal(t, "ns", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.docs_examined":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.docs_examined"], "Found a duplicate in the metrics slice: mongodb.slow_operation.docs_examined")
+					validatedMetrics["mongodb.slow_operation.docs_examined"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of documents examined during execution.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.keys_examined":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.keys_examined"], "Found a duplicate in the metrics slice: mongodb.slow_operation.keys_examined")
+					validatedMetrics["mongodb.slow_operation.keys_examined"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of index keys examined during execution.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.keys_inserted":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.keys_inserted"], "Found a duplicate in the metrics slice: mongodb.slow_operation.keys_inserted")
+					validatedMetrics["mongodb.slow_operation.keys_inserted"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of index keys inserted during execution.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.ndeleted":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.ndeleted"], "Found a duplicate in the metrics slice: mongodb.slow_operation.ndeleted")
+					validatedMetrics["mongodb.slow_operation.ndeleted"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of documents deleted by the operation.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.ninserted":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.ninserted"], "Found a duplicate in the metrics slice: mongodb.slow_operation.ninserted")
+					validatedMetrics["mongodb.slow_operation.ninserted"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of documents inserted by the operation.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.nmatched":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.nmatched"], "Found a duplicate in the metrics slice: mongodb.slow_operation.nmatched")
+					validatedMetrics["mongodb.slow_operation.nmatched"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of documents matched by the query.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.nmodified":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.nmodified"], "Found a duplicate in the metrics slice: mongodb.slow_operation.nmodified")
+					validatedMetrics["mongodb.slow_operation.nmodified"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of documents modified by the operation.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.nreturned":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.nreturned"], "Found a duplicate in the metrics slice: mongodb.slow_operation.nreturned")
+					validatedMetrics["mongodb.slow_operation.nreturned"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of documents returned by the query.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.num_yields":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.num_yields"], "Found a duplicate in the metrics slice: mongodb.slow_operation.num_yields")
+					validatedMetrics["mongodb.slow_operation.num_yields"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of times the operation yielded control (for long-running operations).", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.planning_time_micros":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.planning_time_micros"], "Found a duplicate in the metrics slice: mongodb.slow_operation.planning_time_micros")
+					validatedMetrics["mongodb.slow_operation.planning_time_micros"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Time taken to plan the query in microseconds (only available with profiling).", ms.At(i).Description())
+					assert.Equal(t, "us", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+				case "mongodb.slow_operation.response_length":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.response_length"], "Found a duplicate in the metrics slice: mongodb.slow_operation.response_length")
+					validatedMetrics["mongodb.slow_operation.response_length"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Length of the response returned by the operation", ms.At(i).Description())
+					assert.Equal(t, "By", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
 				case "mongodb.slow_operation.time":
 					assert.False(t, validatedMetrics["mongodb.slow_operation.time"], "Found a duplicate in the metrics slice: mongodb.slow_operation.time")
 					validatedMetrics["mongodb.slow_operation.time"] = true
@@ -4814,9 +5082,9 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
-					attrVal, ok := dp.Attributes().Get("timestamp")
+					attrVal, ok := dp.Attributes().Get("query_timestamp")
 					assert.True(t, ok)
-					assert.EqualValues(t, 9, attrVal.Int())
+					assert.EqualValues(t, 15, attrVal.Int())
 					attrVal, ok = dp.Attributes().Get("database")
 					assert.True(t, ok)
 					assert.EqualValues(t, "database-val", attrVal.Str())
@@ -4832,6 +5100,9 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("query_signature")
 					assert.True(t, ok)
 					assert.EqualValues(t, "query_signature-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
 					attrVal, ok = dp.Attributes().Get("user")
 					assert.True(t, ok)
 					assert.EqualValues(t, "user-val", attrVal.Str())
@@ -4934,6 +5205,24 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("flow_control_stats")
 					assert.True(t, ok)
 					assert.EqualValues(t, "flow_control_stats-val", attrVal.Str())
+				case "mongodb.slow_operation.write_conflicts":
+					assert.False(t, validatedMetrics["mongodb.slow_operation.write_conflicts"], "Found a duplicate in the metrics slice: mongodb.slow_operation.write_conflicts")
+					validatedMetrics["mongodb.slow_operation.write_conflicts"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of write conflicts encountered during execution.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("query_id")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_id-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("query_signature")
+					assert.True(t, ok)
+					assert.EqualValues(t, "query_signature-val", attrVal.Str())
 				case "mongodb.stats.avgobjsize":
 					assert.False(t, validatedMetrics["mongodb.stats.avgobjsize"], "Found a duplicate in the metrics slice: mongodb.stats.avgobjsize")
 					validatedMetrics["mongodb.stats.avgobjsize"] = true

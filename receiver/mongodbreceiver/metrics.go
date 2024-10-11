@@ -3764,7 +3764,8 @@ func (s *mongodbScraper) recordMongodbProflilingSlowms(now pcommon.Timestamp, do
 func (s *mongodbScraper) RecordMongodbSlowOperationTime(now pcommon.Timestamp, doc []SlowOperationEvent, database string, errs *scrapererror.ScrapeErrors) {
 	metricName := "mongodb.slow_operation.time"
 	if doc == nil {
-		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, "error no slow operation event found"))
+		err := errors.New("error no slow operation event found")
+		errs.AddPartial(1, fmt.Errorf(collectMetricWithAttributes, metricName, database, err))
 		return
 	}
 	for _, ops := range doc {
@@ -3777,6 +3778,7 @@ func (s *mongodbScraper) RecordMongodbSlowOperationTime(now pcommon.Timestamp, d
 			ops.NS,
 			ops.PlanSummary,
 			ops.QuerySignature,
+			ops.QueryID,
 			ops.User,
 			ops.Application,
 			ConvertToJSONString(ops.Statement),
@@ -3812,5 +3814,19 @@ func (s *mongodbScraper) RecordMongodbSlowOperationTime(now pcommon.Timestamp, d
 			ConvertToJSONString(ops.LockStats),
 			ConvertToJSONString(ops.FlowControlStats),
 		)
+		s.mb.RecordMongodbSlowOperationResponseLengthDataPoint(now, ops.ResponseLength, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationNumYieldsDataPoint(now, ops.NumYields, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationNreturnedDataPoint(now, ops.NReturned, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationNmatchedDataPoint(now, ops.NMatched, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationNmodifiedDataPoint(now, ops.NModified, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationNinsertedDataPoint(now, ops.NInserted, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationNdeletedDataPoint(now, ops.NDeleted, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationKeysExaminedDataPoint(now, ops.KeysExamined, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationDocsExaminedDataPoint(now, ops.DocsExamined, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationKeysInsertedDataPoint(now, ops.KeysInserted, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationWriteConflictsDataPoint(now, ops.WriteConflicts, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationCPUNanosDataPoint(now, ops.CpuNanos, ops.QueryID, ops.QuerySignature)
+		s.mb.RecordMongodbSlowOperationPlanningTimeMicrosDataPoint(now, ops.PlanningTimeMicros, ops.QueryID, ops.QuerySignature)
+
 	}
 }

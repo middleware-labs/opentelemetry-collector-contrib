@@ -11934,6 +11934,630 @@ func newMetricMongodbSessionCount(cfg MetricConfig) metricMongodbSessionCount {
 	return m
 }
 
+type metricMongodbSlowOperationCPUNanos struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.cpu_nanos metric with initial data.
+func (m *metricMongodbSlowOperationCPUNanos) init() {
+	m.data.SetName("mongodb.slow_operation.cpu_nanos")
+	m.data.SetDescription("CPU time consumed by the operation in nanoseconds.")
+	m.data.SetUnit("ns")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationCPUNanos) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationCPUNanos) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationCPUNanos) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationCPUNanos(cfg MetricConfig) metricMongodbSlowOperationCPUNanos {
+	m := metricMongodbSlowOperationCPUNanos{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationDocsExamined struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.docs_examined metric with initial data.
+func (m *metricMongodbSlowOperationDocsExamined) init() {
+	m.data.SetName("mongodb.slow_operation.docs_examined")
+	m.data.SetDescription("Number of documents examined during execution.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationDocsExamined) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationDocsExamined) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationDocsExamined) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationDocsExamined(cfg MetricConfig) metricMongodbSlowOperationDocsExamined {
+	m := metricMongodbSlowOperationDocsExamined{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationKeysExamined struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.keys_examined metric with initial data.
+func (m *metricMongodbSlowOperationKeysExamined) init() {
+	m.data.SetName("mongodb.slow_operation.keys_examined")
+	m.data.SetDescription("Number of index keys examined during execution.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationKeysExamined) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationKeysExamined) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationKeysExamined) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationKeysExamined(cfg MetricConfig) metricMongodbSlowOperationKeysExamined {
+	m := metricMongodbSlowOperationKeysExamined{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationKeysInserted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.keys_inserted metric with initial data.
+func (m *metricMongodbSlowOperationKeysInserted) init() {
+	m.data.SetName("mongodb.slow_operation.keys_inserted")
+	m.data.SetDescription("Number of index keys inserted during execution.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationKeysInserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationKeysInserted) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationKeysInserted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationKeysInserted(cfg MetricConfig) metricMongodbSlowOperationKeysInserted {
+	m := metricMongodbSlowOperationKeysInserted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationNdeleted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.ndeleted metric with initial data.
+func (m *metricMongodbSlowOperationNdeleted) init() {
+	m.data.SetName("mongodb.slow_operation.ndeleted")
+	m.data.SetDescription("Number of documents deleted by the operation.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationNdeleted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationNdeleted) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationNdeleted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationNdeleted(cfg MetricConfig) metricMongodbSlowOperationNdeleted {
+	m := metricMongodbSlowOperationNdeleted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationNinserted struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.ninserted metric with initial data.
+func (m *metricMongodbSlowOperationNinserted) init() {
+	m.data.SetName("mongodb.slow_operation.ninserted")
+	m.data.SetDescription("Number of documents inserted by the operation.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationNinserted) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationNinserted) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationNinserted) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationNinserted(cfg MetricConfig) metricMongodbSlowOperationNinserted {
+	m := metricMongodbSlowOperationNinserted{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationNmatched struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.nmatched metric with initial data.
+func (m *metricMongodbSlowOperationNmatched) init() {
+	m.data.SetName("mongodb.slow_operation.nmatched")
+	m.data.SetDescription("Number of documents matched by the query.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationNmatched) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationNmatched) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationNmatched) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationNmatched(cfg MetricConfig) metricMongodbSlowOperationNmatched {
+	m := metricMongodbSlowOperationNmatched{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationNmodified struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.nmodified metric with initial data.
+func (m *metricMongodbSlowOperationNmodified) init() {
+	m.data.SetName("mongodb.slow_operation.nmodified")
+	m.data.SetDescription("Number of documents modified by the operation.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationNmodified) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationNmodified) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationNmodified) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationNmodified(cfg MetricConfig) metricMongodbSlowOperationNmodified {
+	m := metricMongodbSlowOperationNmodified{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationNreturned struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.nreturned metric with initial data.
+func (m *metricMongodbSlowOperationNreturned) init() {
+	m.data.SetName("mongodb.slow_operation.nreturned")
+	m.data.SetDescription("Number of documents returned by the query.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationNreturned) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationNreturned) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationNreturned) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationNreturned(cfg MetricConfig) metricMongodbSlowOperationNreturned {
+	m := metricMongodbSlowOperationNreturned{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationNumYields struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.num_yields metric with initial data.
+func (m *metricMongodbSlowOperationNumYields) init() {
+	m.data.SetName("mongodb.slow_operation.num_yields")
+	m.data.SetDescription("Number of times the operation yielded control (for long-running operations).")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationNumYields) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationNumYields) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationNumYields) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationNumYields(cfg MetricConfig) metricMongodbSlowOperationNumYields {
+	m := metricMongodbSlowOperationNumYields{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationPlanningTimeMicros struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.planning_time_micros metric with initial data.
+func (m *metricMongodbSlowOperationPlanningTimeMicros) init() {
+	m.data.SetName("mongodb.slow_operation.planning_time_micros")
+	m.data.SetDescription("Time taken to plan the query in microseconds (only available with profiling).")
+	m.data.SetUnit("us")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationPlanningTimeMicros) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationPlanningTimeMicros) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationPlanningTimeMicros) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationPlanningTimeMicros(cfg MetricConfig) metricMongodbSlowOperationPlanningTimeMicros {
+	m := metricMongodbSlowOperationPlanningTimeMicros{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationResponseLength struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.response_length metric with initial data.
+func (m *metricMongodbSlowOperationResponseLength) init() {
+	m.data.SetName("mongodb.slow_operation.response_length")
+	m.data.SetDescription("Length of the response returned by the operation")
+	m.data.SetUnit("By")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationResponseLength) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationResponseLength) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationResponseLength) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationResponseLength(cfg MetricConfig) metricMongodbSlowOperationResponseLength {
+	m := metricMongodbSlowOperationResponseLength{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMongodbSlowOperationTime struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -11949,7 +12573,7 @@ func (m *metricMongodbSlowOperationTime) init() {
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricMongodbSlowOperationTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, timestampAttributeValue int64, databaseAttributeValue string, operationAttributeValue string, nsAttributeValue string, planSummaryAttributeValue string, querySignatureAttributeValue string, userAttributeValue string, applicationAttributeValue string, statementAttributeValue string, rawQueryAttributeValue string, queryHashAttributeValue string, queryShapeHashAttributeValue string, planCacheKeyAttributeValue string, queryFrameworkAttributeValue string, commentAttributeValue string, millsAttributeValue int64, numYieldsAttributeValue int64, responseLengthAttributeValue int64, nreturnedAttributeValue int64, nmatchedAttributeValue int64, nmodifiedAttributeValue int64, ninsertedAttributeValue int64, ndeletedAttributeValue int64, keysExaminedAttributeValue int64, docsExaminedAttributeValue int64, keysInsertedAttributeValue int64, writeConflictsAttributeValue int64, cpuNanosAttributeValue int64, planningTimeMicrosAttributeValue int64, cursorExhaustedAttributeValue bool, upsertAttributeValue bool, hasSortStageAttributeValue bool, usedDiskAttributeValue string, fromMultiPlannerAttributeValue string, replannedAttributeValue string, replanReasonAttributeValue string, clientAttributeValue string, cursorAttributeValue string, lockStatsAttributeValue string, flowControlStatsAttributeValue string) {
+func (m *metricMongodbSlowOperationTime) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryTimestampAttributeValue int64, databaseAttributeValue string, operationAttributeValue string, nsAttributeValue string, planSummaryAttributeValue string, querySignatureAttributeValue string, queryIDAttributeValue string, userAttributeValue string, applicationAttributeValue string, statementAttributeValue string, rawQueryAttributeValue string, queryHashAttributeValue string, queryShapeHashAttributeValue string, planCacheKeyAttributeValue string, queryFrameworkAttributeValue string, commentAttributeValue string, millsAttributeValue int64, numYieldsAttributeValue int64, responseLengthAttributeValue int64, nreturnedAttributeValue int64, nmatchedAttributeValue int64, nmodifiedAttributeValue int64, ninsertedAttributeValue int64, ndeletedAttributeValue int64, keysExaminedAttributeValue int64, docsExaminedAttributeValue int64, keysInsertedAttributeValue int64, writeConflictsAttributeValue int64, cpuNanosAttributeValue int64, planningTimeMicrosAttributeValue int64, cursorExhaustedAttributeValue bool, upsertAttributeValue bool, hasSortStageAttributeValue bool, usedDiskAttributeValue string, fromMultiPlannerAttributeValue string, replannedAttributeValue string, replanReasonAttributeValue string, clientAttributeValue string, cursorAttributeValue string, lockStatsAttributeValue string, flowControlStatsAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -11957,12 +12581,13 @@ func (m *metricMongodbSlowOperationTime) recordDataPoint(start pcommon.Timestamp
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
-	dp.Attributes().PutInt("timestamp", timestampAttributeValue)
+	dp.Attributes().PutInt("query_timestamp", queryTimestampAttributeValue)
 	dp.Attributes().PutStr("database", databaseAttributeValue)
 	dp.Attributes().PutStr("operation", operationAttributeValue)
 	dp.Attributes().PutStr("ns", nsAttributeValue)
 	dp.Attributes().PutStr("plan_summary", planSummaryAttributeValue)
 	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
 	dp.Attributes().PutStr("user", userAttributeValue)
 	dp.Attributes().PutStr("application", applicationAttributeValue)
 	dp.Attributes().PutStr("statement", statementAttributeValue)
@@ -12017,6 +12642,58 @@ func (m *metricMongodbSlowOperationTime) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbSlowOperationTime(cfg MetricConfig) metricMongodbSlowOperationTime {
 	m := metricMongodbSlowOperationTime{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbSlowOperationWriteConflicts struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.slow_operation.write_conflicts metric with initial data.
+func (m *metricMongodbSlowOperationWriteConflicts) init() {
+	m.data.SetName("mongodb.slow_operation.write_conflicts")
+	m.data.SetDescription("Number of write conflicts encountered during execution.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbSlowOperationWriteConflicts) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("query_id", queryIDAttributeValue)
+	dp.Attributes().PutStr("query_signature", querySignatureAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbSlowOperationWriteConflicts) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbSlowOperationWriteConflicts) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbSlowOperationWriteConflicts(cfg MetricConfig) metricMongodbSlowOperationWriteConflicts {
+	m := metricMongodbSlowOperationWriteConflicts{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -15757,7 +16434,20 @@ type MetricsBuilder struct {
 	metricMongodbReplsetVotefraction                                               metricMongodbReplsetVotefraction
 	metricMongodbReplsetVotes                                                      metricMongodbReplsetVotes
 	metricMongodbSessionCount                                                      metricMongodbSessionCount
+	metricMongodbSlowOperationCPUNanos                                             metricMongodbSlowOperationCPUNanos
+	metricMongodbSlowOperationDocsExamined                                         metricMongodbSlowOperationDocsExamined
+	metricMongodbSlowOperationKeysExamined                                         metricMongodbSlowOperationKeysExamined
+	metricMongodbSlowOperationKeysInserted                                         metricMongodbSlowOperationKeysInserted
+	metricMongodbSlowOperationNdeleted                                             metricMongodbSlowOperationNdeleted
+	metricMongodbSlowOperationNinserted                                            metricMongodbSlowOperationNinserted
+	metricMongodbSlowOperationNmatched                                             metricMongodbSlowOperationNmatched
+	metricMongodbSlowOperationNmodified                                            metricMongodbSlowOperationNmodified
+	metricMongodbSlowOperationNreturned                                            metricMongodbSlowOperationNreturned
+	metricMongodbSlowOperationNumYields                                            metricMongodbSlowOperationNumYields
+	metricMongodbSlowOperationPlanningTimeMicros                                   metricMongodbSlowOperationPlanningTimeMicros
+	metricMongodbSlowOperationResponseLength                                       metricMongodbSlowOperationResponseLength
 	metricMongodbSlowOperationTime                                                 metricMongodbSlowOperationTime
+	metricMongodbSlowOperationWriteConflicts                                       metricMongodbSlowOperationWriteConflicts
 	metricMongodbStatsAvgobjsize                                                   metricMongodbStatsAvgobjsize
 	metricMongodbStatsCollections                                                  metricMongodbStatsCollections
 	metricMongodbStatsDatasize                                                     metricMongodbStatsDatasize
@@ -16072,7 +16762,20 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbReplsetVotefraction:                                               newMetricMongodbReplsetVotefraction(mbc.Metrics.MongodbReplsetVotefraction),
 		metricMongodbReplsetVotes:                                                      newMetricMongodbReplsetVotes(mbc.Metrics.MongodbReplsetVotes),
 		metricMongodbSessionCount:                                                      newMetricMongodbSessionCount(mbc.Metrics.MongodbSessionCount),
+		metricMongodbSlowOperationCPUNanos:                                             newMetricMongodbSlowOperationCPUNanos(mbc.Metrics.MongodbSlowOperationCPUNanos),
+		metricMongodbSlowOperationDocsExamined:                                         newMetricMongodbSlowOperationDocsExamined(mbc.Metrics.MongodbSlowOperationDocsExamined),
+		metricMongodbSlowOperationKeysExamined:                                         newMetricMongodbSlowOperationKeysExamined(mbc.Metrics.MongodbSlowOperationKeysExamined),
+		metricMongodbSlowOperationKeysInserted:                                         newMetricMongodbSlowOperationKeysInserted(mbc.Metrics.MongodbSlowOperationKeysInserted),
+		metricMongodbSlowOperationNdeleted:                                             newMetricMongodbSlowOperationNdeleted(mbc.Metrics.MongodbSlowOperationNdeleted),
+		metricMongodbSlowOperationNinserted:                                            newMetricMongodbSlowOperationNinserted(mbc.Metrics.MongodbSlowOperationNinserted),
+		metricMongodbSlowOperationNmatched:                                             newMetricMongodbSlowOperationNmatched(mbc.Metrics.MongodbSlowOperationNmatched),
+		metricMongodbSlowOperationNmodified:                                            newMetricMongodbSlowOperationNmodified(mbc.Metrics.MongodbSlowOperationNmodified),
+		metricMongodbSlowOperationNreturned:                                            newMetricMongodbSlowOperationNreturned(mbc.Metrics.MongodbSlowOperationNreturned),
+		metricMongodbSlowOperationNumYields:                                            newMetricMongodbSlowOperationNumYields(mbc.Metrics.MongodbSlowOperationNumYields),
+		metricMongodbSlowOperationPlanningTimeMicros:                                   newMetricMongodbSlowOperationPlanningTimeMicros(mbc.Metrics.MongodbSlowOperationPlanningTimeMicros),
+		metricMongodbSlowOperationResponseLength:                                       newMetricMongodbSlowOperationResponseLength(mbc.Metrics.MongodbSlowOperationResponseLength),
 		metricMongodbSlowOperationTime:                                                 newMetricMongodbSlowOperationTime(mbc.Metrics.MongodbSlowOperationTime),
+		metricMongodbSlowOperationWriteConflicts:                                       newMetricMongodbSlowOperationWriteConflicts(mbc.Metrics.MongodbSlowOperationWriteConflicts),
 		metricMongodbStatsAvgobjsize:                                                   newMetricMongodbStatsAvgobjsize(mbc.Metrics.MongodbStatsAvgobjsize),
 		metricMongodbStatsCollections:                                                  newMetricMongodbStatsCollections(mbc.Metrics.MongodbStatsCollections),
 		metricMongodbStatsDatasize:                                                     newMetricMongodbStatsDatasize(mbc.Metrics.MongodbStatsDatasize),
@@ -16445,7 +17148,20 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbReplsetVotefraction.emit(ils.Metrics())
 	mb.metricMongodbReplsetVotes.emit(ils.Metrics())
 	mb.metricMongodbSessionCount.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationCPUNanos.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationDocsExamined.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationKeysExamined.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationKeysInserted.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationNdeleted.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationNinserted.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationNmatched.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationNmodified.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationNreturned.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationNumYields.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationPlanningTimeMicros.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationResponseLength.emit(ils.Metrics())
 	mb.metricMongodbSlowOperationTime.emit(ils.Metrics())
+	mb.metricMongodbSlowOperationWriteConflicts.emit(ils.Metrics())
 	mb.metricMongodbStatsAvgobjsize.emit(ils.Metrics())
 	mb.metricMongodbStatsCollections.emit(ils.Metrics())
 	mb.metricMongodbStatsDatasize.emit(ils.Metrics())
@@ -17685,9 +18401,74 @@ func (mb *MetricsBuilder) RecordMongodbSessionCountDataPoint(ts pcommon.Timestam
 	mb.metricMongodbSessionCount.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordMongodbSlowOperationCPUNanosDataPoint adds a data point to mongodb.slow_operation.cpu_nanos metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationCPUNanosDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationCPUNanos.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationDocsExaminedDataPoint adds a data point to mongodb.slow_operation.docs_examined metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationDocsExaminedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationDocsExamined.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationKeysExaminedDataPoint adds a data point to mongodb.slow_operation.keys_examined metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationKeysExaminedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationKeysExamined.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationKeysInsertedDataPoint adds a data point to mongodb.slow_operation.keys_inserted metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationKeysInsertedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationKeysInserted.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationNdeletedDataPoint adds a data point to mongodb.slow_operation.ndeleted metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationNdeletedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationNdeleted.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationNinsertedDataPoint adds a data point to mongodb.slow_operation.ninserted metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationNinsertedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationNinserted.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationNmatchedDataPoint adds a data point to mongodb.slow_operation.nmatched metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationNmatchedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationNmatched.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationNmodifiedDataPoint adds a data point to mongodb.slow_operation.nmodified metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationNmodifiedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationNmodified.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationNreturnedDataPoint adds a data point to mongodb.slow_operation.nreturned metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationNreturnedDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationNreturned.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationNumYieldsDataPoint adds a data point to mongodb.slow_operation.num_yields metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationNumYieldsDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationNumYields.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationPlanningTimeMicrosDataPoint adds a data point to mongodb.slow_operation.planning_time_micros metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationPlanningTimeMicrosDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationPlanningTimeMicros.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
+// RecordMongodbSlowOperationResponseLengthDataPoint adds a data point to mongodb.slow_operation.response_length metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationResponseLengthDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationResponseLength.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
+}
+
 // RecordMongodbSlowOperationTimeDataPoint adds a data point to mongodb.slow_operation.time metric.
-func (mb *MetricsBuilder) RecordMongodbSlowOperationTimeDataPoint(ts pcommon.Timestamp, val int64, timestampAttributeValue int64, databaseAttributeValue string, operationAttributeValue AttributeOperation, nsAttributeValue string, planSummaryAttributeValue string, querySignatureAttributeValue string, userAttributeValue string, applicationAttributeValue string, statementAttributeValue string, rawQueryAttributeValue string, queryHashAttributeValue string, queryShapeHashAttributeValue string, planCacheKeyAttributeValue string, queryFrameworkAttributeValue string, commentAttributeValue string, millsAttributeValue int64, numYieldsAttributeValue int64, responseLengthAttributeValue int64, nreturnedAttributeValue int64, nmatchedAttributeValue int64, nmodifiedAttributeValue int64, ninsertedAttributeValue int64, ndeletedAttributeValue int64, keysExaminedAttributeValue int64, docsExaminedAttributeValue int64, keysInsertedAttributeValue int64, writeConflictsAttributeValue int64, cpuNanosAttributeValue int64, planningTimeMicrosAttributeValue int64, cursorExhaustedAttributeValue bool, upsertAttributeValue bool, hasSortStageAttributeValue bool, usedDiskAttributeValue string, fromMultiPlannerAttributeValue string, replannedAttributeValue string, replanReasonAttributeValue string, clientAttributeValue string, cursorAttributeValue string, lockStatsAttributeValue string, flowControlStatsAttributeValue string) {
-	mb.metricMongodbSlowOperationTime.recordDataPoint(mb.startTime, ts, val, timestampAttributeValue, databaseAttributeValue, operationAttributeValue.String(), nsAttributeValue, planSummaryAttributeValue, querySignatureAttributeValue, userAttributeValue, applicationAttributeValue, statementAttributeValue, rawQueryAttributeValue, queryHashAttributeValue, queryShapeHashAttributeValue, planCacheKeyAttributeValue, queryFrameworkAttributeValue, commentAttributeValue, millsAttributeValue, numYieldsAttributeValue, responseLengthAttributeValue, nreturnedAttributeValue, nmatchedAttributeValue, nmodifiedAttributeValue, ninsertedAttributeValue, ndeletedAttributeValue, keysExaminedAttributeValue, docsExaminedAttributeValue, keysInsertedAttributeValue, writeConflictsAttributeValue, cpuNanosAttributeValue, planningTimeMicrosAttributeValue, cursorExhaustedAttributeValue, upsertAttributeValue, hasSortStageAttributeValue, usedDiskAttributeValue, fromMultiPlannerAttributeValue, replannedAttributeValue, replanReasonAttributeValue, clientAttributeValue, cursorAttributeValue, lockStatsAttributeValue, flowControlStatsAttributeValue)
+func (mb *MetricsBuilder) RecordMongodbSlowOperationTimeDataPoint(ts pcommon.Timestamp, val int64, queryTimestampAttributeValue int64, databaseAttributeValue string, operationAttributeValue AttributeOperation, nsAttributeValue string, planSummaryAttributeValue string, querySignatureAttributeValue string, queryIDAttributeValue string, userAttributeValue string, applicationAttributeValue string, statementAttributeValue string, rawQueryAttributeValue string, queryHashAttributeValue string, queryShapeHashAttributeValue string, planCacheKeyAttributeValue string, queryFrameworkAttributeValue string, commentAttributeValue string, millsAttributeValue int64, numYieldsAttributeValue int64, responseLengthAttributeValue int64, nreturnedAttributeValue int64, nmatchedAttributeValue int64, nmodifiedAttributeValue int64, ninsertedAttributeValue int64, ndeletedAttributeValue int64, keysExaminedAttributeValue int64, docsExaminedAttributeValue int64, keysInsertedAttributeValue int64, writeConflictsAttributeValue int64, cpuNanosAttributeValue int64, planningTimeMicrosAttributeValue int64, cursorExhaustedAttributeValue bool, upsertAttributeValue bool, hasSortStageAttributeValue bool, usedDiskAttributeValue string, fromMultiPlannerAttributeValue string, replannedAttributeValue string, replanReasonAttributeValue string, clientAttributeValue string, cursorAttributeValue string, lockStatsAttributeValue string, flowControlStatsAttributeValue string) {
+	mb.metricMongodbSlowOperationTime.recordDataPoint(mb.startTime, ts, val, queryTimestampAttributeValue, databaseAttributeValue, operationAttributeValue.String(), nsAttributeValue, planSummaryAttributeValue, querySignatureAttributeValue, queryIDAttributeValue, userAttributeValue, applicationAttributeValue, statementAttributeValue, rawQueryAttributeValue, queryHashAttributeValue, queryShapeHashAttributeValue, planCacheKeyAttributeValue, queryFrameworkAttributeValue, commentAttributeValue, millsAttributeValue, numYieldsAttributeValue, responseLengthAttributeValue, nreturnedAttributeValue, nmatchedAttributeValue, nmodifiedAttributeValue, ninsertedAttributeValue, ndeletedAttributeValue, keysExaminedAttributeValue, docsExaminedAttributeValue, keysInsertedAttributeValue, writeConflictsAttributeValue, cpuNanosAttributeValue, planningTimeMicrosAttributeValue, cursorExhaustedAttributeValue, upsertAttributeValue, hasSortStageAttributeValue, usedDiskAttributeValue, fromMultiPlannerAttributeValue, replannedAttributeValue, replanReasonAttributeValue, clientAttributeValue, cursorAttributeValue, lockStatsAttributeValue, flowControlStatsAttributeValue)
+}
+
+// RecordMongodbSlowOperationWriteConflictsDataPoint adds a data point to mongodb.slow_operation.write_conflicts metric.
+func (mb *MetricsBuilder) RecordMongodbSlowOperationWriteConflictsDataPoint(ts pcommon.Timestamp, val int64, queryIDAttributeValue string, querySignatureAttributeValue string) {
+	mb.metricMongodbSlowOperationWriteConflicts.recordDataPoint(mb.startTime, ts, val, queryIDAttributeValue, querySignatureAttributeValue)
 }
 
 // RecordMongodbStatsAvgobjsizeDataPoint adds a data point to mongodb.stats.avgobjsize metric.

@@ -3052,6 +3052,186 @@ The total number of active sessions.
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | {sessions} | Sum | Int | Cumulative | false |
 
+### mongodb.slow_operation.cpu_nanos
+
+CPU time consumed by the operation in nanoseconds.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ns | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.docs_examined
+
+Number of documents examined during execution.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.keys_examined
+
+Number of index keys examined during execution.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.keys_inserted
+
+Number of index keys inserted during execution.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.ndeleted
+
+Number of documents deleted by the operation.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.ninserted
+
+Number of documents inserted by the operation.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.nmatched
+
+Number of documents matched by the query.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.nmodified
+
+Number of documents modified by the operation.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.nreturned
+
+Number of documents returned by the query.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.num_yields
+
+Number of times the operation yielded control (for long-running operations).
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.planning_time_micros
+
+Time taken to plan the query in microseconds (only available with profiling).
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| us | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
+### mongodb.slow_operation.response_length
+
+Length of the response returned by the operation
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| By | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+
 ### mongodb.slow_operation.time
 
 The total time spent performing operations with slowms. Works only for profile level '1' & '2',
@@ -3064,12 +3244,13 @@ The total time spent performing operations with slowms. Works only for profile l
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| timestamp | The time when the slow operation occurred. | Any Int |
+| query_timestamp | The time when the slow operation occurred. | Any Int |
 | database | The name of a database. | Any Str |
 | operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
 | ns | The namespace of the operation (typically "database.collection"). | Any Str |
 | plan_summary | A summary of the execution plan used for the query. | Any Str |
-| query_signature | A signature that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
 | user | The user who executed the operation (only available with profiling). | Any Str |
 | application | The application name that executed the operation (only available with profiling). | Any Str |
 | statement | The actual command or query that was executed. | Any Str |
@@ -3104,6 +3285,21 @@ The total time spent performing operations with slowms. Works only for profile l
 | cursor | Cursor details related to this operation (only available with profiling). | Any Str |
 | lock_stats | Lock statistics related to this operation (only available with profiling). | Any Str |
 | flow_control_stats | Flow control statistics related to this operation (only available with profiling). | Any Str |
+
+### mongodb.slow_operation.write_conflicts
+
+Number of write conflicts encountered during execution.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
 
 ### mongodb.stats.avgobjsize
 

@@ -457,7 +457,33 @@ all_set:
       enabled: true
     mongodb.session.count:
       enabled: true
+    mongodb.slow_operation.cpu_nanos:
+      enabled: true
+    mongodb.slow_operation.docs_examined:
+      enabled: true
+    mongodb.slow_operation.keys_examined:
+      enabled: true
+    mongodb.slow_operation.keys_inserted:
+      enabled: true
+    mongodb.slow_operation.ndeleted:
+      enabled: true
+    mongodb.slow_operation.ninserted:
+      enabled: true
+    mongodb.slow_operation.nmatched:
+      enabled: true
+    mongodb.slow_operation.nmodified:
+      enabled: true
+    mongodb.slow_operation.nreturned:
+      enabled: true
+    mongodb.slow_operation.num_yields:
+      enabled: true
+    mongodb.slow_operation.planning_time_micros:
+      enabled: true
+    mongodb.slow_operation.response_length:
+      enabled: true
     mongodb.slow_operation.time:
+      enabled: true
+    mongodb.slow_operation.write_conflicts:
       enabled: true
     mongodb.stats.avgobjsize:
       enabled: true
@@ -1058,7 +1084,33 @@ none_set:
       enabled: false
     mongodb.session.count:
       enabled: false
+    mongodb.slow_operation.cpu_nanos:
+      enabled: false
+    mongodb.slow_operation.docs_examined:
+      enabled: false
+    mongodb.slow_operation.keys_examined:
+      enabled: false
+    mongodb.slow_operation.keys_inserted:
+      enabled: false
+    mongodb.slow_operation.ndeleted:
+      enabled: false
+    mongodb.slow_operation.ninserted:
+      enabled: false
+    mongodb.slow_operation.nmatched:
+      enabled: false
+    mongodb.slow_operation.nmodified:
+      enabled: false
+    mongodb.slow_operation.nreturned:
+      enabled: false
+    mongodb.slow_operation.num_yields:
+      enabled: false
+    mongodb.slow_operation.planning_time_micros:
+      enabled: false
+    mongodb.slow_operation.response_length:
+      enabled: false
     mongodb.slow_operation.time:
+      enabled: false
+    mongodb.slow_operation.write_conflicts:
       enabled: false
     mongodb.stats.avgobjsize:
       enabled: false
