@@ -106,6 +106,124 @@ attributes:
       - intent_shared
       - intent_exclusive
 
+  query_timestamp:
+    description: The time when the slow operation occurred.
+    type: int
+  ns:
+    description: The namespace of the operation (typically "database.collection").
+    type: string
+  plan_summary:
+    description: A summary of the execution plan used for the query.
+    type: string
+  query_signature:
+    description: A signature that uniquely identifies same queries for performance analysis.
+    type: string
+  query_id:
+    description: Id that uniquely identifies the query for performance analysis.
+    type: string
+  user:
+    description: The user who executed the operation (only available with profiling).
+    type: string
+  application:
+    description: The application name that executed the operation (only available with profiling).
+    type: string
+  statement:
+    description: The actual command or query that was executed.
+    type: string
+  raw_query:
+    description: The raw representation of the query as it was sent to MongoDB.
+    type: string
+  query_hash:
+    description: A hash that uniquely identifies the query (only available with profiling).
+    type: string
+  query_shape_hash:
+    description: A hash representing the shape of the query.
+    type: string
+  plan_cache_key:
+    description: A key used to identify the execution plan in the cache (only available with profiling).
+    type: string
+  query_framework:
+    description: The framework used for executing the query.
+    type: string
+  comment:
+    description: Any comments associated with the command.
+    type: string
+  mills:
+    description: Duration of the operation in milliseconds.
+    type: int
+  num_yields:
+    description: Number of times the operation yielded control (for long-running operations).
+    type: int
+  response_length:
+    description: Length of the response returned by the operation.
+    type: int
+  nreturned:
+    description: Number of documents returned by the query.
+    type: int
+  nmatched:
+    description: Number of documents matched by the query.
+    type: int
+  nmodified:
+    description: Number of documents modified by the operation.
+    type: int
+  ninserted:
+    description: Number of documents inserted by the operation.
+    type: int
+  ndeleted:
+    description: Number of documents deleted by the operation.
+    type: int
+  keys_examined:
+    description: Number of index keys examined during execution.
+    type: int
+  docs_examined:
+    description: Number of documents examined during execution.
+    type: int
+  keys_inserted:
+    description: Number of index keys inserted during execution.
+    type: int
+  write_conflicts:
+    description: Number of write conflicts encountered during execution.
+    type: int
+  cpu_nanos:
+    description: CPU time consumed by the operation in nanoseconds.
+    type: int
+  planning_time_micros:
+    description: Time taken to plan the query in microseconds (only available with profiling).
+    type: int
+  cursor_exhausted:
+    description: Indicates whether the cursor was exhausted during execution.
+    type: bool
+  upsert:
+    description: Indicates if an upsert operation was performed (only available with profiling).
+    type: bool
+  has_sort_stage:
+    description: Indicates if a sort stage was present in the operation (only available with profiling).
+    type: bool
+  used_disk:
+    description: Disk usage information related to this operation (only available with profiling).
+    type: string
+  from_multi_planner:
+    description: Indicates if this operation came from a multi-planner (only available with profiling).
+    type: string 
+  replanned :
+    description: Indicates if this operation was replanned (only available with profiling).
+    type: string 
+  replan_reason:
+    description: Reason for replanning this operation (only available with profiling).
+    type: string 
+  client:
+    description: Information about the client that executed this operation (only available with profiling).
+    type: string 
+  cursor:
+    description: Cursor details related to this operation (only available with profiling).
+    type: string 
+  lock_stats:
+    description: Lock statistics related to this operation (only available with profiling).
+    type: string 
+  flow_control_stats:
+    description: Flow control statistics related to this operation (only available with profiling).
+    type: string         
+
 metrics:
   mongodb.cache.operations:
     description: The number of cache operations of the instance.
@@ -2335,6 +2453,160 @@ metrics:
     gauge:
       value_type: int
     attributes: [database]
+  mongodb.profiling.level:
+    enabled: true
+    description: Specifies which operations should be profiled.
+    unit: "1"
+    gauge:
+      value_type: int
+    attributes: [database]
+  mongodb.profiling.slowms:
+    enabled: true
+    description: Specifies which operations should be profiled based on slowms in milliseconds. Works only for profile level '1',
+    unit: ms
+    gauge:
+      value_type: int
+    attributes: [database]
+  mongodb.slow_operation.time:
+    enabled: true
+    description: The total time spent performing operations with slowms. Works only for profile level '1' & '2',
+    unit: ms
+    gauge:
+      value_type: int
+    attributes: [
+                  query_timestamp, 
+                  database, 
+                  operation, 
+                  ns, 
+                  plan_summary, 
+                  query_signature, 
+                  query_id, 
+                  user, 
+                  application, 
+                  statement, 
+                  raw_query, 
+                  query_hash, 
+                  query_shape_hash, 
+                  plan_cache_key, 
+                  query_framework, 
+                  comment, 
+                  mills, 
+                  num_yields, 
+                  response_length, 
+                  nreturned, 
+                  nmatched, 
+                  nmodified, 
+                  ninserted, 
+                  ndeleted, 
+                  keys_examined, 
+                  docs_examined, 
+                  keys_inserted, 
+                  write_conflicts, 
+                  cpu_nanos, 
+                  planning_time_micros,
+                  cursor_exhausted,
+                  upsert,
+                  has_sort_stage,
+                  used_disk,
+                  from_multi_planner,
+                  replanned,
+                  replan_reason,
+                  client,
+                  cursor,
+                  lock_stats,
+                  flow_control_stats
+                ]
+  mongodb.slow_operation.response_length:
+    enabled: true
+    description: Length of the response returned by the operation
+    unit: By
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.num_yields:
+    enabled: true
+    description: Number of times the operation yielded control (for long-running operations).
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.nreturned:
+    enabled: true
+    description: Number of documents returned by the query.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.nmatched:
+    enabled: true
+    description: Number of documents matched by the query.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.nmodified:
+    enabled: true
+    description: Number of documents modified by the operation.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.ninserted:
+    enabled: true
+    description: Number of documents inserted by the operation.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.ndeleted:
+    enabled: true
+    description: Number of documents deleted by the operation.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.keys_examined:
+    enabled: true
+    description: Number of index keys examined during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.docs_examined:
+    enabled: true
+    description: Number of documents examined during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.keys_inserted:
+    enabled: true
+    description: Number of index keys inserted during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.write_conflicts:
+    enabled: true
+    description: Number of write conflicts encountered during execution.
+    unit: 1
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.cpu_nanos:
+    enabled: true
+    description: CPU time consumed by the operation in nanoseconds.
+    unit: ns
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
+  mongodb.slow_operation.planning_time_micros:
+    enabled: true
+    description: Time taken to plan the query in microseconds (only available with profiling).
+    unit: us
+    gauge:
+      value_type: int
+    attributes: [query_id,query_signature]
 # TODO: Update the receiver to pass the tests
 tests:
   skip_lifecycle: true    
