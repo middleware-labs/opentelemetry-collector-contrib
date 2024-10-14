@@ -2,6 +2,8 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongod
 
 go 1.22.0
 
+toolchain go1.22.2
+
 require (
 	github.com/google/go-cmp v0.6.0
 	github.com/hashicorp/go-version v1.7.0

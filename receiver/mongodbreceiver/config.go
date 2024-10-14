@@ -32,6 +32,8 @@ type Config struct {
 	ReplicaSet       string                    `mapstructure:"replica_set,omitempty"`
 	Timeout          time.Duration             `mapstructure:"timeout"`
 	DirectConnection bool                      `mapstructure:"direct_connection"`
+	ProfilingLevel int32                       `mapstructure:"profiling_level"`
+	SlowMs         int32                       `mapstructure:"slow_ms"`
 }
 
 func (c *Config) Validate() error {
@@ -84,9 +86,9 @@ func (c *Config) ClientOptions() *options.ClientOptions {
 	if c.Username != "" && c.Password != "" {
 		clientOptions.SetAuth(options.Credential{
 			AuthMechanism: "SCRAM-SHA-1",
-			Username: c.Username,
-			Password: string(c.Password),
-			AuthSource: "admin",
+			Username:      c.Username,
+			Password:      string(c.Password),
+			AuthSource:    "admin",
 		})
 	}
 

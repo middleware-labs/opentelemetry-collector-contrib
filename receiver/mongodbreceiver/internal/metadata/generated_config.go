@@ -247,6 +247,8 @@ type MetricsConfig struct {
 	MongodbOplogLogsizemb                                                    MetricConfig `mapstructure:"mongodb.oplog.logsizemb"`
 	MongodbOplogTimediff                                                     MetricConfig `mapstructure:"mongodb.oplog.timediff"`
 	MongodbOplogUsedsizemb                                                   MetricConfig `mapstructure:"mongodb.oplog.usedsizemb"`
+	MongodbProfilingLevel                                                    MetricConfig `mapstructure:"mongodb.profiling.level"`
+	MongodbProfilingSlowms                                                   MetricConfig `mapstructure:"mongodb.profiling.slowms"`
 	MongodbReplsetHealth                                                     MetricConfig `mapstructure:"mongodb.replset.health"`
 	MongodbReplsetOptimeLag                                                  MetricConfig `mapstructure:"mongodb.replset.optime_lag"`
 	MongodbReplsetReplicationlag                                             MetricConfig `mapstructure:"mongodb.replset.replicationlag"`
@@ -254,6 +256,20 @@ type MetricsConfig struct {
 	MongodbReplsetVotefraction                                               MetricConfig `mapstructure:"mongodb.replset.votefraction"`
 	MongodbReplsetVotes                                                      MetricConfig `mapstructure:"mongodb.replset.votes"`
 	MongodbSessionCount                                                      MetricConfig `mapstructure:"mongodb.session.count"`
+	MongodbSlowOperationCPUNanos                                             MetricConfig `mapstructure:"mongodb.slow_operation.cpu_nanos"`
+	MongodbSlowOperationDocsExamined                                         MetricConfig `mapstructure:"mongodb.slow_operation.docs_examined"`
+	MongodbSlowOperationKeysExamined                                         MetricConfig `mapstructure:"mongodb.slow_operation.keys_examined"`
+	MongodbSlowOperationKeysInserted                                         MetricConfig `mapstructure:"mongodb.slow_operation.keys_inserted"`
+	MongodbSlowOperationNdeleted                                             MetricConfig `mapstructure:"mongodb.slow_operation.ndeleted"`
+	MongodbSlowOperationNinserted                                            MetricConfig `mapstructure:"mongodb.slow_operation.ninserted"`
+	MongodbSlowOperationNmatched                                             MetricConfig `mapstructure:"mongodb.slow_operation.nmatched"`
+	MongodbSlowOperationNmodified                                            MetricConfig `mapstructure:"mongodb.slow_operation.nmodified"`
+	MongodbSlowOperationNreturned                                            MetricConfig `mapstructure:"mongodb.slow_operation.nreturned"`
+	MongodbSlowOperationNumYields                                            MetricConfig `mapstructure:"mongodb.slow_operation.num_yields"`
+	MongodbSlowOperationPlanningTimeMicros                                   MetricConfig `mapstructure:"mongodb.slow_operation.planning_time_micros"`
+	MongodbSlowOperationResponseLength                                       MetricConfig `mapstructure:"mongodb.slow_operation.response_length"`
+	MongodbSlowOperationTime                                                 MetricConfig `mapstructure:"mongodb.slow_operation.time"`
+	MongodbSlowOperationWriteConflicts                                       MetricConfig `mapstructure:"mongodb.slow_operation.write_conflicts"`
 	MongodbStatsAvgobjsize                                                   MetricConfig `mapstructure:"mongodb.stats.avgobjsize"`
 	MongodbStatsCollections                                                  MetricConfig `mapstructure:"mongodb.stats.collections"`
 	MongodbStatsDatasize                                                     MetricConfig `mapstructure:"mongodb.stats.datasize"`
@@ -983,6 +999,12 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbOplogUsedsizemb: MetricConfig{
 			Enabled: true,
 		},
+		MongodbProfilingLevel: MetricConfig{
+			Enabled: true,
+		},
+		MongodbProfilingSlowms: MetricConfig{
+			Enabled: true,
+		},
 		MongodbReplsetHealth: MetricConfig{
 			Enabled: true,
 		},
@@ -1002,6 +1024,48 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		MongodbSessionCount: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationCPUNanos: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationDocsExamined: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationKeysExamined: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationKeysInserted: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationNdeleted: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationNinserted: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationNmatched: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationNmodified: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationNreturned: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationNumYields: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationPlanningTimeMicros: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationResponseLength: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationTime: MetricConfig{
+			Enabled: true,
+		},
+		MongodbSlowOperationWriteConflicts: MetricConfig{
 			Enabled: true,
 		},
 		MongodbStatsAvgobjsize: MetricConfig{
