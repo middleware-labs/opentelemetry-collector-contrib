@@ -120,7 +120,7 @@ func (c *Config) ClientOptions(secondary bool) *options.ClientOptions {
 
 	// Set up authentication if username/password are provided or if an auth mechanism is specified
 	// Some mechanisms (e.g., MONGODB-X509, MONGODB-AWS with IAM) don't require username/password
-	if c.Username != "" && c.Password != "" || c.AuthMechanism != "" {
+	if c.Username != "" &&      c.Password != "" || c.AuthMechanism != "" {
 		credential := c.buildCredential()
 		clientOptions.SetAuth(credential)
 	}
