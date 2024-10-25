@@ -57,6 +57,10 @@ type scraper struct {
 	getProcessHandles    func(context.Context) (processHandles, error)
 
 	handleCountManager handlecount.Manager
+
+	// for caching
+	currMap map[int32]*processMetadata
+	prevMap map[int32]*processMetadata
 }
 
 // newProcessScraper creates a Process Scraper
@@ -69,6 +73,8 @@ func newProcessScraper(settings receiver.Settings, cfg *Config) (*scraper, error
 		scrapeProcessDelay:   cfg.ScrapeProcessDelay,
 		ucals:                make(map[int32]*ucal.CPUUtilizationCalculator),
 		handleCountManager:   handlecount.NewManager(),
+		currMap:              make(map[int32]*processMetadata),
+		prevMap:              make(map[int32]*processMetadata),
 	}
 
 	var err error
@@ -204,6 +210,7 @@ func (s *scraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 // successfully obtained will still be returned.
 func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 	ctx := context.WithValue(context.Background(), common.EnvKey, s.config.EnvMap)
+
 	handles, err := s.getProcessHandles(ctx)
 	if err != nil {
 		return nil, err
@@ -219,6 +226,13 @@ func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 	for i := 0; i < handles.Len(); i++ {
 		pid := handles.Pid(i)
 		handle := handles.At(i)
+
+		md, ok := s.prevMap[pid]
+		if ok {
+			data = append(data, md)
+			s.currMap[pid] = md // update current map
+			continue
+		}
 
 		exe, err := getProcessExecutable(ctx, handle)
 		if err != nil {
@@ -279,7 +293,7 @@ func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 			}
 		}
 
-		md := &processMetadata{
+		md = &processMetadata{
 			pid:        pid,
 			parentPid:  parentPid,
 			executable: executable,
@@ -291,8 +305,12 @@ func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 		}
 
 		data = append(data, md)
-	}
 
+		s.currMap[pid] = md
+
+	}
+	s.prevMap = s.currMap
+	s.currMap = make(map[int32]*processMetadata)
 	return data, errs.Combine()
 }
 
