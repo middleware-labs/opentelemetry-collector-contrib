@@ -41,6 +41,11 @@ const (
 	metricsLen = cpuMetricsLen + memoryMetricsLen + diskMetricsLen + memoryUtilizationMetricsLen + pagingMetricsLen + threadMetricsLen + contextSwitchMetricsLen + fileDescriptorMetricsLen + signalMetricsLen
 )
 
+type processDiscriminator struct {
+	pid        int32
+	createTime int64
+}
+
 // scraper for Process Metrics
 type scraper struct {
 	settings           receiver.Settings
@@ -59,8 +64,8 @@ type scraper struct {
 	handleCountManager handlecount.Manager
 
 	// for caching
-	currMap map[int32]*processMetadata
-	prevMap map[int32]*processMetadata
+	currMap map[processDiscriminator]*processMetadata
+	prevMap map[processDiscriminator]*processMetadata
 }
 
 // newProcessScraper creates a Process Scraper
@@ -73,8 +78,8 @@ func newProcessScraper(settings receiver.Settings, cfg *Config) (*scraper, error
 		scrapeProcessDelay:   cfg.ScrapeProcessDelay,
 		ucals:                make(map[int32]*ucal.CPUUtilizationCalculator),
 		handleCountManager:   handlecount.NewManager(),
-		currMap:              make(map[int32]*processMetadata),
-		prevMap:              make(map[int32]*processMetadata),
+		currMap:              make(map[processDiscriminator]*processMetadata),
+		prevMap:              make(map[processDiscriminator]*processMetadata),
 	}
 
 	var err error
@@ -227,10 +232,27 @@ func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 		pid := handles.Pid(i)
 		handle := handles.At(i)
 
-		md, ok := s.prevMap[pid]
+		nowUnixMilli := time.Now().UnixMilli()
+		createTime, err := s.getProcessCreateTime(handle, ctx)
+		if err != nil {
+			errs.AddPartial(0, fmt.Errorf("error reading create time for process %q: %w", pid, err))
+			// set the start time to now to avoid including this when a scrape_process_delay is set
+			createTime = nowUnixMilli
+		}
+
+		if s.scrapeProcessDelay.Milliseconds() > (nowUnixMilli - createTime) {
+			continue
+		}
+
+		discriminator := processDiscriminator{
+			pid:        pid,
+			createTime: createTime,
+		}
+
+		md, ok := s.prevMap[discriminator]
 		if ok {
 			data = append(data, md)
-			s.currMap[pid] = md // update current map
+			s.currMap[discriminator] = md // update current map
 			continue
 		}
 
@@ -276,16 +298,6 @@ func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 			}
 		}
 
-		createTime, err := s.getProcessCreateTime(handle, ctx)
-		if err != nil {
-			errs.AddPartial(0, fmt.Errorf("error reading create time for process %q (pid %v): %w", executable.name, pid, err))
-			// set the start time to now to avoid including this when a scrape_process_delay is set
-			createTime = time.Now().UnixMilli()
-		}
-		if s.scrapeProcessDelay.Milliseconds() > (time.Now().UnixMilli() - createTime) {
-			continue
-		}
-
 		parentPid, err := parentPid(ctx, handle, pid)
 		if err != nil {
 			if !s.config.AvoidSelectedErrors {
@@ -306,11 +318,11 @@ func (s *scraper) getProcessMetadata() ([]*processMetadata, error) {
 
 		data = append(data, md)
 
-		s.currMap[pid] = md
+		s.currMap[discriminator] = md
 
 	}
 	s.prevMap = s.currMap
-	s.currMap = make(map[int32]*processMetadata)
+	s.currMap = make(map[processDiscriminator]*processMetadata)
 	return data, errs.Combine()
 }
 
