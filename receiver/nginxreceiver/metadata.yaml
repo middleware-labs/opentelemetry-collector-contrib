@@ -17,7 +17,13 @@ attributes:
     - reading
     - writing
     - waiting
-
+  upstream_block_name:
+    description: The name of the upstream block
+    type: string
+  upstream_peer_address:
+    description: The address of the upstream server
+    type: string
+  
 metrics:
   nginx.requests:
     enabled: true
@@ -55,3 +61,25 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [state]
+
+  ### Timing metrics 
+  nginx.load_timestamp:
+    enabled: true
+    description: Time of the last reload of configuration (time since Epoch). 
+    gauge:
+      value_type: int
+    unit: ms
+  
+  nginx.upstream.peers.response_time:
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    enabled: true  
+    description: The average time to receive the last byte of data from this server. 
+    gauge:
+      value_type: int
+    unit: ms    
+
+# `nginx.load_timestamp` - Time when NGINX was loaded
+# - `nginx.timestamp` - Current timestamp
+# - `nginx.upstream.peers.response_time` - Response time in milliseconds for upstream servers

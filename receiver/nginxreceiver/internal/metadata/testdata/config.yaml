@@ -7,7 +7,11 @@ all_set:
       enabled: true
     nginx.connections_handled:
       enabled: true
+    nginx.load_timestamp:
+      enabled: true
     nginx.requests:
+      enabled: true
+    nginx.upstream.peers.response_time:
       enabled: true
 none_set:
   metrics:
@@ -17,5 +21,9 @@ none_set:
       enabled: false
     nginx.connections_handled:
       enabled: false
+    nginx.load_timestamp:
+      enabled: false
     nginx.requests:
+      enabled: false
+    nginx.upstream.peers.response_time:
       enabled: false
