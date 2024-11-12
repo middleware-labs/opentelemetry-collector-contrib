@@ -42,6 +42,14 @@ The total number of handled connections. Generally, the parameter value is the s
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | connections | Sum | Int | Cumulative | true |
 
+### nginx.load_timestamp
+
+Time of the last reload of configuration (time since Epoch).
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ms | Gauge | Int |
+
 ### nginx.requests
 
 Total number of requests made to the server since it started
@@ -49,3 +57,18 @@ Total number of requests made to the server since it started
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | requests | Sum | Int | Cumulative | true |
+
+### nginx.upstream.peers.response_time
+
+The average time to receive the last byte of data from this server.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ms | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address of the upstream server | Any Str |
