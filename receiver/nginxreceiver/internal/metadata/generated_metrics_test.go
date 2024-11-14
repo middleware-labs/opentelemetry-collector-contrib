@@ -77,6 +77,18 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordNginxNetReadingDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxNetWaitingDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxNetWritingDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordNginxRequestsDataPoint(ts, 1)
 
 			defaultMetricsCount++
@@ -157,6 +169,42 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "Time of the last reload of configuration (time since Epoch).", ms.At(i).Description())
 					assert.Equal(t, "ms", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.net.reading":
+					assert.False(t, validatedMetrics["nginx.net.reading"], "Found a duplicate in the metrics slice: nginx.net.reading")
+					validatedMetrics["nginx.net.reading"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Current number of connections where NGINX is reading the request header", ms.At(i).Description())
+					assert.Equal(t, "connections", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.net.waiting":
+					assert.False(t, validatedMetrics["nginx.net.waiting"], "Found a duplicate in the metrics slice: nginx.net.waiting")
+					validatedMetrics["nginx.net.waiting"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Current number of connections where NGINX is waiting the response back to the client", ms.At(i).Description())
+					assert.Equal(t, "connections", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.net.writing":
+					assert.False(t, validatedMetrics["nginx.net.writing"], "Found a duplicate in the metrics slice: nginx.net.writing")
+					validatedMetrics["nginx.net.writing"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Current number of connections where NGINX is writing the response back to the client", ms.At(i).Description())
+					assert.Equal(t, "connections", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())

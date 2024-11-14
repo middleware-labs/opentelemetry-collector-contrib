@@ -93,6 +93,13 @@ func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 func (r *nginxScraper) recordVtsStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
 	r.recordTimingStats(now, vtsStats)
+	r.recordVtsConnectionStats(now, vtsStats)
+}
+
+func (r *nginxScraper) recordVtsConnectionStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
+	r.mb.RecordNginxNetReadingDataPoint(now, vtsStats.Connections.Reading)
+	r.mb.RecordNginxNetWritingDataPoint(now, vtsStats.Connections.Writing)
+	r.mb.RecordNginxNetWaitingDataPoint(now, vtsStats.Connections.Waiting)
 }
 
 func (r *nginxScraper) recordTimingStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
