@@ -31,7 +31,13 @@ all_set:
       enabled: true
     nginx.server_zone.sent:
       enabled: true
+    nginx.upstream.peers.received:
+      enabled: true
+    nginx.upstream.peers.requests:
+      enabled: true
     nginx.upstream.peers.response_time:
+      enabled: true
+    nginx.upstream.peers.sent:
       enabled: true
 none_set:
   metrics:
@@ -65,5 +71,11 @@ none_set:
       enabled: false
     nginx.server_zone.sent:
       enabled: false
+    nginx.upstream.peers.received:
+      enabled: false
+    nginx.upstream.peers.requests:
+      enabled: false
     nginx.upstream.peers.response_time:
+      enabled: false
+    nginx.upstream.peers.sent:
       enabled: false

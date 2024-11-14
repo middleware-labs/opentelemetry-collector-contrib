@@ -180,6 +180,36 @@ Bytes sent by server zones
 | ---- | ----------- | ------ |
 | serverzone_name | The name of serverzone | Any Str |
 
+### nginx.upstream.peers.received
+
+Bytes received from upstream servers
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.requests
+
+Number of requests made to upstream servers
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| requests | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
 ### nginx.upstream.peers.response_time
 
 The average time to receive the last byte of data from this server.
@@ -187,6 +217,21 @@ The average time to receive the last byte of data from this server.
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | ms | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.sent
+
+Bytes sent from upstream servers
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
 
 #### Attributes
 

@@ -154,10 +154,6 @@ metrics:
     unit:
       response
 
-### Server Zone Traffic
-# - `nginx.server_zone.received` - Bytes received by server zones
-# - `nginx.server_zone.sent` - Bytes sent by server zones
-
   nginx.server_zone.received:
     enabled: true
     attributes:
@@ -179,4 +175,44 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: By 
-  
+
+  ### Request and Traffic
+# - `nginx.upstream.peers.requests` - Number of requests made to upstream servers
+# - `nginx.upstream.peers.received` - Bytes received from upstream servers
+# - `nginx.upstream.peers.sent` - Bytes sent to upstream servers
+
+  nginx.upstream.peers.requests:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of requests made to upstream servers
+    sum:
+      value_type: int
+      monotonic:  true
+      aggregation_temporality: cumulative
+    unit: requests
+
+  nginx.upstream.peers.received:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Bytes received from upstream servers 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By
+
+  nginx.upstream.peers.sent:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Bytes sent from upstream servers 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By
