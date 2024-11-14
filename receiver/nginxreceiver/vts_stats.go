@@ -85,7 +85,7 @@ type UpstreamServer struct {
 	ResponseMsec        int64          `json:"responseMsec"`
 	ResponseMsecs       RequestMetrics `json:"responseMsecs"`
 	ResponseBuckets     RequestBuckets `json:"responseBuckets"`
-	Weight              int            `json:"weight"`
+	Weight              float64        `json:"weight"`
 	MaxFails            int            `json:"maxFails"`
 	FailTimeout         int            `json:"failTimeout"`
 	Backup              bool           `json:"backup"`
