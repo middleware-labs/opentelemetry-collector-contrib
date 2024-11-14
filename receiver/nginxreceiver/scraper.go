@@ -95,6 +95,14 @@ func (r *nginxScraper) recordVtsStats(now pcommon.Timestamp, vtsStats *NginxVtsS
 	r.recordTimingStats(now, vtsStats)
 	r.recordVtsConnectionStats(now, vtsStats)
 	r.recordVtsServerZoneResponseStats(now, vtsStats)
+	r.recordVtsServerZoneTrafficStats(now, vtsStats)
+}
+
+func (r *nginxScraper) recordVtsServerZoneTrafficStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
+	for serverZoneName, serverZone := range vtsStats.ServerZones {
+		r.mb.RecordNginxServerZoneSentDataPoint(now, serverZone.OutBytes, serverZoneName)
+		r.mb.RecordNginxServerZoneReceivedDataPoint(now, serverZone.InBytes, serverZoneName)
+	}
 }
 
 func (r *nginxScraper) recordVtsServerZoneResponseStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {

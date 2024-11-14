@@ -104,14 +104,6 @@ metrics:
       value_type: int
     unit: connections
 
-
-### Server Zone Response Codes
-# - `nginx.server_zone.responses.1xx` - Number of responses with 1xx status codes
-# - `nginx.server_zone.responses.2xx` - Number of responses with 2xx status codes
-# - `nginx.server_zone.responses.3xx` - Number of responses with 3xx status codes
-# - `nginx.server_zone.responses.4xx` - Number of responses with 4xx status codes
-# - `nginx.server_zone.responses.5xx` - Number of responses with 5xx status codes
-
   nginx.server_zone.responses.1xx:
     enabled: true
     attributes:
@@ -161,3 +153,30 @@ metrics:
       value_type: int
     unit:
       response
+
+### Server Zone Traffic
+# - `nginx.server_zone.received` - Bytes received by server zones
+# - `nginx.server_zone.sent` - Bytes sent by server zones
+
+  nginx.server_zone.received:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: Bytes received by server zones
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By 
+
+  nginx.server_zone.sent:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: Bytes sent by server zones
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By 
+  

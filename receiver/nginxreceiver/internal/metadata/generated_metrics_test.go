@@ -93,6 +93,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordNginxServerZoneReceivedDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordNginxServerZoneResponses1xxDataPoint(ts, 1, "serverzone_name-val")
 
 			defaultMetricsCount++
@@ -110,6 +114,10 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneResponses5xxDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneSentDataPoint(ts, 1, "serverzone_name-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -244,6 +252,23 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.server_zone.received":
+					assert.False(t, validatedMetrics["nginx.server_zone.received"], "Found a duplicate in the metrics slice: nginx.server_zone.received")
+					validatedMetrics["nginx.server_zone.received"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Bytes received by server zones", ms.At(i).Description())
+					assert.Equal(t, "By", ms.At(i).Unit())
+					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
 				case "nginx.server_zone.responses.1xx":
 					assert.False(t, validatedMetrics["nginx.server_zone.responses.1xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.1xx")
 					validatedMetrics["nginx.server_zone.responses.1xx"] = true
@@ -312,6 +337,23 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, "The number of responses with 5xx status code.", ms.At(i).Description())
 					assert.Equal(t, "response", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
+				case "nginx.server_zone.sent":
+					assert.False(t, validatedMetrics["nginx.server_zone.sent"], "Found a duplicate in the metrics slice: nginx.server_zone.sent")
+					validatedMetrics["nginx.server_zone.sent"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Bytes sent by server zones", ms.At(i).Description())
+					assert.Equal(t, "By", ms.At(i).Unit())
+					assert.Equal(t, true, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
