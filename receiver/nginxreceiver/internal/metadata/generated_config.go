@@ -35,11 +35,13 @@ type MetricsConfig struct {
 	NginxNetWaiting                MetricConfig `mapstructure:"nginx.net.waiting"`
 	NginxNetWriting                MetricConfig `mapstructure:"nginx.net.writing"`
 	NginxRequests                  MetricConfig `mapstructure:"nginx.requests"`
+	NginxServerZoneReceived        MetricConfig `mapstructure:"nginx.server_zone.received"`
 	NginxServerZoneResponses1xx    MetricConfig `mapstructure:"nginx.server_zone.responses.1xx"`
 	NginxServerZoneResponses2xx    MetricConfig `mapstructure:"nginx.server_zone.responses.2xx"`
 	NginxServerZoneResponses3xx    MetricConfig `mapstructure:"nginx.server_zone.responses.3xx"`
 	NginxServerZoneResponses4xx    MetricConfig `mapstructure:"nginx.server_zone.responses.4xx"`
 	NginxServerZoneResponses5xx    MetricConfig `mapstructure:"nginx.server_zone.responses.5xx"`
+	NginxServerZoneSent            MetricConfig `mapstructure:"nginx.server_zone.sent"`
 	NginxUpstreamPeersResponseTime MetricConfig `mapstructure:"nginx.upstream.peers.response_time"`
 }
 
@@ -69,6 +71,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		NginxRequests: MetricConfig{
 			Enabled: true,
 		},
+		NginxServerZoneReceived: MetricConfig{
+			Enabled: true,
+		},
 		NginxServerZoneResponses1xx: MetricConfig{
 			Enabled: true,
 		},
@@ -82,6 +87,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		NginxServerZoneResponses5xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneSent: MetricConfig{
 			Enabled: true,
 		},
 		NginxUpstreamPeersResponseTime: MetricConfig{

@@ -447,6 +447,59 @@ func newMetricNginxRequests(cfg MetricConfig) metricNginxRequests {
 	return m
 }
 
+type metricNginxServerZoneReceived struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.server_zone.received metric with initial data.
+func (m *metricNginxServerZoneReceived) init() {
+	m.data.SetName("nginx.server_zone.received")
+	m.data.SetDescription("Bytes received by server zones")
+	m.data.SetUnit("By")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxServerZoneReceived) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("serverzone_name", serverzoneNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxServerZoneReceived) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxServerZoneReceived) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxServerZoneReceived(cfg MetricConfig) metricNginxServerZoneReceived {
+	m := metricNginxServerZoneReceived{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricNginxServerZoneResponses1xx struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -702,6 +755,59 @@ func newMetricNginxServerZoneResponses5xx(cfg MetricConfig) metricNginxServerZon
 	return m
 }
 
+type metricNginxServerZoneSent struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.server_zone.sent metric with initial data.
+func (m *metricNginxServerZoneSent) init() {
+	m.data.SetName("nginx.server_zone.sent")
+	m.data.SetDescription("Bytes sent by server zones")
+	m.data.SetUnit("By")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxServerZoneSent) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("serverzone_name", serverzoneNameAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxServerZoneSent) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxServerZoneSent) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxServerZoneSent(cfg MetricConfig) metricNginxServerZoneSent {
+	m := metricNginxServerZoneSent{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricNginxUpstreamPeersResponseTime struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -770,11 +876,13 @@ type MetricsBuilder struct {
 	metricNginxNetWaiting                metricNginxNetWaiting
 	metricNginxNetWriting                metricNginxNetWriting
 	metricNginxRequests                  metricNginxRequests
+	metricNginxServerZoneReceived        metricNginxServerZoneReceived
 	metricNginxServerZoneResponses1xx    metricNginxServerZoneResponses1xx
 	metricNginxServerZoneResponses2xx    metricNginxServerZoneResponses2xx
 	metricNginxServerZoneResponses3xx    metricNginxServerZoneResponses3xx
 	metricNginxServerZoneResponses4xx    metricNginxServerZoneResponses4xx
 	metricNginxServerZoneResponses5xx    metricNginxServerZoneResponses5xx
+	metricNginxServerZoneSent            metricNginxServerZoneSent
 	metricNginxUpstreamPeersResponseTime metricNginxUpstreamPeersResponseTime
 }
 
@@ -802,11 +910,13 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricNginxNetWaiting:                newMetricNginxNetWaiting(mbc.Metrics.NginxNetWaiting),
 		metricNginxNetWriting:                newMetricNginxNetWriting(mbc.Metrics.NginxNetWriting),
 		metricNginxRequests:                  newMetricNginxRequests(mbc.Metrics.NginxRequests),
+		metricNginxServerZoneReceived:        newMetricNginxServerZoneReceived(mbc.Metrics.NginxServerZoneReceived),
 		metricNginxServerZoneResponses1xx:    newMetricNginxServerZoneResponses1xx(mbc.Metrics.NginxServerZoneResponses1xx),
 		metricNginxServerZoneResponses2xx:    newMetricNginxServerZoneResponses2xx(mbc.Metrics.NginxServerZoneResponses2xx),
 		metricNginxServerZoneResponses3xx:    newMetricNginxServerZoneResponses3xx(mbc.Metrics.NginxServerZoneResponses3xx),
 		metricNginxServerZoneResponses4xx:    newMetricNginxServerZoneResponses4xx(mbc.Metrics.NginxServerZoneResponses4xx),
 		metricNginxServerZoneResponses5xx:    newMetricNginxServerZoneResponses5xx(mbc.Metrics.NginxServerZoneResponses5xx),
+		metricNginxServerZoneSent:            newMetricNginxServerZoneSent(mbc.Metrics.NginxServerZoneSent),
 		metricNginxUpstreamPeersResponseTime: newMetricNginxUpstreamPeersResponseTime(mbc.Metrics.NginxUpstreamPeersResponseTime),
 	}
 
@@ -873,11 +983,13 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricNginxNetWaiting.emit(ils.Metrics())
 	mb.metricNginxNetWriting.emit(ils.Metrics())
 	mb.metricNginxRequests.emit(ils.Metrics())
+	mb.metricNginxServerZoneReceived.emit(ils.Metrics())
 	mb.metricNginxServerZoneResponses1xx.emit(ils.Metrics())
 	mb.metricNginxServerZoneResponses2xx.emit(ils.Metrics())
 	mb.metricNginxServerZoneResponses3xx.emit(ils.Metrics())
 	mb.metricNginxServerZoneResponses4xx.emit(ils.Metrics())
 	mb.metricNginxServerZoneResponses5xx.emit(ils.Metrics())
+	mb.metricNginxServerZoneSent.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersResponseTime.emit(ils.Metrics())
 
 	for _, op := range rmo {
@@ -940,6 +1052,11 @@ func (mb *MetricsBuilder) RecordNginxRequestsDataPoint(ts pcommon.Timestamp, val
 	mb.metricNginxRequests.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordNginxServerZoneReceivedDataPoint adds a data point to nginx.server_zone.received metric.
+func (mb *MetricsBuilder) RecordNginxServerZoneReceivedDataPoint(ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
+	mb.metricNginxServerZoneReceived.recordDataPoint(mb.startTime, ts, val, serverzoneNameAttributeValue)
+}
+
 // RecordNginxServerZoneResponses1xxDataPoint adds a data point to nginx.server_zone.responses.1xx metric.
 func (mb *MetricsBuilder) RecordNginxServerZoneResponses1xxDataPoint(ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
 	mb.metricNginxServerZoneResponses1xx.recordDataPoint(mb.startTime, ts, val, serverzoneNameAttributeValue)
@@ -963,6 +1080,11 @@ func (mb *MetricsBuilder) RecordNginxServerZoneResponses4xxDataPoint(ts pcommon.
 // RecordNginxServerZoneResponses5xxDataPoint adds a data point to nginx.server_zone.responses.5xx metric.
 func (mb *MetricsBuilder) RecordNginxServerZoneResponses5xxDataPoint(ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
 	mb.metricNginxServerZoneResponses5xx.recordDataPoint(mb.startTime, ts, val, serverzoneNameAttributeValue)
+}
+
+// RecordNginxServerZoneSentDataPoint adds a data point to nginx.server_zone.sent metric.
+func (mb *MetricsBuilder) RecordNginxServerZoneSentDataPoint(ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
+	mb.metricNginxServerZoneSent.recordDataPoint(mb.startTime, ts, val, serverzoneNameAttributeValue)
 }
 
 // RecordNginxUpstreamPeersResponseTimeDataPoint adds a data point to nginx.upstream.peers.response_time metric.

@@ -82,6 +82,20 @@ Total number of requests made to the server since it started
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | requests | Sum | Int | Cumulative | true |
 
+### nginx.server_zone.received
+
+Bytes received by server zones
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
 ### nginx.server_zone.responses.1xx
 
 The number of responses with 1xx status code.
@@ -145,6 +159,20 @@ The number of responses with 5xx status code.
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
 | response | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.sent
+
+Bytes sent by server zones
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
 
 #### Attributes
 

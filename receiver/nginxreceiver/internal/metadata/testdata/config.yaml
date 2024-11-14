@@ -17,6 +17,8 @@ all_set:
       enabled: true
     nginx.requests:
       enabled: true
+    nginx.server_zone.received:
+      enabled: true
     nginx.server_zone.responses.1xx:
       enabled: true
     nginx.server_zone.responses.2xx:
@@ -26,6 +28,8 @@ all_set:
     nginx.server_zone.responses.4xx:
       enabled: true
     nginx.server_zone.responses.5xx:
+      enabled: true
+    nginx.server_zone.sent:
       enabled: true
     nginx.upstream.peers.response_time:
       enabled: true
@@ -47,6 +51,8 @@ none_set:
       enabled: false
     nginx.requests:
       enabled: false
+    nginx.server_zone.received:
+      enabled: false
     nginx.server_zone.responses.1xx:
       enabled: false
     nginx.server_zone.responses.2xx:
@@ -56,6 +62,8 @@ none_set:
     nginx.server_zone.responses.4xx:
       enabled: false
     nginx.server_zone.responses.5xx:
+      enabled: false
+    nginx.server_zone.sent:
       enabled: false
     nginx.upstream.peers.response_time:
       enabled: false
