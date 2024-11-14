@@ -96,18 +96,12 @@ func (r *nginxScraper) recordVtsStats(now pcommon.Timestamp, vtsStats *NginxVtsS
 	r.recordVtsConnectionStats(now, vtsStats)
 	r.recordVtsServerZoneResponseStats(now, vtsStats)
 	r.recordVtsServerZoneTrafficStats(now, vtsStats)
-	r.recordVtsUpstreamRequestTrafficStats(now, vtsStats)
+	r.recordVtsUpstreamStats(now, vtsStats)
 }
 
-func (r *nginxScraper) recordVtsUpstreamRequestTrafficStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
+func (r *nginxScraper) recordVtsUpstreamStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
 	for upstreamZoneName, upstreamZoneServers := range vtsStats.UpstreamZones {
 		for _, upstreamZoneServer := range upstreamZoneServers {
-			// pp.Println(upstreamZoneName)
-			// pp.Println("Upstream Zone Server Address: ", upstreamZoneServer.Server)
-			// pp.Println("Reqs made to this server: ", upstreamZoneServer.RequestCounter)
-			// pp.Println("Bytes received by this server: ", upstreamZoneServer.InBytes)
-			// pp.Println("Bytes sent by this server: ", upstreamZoneServer.OutBytes)
-
 			r.mb.RecordNginxUpstreamPeersRequestsDataPoint(
 				now, upstreamZoneServer.RequestCounter, upstreamZoneName, upstreamZoneServer.Server,
 			)
@@ -116,6 +110,32 @@ func (r *nginxScraper) recordVtsUpstreamRequestTrafficStats(now pcommon.Timestam
 			)
 			r.mb.RecordNginxUpstreamPeersSentDataPoint(
 				now, upstreamZoneServer.OutBytes, upstreamZoneName, upstreamZoneServer.Server,
+			)
+
+			r.mb.RecordNginxUpstreamPeersResponses1xxDataPoint(
+				now, upstreamZoneServer.Responses.Status1xx, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersResponses2xxDataPoint(
+				now, upstreamZoneServer.Responses.Status2xx, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersResponses3xxDataPoint(
+				now, upstreamZoneServer.Responses.Status3xx, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersResponses4xxDataPoint(
+				now, upstreamZoneServer.Responses.Status4xx, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersResponses5xxDataPoint(
+				now, upstreamZoneServer.Responses.Status5xx, upstreamZoneName, upstreamZoneServer.Server,
+			)
+
+			r.mb.RecordNginxUpstreamPeersWeightDataPoint(
+				now, upstreamZoneServer.Weight, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersBackupDataPoint(
+				now, int64(boolToInt(upstreamZoneServer.Backup)), upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(
+				now, int64(boolToInt(upstreamZoneServer.Down)), upstreamZoneName, upstreamZoneServer.Server,
 			)
 		}
 	}
@@ -160,8 +180,6 @@ func (r *nginxScraper) recordVtsConnectionStats(now pcommon.Timestamp, vtsStats 
 
 func (r *nginxScraper) recordTimingStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
 
-	// r.mb.RecordNginxLoadTimestampDataPoint(now, vtsStats.LoadMsec)
-
 	for upstreamZones, v := range vtsStats.UpstreamZones {
 		for _, val := range v {
 			pp.Println(val.Server)
@@ -172,4 +190,12 @@ func (r *nginxScraper) recordTimingStats(now pcommon.Timestamp, vtsStats *NginxV
 			)
 		}
 	}
+}
+
+func boolToInt(bitSet bool) int8 {
+	var bitSetVar int8
+	if bitSet {
+		bitSetVar = 1
+	}
+	return bitSetVar
 }

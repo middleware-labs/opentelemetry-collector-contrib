@@ -180,6 +180,36 @@ Bytes sent by server zones
 | ---- | ----------- | ------ |
 | serverzone_name | The name of serverzone | Any Str |
 
+### nginx.upstream.peers.backup
+
+Whether upstream server is a backup server
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {state} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.health_checks.last_passed
+
+Boolean indicating if the last health check request was successful and passed tests.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {status} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
 ### nginx.upstream.peers.received
 
 Bytes received from upstream servers
@@ -225,6 +255,81 @@ The average time to receive the last byte of data from this server.
 | upstream_block_name | The name of the upstream block | Any Str |
 | upstream_peer_address | The address f the upstream server | Any Str |
 
+### nginx.upstream.peers.responses.1xx
+
+Number of responses from upstream with 1xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.2xx
+
+Number of responses from upstream with 2xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.3xx
+
+Number of responses from upstream with 3xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.4xx
+
+Number of responses from upstream with 4xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.5xx
+
+Number of responses from upstream with 5xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
 ### nginx.upstream.peers.sent
 
 Bytes sent from upstream servers
@@ -232,6 +337,21 @@ Bytes sent from upstream servers
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.weight
+
+Weight of upstream server
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| weight | Gauge | Double |
 
 #### Attributes
 

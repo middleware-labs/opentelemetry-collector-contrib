@@ -4,7 +4,6 @@ go 1.22.0
 
 require (
 	github.com/google/go-cmp v0.6.0
-	github.com/nginxinc/nginx-prometheus-exporter v0.11.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.115.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.115.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.115.0

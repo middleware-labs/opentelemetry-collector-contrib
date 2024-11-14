@@ -216,3 +216,105 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: By
+
+  ### Response Codes
+# - `nginx.upstream.peers.responses.1xx` - Number of responses from upstream with 1xx status codes
+# - `nginx.upstream.peers.responses.2xx` - Number of responses from upstream with 2xx status codes
+# - `nginx.upstream.peers.responses.3xx` - Number of responses from upstream with 3xx status codes
+# - `nginx.upstream.peers.responses.4xx` - Number of responses from upstream with 4xx status codes
+# - `nginx.upstream.peers.responses.5xx` - Number of responses from upstream with 5xx status codes
+
+  nginx.upstream.peers.responses.1xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 1xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+
+  nginx.upstream.peers.responses.2xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 2xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+  
+  nginx.upstream.peers.responses.3xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 3xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+  
+  nginx.upstream.peers.responses.4xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 4xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+  
+  nginx.upstream.peers.responses.5xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 5xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+  
+  ### Server Configuration
+# - `nginx.upstream.peers.weight` - Weight of upstream server
+# - `nginx.upstream.peers.backup` - Whether upstream server is a backup server
+# - `nginx.upstream.peers.health_checks.last_passed` - Status of last health check for upstream server
+
+  nginx.upstream.peers.weight:
+    enabled: true
+    attributes: 
+      - upstream_block_name
+      - upstream_peer_address
+    description: Weight of upstream server
+    gauge:
+      value_type: double 
+    unit: weight 
+
+  nginx.upstream.peers.backup:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Whether upstream server is a backup server
+    gauge: 
+      value_type: int
+    unit: "{state}"
+    
+  nginx.upstream.peers.health_checks.last_passed:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Boolean indicating if the last health check request was successful and passed tests.
+    gauge:
+      value_type: int 
+    unit: "{status}"

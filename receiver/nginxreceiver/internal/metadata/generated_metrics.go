@@ -808,6 +808,110 @@ func newMetricNginxServerZoneSent(cfg MetricConfig) metricNginxServerZoneSent {
 	return m
 }
 
+type metricNginxUpstreamPeersBackup struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.backup metric with initial data.
+func (m *metricNginxUpstreamPeersBackup) init() {
+	m.data.SetName("nginx.upstream.peers.backup")
+	m.data.SetDescription("Whether upstream server is a backup server")
+	m.data.SetUnit("{state}")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersBackup) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersBackup) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersBackup) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersBackup(cfg MetricConfig) metricNginxUpstreamPeersBackup {
+	m := metricNginxUpstreamPeersBackup{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxUpstreamPeersHealthChecksLastPassed struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.health_checks.last_passed metric with initial data.
+func (m *metricNginxUpstreamPeersHealthChecksLastPassed) init() {
+	m.data.SetName("nginx.upstream.peers.health_checks.last_passed")
+	m.data.SetDescription("Boolean indicating if the last health check request was successful and passed tests.")
+	m.data.SetUnit("{status}")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersHealthChecksLastPassed) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersHealthChecksLastPassed) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersHealthChecksLastPassed) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersHealthChecksLastPassed(cfg MetricConfig) metricNginxUpstreamPeersHealthChecksLastPassed {
+	m := metricNginxUpstreamPeersHealthChecksLastPassed{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricNginxUpstreamPeersReceived struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -968,6 +1072,276 @@ func newMetricNginxUpstreamPeersResponseTime(cfg MetricConfig) metricNginxUpstre
 	return m
 }
 
+type metricNginxUpstreamPeersResponses1xx struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.responses.1xx metric with initial data.
+func (m *metricNginxUpstreamPeersResponses1xx) init() {
+	m.data.SetName("nginx.upstream.peers.responses.1xx")
+	m.data.SetDescription("Number of responses from upstream with 1xx status codes")
+	m.data.SetUnit("responses")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersResponses1xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersResponses1xx) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersResponses1xx) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersResponses1xx(cfg MetricConfig) metricNginxUpstreamPeersResponses1xx {
+	m := metricNginxUpstreamPeersResponses1xx{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxUpstreamPeersResponses2xx struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.responses.2xx metric with initial data.
+func (m *metricNginxUpstreamPeersResponses2xx) init() {
+	m.data.SetName("nginx.upstream.peers.responses.2xx")
+	m.data.SetDescription("Number of responses from upstream with 2xx status codes")
+	m.data.SetUnit("responses")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersResponses2xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersResponses2xx) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersResponses2xx) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersResponses2xx(cfg MetricConfig) metricNginxUpstreamPeersResponses2xx {
+	m := metricNginxUpstreamPeersResponses2xx{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxUpstreamPeersResponses3xx struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.responses.3xx metric with initial data.
+func (m *metricNginxUpstreamPeersResponses3xx) init() {
+	m.data.SetName("nginx.upstream.peers.responses.3xx")
+	m.data.SetDescription("Number of responses from upstream with 3xx status codes")
+	m.data.SetUnit("responses")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersResponses3xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersResponses3xx) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersResponses3xx) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersResponses3xx(cfg MetricConfig) metricNginxUpstreamPeersResponses3xx {
+	m := metricNginxUpstreamPeersResponses3xx{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxUpstreamPeersResponses4xx struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.responses.4xx metric with initial data.
+func (m *metricNginxUpstreamPeersResponses4xx) init() {
+	m.data.SetName("nginx.upstream.peers.responses.4xx")
+	m.data.SetDescription("Number of responses from upstream with 4xx status codes")
+	m.data.SetUnit("responses")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersResponses4xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersResponses4xx) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersResponses4xx) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersResponses4xx(cfg MetricConfig) metricNginxUpstreamPeersResponses4xx {
+	m := metricNginxUpstreamPeersResponses4xx{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxUpstreamPeersResponses5xx struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.responses.5xx metric with initial data.
+func (m *metricNginxUpstreamPeersResponses5xx) init() {
+	m.data.SetName("nginx.upstream.peers.responses.5xx")
+	m.data.SetDescription("Number of responses from upstream with 5xx status codes")
+	m.data.SetUnit("responses")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersResponses5xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersResponses5xx) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersResponses5xx) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersResponses5xx(cfg MetricConfig) metricNginxUpstreamPeersResponses5xx {
+	m := metricNginxUpstreamPeersResponses5xx{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricNginxUpstreamPeersSent struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -1022,33 +1396,93 @@ func newMetricNginxUpstreamPeersSent(cfg MetricConfig) metricNginxUpstreamPeersS
 	return m
 }
 
+type metricNginxUpstreamPeersWeight struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.upstream.peers.weight metric with initial data.
+func (m *metricNginxUpstreamPeersWeight) init() {
+	m.data.SetName("nginx.upstream.peers.weight")
+	m.data.SetDescription("Weight of upstream server")
+	m.data.SetUnit("weight")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricNginxUpstreamPeersWeight) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("upstream_block_name", upstreamBlockNameAttributeValue)
+	dp.Attributes().PutStr("upstream_peer_address", upstreamPeerAddressAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxUpstreamPeersWeight) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxUpstreamPeersWeight) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxUpstreamPeersWeight(cfg MetricConfig) metricNginxUpstreamPeersWeight {
+	m := metricNginxUpstreamPeersWeight{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 // MetricsBuilder provides an interface for scrapers to report metrics while taking care of all the transformations
 // required to produce metric representation defined in metadata and user config.
 type MetricsBuilder struct {
-	config                               MetricsBuilderConfig // config of the metrics builder.
-	startTime                            pcommon.Timestamp    // start time that will be applied to all recorded data points.
-	metricsCapacity                      int                  // maximum observed number of metrics per resource.
-	metricsBuffer                        pmetric.Metrics      // accumulates metrics data before emitting.
-	buildInfo                            component.BuildInfo  // contains version information.
-	metricNginxConnectionsAccepted       metricNginxConnectionsAccepted
-	metricNginxConnectionsCurrent        metricNginxConnectionsCurrent
-	metricNginxConnectionsHandled        metricNginxConnectionsHandled
-	metricNginxLoadTimestamp             metricNginxLoadTimestamp
-	metricNginxNetReading                metricNginxNetReading
-	metricNginxNetWaiting                metricNginxNetWaiting
-	metricNginxNetWriting                metricNginxNetWriting
-	metricNginxRequests                  metricNginxRequests
-	metricNginxServerZoneReceived        metricNginxServerZoneReceived
-	metricNginxServerZoneResponses1xx    metricNginxServerZoneResponses1xx
-	metricNginxServerZoneResponses2xx    metricNginxServerZoneResponses2xx
-	metricNginxServerZoneResponses3xx    metricNginxServerZoneResponses3xx
-	metricNginxServerZoneResponses4xx    metricNginxServerZoneResponses4xx
-	metricNginxServerZoneResponses5xx    metricNginxServerZoneResponses5xx
-	metricNginxServerZoneSent            metricNginxServerZoneSent
-	metricNginxUpstreamPeersReceived     metricNginxUpstreamPeersReceived
-	metricNginxUpstreamPeersRequests     metricNginxUpstreamPeersRequests
-	metricNginxUpstreamPeersResponseTime metricNginxUpstreamPeersResponseTime
-	metricNginxUpstreamPeersSent         metricNginxUpstreamPeersSent
+	config                                         MetricsBuilderConfig // config of the metrics builder.
+	startTime                                      pcommon.Timestamp    // start time that will be applied to all recorded data points.
+	metricsCapacity                                int                  // maximum observed number of metrics per resource.
+	metricsBuffer                                  pmetric.Metrics      // accumulates metrics data before emitting.
+	buildInfo                                      component.BuildInfo  // contains version information.
+	metricNginxConnectionsAccepted                 metricNginxConnectionsAccepted
+	metricNginxConnectionsCurrent                  metricNginxConnectionsCurrent
+	metricNginxConnectionsHandled                  metricNginxConnectionsHandled
+	metricNginxLoadTimestamp                       metricNginxLoadTimestamp
+	metricNginxNetReading                          metricNginxNetReading
+	metricNginxNetWaiting                          metricNginxNetWaiting
+	metricNginxNetWriting                          metricNginxNetWriting
+	metricNginxRequests                            metricNginxRequests
+	metricNginxServerZoneReceived                  metricNginxServerZoneReceived
+	metricNginxServerZoneResponses1xx              metricNginxServerZoneResponses1xx
+	metricNginxServerZoneResponses2xx              metricNginxServerZoneResponses2xx
+	metricNginxServerZoneResponses3xx              metricNginxServerZoneResponses3xx
+	metricNginxServerZoneResponses4xx              metricNginxServerZoneResponses4xx
+	metricNginxServerZoneResponses5xx              metricNginxServerZoneResponses5xx
+	metricNginxServerZoneSent                      metricNginxServerZoneSent
+	metricNginxUpstreamPeersBackup                 metricNginxUpstreamPeersBackup
+	metricNginxUpstreamPeersHealthChecksLastPassed metricNginxUpstreamPeersHealthChecksLastPassed
+	metricNginxUpstreamPeersReceived               metricNginxUpstreamPeersReceived
+	metricNginxUpstreamPeersRequests               metricNginxUpstreamPeersRequests
+	metricNginxUpstreamPeersResponseTime           metricNginxUpstreamPeersResponseTime
+	metricNginxUpstreamPeersResponses1xx           metricNginxUpstreamPeersResponses1xx
+	metricNginxUpstreamPeersResponses2xx           metricNginxUpstreamPeersResponses2xx
+	metricNginxUpstreamPeersResponses3xx           metricNginxUpstreamPeersResponses3xx
+	metricNginxUpstreamPeersResponses4xx           metricNginxUpstreamPeersResponses4xx
+	metricNginxUpstreamPeersResponses5xx           metricNginxUpstreamPeersResponses5xx
+	metricNginxUpstreamPeersSent                   metricNginxUpstreamPeersSent
+	metricNginxUpstreamPeersWeight                 metricNginxUpstreamPeersWeight
 }
 
 // MetricBuilderOption applies changes to default metrics builder.
@@ -1071,29 +1505,37 @@ func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
 
 func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
-		config:                               mbc,
-		startTime:                            pcommon.NewTimestampFromTime(time.Now()),
-		metricsBuffer:                        pmetric.NewMetrics(),
-		buildInfo:                            settings.BuildInfo,
-		metricNginxConnectionsAccepted:       newMetricNginxConnectionsAccepted(mbc.Metrics.NginxConnectionsAccepted),
-		metricNginxConnectionsCurrent:        newMetricNginxConnectionsCurrent(mbc.Metrics.NginxConnectionsCurrent),
-		metricNginxConnectionsHandled:        newMetricNginxConnectionsHandled(mbc.Metrics.NginxConnectionsHandled),
-		metricNginxLoadTimestamp:             newMetricNginxLoadTimestamp(mbc.Metrics.NginxLoadTimestamp),
-		metricNginxNetReading:                newMetricNginxNetReading(mbc.Metrics.NginxNetReading),
-		metricNginxNetWaiting:                newMetricNginxNetWaiting(mbc.Metrics.NginxNetWaiting),
-		metricNginxNetWriting:                newMetricNginxNetWriting(mbc.Metrics.NginxNetWriting),
-		metricNginxRequests:                  newMetricNginxRequests(mbc.Metrics.NginxRequests),
-		metricNginxServerZoneReceived:        newMetricNginxServerZoneReceived(mbc.Metrics.NginxServerZoneReceived),
-		metricNginxServerZoneResponses1xx:    newMetricNginxServerZoneResponses1xx(mbc.Metrics.NginxServerZoneResponses1xx),
-		metricNginxServerZoneResponses2xx:    newMetricNginxServerZoneResponses2xx(mbc.Metrics.NginxServerZoneResponses2xx),
-		metricNginxServerZoneResponses3xx:    newMetricNginxServerZoneResponses3xx(mbc.Metrics.NginxServerZoneResponses3xx),
-		metricNginxServerZoneResponses4xx:    newMetricNginxServerZoneResponses4xx(mbc.Metrics.NginxServerZoneResponses4xx),
-		metricNginxServerZoneResponses5xx:    newMetricNginxServerZoneResponses5xx(mbc.Metrics.NginxServerZoneResponses5xx),
-		metricNginxServerZoneSent:            newMetricNginxServerZoneSent(mbc.Metrics.NginxServerZoneSent),
-		metricNginxUpstreamPeersReceived:     newMetricNginxUpstreamPeersReceived(mbc.Metrics.NginxUpstreamPeersReceived),
-		metricNginxUpstreamPeersRequests:     newMetricNginxUpstreamPeersRequests(mbc.Metrics.NginxUpstreamPeersRequests),
-		metricNginxUpstreamPeersResponseTime: newMetricNginxUpstreamPeersResponseTime(mbc.Metrics.NginxUpstreamPeersResponseTime),
-		metricNginxUpstreamPeersSent:         newMetricNginxUpstreamPeersSent(mbc.Metrics.NginxUpstreamPeersSent),
+		config:                                         mbc,
+		startTime:                                      pcommon.NewTimestampFromTime(time.Now()),
+		metricsBuffer:                                  pmetric.NewMetrics(),
+		buildInfo:                                      settings.BuildInfo,
+		metricNginxConnectionsAccepted:                 newMetricNginxConnectionsAccepted(mbc.Metrics.NginxConnectionsAccepted),
+		metricNginxConnectionsCurrent:                  newMetricNginxConnectionsCurrent(mbc.Metrics.NginxConnectionsCurrent),
+		metricNginxConnectionsHandled:                  newMetricNginxConnectionsHandled(mbc.Metrics.NginxConnectionsHandled),
+		metricNginxLoadTimestamp:                       newMetricNginxLoadTimestamp(mbc.Metrics.NginxLoadTimestamp),
+		metricNginxNetReading:                          newMetricNginxNetReading(mbc.Metrics.NginxNetReading),
+		metricNginxNetWaiting:                          newMetricNginxNetWaiting(mbc.Metrics.NginxNetWaiting),
+		metricNginxNetWriting:                          newMetricNginxNetWriting(mbc.Metrics.NginxNetWriting),
+		metricNginxRequests:                            newMetricNginxRequests(mbc.Metrics.NginxRequests),
+		metricNginxServerZoneReceived:                  newMetricNginxServerZoneReceived(mbc.Metrics.NginxServerZoneReceived),
+		metricNginxServerZoneResponses1xx:              newMetricNginxServerZoneResponses1xx(mbc.Metrics.NginxServerZoneResponses1xx),
+		metricNginxServerZoneResponses2xx:              newMetricNginxServerZoneResponses2xx(mbc.Metrics.NginxServerZoneResponses2xx),
+		metricNginxServerZoneResponses3xx:              newMetricNginxServerZoneResponses3xx(mbc.Metrics.NginxServerZoneResponses3xx),
+		metricNginxServerZoneResponses4xx:              newMetricNginxServerZoneResponses4xx(mbc.Metrics.NginxServerZoneResponses4xx),
+		metricNginxServerZoneResponses5xx:              newMetricNginxServerZoneResponses5xx(mbc.Metrics.NginxServerZoneResponses5xx),
+		metricNginxServerZoneSent:                      newMetricNginxServerZoneSent(mbc.Metrics.NginxServerZoneSent),
+		metricNginxUpstreamPeersBackup:                 newMetricNginxUpstreamPeersBackup(mbc.Metrics.NginxUpstreamPeersBackup),
+		metricNginxUpstreamPeersHealthChecksLastPassed: newMetricNginxUpstreamPeersHealthChecksLastPassed(mbc.Metrics.NginxUpstreamPeersHealthChecksLastPassed),
+		metricNginxUpstreamPeersReceived:               newMetricNginxUpstreamPeersReceived(mbc.Metrics.NginxUpstreamPeersReceived),
+		metricNginxUpstreamPeersRequests:               newMetricNginxUpstreamPeersRequests(mbc.Metrics.NginxUpstreamPeersRequests),
+		metricNginxUpstreamPeersResponseTime:           newMetricNginxUpstreamPeersResponseTime(mbc.Metrics.NginxUpstreamPeersResponseTime),
+		metricNginxUpstreamPeersResponses1xx:           newMetricNginxUpstreamPeersResponses1xx(mbc.Metrics.NginxUpstreamPeersResponses1xx),
+		metricNginxUpstreamPeersResponses2xx:           newMetricNginxUpstreamPeersResponses2xx(mbc.Metrics.NginxUpstreamPeersResponses2xx),
+		metricNginxUpstreamPeersResponses3xx:           newMetricNginxUpstreamPeersResponses3xx(mbc.Metrics.NginxUpstreamPeersResponses3xx),
+		metricNginxUpstreamPeersResponses4xx:           newMetricNginxUpstreamPeersResponses4xx(mbc.Metrics.NginxUpstreamPeersResponses4xx),
+		metricNginxUpstreamPeersResponses5xx:           newMetricNginxUpstreamPeersResponses5xx(mbc.Metrics.NginxUpstreamPeersResponses5xx),
+		metricNginxUpstreamPeersSent:                   newMetricNginxUpstreamPeersSent(mbc.Metrics.NginxUpstreamPeersSent),
+		metricNginxUpstreamPeersWeight:                 newMetricNginxUpstreamPeersWeight(mbc.Metrics.NginxUpstreamPeersWeight),
 	}
 
 	for _, op := range options {
@@ -1174,10 +1616,18 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricNginxServerZoneResponses4xx.emit(ils.Metrics())
 	mb.metricNginxServerZoneResponses5xx.emit(ils.Metrics())
 	mb.metricNginxServerZoneSent.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersBackup.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersHealthChecksLastPassed.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersReceived.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersRequests.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersResponseTime.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersResponses1xx.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersResponses2xx.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersResponses3xx.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersResponses4xx.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersResponses5xx.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersSent.emit(ils.Metrics())
+	mb.metricNginxUpstreamPeersWeight.emit(ils.Metrics())
 
 	for _, op := range options {
 		op.apply(rm)
@@ -1274,6 +1724,16 @@ func (mb *MetricsBuilder) RecordNginxServerZoneSentDataPoint(ts pcommon.Timestam
 	mb.metricNginxServerZoneSent.recordDataPoint(mb.startTime, ts, val, serverzoneNameAttributeValue)
 }
 
+// RecordNginxUpstreamPeersBackupDataPoint adds a data point to nginx.upstream.peers.backup metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersBackupDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersBackup.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
+// RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint adds a data point to nginx.upstream.peers.health_checks.last_passed metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersHealthChecksLastPassed.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
 // RecordNginxUpstreamPeersReceivedDataPoint adds a data point to nginx.upstream.peers.received metric.
 func (mb *MetricsBuilder) RecordNginxUpstreamPeersReceivedDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
 	mb.metricNginxUpstreamPeersReceived.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
@@ -1289,9 +1749,39 @@ func (mb *MetricsBuilder) RecordNginxUpstreamPeersResponseTimeDataPoint(ts pcomm
 	mb.metricNginxUpstreamPeersResponseTime.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
 }
 
+// RecordNginxUpstreamPeersResponses1xxDataPoint adds a data point to nginx.upstream.peers.responses.1xx metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersResponses1xxDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersResponses1xx.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
+// RecordNginxUpstreamPeersResponses2xxDataPoint adds a data point to nginx.upstream.peers.responses.2xx metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersResponses2xxDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersResponses2xx.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
+// RecordNginxUpstreamPeersResponses3xxDataPoint adds a data point to nginx.upstream.peers.responses.3xx metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersResponses3xxDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersResponses3xx.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
+// RecordNginxUpstreamPeersResponses4xxDataPoint adds a data point to nginx.upstream.peers.responses.4xx metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersResponses4xxDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersResponses4xx.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
+// RecordNginxUpstreamPeersResponses5xxDataPoint adds a data point to nginx.upstream.peers.responses.5xx metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersResponses5xxDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersResponses5xx.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
 // RecordNginxUpstreamPeersSentDataPoint adds a data point to nginx.upstream.peers.sent metric.
 func (mb *MetricsBuilder) RecordNginxUpstreamPeersSentDataPoint(ts pcommon.Timestamp, val int64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
 	mb.metricNginxUpstreamPeersSent.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
+}
+
+// RecordNginxUpstreamPeersWeightDataPoint adds a data point to nginx.upstream.peers.weight metric.
+func (mb *MetricsBuilder) RecordNginxUpstreamPeersWeightDataPoint(ts pcommon.Timestamp, val float64, upstreamBlockNameAttributeValue string, upstreamPeerAddressAttributeValue string) {
+	mb.metricNginxUpstreamPeersWeight.recordDataPoint(mb.startTime, ts, val, upstreamBlockNameAttributeValue, upstreamPeerAddressAttributeValue)
 }
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
