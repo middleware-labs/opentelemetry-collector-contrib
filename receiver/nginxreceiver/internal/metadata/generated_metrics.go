@@ -249,6 +249,153 @@ func newMetricNginxLoadTimestamp(cfg MetricConfig) metricNginxLoadTimestamp {
 	return m
 }
 
+type metricNginxNetReading struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.net.reading metric with initial data.
+func (m *metricNginxNetReading) init() {
+	m.data.SetName("nginx.net.reading")
+	m.data.SetDescription("Current number of connections where NGINX is reading the request header")
+	m.data.SetUnit("connections")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricNginxNetReading) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxNetReading) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxNetReading) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxNetReading(cfg MetricConfig) metricNginxNetReading {
+	m := metricNginxNetReading{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxNetWaiting struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.net.waiting metric with initial data.
+func (m *metricNginxNetWaiting) init() {
+	m.data.SetName("nginx.net.waiting")
+	m.data.SetDescription("Current number of connections where NGINX is waiting the response back to the client")
+	m.data.SetUnit("connections")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricNginxNetWaiting) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxNetWaiting) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxNetWaiting) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxNetWaiting(cfg MetricConfig) metricNginxNetWaiting {
+	m := metricNginxNetWaiting{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricNginxNetWriting struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills nginx.net.writing metric with initial data.
+func (m *metricNginxNetWriting) init() {
+	m.data.SetName("nginx.net.writing")
+	m.data.SetDescription("Current number of connections where NGINX is writing the response back to the client")
+	m.data.SetUnit("connections")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricNginxNetWriting) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricNginxNetWriting) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricNginxNetWriting) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricNginxNetWriting(cfg MetricConfig) metricNginxNetWriting {
+	m := metricNginxNetWriting{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricNginxRequests struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -364,6 +511,9 @@ type MetricsBuilder struct {
 	metricNginxConnectionsCurrent        metricNginxConnectionsCurrent
 	metricNginxConnectionsHandled        metricNginxConnectionsHandled
 	metricNginxLoadTimestamp             metricNginxLoadTimestamp
+	metricNginxNetReading                metricNginxNetReading
+	metricNginxNetWaiting                metricNginxNetWaiting
+	metricNginxNetWriting                metricNginxNetWriting
 	metricNginxRequests                  metricNginxRequests
 	metricNginxUpstreamPeersResponseTime metricNginxUpstreamPeersResponseTime
 }
@@ -388,6 +538,9 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricNginxConnectionsCurrent:        newMetricNginxConnectionsCurrent(mbc.Metrics.NginxConnectionsCurrent),
 		metricNginxConnectionsHandled:        newMetricNginxConnectionsHandled(mbc.Metrics.NginxConnectionsHandled),
 		metricNginxLoadTimestamp:             newMetricNginxLoadTimestamp(mbc.Metrics.NginxLoadTimestamp),
+		metricNginxNetReading:                newMetricNginxNetReading(mbc.Metrics.NginxNetReading),
+		metricNginxNetWaiting:                newMetricNginxNetWaiting(mbc.Metrics.NginxNetWaiting),
+		metricNginxNetWriting:                newMetricNginxNetWriting(mbc.Metrics.NginxNetWriting),
 		metricNginxRequests:                  newMetricNginxRequests(mbc.Metrics.NginxRequests),
 		metricNginxUpstreamPeersResponseTime: newMetricNginxUpstreamPeersResponseTime(mbc.Metrics.NginxUpstreamPeersResponseTime),
 	}
@@ -451,6 +604,9 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricNginxConnectionsCurrent.emit(ils.Metrics())
 	mb.metricNginxConnectionsHandled.emit(ils.Metrics())
 	mb.metricNginxLoadTimestamp.emit(ils.Metrics())
+	mb.metricNginxNetReading.emit(ils.Metrics())
+	mb.metricNginxNetWaiting.emit(ils.Metrics())
+	mb.metricNginxNetWriting.emit(ils.Metrics())
 	mb.metricNginxRequests.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersResponseTime.emit(ils.Metrics())
 
@@ -492,6 +648,21 @@ func (mb *MetricsBuilder) RecordNginxConnectionsHandledDataPoint(ts pcommon.Time
 // RecordNginxLoadTimestampDataPoint adds a data point to nginx.load_timestamp metric.
 func (mb *MetricsBuilder) RecordNginxLoadTimestampDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricNginxLoadTimestamp.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordNginxNetReadingDataPoint adds a data point to nginx.net.reading metric.
+func (mb *MetricsBuilder) RecordNginxNetReadingDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricNginxNetReading.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordNginxNetWaitingDataPoint adds a data point to nginx.net.waiting metric.
+func (mb *MetricsBuilder) RecordNginxNetWaitingDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricNginxNetWaiting.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordNginxNetWritingDataPoint adds a data point to nginx.net.writing metric.
+func (mb *MetricsBuilder) RecordNginxNetWritingDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricNginxNetWriting.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordNginxRequestsDataPoint adds a data point to nginx.requests metric.

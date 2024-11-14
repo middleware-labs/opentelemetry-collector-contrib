@@ -9,6 +9,12 @@ all_set:
       enabled: true
     nginx.load_timestamp:
       enabled: true
+    nginx.net.reading:
+      enabled: true
+    nginx.net.waiting:
+      enabled: true
+    nginx.net.writing:
+      enabled: true
     nginx.requests:
       enabled: true
     nginx.upstream.peers.response_time:
@@ -22,6 +28,12 @@ none_set:
     nginx.connections_handled:
       enabled: false
     nginx.load_timestamp:
+      enabled: false
+    nginx.net.reading:
+      enabled: false
+    nginx.net.waiting:
+      enabled: false
+    nginx.net.writing:
       enabled: false
     nginx.requests:
       enabled: false

@@ -31,6 +31,9 @@ type MetricsConfig struct {
 	NginxConnectionsCurrent        MetricConfig `mapstructure:"nginx.connections_current"`
 	NginxConnectionsHandled        MetricConfig `mapstructure:"nginx.connections_handled"`
 	NginxLoadTimestamp             MetricConfig `mapstructure:"nginx.load_timestamp"`
+	NginxNetReading                MetricConfig `mapstructure:"nginx.net.reading"`
+	NginxNetWaiting                MetricConfig `mapstructure:"nginx.net.waiting"`
+	NginxNetWriting                MetricConfig `mapstructure:"nginx.net.writing"`
 	NginxRequests                  MetricConfig `mapstructure:"nginx.requests"`
 	NginxUpstreamPeersResponseTime MetricConfig `mapstructure:"nginx.upstream.peers.response_time"`
 }
@@ -47,6 +50,15 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		NginxLoadTimestamp: MetricConfig{
+			Enabled: true,
+		},
+		NginxNetReading: MetricConfig{
+			Enabled: true,
+		},
+		NginxNetWaiting: MetricConfig{
+			Enabled: true,
+		},
+		NginxNetWriting: MetricConfig{
 			Enabled: true,
 		},
 		NginxRequests: MetricConfig{

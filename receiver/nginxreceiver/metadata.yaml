@@ -22,7 +22,7 @@ attributes:
     description: The name of the upstream block
     type: string
   upstream_peer_address:
-    description: The address of the upstream server
+    description: The address f the upstream server
     type: string
   
 metrics:
@@ -81,6 +81,24 @@ metrics:
       value_type: int
     unit: ms    
 
-# `nginx.load_timestamp` - Time when NGINX was loaded
-# - `nginx.timestamp` - Current timestamp
-# - `nginx.upstream.peers.response_time` - Response time in milliseconds for upstream servers
+  nginx.net.reading:
+    enabled: true
+    description: Current number of connections where NGINX is reading the request header
+    gauge:
+      value_type: int
+    unit: connections
+
+  nginx.net.writing:
+    enabled: true
+    description: Current number of connections where NGINX is writing the response back to the client
+    gauge:
+      value_type: int
+    unit: connections
+
+  nginx.net.waiting:
+    enabled: true
+    description: Current number of connections where NGINX is waiting the response back to the client
+    gauge:
+      value_type: int
+    unit: connections
+

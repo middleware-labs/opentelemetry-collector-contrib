@@ -50,6 +50,30 @@ Time of the last reload of configuration (time since Epoch).
 | ---- | ----------- | ---------- |
 | ms | Gauge | Int |
 
+### nginx.net.reading
+
+Current number of connections where NGINX is reading the request header
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| connections | Gauge | Int |
+
+### nginx.net.waiting
+
+Current number of connections where NGINX is waiting the response back to the client
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| connections | Gauge | Int |
+
+### nginx.net.writing
+
+Current number of connections where NGINX is writing the response back to the client
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| connections | Gauge | Int |
+
 ### nginx.requests
 
 Total number of requests made to the server since it started
@@ -71,4 +95,4 @@ The average time to receive the last byte of data from this server.
 | Name | Description | Values |
 | ---- | ----------- | ------ |
 | upstream_block_name | The name of the upstream block | Any Str |
-| upstream_peer_address | The address of the upstream server | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
