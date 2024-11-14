@@ -94,6 +94,31 @@ func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
 func (r *nginxScraper) recordVtsStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
 	r.recordTimingStats(now, vtsStats)
 	r.recordVtsConnectionStats(now, vtsStats)
+	r.recordVtsServerZoneResponseStats(now, vtsStats)
+}
+
+func (r *nginxScraper) recordVtsServerZoneResponseStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
+	for serverZoneName, serverZone := range vtsStats.ServerZones {
+		r.mb.RecordNginxServerZoneResponses1xxDataPoint(
+			now, serverZone.Responses.Status1xx, serverZoneName,
+		)
+
+		r.mb.RecordNginxServerZoneResponses2xxDataPoint(
+			now, serverZone.Responses.Status2xx, serverZoneName,
+		)
+
+		r.mb.RecordNginxServerZoneResponses3xxDataPoint(
+			now, serverZone.Responses.Status3xx, serverZoneName,
+		)
+
+		r.mb.RecordNginxServerZoneResponses4xxDataPoint(
+			now, serverZone.Responses.Status4xx, serverZoneName,
+		)
+
+		r.mb.RecordNginxServerZoneResponses5xxDataPoint(
+			now, serverZone.Responses.Status5xx, serverZoneName,
+		)
+	}
 }
 
 func (r *nginxScraper) recordVtsConnectionStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {

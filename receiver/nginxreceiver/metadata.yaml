@@ -24,7 +24,10 @@ attributes:
   upstream_peer_address:
     description: The address f the upstream server
     type: string
-  
+  serverzone_name:
+    description: The name of serverzone
+    type: string
+
 metrics:
   nginx.requests:
     enabled: true
@@ -102,3 +105,60 @@ metrics:
       value_type: int
     unit: connections
 
+
+### Server Zone Response Codes
+# - `nginx.server_zone.responses.1xx` - Number of responses with 1xx status codes
+# - `nginx.server_zone.responses.2xx` - Number of responses with 2xx status codes
+# - `nginx.server_zone.responses.3xx` - Number of responses with 3xx status codes
+# - `nginx.server_zone.responses.4xx` - Number of responses with 4xx status codes
+# - `nginx.server_zone.responses.5xx` - Number of responses with 5xx status codes
+
+  nginx.server_zone.responses.1xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 1xx status code.
+    gauge:
+      value_type: int
+    unit:
+      response
+
+  nginx.server_zone.responses.2xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 2xx status code.
+    gauge:
+      value_type: int
+    unit:
+      response 
+
+  nginx.server_zone.responses.3xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 3xx status code.
+    gauge:
+      value_type: int
+    unit:
+      response
+
+  nginx.server_zone.responses.4xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 4xx status code.
+    gauge:
+      value_type: int
+    unit:
+      response
+
+  nginx.server_zone.responses.5xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 5xx status code.
+    gauge:
+      value_type: int
+    unit:
+      response

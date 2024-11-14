@@ -93,6 +93,26 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordNginxServerZoneResponses1xxDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses2xxDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses3xxDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses4xxDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses5xxDataPoint(ts, 1, "serverzone_name-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponseTimeDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 
 			res := pcommon.NewResource()
@@ -224,6 +244,81 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.server_zone.responses.1xx":
+					assert.False(t, validatedMetrics["nginx.server_zone.responses.1xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.1xx")
+					validatedMetrics["nginx.server_zone.responses.1xx"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of responses with 1xx status code.", ms.At(i).Description())
+					assert.Equal(t, "response", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
+				case "nginx.server_zone.responses.2xx":
+					assert.False(t, validatedMetrics["nginx.server_zone.responses.2xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.2xx")
+					validatedMetrics["nginx.server_zone.responses.2xx"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of responses with 2xx status code.", ms.At(i).Description())
+					assert.Equal(t, "response", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
+				case "nginx.server_zone.responses.3xx":
+					assert.False(t, validatedMetrics["nginx.server_zone.responses.3xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.3xx")
+					validatedMetrics["nginx.server_zone.responses.3xx"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of responses with 3xx status code.", ms.At(i).Description())
+					assert.Equal(t, "response", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
+				case "nginx.server_zone.responses.4xx":
+					assert.False(t, validatedMetrics["nginx.server_zone.responses.4xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.4xx")
+					validatedMetrics["nginx.server_zone.responses.4xx"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of responses with 4xx status code.", ms.At(i).Description())
+					assert.Equal(t, "response", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
+				case "nginx.server_zone.responses.5xx":
+					assert.False(t, validatedMetrics["nginx.server_zone.responses.5xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.5xx")
+					validatedMetrics["nginx.server_zone.responses.5xx"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of responses with 5xx status code.", ms.At(i).Description())
+					assert.Equal(t, "response", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("serverzone_name")
+					assert.True(t, ok)
+					assert.EqualValues(t, "serverzone_name-val", attrVal.Str())
 				case "nginx.upstream.peers.response_time":
 					assert.False(t, validatedMetrics["nginx.upstream.peers.response_time"], "Found a duplicate in the metrics slice: nginx.upstream.peers.response_time")
 					validatedMetrics["nginx.upstream.peers.response_time"] = true
