@@ -17,6 +17,16 @@ all_set:
       enabled: true
     nginx.requests:
       enabled: true
+    nginx.server_zone.responses.1xx:
+      enabled: true
+    nginx.server_zone.responses.2xx:
+      enabled: true
+    nginx.server_zone.responses.3xx:
+      enabled: true
+    nginx.server_zone.responses.4xx:
+      enabled: true
+    nginx.server_zone.responses.5xx:
+      enabled: true
     nginx.upstream.peers.response_time:
       enabled: true
 none_set:
@@ -36,6 +46,16 @@ none_set:
     nginx.net.writing:
       enabled: false
     nginx.requests:
+      enabled: false
+    nginx.server_zone.responses.1xx:
+      enabled: false
+    nginx.server_zone.responses.2xx:
+      enabled: false
+    nginx.server_zone.responses.3xx:
+      enabled: false
+    nginx.server_zone.responses.4xx:
+      enabled: false
+    nginx.server_zone.responses.5xx:
       enabled: false
     nginx.upstream.peers.response_time:
       enabled: false

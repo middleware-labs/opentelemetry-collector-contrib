@@ -82,6 +82,76 @@ Total number of requests made to the server since it started
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | requests | Sum | Int | Cumulative | true |
 
+### nginx.server_zone.responses.1xx
+
+The number of responses with 1xx status code.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| response | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.2xx
+
+The number of responses with 2xx status code.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| response | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.3xx
+
+The number of responses with 3xx status code.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| response | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.4xx
+
+The number of responses with 4xx status code.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| response | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.5xx
+
+The number of responses with 5xx status code.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| response | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
 ### nginx.upstream.peers.response_time
 
 The average time to receive the last byte of data from this server.
