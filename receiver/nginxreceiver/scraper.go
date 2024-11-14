@@ -96,6 +96,29 @@ func (r *nginxScraper) recordVtsStats(now pcommon.Timestamp, vtsStats *NginxVtsS
 	r.recordVtsConnectionStats(now, vtsStats)
 	r.recordVtsServerZoneResponseStats(now, vtsStats)
 	r.recordVtsServerZoneTrafficStats(now, vtsStats)
+	r.recordVtsUpstreamRequestTrafficStats(now, vtsStats)
+}
+
+func (r *nginxScraper) recordVtsUpstreamRequestTrafficStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
+	for upstreamZoneName, upstreamZoneServers := range vtsStats.UpstreamZones {
+		for _, upstreamZoneServer := range upstreamZoneServers {
+			// pp.Println(upstreamZoneName)
+			// pp.Println("Upstream Zone Server Address: ", upstreamZoneServer.Server)
+			// pp.Println("Reqs made to this server: ", upstreamZoneServer.RequestCounter)
+			// pp.Println("Bytes received by this server: ", upstreamZoneServer.InBytes)
+			// pp.Println("Bytes sent by this server: ", upstreamZoneServer.OutBytes)
+
+			r.mb.RecordNginxUpstreamPeersRequestsDataPoint(
+				now, upstreamZoneServer.RequestCounter, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersReceivedDataPoint(
+				now, upstreamZoneServer.InBytes, upstreamZoneName, upstreamZoneServer.Server,
+			)
+			r.mb.RecordNginxUpstreamPeersSentDataPoint(
+				now, upstreamZoneServer.OutBytes, upstreamZoneName, upstreamZoneServer.Server,
+			)
+		}
+	}
 }
 
 func (r *nginxScraper) recordVtsServerZoneTrafficStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
