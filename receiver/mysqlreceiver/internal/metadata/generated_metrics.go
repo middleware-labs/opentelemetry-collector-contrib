@@ -1430,6 +1430,55 @@ func newMetricMysqlCommands(cfg MetricConfig) metricMysqlCommands {
 	return m
 }
 
+type metricMysqlConnectionActiveCount struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.connection.active.count metric with initial data.
+func (m *metricMysqlConnectionActiveCount) init() {
+	m.data.SetName("mysql.connection.active.count")
+	m.data.SetDescription("The numner of active connections to the MySQL server")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMysqlConnectionActiveCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlConnectionActiveCount) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlConnectionActiveCount) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlConnectionActiveCount(cfg MetricConfig) metricMysqlConnectionActiveCount {
+	m := metricMysqlConnectionActiveCount{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMysqlConnectionCount struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -4095,6 +4144,7 @@ type MetricsBuilder struct {
 	metricMysqlBufferPoolUsage          metricMysqlBufferPoolUsage
 	metricMysqlClientNetworkIo          metricMysqlClientNetworkIo
 	metricMysqlCommands                 metricMysqlCommands
+	metricMysqlConnectionActiveCount    metricMysqlConnectionActiveCount
 	metricMysqlConnectionCount          metricMysqlConnectionCount
 	metricMysqlConnectionErrors         metricMysqlConnectionErrors
 	metricMysqlDoubleWrites             metricMysqlDoubleWrites
@@ -4171,6 +4221,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMysqlBufferPoolUsage:          newMetricMysqlBufferPoolUsage(mbc.Metrics.MysqlBufferPoolUsage),
 		metricMysqlClientNetworkIo:          newMetricMysqlClientNetworkIo(mbc.Metrics.MysqlClientNetworkIo),
 		metricMysqlCommands:                 newMetricMysqlCommands(mbc.Metrics.MysqlCommands),
+		metricMysqlConnectionActiveCount:    newMetricMysqlConnectionActiveCount(mbc.Metrics.MysqlConnectionActiveCount),
 		metricMysqlConnectionCount:          newMetricMysqlConnectionCount(mbc.Metrics.MysqlConnectionCount),
 		metricMysqlConnectionErrors:         newMetricMysqlConnectionErrors(mbc.Metrics.MysqlConnectionErrors),
 		metricMysqlDoubleWrites:             newMetricMysqlDoubleWrites(mbc.Metrics.MysqlDoubleWrites),
@@ -4305,6 +4356,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMysqlBufferPoolUsage.emit(ils.Metrics())
 	mb.metricMysqlClientNetworkIo.emit(ils.Metrics())
 	mb.metricMysqlCommands.emit(ils.Metrics())
+	mb.metricMysqlConnectionActiveCount.emit(ils.Metrics())
 	mb.metricMysqlConnectionCount.emit(ils.Metrics())
 	mb.metricMysqlConnectionErrors.emit(ils.Metrics())
 	mb.metricMysqlDoubleWrites.emit(ils.Metrics())
@@ -4454,6 +4506,11 @@ func (mb *MetricsBuilder) RecordMysqlCommandsDataPoint(ts pcommon.Timestamp, inp
 	}
 	mb.metricMysqlCommands.recordDataPoint(mb.startTime, ts, val, commandAttributeValue.String())
 	return nil
+}
+
+// RecordMysqlConnectionActiveCountDataPoint adds a data point to mysql.connection.active.count metric.
+func (mb *MetricsBuilder) RecordMysqlConnectionActiveCountDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricMysqlConnectionActiveCount.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMysqlConnectionCountDataPoint adds a data point to mysql.connection.count metric.

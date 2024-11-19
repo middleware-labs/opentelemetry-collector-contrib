@@ -16,6 +16,7 @@ import (
 	"go.opentelemetry.io/collector/receiver/scrapererror"
 	"go.uber.org/zap"
 
+	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver/internal/metadata"
 )
 
@@ -117,6 +118,8 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.scrapeTotalErrors(now, errs)
 
 	m.scraperInnodbMetricsForDBM(now, errs)
+
+	m.scrapeActiveConnections(now, errs)
 
 	rb := m.mb.NewResourceBuilder()
 
@@ -675,6 +678,16 @@ func (m *mySQLScraper) scrapeReplicaStatusStats(now pcommon.Timestamp) {
 
 		m.mb.RecordMysqlReplicaSQLDelayDataPoint(now, s.sqlDelay)
 	}
+}
+
+func (m *mySQLScraper) scrapeActiveConnections(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	activeConnections, err := m.sqlclient.getActiveConnections()
+	pp.Println("Trying to scrape active connections")
+	if err != nil {
+		m.logger.Info("Failed to fetch active connections", zap.Error(err))
+		return
+	}
+	m.mb.RecordMysqlConnectionActiveCountDataPoint(now, activeConnections)
 }
 
 func addPartialIfError(errors *scrapererror.ScrapeErrors, err error) {
