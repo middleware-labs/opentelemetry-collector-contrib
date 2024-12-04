@@ -98,6 +98,14 @@ The number of times each type of command has been executed.
 | ---- | ----------- | ------ |
 | command | The command types. | Str: ``delete``, ``insert``, ``select``, ``update`` |
 
+### mysql.connection.active.count
+
+The numner of active connections to the MySQL server
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| 1 | Gauge | Int |
+
 ### mysql.connection.count
 
 The number of connection attempts (successful or not) to the MySQL server.

@@ -73,6 +73,7 @@ func TestScrape(t *testing.T) {
 			totalRowsFile:               "total_rows_stats",
 			totalErrorsFile:             "total_error_stats",
 			rowOperationsStatsFile:      "row_operations_status",
+			activeConnectionsFile:       "active_connections",
 		}
 
 		scraper.renameCommands = true
@@ -121,6 +122,7 @@ func TestScrape(t *testing.T) {
 			totalRowsFile:               "total_rows_empty",
 			totalErrorsFile:             "total_errors_empty",
 			rowOperationsStatsFile:      "row_operations_status_empty",
+			activeConnectionsFile:       "active_connections_empty",
 		}
 
 		actualMetrics, scrapeErr := scraper.scrape(context.Background())
@@ -163,6 +165,7 @@ type mockClient struct {
 	totalRowsFile               string
 	totalErrorsFile             string
 	rowOperationsStatsFile      string
+	activeConnectionsFile       string
 }
 
 func readFile(fname string) (map[string]string, error) {
@@ -195,6 +198,42 @@ func (c *mockClient) getGlobalStats() (map[string]string, error) {
 
 func (c *mockClient) getInnodbStats() (map[string]string, error) {
 	return readFile(c.innodbStatsFile)
+}
+
+// getActiveConnections implements client.
+func (c *mockClient) getActiveConnections() (int64, error) {
+	// Open test data file
+	file, err := os.Open(filepath.Join("testdata", "scraper", c.rowOperationsStatsFile+".txt"))
+	if err != nil {
+		return -1, fmt.Errorf("failed to open test data file: %w", err)
+	}
+	defer file.Close()
+
+	// Create scanner to read test data
+	scanner := bufio.NewScanner(file)
+
+	// Find the Threads_connected line
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "Threads_connected") {
+			// Split the line by whitespace and get the value
+			fields := strings.Fields(line)
+			if len(fields) >= 2 {
+				// Parse the value to int64
+				connections, err := strconv.ParseInt(fields[len(fields)-1], 10, 64)
+				if err != nil {
+					return -1, fmt.Errorf("failed to parse connection count from test data: %w", err)
+				}
+				return connections, nil
+			}
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return -1, fmt.Errorf("error reading test data: %w", err)
+	}
+
+	return -1, fmt.Errorf("Threads_connected value not found in test data")
 }
 
 func (c *mockClient) getRowOperationStats() (RowOperationStats, error) {

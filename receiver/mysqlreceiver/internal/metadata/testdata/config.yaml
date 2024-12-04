@@ -17,6 +17,8 @@ all_set:
       enabled: true
     mysql.commands:
       enabled: true
+    mysql.connection.active.count:
+      enabled: true
     mysql.connection.count:
       enabled: true
     mysql.connection.errors:
@@ -139,6 +141,8 @@ none_set:
     mysql.client.network.io:
       enabled: false
     mysql.commands:
+      enabled: false
+    mysql.connection.active.count:
       enabled: false
     mysql.connection.count:
       enabled: false
