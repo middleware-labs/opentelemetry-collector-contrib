@@ -628,6 +628,14 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: []
+
+  mysql.connection.active.count:
+    enabled: true
+    description: The numner of active connections to the MySQL server
+    unit: 1
+    gauge:
+      value_type: int
+
   mysql.row_locks:
     enabled: true
     description: The number of InnoDB row locks.
