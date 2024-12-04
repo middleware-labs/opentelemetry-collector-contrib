@@ -91,7 +91,7 @@ func getContainerResources(r *v1.ResourceRequirements) resources {
 }
 
 func NewMetadata(labels []MetadataLabel, podsMetadata *v1.PodList, nodesMetadata *v1.NodeList, nodeCap NodeCapacity,
-	detailedPVCResourceSetter func(rb *metadata.ResourceBuilder, volCacheID, volumeClaim, namespace string) error,
+	detailedPVCResourceSetter func(rb *metadata.ResourceBuilder, volCacheID, volumeClaim, namespace string) ([]metadata.ResourceMetricsOption, error),
 ) Metadata {
 	m := Metadata{
 		Labels:                    getLabelsMap(labels),

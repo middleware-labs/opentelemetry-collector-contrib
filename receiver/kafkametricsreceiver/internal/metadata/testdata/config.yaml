@@ -99,7 +99,6 @@ reaggregate_set:
       attributes: []
     kafka.topic.replication_factor:
       enabled: true
-      attributes: []
   resource_attributes:
     kafka.cluster.alias:
       enabled: true

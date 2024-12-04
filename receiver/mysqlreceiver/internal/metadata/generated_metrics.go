@@ -1908,6 +1908,55 @@ func newMetricMysqlCommands(cfg MysqlCommandsMetricConfig) metricMysqlCommands {
 	return m
 }
 
+type metricMysqlConnectionActiveCount struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mysql.connection.active.count metric with initial data.
+func (m *metricMysqlConnectionActiveCount) init() {
+	m.data.SetName("mysql.connection.active.count")
+	m.data.SetDescription("The numner of active connections to the MySQL server")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMysqlConnectionActiveCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMysqlConnectionActiveCount) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMysqlConnectionActiveCount) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMysqlConnectionActiveCount(cfg MetricConfig) metricMysqlConnectionActiveCount {
+	m := metricMysqlConnectionActiveCount{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMysqlConnectionCount struct {
 	data     pmetric.Metric                   // data buffer for generated metric.
 	config   MysqlConnectionCountMetricConfig // metric config provided by user.
@@ -5916,6 +5965,7 @@ type MetricsBuilder struct {
 	metricMysqlBufferPoolUsage          metricMysqlBufferPoolUsage
 	metricMysqlClientNetworkIo          metricMysqlClientNetworkIo
 	metricMysqlCommands                 metricMysqlCommands
+	metricMysqlConnectionActiveCount    metricMysqlConnectionActiveCount
 	metricMysqlConnectionCount          metricMysqlConnectionCount
 	metricMysqlConnectionErrors         metricMysqlConnectionErrors
 	metricMysqlDoubleWrites             metricMysqlDoubleWrites
@@ -5970,24 +6020,16 @@ type MetricsBuilder struct {
 	metricMysqlUptime                   metricMysqlUptime
 }
 
-// MetricBuilderOption applies changes to default metrics builder.
-type MetricBuilderOption interface {
-	apply(*MetricsBuilder)
-}
-
-type metricBuilderOptionFunc func(mb *MetricsBuilder)
-
-func (mbof metricBuilderOptionFunc) apply(mb *MetricsBuilder) {
-	mbof(mb)
-}
+// metricBuilderOption applies changes to default metrics builder.
+type metricBuilderOption func(*MetricsBuilder)
 
 // WithStartTime sets startTime on the metrics builder.
-func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
-	return metricBuilderOptionFunc(func(mb *MetricsBuilder) {
+func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
+	return func(mb *MetricsBuilder) {
 		mb.startTime = startTime
-	})
+	}
 }
-func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
+func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...metricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
 		config:                              mbc,
 		startTime:                           pcommon.NewTimestampFromTime(time.Now()),
@@ -6001,6 +6043,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMysqlBufferPoolUsage:          newMetricMysqlBufferPoolUsage(mbc.Metrics.MysqlBufferPoolUsage),
 		metricMysqlClientNetworkIo:          newMetricMysqlClientNetworkIo(mbc.Metrics.MysqlClientNetworkIo),
 		metricMysqlCommands:                 newMetricMysqlCommands(mbc.Metrics.MysqlCommands),
+		metricMysqlConnectionActiveCount:    newMetricMysqlConnectionActiveCount(mbc.Metrics.MysqlConnectionActiveCount),
 		metricMysqlConnectionCount:          newMetricMysqlConnectionCount(mbc.Metrics.MysqlConnectionCount),
 		metricMysqlConnectionErrors:         newMetricMysqlConnectionErrors(mbc.Metrics.MysqlConnectionErrors),
 		metricMysqlDoubleWrites:             newMetricMysqlDoubleWrites(mbc.Metrics.MysqlDoubleWrites),
@@ -6070,7 +6113,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 
 	for _, op := range options {
-		op.apply(mb)
+		op(mb)
 	}
 	return mb
 }
@@ -6088,28 +6131,20 @@ func (mb *MetricsBuilder) updateCapacity(rm pmetric.ResourceMetrics) {
 }
 
 // ResourceMetricsOption applies changes to provided resource metrics.
-type ResourceMetricsOption interface {
-	apply(pmetric.ResourceMetrics)
-}
-
-type resourceMetricsOptionFunc func(pmetric.ResourceMetrics)
-
-func (rmof resourceMetricsOptionFunc) apply(rm pmetric.ResourceMetrics) {
-	rmof(rm)
-}
+type ResourceMetricsOption func(pmetric.ResourceMetrics)
 
 // WithResource sets the provided resource on the emitted ResourceMetrics.
 // It's recommended to use ResourceBuilder to create the resource.
 func WithResource(res pcommon.Resource) ResourceMetricsOption {
-	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
+	return func(rm pmetric.ResourceMetrics) {
 		res.CopyTo(rm.Resource())
-	})
+	}
 }
 
 // WithStartTimeOverride overrides start time for all the resource metrics data points.
 // This option should be only used if different start time has to be set on metrics coming from different resources.
 func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
-	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
+	return func(rm pmetric.ResourceMetrics) {
 		var dps pmetric.NumberDataPointSlice
 		metrics := rm.ScopeMetrics().At(0).Metrics()
 		for i := 0; i < metrics.Len(); i++ {
@@ -6123,7 +6158,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 				dps.At(j).SetStartTimestamp(start)
 			}
 		}
-	})
+	}
 }
 
 // EmitForResource saves all the generated metrics under a new resource and updates the internal state to be ready for
@@ -6131,7 +6166,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 // needs to emit metrics from several resources. Otherwise calling this function is not required,
 // just `Emit` function can be called instead.
 // Resource attributes should be provided as ResourceMetricsOption arguments.
-func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
+func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	rm := pmetric.NewResourceMetrics()
 	ils := rm.ScopeMetrics().AppendEmpty()
 	ils.Scope().SetName(ScopeName)
@@ -6145,6 +6180,7 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricMysqlBufferPoolUsage.emit(ils.Metrics())
 	mb.metricMysqlClientNetworkIo.emit(ils.Metrics())
 	mb.metricMysqlCommands.emit(ils.Metrics())
+	mb.metricMysqlConnectionActiveCount.emit(ils.Metrics())
 	mb.metricMysqlConnectionCount.emit(ils.Metrics())
 	mb.metricMysqlConnectionErrors.emit(ils.Metrics())
 	mb.metricMysqlDoubleWrites.emit(ils.Metrics())
@@ -6198,8 +6234,8 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricMysqlTotalRows.emit(ils.Metrics())
 	mb.metricMysqlUptime.emit(ils.Metrics())
 
-	for _, op := range options {
-		op.apply(rm)
+	for _, op := range rmo {
+		op(rm)
 	}
 	for attr, filter := range mb.resourceAttributeIncludeFilter {
 		if val, ok := rm.Resource().Attributes().Get(attr); ok && !filter.Matches(val.AsString()) {
@@ -6221,8 +6257,8 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 // Emit returns all the metrics accumulated by the metrics builder and updates the internal state to be ready for
 // recording another set of metrics. This function will be responsible for applying all the transformations required to
 // produce metric representation defined in metadata and user config, e.g. delta or cumulative.
-func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics {
-	mb.EmitForResource(options...)
+func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
+	mb.EmitForResource(rmo...)
 	metrics := mb.metricsBuffer
 	mb.metricsBuffer = pmetric.NewMetrics()
 	return metrics
@@ -6296,6 +6332,11 @@ func (mb *MetricsBuilder) RecordMysqlCommandsDataPoint(ts pcommon.Timestamp, inp
 	}
 	mb.metricMysqlCommands.recordDataPoint(mb.startTime, ts, val, commandAttributeValue.String())
 	return nil
+}
+
+// RecordMysqlConnectionActiveCountDataPoint adds a data point to mysql.connection.active.count metric.
+func (mb *MetricsBuilder) RecordMysqlConnectionActiveCountDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricMysqlConnectionActiveCount.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMysqlConnectionCountDataPoint adds a data point to mysql.connection.count metric.
@@ -6725,9 +6766,9 @@ func (mb *MetricsBuilder) RecordMysqlUptimeDataPoint(ts pcommon.Timestamp, input
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
 // and metrics builder should update its startTime and reset it's internal state accordingly.
-func (mb *MetricsBuilder) Reset(options ...MetricBuilderOption) {
+func (mb *MetricsBuilder) Reset(options ...metricBuilderOption) {
 	mb.startTime = pcommon.NewTimestampFromTime(time.Now())
 	for _, op := range options {
-		op.apply(mb)
+		op(mb)
 	}
 }
