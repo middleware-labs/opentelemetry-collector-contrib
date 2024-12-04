@@ -16,7 +16,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkametricsreceiver/internal/metadata"
 )
 
-type createKafkaScraper func(context.Context, Config, receiver.Settings, *franzAdminProvider) (scraper.Metrics, error)
+type createKafkaScraper func(context.Context, Config, receiver.Settings) (scraper.Metrics, error)
 
 var (
 	brokersScraperType   = component.MustNewType("brokers")
@@ -36,19 +36,35 @@ var newMetricsReceiver = func(
 	params receiver.Settings,
 	consumer consumer.Metrics,
 ) (receiver.Metrics, error) {
-	// All scrapers share a single franz-go admin client to avoid duplicating
-	// connection pools and metadata caches per scraper.
-	clients := newFranzAdminProvider(config.ClientConfig, params.Logger)
-
 	scraperControllerOptions := make([]scraperhelper.ControllerOption, 0, len(config.Scrapers))
 	for _, key := range config.Scrapers {
 		factory, ok := allScrapers[key]
 		if !ok {
 			return nil, fmt.Errorf("no scraper found for key: %s", key)
 		}
-		s, err := factory(ctx, config, params, clients)
+			s, err := factory(ctx, config, params)
+	sc := sarama.NewConfig()
+	sc.ClientID = config.ClientID
+	if config.ResolveCanonicalBootstrapServersOnly {
+		sc.Net.ResolveCanonicalBootstrapServers = true
+	}
+	if config.ProtocolVersion != "" {
+		version, err := sarama.ParseKafkaVersion(config.ProtocolVersion)
 		if err != nil {
 			return nil, err
+		}
+		sc.Version = version
+	}
+	if err := kafka.ConfigureAuthentication(config.Authentication, sc); err != nil {
+		return nil, err
+	}
+	scraperControllerOptions := make([]scraperhelper.ScraperControllerOption, 0, len(config.Scrapers))
+	for _, scraper := range config.Scrapers {
+		if s, ok := allScrapers[scraper]; ok {
+			s, err := s(ctx, config, sc, params)
+			if err != nil {
+				return nil, err
+
 		}
 		scraperControllerOptions = append(scraperControllerOptions, scraperhelper.AddMetricsScraper(metadata.Type, s))
 	}

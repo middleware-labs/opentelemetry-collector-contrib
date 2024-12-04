@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	Type      = component.MustNewType("postgresql")
-	ScopeName = "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
+	Type = component.MustNewType("postgresql")
 )
 
 const (
