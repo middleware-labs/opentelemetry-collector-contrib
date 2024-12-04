@@ -101,6 +101,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordMysqlConnectionActiveCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordMysqlConnectionCountDataPoint(ts, "1")
 
 			allMetricsCount++
@@ -440,6 +444,18 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("command")
 					assert.True(t, ok)
 					assert.EqualValues(t, "delete", attrVal.Str())
+				case "mysql.connection.active.count":
+					assert.False(t, validatedMetrics["mysql.connection.active.count"], "Found a duplicate in the metrics slice: mysql.connection.active.count")
+					validatedMetrics["mysql.connection.active.count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "The numner of active connections to the MySQL server", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "mysql.connection.count":
 					assert.False(t, validatedMetrics["mysql.connection.count"], "Found a duplicate in the metrics slice: mysql.connection.count")
 					validatedMetrics["mysql.connection.count"] = true

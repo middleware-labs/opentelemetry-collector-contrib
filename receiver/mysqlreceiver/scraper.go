@@ -118,6 +118,8 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 	m.scraperInnodbMetricsForDBM(now, errs)
 
+	m.scrapeActiveConnections(now, errs)
+
 	rb := m.mb.NewResourceBuilder()
 
 	version, err := m.sqlclient.getVersion()
@@ -675,6 +677,15 @@ func (m *mySQLScraper) scrapeReplicaStatusStats(now pcommon.Timestamp) {
 
 		m.mb.RecordMysqlReplicaSQLDelayDataPoint(now, s.sqlDelay)
 	}
+}
+
+func (m *mySQLScraper) scrapeActiveConnections(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	activeConnections, err := m.sqlclient.getActiveConnections()
+	if err != nil {
+		m.logger.Info("Failed to fetch active connections", zap.Error(err))
+		return
+	}
+	m.mb.RecordMysqlConnectionActiveCountDataPoint(now, activeConnections)
 }
 
 func addPartialIfError(errors *scrapererror.ScrapeErrors, err error) {

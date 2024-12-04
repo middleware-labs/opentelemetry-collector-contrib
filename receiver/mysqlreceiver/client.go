@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,6 +32,7 @@ type client interface {
 	getTotalRows() ([]NRows, error)
 	getTotalErrors() (int64, error)
 	getRowOperationStats() (RowOperationStats, error)
+	getActiveConnections() (int64, error)
 	Close() error
 }
 
@@ -590,6 +592,25 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 	}
 
 	return nerrors, nil
+}
+
+func (c *mySQLClient) getActiveConnections() (int64, error) {
+	query := "SHOW STATUS WHERE `variable_name` = 'Threads_connected'"
+
+	var varName string
+	var value string
+
+	err := c.client.QueryRow(query).Scan(&varName, &value)
+	if err != nil {
+		return -1, fmt.Errorf("failed to scan active connections: %w", err)
+	}
+
+	connections, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return -1, fmt.Errorf("failed to parse active connections count: %w", err)
+	}
+
+	return connections, nil
 }
 
 func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {

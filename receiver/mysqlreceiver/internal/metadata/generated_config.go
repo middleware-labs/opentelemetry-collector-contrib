@@ -36,6 +36,7 @@ type MetricsConfig struct {
 	MysqlBufferPoolUsage          MetricConfig `mapstructure:"mysql.buffer_pool.usage"`
 	MysqlClientNetworkIo          MetricConfig `mapstructure:"mysql.client.network.io"`
 	MysqlCommands                 MetricConfig `mapstructure:"mysql.commands"`
+	MysqlConnectionActiveCount    MetricConfig `mapstructure:"mysql.connection.active.count"`
 	MysqlConnectionCount          MetricConfig `mapstructure:"mysql.connection.count"`
 	MysqlConnectionErrors         MetricConfig `mapstructure:"mysql.connection.errors"`
 	MysqlDoubleWrites             MetricConfig `mapstructure:"mysql.double_writes"`
@@ -112,6 +113,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: false,
 		},
 		MysqlCommands: MetricConfig{
+			Enabled: true,
+		},
+		MysqlConnectionActiveCount: MetricConfig{
 			Enabled: true,
 		},
 		MysqlConnectionCount: MetricConfig{
