@@ -134,6 +134,8 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 
 	m.scraperInnodbMetricsForDBM(now, errs)
 
+	m.scrapeActiveConnections(now, errs)
+
 	rb := m.mb.NewResourceBuilder()
 
 	version, err := m.sqlclient.getVersion()
@@ -141,7 +143,7 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 		m.logger.Error("Failed to fetch the version of mysql database", zap.Error(err))
 	}
 
-	rb.SetMysqlDbVersion(version)
+	rb.SetMysqlDbVersion(version.String())
 	rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
 	m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
@@ -863,6 +865,15 @@ func (m *mySQLScraper) scrapeQuerySamples(ctx context.Context, now pcommon.Times
 			networkPeerPort,
 		)
 	}
+}
+
+func (m *mySQLScraper) scrapeActiveConnections(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
+	activeConnections, err := m.sqlclient.getActiveConnections()
+	if err != nil {
+		m.logger.Info("Failed to fetch active connections", zap.Error(err))
+		return
+	}
+	m.mb.RecordMysqlConnectionActiveCountDataPoint(now, activeConnections)
 }
 
 func addPartialIfError(errors *scrapererror.ScrapeErrors, err error) {

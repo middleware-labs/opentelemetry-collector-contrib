@@ -1403,9 +1403,8 @@ func (rac *ResourceAttributeConfig) Unmarshal(parser *confmap.Conf) error {
 type ResourceAttributesConfig struct {
 	Database            ResourceAttributeConfig `mapstructure:"database"`
 	MongodbDatabaseName ResourceAttributeConfig `mapstructure:"mongodb.database.name"`
-	Database      ResourceAttributeConfig `mapstructure:"database"`
-	ServerAddress ResourceAttributeConfig `mapstructure:"server.address"`
-	ServerPort    ResourceAttributeConfig `mapstructure:"server.port"`
+	ServerAddress       ResourceAttributeConfig `mapstructure:"server.address"`
+	ServerPort          ResourceAttributeConfig `mapstructure:"server.port"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {

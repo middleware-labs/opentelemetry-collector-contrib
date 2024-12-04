@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -39,6 +40,7 @@ type client interface {
 	getTotalRows() ([]NRows, error)
 	getTotalErrors() (int64, error)
 	getRowOperationStats() (RowOperationStats, error)
+	getActiveConnections() (int64, error)
 	Close() error
 }
 
@@ -286,7 +288,7 @@ func (c *mySQLClient) getVersion() (*version.Version, error) {
 	if err != nil {
 		return nil, err
 	}
-version, err := version.NewVersion(versionStr)
+	version, err := version.NewVersion(versionStr)
 	return version, err
 }
 
@@ -623,6 +625,25 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 	return nerrors, nil
 }
 
+func (c *mySQLClient) getActiveConnections() (int64, error) {
+	query := "SHOW STATUS WHERE `variable_name` = 'Threads_connected'"
+
+	var varName string
+	var value string
+
+	err := c.client.QueryRow(query).Scan(&varName, &value)
+	if err != nil {
+		return -1, fmt.Errorf("failed to scan active connections: %w", err)
+	}
+
+	connections, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return -1, fmt.Errorf("failed to parse active connections count: %w", err)
+	}
+
+	return connections, nil
+}
+
 func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, error) {
 	query := "SELECT OBJECT_SCHEMA, OBJECT_NAME, COUNT_READ_NORMAL, COUNT_READ_WITH_SHARED_LOCKS," +
 		"COUNT_READ_HIGH_PRIORITY, COUNT_READ_NO_INSERT, COUNT_READ_EXTERNAL, COUNT_WRITE_ALLOW_WRITE," +
@@ -664,10 +685,6 @@ func (c *mySQLClient) getReplicaStatusStats() ([]replicaStatusStats, error) {
 	if err != nil {
 
 		return nil, err
-	}
-
-	if version < "8.0.22" {
-		return nil, nil
 	}
 
 	query := "SHOW REPLICA STATUS"
