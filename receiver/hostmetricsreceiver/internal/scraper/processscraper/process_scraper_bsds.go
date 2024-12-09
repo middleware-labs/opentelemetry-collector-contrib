@@ -16,11 +16,11 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/processscraper/ucal"
 )
 
-func (s *scraper) recordCPUPercentMetric(now pcommon.Timestamp, cpuPercent float64) {
+func (s *processScraper) recordCPUPercentMetric(now pcommon.Timestamp, cpuPercent float64) {
 	s.mb.RecordProcessCPUPercentDataPoint(now, cpuPercent)
 }
 
-func (s *scraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
+func (s *processScraper) recordMemoryPercentMetric(now pcommon.Timestamp, memoryPercent float32) {
 	s.mb.RecordProcessMemoryPercentDataPoint(now, float64(memoryPercent))
 }
 

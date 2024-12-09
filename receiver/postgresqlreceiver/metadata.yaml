@@ -525,7 +525,7 @@ metrics:
   postgresql.temp_files:
     enabled: false
     description: The number of temp files.
-    stability:
+  stability:
       level: development
     unit: "{temp_file}"
     sum:
@@ -627,7 +627,6 @@ tests:
         # https://github.com/snowflakedb/gosnowflake/issues/1369
         - "github.com/snowflakedb/gosnowflake.initOCSPCacheClearer.func1"
 
-      This metric requires WAL to be enabled with at least one replica.
   postgresql.connection.count:
     enabled: true
     description: The number of active connections to this database. If DBM is enabled,

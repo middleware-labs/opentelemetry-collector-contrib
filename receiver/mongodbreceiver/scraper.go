@@ -50,6 +50,8 @@ type mongodbScraper struct {
 	prevFlushTimestamp pcommon.Timestamp
 	prevCounts         map[string]int64
 	prevFlushCount     int64
+	// removeDatabaseAttr if enabled, will remove database attribute on database metrics
+	removeDatabaseAttr bool
 }
 
 func newMongodbScraper(settings receiver.Settings, config *Config) *mongodbScraper {

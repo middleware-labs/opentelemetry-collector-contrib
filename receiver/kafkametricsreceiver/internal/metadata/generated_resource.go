@@ -21,14 +21,17 @@ func NewResourceBuilder(rac ResourceAttributesConfig) *ResourceBuilder {
 	}
 }
 
-// SetRuntimeMetricsKafka sets provided value as "runtime.metrics.kafka" attribute.
-func (rb *ResourceBuilder) SetRuntimeMetricsKafka(val string) {
-	if rb.config.RuntimeMetricsKafka.Enabled {
-		rb.res.Attributes().PutStr("runtime.metrics.kafka", val)
 // SetKafkaClusterAlias sets provided value as "kafka.cluster.alias" attribute.
 func (rb *ResourceBuilder) SetKafkaClusterAlias(val string) {
 	if rb.config.KafkaClusterAlias.Enabled {
 		rb.res.Attributes().PutStr("kafka.cluster.alias", val)
+	}
+}
+
+// SetRuntimeMetricsKafka sets provided value as "runtime.metrics.kafka" attribute.
+func (rb *ResourceBuilder) SetRuntimeMetricsKafka(val string) {
+	if rb.config.RuntimeMetricsKafka.Enabled {
+		rb.res.Attributes().PutStr("runtime.metrics.kafka", val)
 	}
 }
 

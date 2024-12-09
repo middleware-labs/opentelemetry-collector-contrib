@@ -288,7 +288,7 @@ func (c *mySQLClient) getVersion() (*version.Version, error) {
 	if err != nil {
 		return nil, err
 	}
-version, err := version.NewVersion(versionStr)
+	version, err := version.NewVersion(versionStr)
 	return version, err
 }
 
@@ -685,10 +685,6 @@ func (c *mySQLClient) getReplicaStatusStats() ([]replicaStatusStats, error) {
 	if err != nil {
 
 		return nil, err
-	}
-
-	if version < "8.0.22" {
-		return nil, nil
 	}
 
 	query := "SHOW REPLICA STATUS"
