@@ -83,6 +83,25 @@ var newMetricsReceiver = func(
 	for _, key := range config.Scrapers {
 		if factory, ok := activeScrapers[key]; ok {
 			s, err := factory(ctx, config, params)
+	sc := sarama.NewConfig()
+	sc.ClientID = config.ClientID
+	if config.ResolveCanonicalBootstrapServersOnly {
+		sc.Net.ResolveCanonicalBootstrapServers = true
+	}
+	if config.ProtocolVersion != "" {
+		version, err := sarama.ParseKafkaVersion(config.ProtocolVersion)
+		if err != nil {
+			return nil, err
+		}
+		sc.Version = version
+	}
+	if err := kafka.ConfigureAuthentication(config.Authentication, sc); err != nil {
+		return nil, err
+	}
+	scraperControllerOptions := make([]scraperhelper.ScraperControllerOption, 0, len(config.Scrapers))
+	for _, scraper := range config.Scrapers {
+		if s, ok := allScrapers[scraper]; ok {
+			s, err := s(ctx, config, sc, params)
 			if err != nil {
 				return nil, err
 			}
