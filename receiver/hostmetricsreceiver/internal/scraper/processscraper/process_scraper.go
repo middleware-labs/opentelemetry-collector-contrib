@@ -356,7 +356,7 @@ func (s *processScraper) scrapeAndAppendCPUTimeMetric(ctx context.Context, now p
 	return err
 }
 
-func (s *scraper) scrapeAndAppendMemoryPercentMetric(ctx context.Context, now pcommon.Timestamp, handle processHandle) error {
+func (s *processScraper) scrapeAndAppendMemoryPercentMetric(ctx context.Context, now pcommon.Timestamp, handle processHandle) error {
 	percent, err := handle.MemoryPercentWithContext(ctx)
 	if err != nil {
 		return err
@@ -365,7 +365,7 @@ func (s *scraper) scrapeAndAppendMemoryPercentMetric(ctx context.Context, now pc
 	return nil
 }
 
-func (s *scraper) scrapeAndAppendCPUPercentMetric(ctx context.Context, now pcommon.Timestamp, handle processHandle) error {
+func (s *processScraper) scrapeAndAppendCPUPercentMetric(ctx context.Context, now pcommon.Timestamp, handle processHandle) error {
 	percent, err := handle.CPUPercentWithContext(ctx)
 	if err != nil {
 		return err

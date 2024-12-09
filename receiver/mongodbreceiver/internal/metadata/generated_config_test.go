@@ -339,9 +339,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 				ResourceAttributes: ResourceAttributesConfig{
 					Database:            ResourceAttributeConfig{Enabled: true},
 					MongodbDatabaseName: ResourceAttributeConfig{Enabled: true},
-					Database:      ResourceAttributeConfig{Enabled: true},
-					ServerAddress: ResourceAttributeConfig{Enabled: true},
-					ServerPort:    ResourceAttributeConfig{Enabled: true},
+					ServerAddress:       ResourceAttributeConfig{Enabled: true},
+					ServerPort:          ResourceAttributeConfig{Enabled: true},
 				},
 			},
 		},
@@ -663,9 +662,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 				ResourceAttributes: ResourceAttributesConfig{
 					Database:            ResourceAttributeConfig{Enabled: false},
 					MongodbDatabaseName: ResourceAttributeConfig{Enabled: false},
-					Database:      ResourceAttributeConfig{Enabled: false},
-					ServerAddress: ResourceAttributeConfig{Enabled: false},
-					ServerPort:    ResourceAttributeConfig{Enabled: false},
+					ServerAddress:       ResourceAttributeConfig{Enabled: false},
+					ServerPort:          ResourceAttributeConfig{Enabled: false},
 				},
 			},
 		},
@@ -673,8 +671,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
-			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
+			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{})); diff != "" {
+				t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
+			}
 		})
 	}
 }
@@ -701,10 +700,10 @@ func TestResourceAttributesConfig(t *testing.T) {
 		{
 			name: "all_set",
 			want: ResourceAttributesConfig{
+				Database:            ResourceAttributeConfig{Enabled: true},
 				MongodbDatabaseName: ResourceAttributeConfig{Enabled: true},
-				Database:      ResourceAttributeConfig{Enabled: true},
-				ServerAddress: ResourceAttributeConfig{Enabled: true},
-				ServerPort:    ResourceAttributeConfig{Enabled: true},
+				ServerAddress:       ResourceAttributeConfig{Enabled: true},
+				ServerPort:          ResourceAttributeConfig{Enabled: true},
 			},
 		},
 		{
@@ -712,16 +711,17 @@ func TestResourceAttributesConfig(t *testing.T) {
 			want: ResourceAttributesConfig{
 				Database:            ResourceAttributeConfig{Enabled: false},
 				MongodbDatabaseName: ResourceAttributeConfig{Enabled: false},
-				ServerAddress: ResourceAttributeConfig{Enabled: false},
-				ServerPort:    ResourceAttributeConfig{Enabled: false},
+				ServerAddress:       ResourceAttributeConfig{Enabled: false},
+				ServerPort:          ResourceAttributeConfig{Enabled: false},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{}))
-			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
+			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{})); diff != "" {
+				t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
+			}
 		})
 	}
 }

@@ -326,7 +326,7 @@ metrics:
       value_type: double
     extended_documentation: |
       This metric requires WAL to be enabled with at least one replica.
-postgresql.tup_updated:
+  postgresql.tup_updated:
     enabled: false
     description: Number of rows updated by queries in the database.
     unit: "{tup_updated}"
@@ -382,10 +382,7 @@ postgresql.tup_updated:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-tests:
-  config:
 
-      This metric requires WAL to be enabled with at least one replica.
   postgresql.connection.count:
     enabled: true
     description: The number of active connections to this database. If DBM is enabled,
