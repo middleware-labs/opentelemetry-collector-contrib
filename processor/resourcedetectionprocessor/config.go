@@ -15,6 +15,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/azure"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/azure/aks"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/consul"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/cycleio"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/docker"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/gcp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal/heroku"
@@ -86,6 +87,9 @@ type DetectorConfig struct {
 
 	// K8SNode contains user-specified configurations for the K8SNode detector
 	K8SNodeConfig k8snode.Config `mapstructure:"k8snode"`
+
+	// CycleIO contains user-specified configurations for the CycleIO detector
+	CycleIOConfig cycleio.Config `mapstructure:"cycleio"`
 }
 
 func detectorCreateDefaultConfig() DetectorConfig {
@@ -137,6 +141,8 @@ func (d *DetectorConfig) GetConfigFromType(detectorType internal.DetectorType) i
 		return d.OpenShiftConfig
 	case k8snode.TypeStr:
 		return d.K8SNodeConfig
+	case cycleio.TypeStr:
+		return d.CycleIOConfig
 	default:
 		return nil
 	}
