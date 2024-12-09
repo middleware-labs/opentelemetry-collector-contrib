@@ -19,10 +19,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/logging"
 )
 
-const (
-	contextName = "DataPoint"
-)
-
 var _ internal.ResourceContext = (*TransformContext)(nil)
 var _ internal.InstrumentationScopeContext = (*TransformContext)(nil)
 var _ zapcore.ObjectMarshaler = (*TransformContext)(nil)

@@ -43,9 +43,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					KafkaTopicReplicationFactor:   MetricConfig{Enabled: true},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					KafkaClusterAlias: ResourceAttributeConfig{Enabled: true},
-				},
-				ResourceAttributes: ResourceAttributesConfig{
+					KafkaClusterAlias:   ResourceAttributeConfig{Enabled: true},
 					RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: true},
 				},
 			},
@@ -72,9 +70,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					KafkaTopicReplicationFactor:   MetricConfig{Enabled: false},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					KafkaClusterAlias: ResourceAttributeConfig{Enabled: false},
-				},
-				ResourceAttributes: ResourceAttributesConfig{
+					KafkaClusterAlias:   ResourceAttributeConfig{Enabled: false},
 					RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: false},
 				},
 			},
@@ -83,8 +79,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
-			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
+			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{})); diff != "" {
+				t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
+			}
 		})
 	}
 }
@@ -111,15 +108,14 @@ func TestResourceAttributesConfig(t *testing.T) {
 		{
 			name: "all_set",
 			want: ResourceAttributesConfig{
-				KafkaClusterAlias: ResourceAttributeConfig{Enabled: true},
+				KafkaClusterAlias:   ResourceAttributeConfig{Enabled: true},
 				RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: true},
-
 			},
 		},
 		{
 			name: "none_set",
 			want: ResourceAttributesConfig{
-				KafkaClusterAlias: ResourceAttributeConfig{Enabled: false},
+				KafkaClusterAlias:   ResourceAttributeConfig{Enabled: false},
 				RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: false},
 			},
 		},
@@ -128,8 +124,8 @@ func TestResourceAttributesConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, tt.name)
 			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{})); diff != "" {
-                t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
-            }
+				t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
+			}
 		})
 	}
 }

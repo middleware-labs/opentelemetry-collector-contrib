@@ -31,12 +31,12 @@ all_set:
       enabled: true
     kafka.topic.partitions:
       enabled: true
-  resource_attributes:
-    runtime.metrics.kafka:
-      enabled: true
     kafka.topic.replication_factor:
       enabled: true
+  resource_attributes:
     kafka.cluster.alias:
+      enabled: true
+    runtime.metrics.kafka:
       enabled: true
 none_set:
   metrics:

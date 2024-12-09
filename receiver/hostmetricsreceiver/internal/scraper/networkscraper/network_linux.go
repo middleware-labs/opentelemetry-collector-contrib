@@ -10,10 +10,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/shirou/gopsutil/v4/common"
-	"go.opentelemetry.io/collector/pdata/pcommon"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
+	"github.com/shirou/gopsutil/v4/common"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
 var allTCPStates = []string{
@@ -46,7 +46,7 @@ func (s *networkScraper) recordNetworkConntrackMetrics() error {
 	return nil
 }
 
-func (s *scraper) recordSystemNetworkIoBandwidth(now pcommon.Timestamp, networkBandwidthMap map[string]bcal.NetworkBandwidth) {
+func (s *networkScraper) recordSystemNetworkIoBandwidth(now pcommon.Timestamp, networkBandwidthMap map[string]bcal.NetworkBandwidth) {
 	if s.config.MetricsBuilderConfig.Metrics.SystemNetworkIoBandwidth.Enabled {
 		for device, networkBandwidth := range networkBandwidthMap {
 			s.mb.RecordSystemNetworkIoBandwidthDataPoint(now, networkBandwidth.InboundRate, device, metadata.AttributeDirectionReceive)

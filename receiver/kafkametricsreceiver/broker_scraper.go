@@ -77,13 +77,11 @@ func (s *brokerScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	}
 
 	// add resource attributes
-	rb := s.mb.NewResourceBuilder()
 	rb.SetRuntimeMetricsKafka("true")
 	s.mb.EmitForResource(
 		metadata.WithResource(rb.Emit()),
 	)
 
-	return s.mb.Emit(), nil
 	for _, broker := range brokers {
 		id := strconv.Itoa(int(broker.ID()))
 		configEntries, err := s.clusterAdmin.DescribeConfig(sarama.ConfigResource{

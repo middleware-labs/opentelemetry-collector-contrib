@@ -42,6 +42,9 @@ type mongodbScraper struct {
 	client       client
 	mongoVersion *version.Version
 	mb           *metadata.MetricsBuilder
+
+	// removeDatabaseAttr if enabled, will remove database attribute on database metrics
+	removeDatabaseAttr bool
 }
 
 func newMongodbScraper(settings receiver.Settings, config *Config) *mongodbScraper {
