@@ -37,7 +37,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: []
+    attributes: [] 
   nginx.connections_accepted:
     enabled: true
     description: The total number of accepted client connections
@@ -120,11 +120,12 @@ metrics:
     attributes:
       - serverzone_name
     description: The number of responses with 2xx status code.
-    gauge:
+    sum:
       value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
     unit:
       response 
-
   nginx.server_zone.responses.3xx:
     enabled: true
     attributes:
@@ -140,21 +141,23 @@ metrics:
     attributes:
       - serverzone_name
     description: The number of responses with 4xx status code.
-    gauge:
+    sum:
       value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
     unit:
       response
-
   nginx.server_zone.responses.5xx:
     enabled: true
     attributes:
       - serverzone_name
     description: The number of responses with 5xx status code.
-    gauge:
+    sum:
       value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
     unit:
       response
-
   nginx.server_zone.received:
     enabled: true
     attributes:
@@ -165,7 +168,6 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: By 
-
   nginx.server_zone.sent:
     enabled: true
     attributes:
@@ -176,12 +178,6 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: By 
-
-  ### Request and Traffic
-# - `nginx.upstream.peers.requests` - Number of requests made to upstream servers
-# - `nginx.upstream.peers.received` - Bytes received from upstream servers
-# - `nginx.upstream.peers.sent` - Bytes sent to upstream servers
-
   nginx.upstream.peers.requests:
     enabled: true
     attributes:
@@ -193,7 +189,6 @@ metrics:
       monotonic:  true
       aggregation_temporality: cumulative
     unit: requests
-
   nginx.upstream.peers.received:
     enabled: true
     attributes:
@@ -218,13 +213,6 @@ metrics:
       aggregation_temporality: cumulative
     unit: By
 
-  ### Response Codes
-# - `nginx.upstream.peers.responses.1xx` - Number of responses from upstream with 1xx status codes
-# - `nginx.upstream.peers.responses.2xx` - Number of responses from upstream with 2xx status codes
-# - `nginx.upstream.peers.responses.3xx` - Number of responses from upstream with 3xx status codes
-# - `nginx.upstream.peers.responses.4xx` - Number of responses from upstream with 4xx status codes
-# - `nginx.upstream.peers.responses.5xx` - Number of responses from upstream with 5xx status codes
-
   nginx.upstream.peers.responses.1xx:
     enabled: true
     attributes:
@@ -248,7 +236,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: responses
-  
+
   nginx.upstream.peers.responses.3xx:
     enabled: true
     attributes:
@@ -272,7 +260,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: responses
-  
+
   nginx.upstream.peers.responses.5xx:
     enabled: true
     attributes:
@@ -284,11 +272,6 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     unit: responses
-  
-  ### Server Configuration
-# - `nginx.upstream.peers.weight` - Weight of upstream server
-# - `nginx.upstream.peers.backup` - Whether upstream server is a backup server
-# - `nginx.upstream.peers.health_checks.last_passed` - Status of last health check for upstream server
 
   nginx.upstream.peers.weight:
     enabled: true

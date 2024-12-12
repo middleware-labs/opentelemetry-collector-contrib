@@ -14,7 +14,6 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/nginxreceiver/internal/metadata"
 )
 
@@ -50,7 +49,6 @@ func (r *nginxScraper) start(ctx context.Context, host component.Host) error {
 }
 
 func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
-	// Init client in scrape method in case there are transient errors in the constructor.
 	if r.client == nil {
 		var err error
 		r.client, err = NewNginxClient(r.httpClient, r.cfg.ClientConfig.Endpoint, r.cfg.VTSEndpoint)
@@ -73,8 +71,6 @@ func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
 		r.settings.Logger.Error("Failed to fetch nginx stats", zap.Error(err))
 		return pmetric.Metrics{}, err
 	}
-
-	// pp.Println(vtsStats)
 
 	now := pcommon.NewTimestampFromTime(time.Now())
 
@@ -182,8 +178,6 @@ func (r *nginxScraper) recordTimingStats(now pcommon.Timestamp, vtsStats *NginxV
 
 	for upstreamZones, v := range vtsStats.UpstreamZones {
 		for _, val := range v {
-			pp.Println(val.Server)
-			pp.Println(val.ResponseMsec)
 
 			r.mb.RecordNginxUpstreamPeersResponseTimeDataPoint(
 				now, val.ResponseMsec, upstreamZones, val.Server,

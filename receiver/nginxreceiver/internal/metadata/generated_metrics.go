@@ -562,15 +562,17 @@ func (m *metricNginxServerZoneResponses2xx) init() {
 	m.data.SetName("nginx.server_zone.responses.2xx")
 	m.data.SetDescription("The number of responses with 2xx status code.")
 	m.data.SetUnit("response")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
 func (m *metricNginxServerZoneResponses2xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
@@ -579,14 +581,14 @@ func (m *metricNginxServerZoneResponses2xx) recordDataPoint(start pcommon.Timest
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
 func (m *metricNginxServerZoneResponses2xx) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
 	}
 }
 
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricNginxServerZoneResponses2xx) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -664,15 +666,17 @@ func (m *metricNginxServerZoneResponses4xx) init() {
 	m.data.SetName("nginx.server_zone.responses.4xx")
 	m.data.SetDescription("The number of responses with 4xx status code.")
 	m.data.SetUnit("response")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
 func (m *metricNginxServerZoneResponses4xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
@@ -681,14 +685,14 @@ func (m *metricNginxServerZoneResponses4xx) recordDataPoint(start pcommon.Timest
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
 func (m *metricNginxServerZoneResponses4xx) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
 	}
 }
 
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricNginxServerZoneResponses4xx) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
@@ -715,15 +719,17 @@ func (m *metricNginxServerZoneResponses5xx) init() {
 	m.data.SetName("nginx.server_zone.responses.5xx")
 	m.data.SetDescription("The number of responses with 5xx status code.")
 	m.data.SetUnit("response")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 }
 
 func (m *metricNginxServerZoneResponses5xx) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, serverzoneNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp := m.data.Sum().DataPoints().AppendEmpty()
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
@@ -732,14 +738,14 @@ func (m *metricNginxServerZoneResponses5xx) recordDataPoint(start pcommon.Timest
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
 func (m *metricNginxServerZoneResponses5xx) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
 	}
 }
 
 // emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
 func (m *metricNginxServerZoneResponses5xx) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
 		m.updateCapacity()
 		m.data.MoveTo(metrics.AppendEmpty())
 		m.init()
