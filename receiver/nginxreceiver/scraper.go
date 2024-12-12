@@ -49,7 +49,6 @@ func (r *nginxScraper) start(ctx context.Context, host component.Host) error {
 }
 
 func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
-	// Init client in scrape method in case there are transient errors in the constructor.
 	if r.client == nil {
 		var err error
 		r.client, err = NewNginxClient(r.httpClient, r.cfg.ClientConfig.Endpoint, r.cfg.VTSEndpoint)
@@ -72,8 +71,6 @@ func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
 		r.settings.Logger.Error("Failed to fetch nginx stats", zap.Error(err))
 		return pmetric.Metrics{}, err
 	}
-
-	// pp.Println(vtsStats)
 
 	now := pcommon.NewTimestampFromTime(time.Now())
 
