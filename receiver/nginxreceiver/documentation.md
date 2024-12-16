@@ -100,9 +100,9 @@ Bytes received by server zones
 
 The number of responses with 1xx status code.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| response | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
 
 #### Attributes
 
@@ -128,9 +128,9 @@ The number of responses with 2xx status code.
 
 The number of responses with 3xx status code.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| response | Gauge | Int |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
 
 #### Attributes
 

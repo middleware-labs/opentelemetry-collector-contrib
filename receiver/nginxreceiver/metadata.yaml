@@ -109,8 +109,10 @@ metrics:
     attributes:
       - serverzone_name
     description: The number of responses with 1xx status code.
-    gauge:
+    sum:
       value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
     unit:
       response
 
@@ -130,8 +132,10 @@ metrics:
     attributes:
       - serverzone_name
     description: The number of responses with 3xx status code.
-    gauge:
+    sum:
       value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
     unit:
       response
 
