@@ -14,7 +14,6 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 	"go.uber.org/zap"
 
-	"github.com/k0kubun/pp"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/nginxreceiver/internal/metadata"
 )
 
@@ -182,8 +181,6 @@ func (r *nginxScraper) recordTimingStats(now pcommon.Timestamp, vtsStats *NginxV
 
 	for upstreamZones, v := range vtsStats.UpstreamZones {
 		for _, val := range v {
-			pp.Println(val.Server)
-			pp.Println(val.ResponseMsec)
 
 			r.mb.RecordNginxUpstreamPeersResponseTimeDataPoint(
 				now, val.ResponseMsec, upstreamZones, val.Server,
