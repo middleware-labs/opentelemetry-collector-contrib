@@ -7,7 +7,53 @@ all_set:
       enabled: true
     nginx.connections_handled:
       enabled: true
+    nginx.load_timestamp:
+      enabled: true
+    nginx.net.reading:
+      enabled: true
+    nginx.net.waiting:
+      enabled: true
+    nginx.net.writing:
+      enabled: true
     nginx.requests:
+      enabled: true
+    nginx.server_zone.received:
+      enabled: true
+    nginx.server_zone.responses.1xx:
+      enabled: true
+    nginx.server_zone.responses.2xx:
+      enabled: true
+    nginx.server_zone.responses.3xx:
+      enabled: true
+    nginx.server_zone.responses.4xx:
+      enabled: true
+    nginx.server_zone.responses.5xx:
+      enabled: true
+    nginx.server_zone.sent:
+      enabled: true
+    nginx.upstream.peers.backup:
+      enabled: true
+    nginx.upstream.peers.health_checks.last_passed:
+      enabled: true
+    nginx.upstream.peers.received:
+      enabled: true
+    nginx.upstream.peers.requests:
+      enabled: true
+    nginx.upstream.peers.response_time:
+      enabled: true
+    nginx.upstream.peers.responses.1xx:
+      enabled: true
+    nginx.upstream.peers.responses.2xx:
+      enabled: true
+    nginx.upstream.peers.responses.3xx:
+      enabled: true
+    nginx.upstream.peers.responses.4xx:
+      enabled: true
+    nginx.upstream.peers.responses.5xx:
+      enabled: true
+    nginx.upstream.peers.sent:
+      enabled: true
+    nginx.upstream.peers.weight:
       enabled: true
 none_set:
   metrics:
@@ -17,5 +63,51 @@ none_set:
       enabled: false
     nginx.connections_handled:
       enabled: false
+    nginx.load_timestamp:
+      enabled: false
+    nginx.net.reading:
+      enabled: false
+    nginx.net.waiting:
+      enabled: false
+    nginx.net.writing:
+      enabled: false
     nginx.requests:
+      enabled: false
+    nginx.server_zone.received:
+      enabled: false
+    nginx.server_zone.responses.1xx:
+      enabled: false
+    nginx.server_zone.responses.2xx:
+      enabled: false
+    nginx.server_zone.responses.3xx:
+      enabled: false
+    nginx.server_zone.responses.4xx:
+      enabled: false
+    nginx.server_zone.responses.5xx:
+      enabled: false
+    nginx.server_zone.sent:
+      enabled: false
+    nginx.upstream.peers.backup:
+      enabled: false
+    nginx.upstream.peers.health_checks.last_passed:
+      enabled: false
+    nginx.upstream.peers.received:
+      enabled: false
+    nginx.upstream.peers.requests:
+      enabled: false
+    nginx.upstream.peers.response_time:
+      enabled: false
+    nginx.upstream.peers.responses.1xx:
+      enabled: false
+    nginx.upstream.peers.responses.2xx:
+      enabled: false
+    nginx.upstream.peers.responses.3xx:
+      enabled: false
+    nginx.upstream.peers.responses.4xx:
+      enabled: false
+    nginx.upstream.peers.responses.5xx:
+      enabled: false
+    nginx.upstream.peers.sent:
+      enabled: false
+    nginx.upstream.peers.weight:
       enabled: false
