@@ -42,6 +42,38 @@ The total number of handled connections. Generally, the parameter value is the s
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | connections | Sum | Int | Cumulative | true |
 
+### nginx.load_timestamp
+
+Time of the last reload of configuration (time since Epoch).
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ms | Gauge | Int |
+
+### nginx.net.reading
+
+Current number of connections where NGINX is reading the request header
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| connections | Gauge | Int |
+
+### nginx.net.waiting
+
+Current number of connections where NGINX is waiting the response back to the client
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| connections | Gauge | Int |
+
+### nginx.net.writing
+
+Current number of connections where NGINX is writing the response back to the client
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| connections | Gauge | Int |
+
 ### nginx.requests
 
 Total number of requests made to the server since it started
@@ -49,3 +81,281 @@ Total number of requests made to the server since it started
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
 | ---- | ----------- | ---------- | ----------------------- | --------- |
 | requests | Sum | Int | Cumulative | true |
+
+### nginx.server_zone.received
+
+Bytes received by server zones
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.1xx
+
+The number of responses with 1xx status code.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.2xx
+
+The number of responses with 2xx status code.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.3xx
+
+The number of responses with 3xx status code.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.4xx
+
+The number of responses with 4xx status code.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.responses.5xx
+
+The number of responses with 5xx status code.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| response | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.server_zone.sent
+
+Bytes sent by server zones
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| serverzone_name | The name of serverzone | Any Str |
+
+### nginx.upstream.peers.backup
+
+Whether upstream server is a backup server
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {state} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.health_checks.last_passed
+
+Boolean indicating if the last health check request was successful and passed tests.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {status} | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.received
+
+Bytes received from upstream servers
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.requests
+
+Number of requests made to upstream servers
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| requests | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.response_time
+
+The average time to receive the last byte of data from this server.
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| ms | Gauge | Int |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.1xx
+
+Number of responses from upstream with 1xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.2xx
+
+Number of responses from upstream with 2xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.3xx
+
+Number of responses from upstream with 3xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.4xx
+
+Number of responses from upstream with 4xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.responses.5xx
+
+Number of responses from upstream with 5xx status codes
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| responses | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.sent
+
+Bytes sent from upstream servers
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
+| ---- | ----------- | ---------- | ----------------------- | --------- |
+| By | Sum | Int | Cumulative | true |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |
+
+### nginx.upstream.peers.weight
+
+Weight of upstream server
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| weight | Gauge | Double |
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| upstream_block_name | The name of the upstream block | Any Str |
+| upstream_peer_address | The address f the upstream server | Any Str |

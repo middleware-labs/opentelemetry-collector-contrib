@@ -27,10 +27,33 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for nginx metrics.
 type MetricsConfig struct {
-	NginxConnectionsAccepted MetricConfig `mapstructure:"nginx.connections_accepted"`
-	NginxConnectionsCurrent  MetricConfig `mapstructure:"nginx.connections_current"`
-	NginxConnectionsHandled  MetricConfig `mapstructure:"nginx.connections_handled"`
-	NginxRequests            MetricConfig `mapstructure:"nginx.requests"`
+	NginxConnectionsAccepted                 MetricConfig `mapstructure:"nginx.connections_accepted"`
+	NginxConnectionsCurrent                  MetricConfig `mapstructure:"nginx.connections_current"`
+	NginxConnectionsHandled                  MetricConfig `mapstructure:"nginx.connections_handled"`
+	NginxLoadTimestamp                       MetricConfig `mapstructure:"nginx.load_timestamp"`
+	NginxNetReading                          MetricConfig `mapstructure:"nginx.net.reading"`
+	NginxNetWaiting                          MetricConfig `mapstructure:"nginx.net.waiting"`
+	NginxNetWriting                          MetricConfig `mapstructure:"nginx.net.writing"`
+	NginxRequests                            MetricConfig `mapstructure:"nginx.requests"`
+	NginxServerZoneReceived                  MetricConfig `mapstructure:"nginx.server_zone.received"`
+	NginxServerZoneResponses1xx              MetricConfig `mapstructure:"nginx.server_zone.responses.1xx"`
+	NginxServerZoneResponses2xx              MetricConfig `mapstructure:"nginx.server_zone.responses.2xx"`
+	NginxServerZoneResponses3xx              MetricConfig `mapstructure:"nginx.server_zone.responses.3xx"`
+	NginxServerZoneResponses4xx              MetricConfig `mapstructure:"nginx.server_zone.responses.4xx"`
+	NginxServerZoneResponses5xx              MetricConfig `mapstructure:"nginx.server_zone.responses.5xx"`
+	NginxServerZoneSent                      MetricConfig `mapstructure:"nginx.server_zone.sent"`
+	NginxUpstreamPeersBackup                 MetricConfig `mapstructure:"nginx.upstream.peers.backup"`
+	NginxUpstreamPeersHealthChecksLastPassed MetricConfig `mapstructure:"nginx.upstream.peers.health_checks.last_passed"`
+	NginxUpstreamPeersReceived               MetricConfig `mapstructure:"nginx.upstream.peers.received"`
+	NginxUpstreamPeersRequests               MetricConfig `mapstructure:"nginx.upstream.peers.requests"`
+	NginxUpstreamPeersResponseTime           MetricConfig `mapstructure:"nginx.upstream.peers.response_time"`
+	NginxUpstreamPeersResponses1xx           MetricConfig `mapstructure:"nginx.upstream.peers.responses.1xx"`
+	NginxUpstreamPeersResponses2xx           MetricConfig `mapstructure:"nginx.upstream.peers.responses.2xx"`
+	NginxUpstreamPeersResponses3xx           MetricConfig `mapstructure:"nginx.upstream.peers.responses.3xx"`
+	NginxUpstreamPeersResponses4xx           MetricConfig `mapstructure:"nginx.upstream.peers.responses.4xx"`
+	NginxUpstreamPeersResponses5xx           MetricConfig `mapstructure:"nginx.upstream.peers.responses.5xx"`
+	NginxUpstreamPeersSent                   MetricConfig `mapstructure:"nginx.upstream.peers.sent"`
+	NginxUpstreamPeersWeight                 MetricConfig `mapstructure:"nginx.upstream.peers.weight"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
@@ -44,7 +67,76 @@ func DefaultMetricsConfig() MetricsConfig {
 		NginxConnectionsHandled: MetricConfig{
 			Enabled: true,
 		},
+		NginxLoadTimestamp: MetricConfig{
+			Enabled: true,
+		},
+		NginxNetReading: MetricConfig{
+			Enabled: true,
+		},
+		NginxNetWaiting: MetricConfig{
+			Enabled: true,
+		},
+		NginxNetWriting: MetricConfig{
+			Enabled: true,
+		},
 		NginxRequests: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneReceived: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneResponses1xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneResponses2xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneResponses3xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneResponses4xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneResponses5xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxServerZoneSent: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersBackup: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersHealthChecksLastPassed: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersReceived: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersRequests: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersResponseTime: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersResponses1xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersResponses2xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersResponses3xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersResponses4xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersResponses5xx: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersSent: MetricConfig{
+			Enabled: true,
+		},
+		NginxUpstreamPeersWeight: MetricConfig{
 			Enabled: true,
 		},
 	}

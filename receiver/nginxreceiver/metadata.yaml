@@ -17,6 +17,15 @@ attributes:
     - reading
     - writing
     - waiting
+  upstream_block_name:
+    description: The name of the upstream block
+    type: string
+  upstream_peer_address:
+    description: The address f the upstream server
+    type: string
+  serverzone_name:
+    description: The name of serverzone
+    type: string
 
 metrics:
   nginx.requests:
@@ -27,7 +36,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: []
+    attributes: [] 
   nginx.connections_accepted:
     enabled: true
     description: The total number of accepted client connections
@@ -55,3 +64,244 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [state]
+
+  ### Timing metrics 
+  nginx.load_timestamp:
+    enabled: true
+    description: Time of the last reload of configuration (time since Epoch). 
+    gauge:
+      value_type: int
+    unit: ms
+  
+  nginx.upstream.peers.response_time:
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    enabled: true  
+    description: The average time to receive the last byte of data from this server. 
+    gauge:
+      value_type: int
+    unit: ms    
+
+  nginx.net.reading:
+    enabled: true
+    description: Current number of connections where NGINX is reading the request header
+    gauge:
+      value_type: int
+    unit: connections
+
+  nginx.net.writing:
+    enabled: true
+    description: Current number of connections where NGINX is writing the response back to the client
+    gauge:
+      value_type: int
+    unit: connections
+
+  nginx.net.waiting:
+    enabled: true
+    description: Current number of connections where NGINX is waiting the response back to the client
+    gauge:
+      value_type: int
+    unit: connections
+
+  nginx.server_zone.responses.1xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 1xx status code.
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit:
+      response
+
+  nginx.server_zone.responses.2xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 2xx status code.
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit:
+      response 
+  nginx.server_zone.responses.3xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 3xx status code.
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit:
+      response
+
+  nginx.server_zone.responses.4xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 4xx status code.
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit:
+      response
+  nginx.server_zone.responses.5xx:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: The number of responses with 5xx status code.
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit:
+      response
+  nginx.server_zone.received:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: Bytes received by server zones
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By 
+  nginx.server_zone.sent:
+    enabled: true
+    attributes:
+      - serverzone_name
+    description: Bytes sent by server zones
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By 
+  nginx.upstream.peers.requests:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of requests made to upstream servers
+    sum:
+      value_type: int
+      monotonic:  true
+      aggregation_temporality: cumulative
+    unit: requests
+  nginx.upstream.peers.received:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Bytes received from upstream servers 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By
+
+  nginx.upstream.peers.sent:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Bytes sent from upstream servers 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: By
+
+  nginx.upstream.peers.responses.1xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 1xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+
+  nginx.upstream.peers.responses.2xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 2xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+
+  nginx.upstream.peers.responses.3xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 3xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+  
+  nginx.upstream.peers.responses.4xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 4xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+
+  nginx.upstream.peers.responses.5xx:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Number of responses from upstream with 5xx status codes 
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+    unit: responses
+
+  nginx.upstream.peers.weight:
+    enabled: true
+    attributes: 
+      - upstream_block_name
+      - upstream_peer_address
+    description: Weight of upstream server
+    gauge:
+      value_type: double 
+    unit: weight 
+
+  nginx.upstream.peers.backup:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Whether upstream server is a backup server
+    gauge: 
+      value_type: int
+    unit: "{state}"
+    
+  nginx.upstream.peers.health_checks.last_passed:
+    enabled: true
+    attributes:
+      - upstream_block_name
+      - upstream_peer_address
+    description: Boolean indicating if the last health check request was successful and passed tests.
+    gauge:
+      value_type: int 
+    unit: "{status}"
