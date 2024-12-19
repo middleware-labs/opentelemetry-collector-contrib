@@ -17,4 +17,6 @@ type Config struct {
 
 	// prevent unkeyed literal initialization
 	_ struct{}
+
+	VTSEndpoint string `mapstructure:"vts_endpoint"`
 }
