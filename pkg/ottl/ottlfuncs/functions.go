@@ -14,6 +14,7 @@ func StandardFuncs[K any]() map[string]ottl.Factory[K] {
 		NewClearFactory[K](),
 		NewDeleteKeyFactory[K](),
 		NewDeleteMatchingKeysFactory[K](),
+		NewDeleteMatchingValuesFactory[K](),
 		NewKeepMatchingKeysFactory[K](),
 		NewFlattenFactory[K](),
 		NewKeepKeysFactory[K](),
