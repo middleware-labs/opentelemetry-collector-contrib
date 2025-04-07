@@ -125,9 +125,16 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	version, err := m.sqlclient.getVersion()
 	if err != nil {
 		m.logger.Error("Failed to fetch the version of mysql database", zap.Error(err))
+		// Set a fallback version or skip setting it
+		rb.SetMysqlDbVersion("unknown")
+	} else if version != nil {
+		// Only set the version if it's not nil
+		rb.SetMysqlDbVersion(version.String())
+	} else {
+		// The case where version is nil but no error was returned
+		rb.SetMysqlDbVersion("unknown")
 	}
 
-	rb.SetMysqlDbVersion(version.String())
 	rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
 	m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
