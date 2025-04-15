@@ -368,7 +368,6 @@ func TestDetectCPUInfo(t *testing.T) {
 	assert.Equal(t, conventions.SchemaURL, schemaURL)
 	md.AssertExpectations(t)
 
-	fmt.Println("res.Attributes().AsRaw()", res.Attributes().AsRaw())
 	expected := map[string]any{
 		conventions.AttributeHostName:      "fqdn",
 		conventions.AttributeOSDescription: "Ubuntu 22.04.2 LTS (Jammy Jellyfish)",
