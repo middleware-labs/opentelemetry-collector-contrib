@@ -137,12 +137,12 @@ func TestToIEEERA(t *testing.T) {
 		expected string
 	}{
 		{
-			addr:      testMACs[0].MAC,
-			expected: testMACsAttribute[0].(string),
+			addr:     net.HardwareAddr{0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+			expected: "00-00-00-00-00-01",
 		},
 		{
-			addr:     testMACs[1].MAC,
-			expected: testMACsAttribute[1].(string),
+			addr:     net.HardwareAddr{0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x00},
+			expected: "DE-AD-BE-EF-00-00",
 		},
 	}
 
