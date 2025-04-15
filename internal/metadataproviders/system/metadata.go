@@ -76,14 +76,14 @@ type Provider interface {
 }
 
 type InterfaceIP struct {
-    IP            net.IP
-    InterfaceName string
+	IP            net.IP
+	InterfaceName string
 }
 
 // Define a new struct for interface MACs
 type InterfaceMAC struct {
-    MAC           net.HardwareAddr
-    InterfaceName string
+	MAC           net.HardwareAddr
+	InterfaceName string
 }
 
 type systemMetadataProvider struct {
@@ -209,9 +209,9 @@ func (p systemMetadataProvider) HostIPs() (interfaceIPs []InterfaceIP, err error
 			}
 
 			interfaceIPs = append(interfaceIPs, InterfaceIP{
-                IP:            ip,
-                InterfaceName: iface.Name,
-            })
+				IP:            ip,
+				InterfaceName: iface.Name,
+			})
 		}
 	}
 	return interfaceIPs, err
@@ -228,7 +228,6 @@ func (p systemMetadataProvider) HostMACs() (interfaceMACs []InterfaceMAC, err er
 		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
 			continue
 		}
-	
 		interfaceMACs = append(interfaceMACs, InterfaceMAC{
 			MAC:           iface.HardwareAddr,
 			InterfaceName: iface.Name,
