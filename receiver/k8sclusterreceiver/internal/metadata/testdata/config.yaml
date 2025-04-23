@@ -158,9 +158,19 @@ all_set:
       enabled: true
     k8s.container.status.last_terminated_reason:
       enabled: true
+    k8s.cronjob.concurrency_policy:
+      enabled: true
+    k8s.cronjob.last_schedule_time:
+      enabled: true
+    k8s.cronjob.last_successful_time:
+      enabled: true
     k8s.cronjob.name:
       enabled: true
+    k8s.cronjob.schedule:
+      enabled: true
     k8s.cronjob.start_time:
+      enabled: true
+    k8s.cronjob.suspend:
       enabled: true
     k8s.cronjob.uid:
       enabled: true
@@ -531,9 +541,19 @@ none_set:
       enabled: false
     k8s.container.status.last_terminated_reason:
       enabled: false
+    k8s.cronjob.concurrency_policy:
+      enabled: false
+    k8s.cronjob.last_schedule_time:
+      enabled: false
+    k8s.cronjob.last_successful_time:
+      enabled: false
     k8s.cronjob.name:
       enabled: false
+    k8s.cronjob.schedule:
+      enabled: false
     k8s.cronjob.start_time:
+      enabled: false
+    k8s.cronjob.suspend:
       enabled: false
     k8s.cronjob.uid:
       enabled: false
@@ -843,11 +863,31 @@ filter_set_include:
       enabled: true
       metrics_include:
         - regexp: ".*"
+    k8s.cronjob.concurrency_policy:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.cronjob.last_schedule_time:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.cronjob.last_successful_time:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
     k8s.cronjob.name:
       enabled: true
       metrics_include:
         - regexp: ".*"
+    k8s.cronjob.schedule:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
     k8s.cronjob.start_time:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.cronjob.suspend:
       enabled: true
       metrics_include:
         - regexp: ".*"
@@ -1369,14 +1409,34 @@ filter_set_exclude:
       enabled: true
       metrics_exclude:
         - strict: "k8s.container.status.last_terminated_reason-val"
+    k8s.cronjob.concurrency_policy:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.cronjob.concurrency_policy-val"
+    k8s.cronjob.last_schedule_time:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.cronjob.last_schedule_time-val"
+    k8s.cronjob.last_successful_time:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.cronjob.last_successful_time-val"
     k8s.cronjob.name:
       enabled: true
       metrics_exclude:
         - strict: "k8s.cronjob.name-val"
+    k8s.cronjob.schedule:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.cronjob.schedule-val"
     k8s.cronjob.start_time:
       enabled: true
       metrics_exclude:
         - strict: "k8s.cronjob.start_time-val"
+    k8s.cronjob.suspend:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.cronjob.suspend-val"
     k8s.cronjob.uid:
       enabled: true
       metrics_exclude:
