@@ -548,6 +548,31 @@ resource_attributes:
     type: string
     enabled: true
 
+  k8s.cronjob.suspend:
+    description: The suspension state of the k8s CronJob.
+    type: string
+    enabled: true
+
+  k8s.cronjob.schedule:
+    description: The schedule of the k8s CronJob in Cron format.
+    type: string
+    enabled: true
+
+  k8s.cronjob.concurrency_policy:
+    description: The concurrency policy of the k8s CronJob.
+    type: string
+    enabled: true
+  
+  k8s.cronjob.last_schedule_time:
+    description: The time when the CronJob was last scheduled.
+    type: string
+    enabled: true
+  
+  k8s.cronjob.last_successful_time:
+    description: The time when the CronJob last completed successfully.
+    type: string
+    enabled: true
+
   k8s.cronjob.name:
     description: The k8s CronJob name
     type: string
@@ -934,7 +959,7 @@ metrics:
   k8s.service.port_count:
     enabled: true
     description: The number of ports in the service
-    unit: 1
+    unit: ""
     gauge:
       value_type: int
 

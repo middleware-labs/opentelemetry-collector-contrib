@@ -303,8 +303,13 @@ type ResourceAttributesConfig struct {
 	K8sContainerName                              ResourceAttributeConfig `mapstructure:"k8s.container.name"`
 	K8sContainerStatusCurrentWaitingReason        ResourceAttributeConfig `mapstructure:"k8s.container.status.current_waiting_reason"`
 	K8sContainerStatusLastTerminatedReason        ResourceAttributeConfig `mapstructure:"k8s.container.status.last_terminated_reason"`
+	K8sCronjobConcurrencyPolicy                   ResourceAttributeConfig `mapstructure:"k8s.cronjob.concurrency_policy"`
+	K8sCronjobLastScheduleTime                    ResourceAttributeConfig `mapstructure:"k8s.cronjob.last_schedule_time"`
+	K8sCronjobLastSuccessfulTime                  ResourceAttributeConfig `mapstructure:"k8s.cronjob.last_successful_time"`
 	K8sCronjobName                                ResourceAttributeConfig `mapstructure:"k8s.cronjob.name"`
+	K8sCronjobSchedule                            ResourceAttributeConfig `mapstructure:"k8s.cronjob.schedule"`
 	K8sCronjobStartTime                           ResourceAttributeConfig `mapstructure:"k8s.cronjob.start_time"`
+	K8sCronjobSuspend                             ResourceAttributeConfig `mapstructure:"k8s.cronjob.suspend"`
 	K8sCronjobUID                                 ResourceAttributeConfig `mapstructure:"k8s.cronjob.uid"`
 	K8sDaemonsetName                              ResourceAttributeConfig `mapstructure:"k8s.daemonset.name"`
 	K8sDaemonsetStartTime                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.start_time"`
@@ -486,10 +491,25 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sContainerStatusLastTerminatedReason: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sCronjobConcurrencyPolicy: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobLastScheduleTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobLastSuccessfulTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sCronjobName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sCronjobSchedule: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sCronjobStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobSuspend: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sCronjobUID: ResourceAttributeConfig{

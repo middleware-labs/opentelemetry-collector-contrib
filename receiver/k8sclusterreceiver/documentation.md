@@ -366,7 +366,7 @@ The number of ports in the service
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+|  | Gauge | Int |
 
 ### k8s.serviceaccount.secret_count
 
@@ -526,8 +526,13 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.container.name | The k8s container name | Any Str | true |
 | k8s.container.status.current_waiting_reason | Current waiting reason of the Container. | Any Str | true |
 | k8s.container.status.last_terminated_reason | Last terminated reason of a container. | Any Str | true |
+| k8s.cronjob.concurrency_policy | The concurrency policy of the k8s CronJob. | Any Str | true |
+| k8s.cronjob.last_schedule_time | The time when the CronJob was last scheduled. | Any Str | true |
+| k8s.cronjob.last_successful_time | The time when the CronJob last completed successfully. | Any Str | true |
 | k8s.cronjob.name | The k8s CronJob name | Any Str | true |
+| k8s.cronjob.schedule | The schedule of the k8s CronJob in Cron format. | Any Str | true |
 | k8s.cronjob.start_time | The start time of the Cronjob. | Any Str | true |
+| k8s.cronjob.suspend | The suspension state of the k8s CronJob. | Any Str | true |
 | k8s.cronjob.uid | The k8s CronJob uid. | Any Str | true |
 | k8s.daemonset.name | The k8s daemonset name. | Any Str | true |
 | k8s.daemonset.start_time | The start time of the Daemonset. | Any Str | true |

@@ -2185,7 +2185,7 @@ type metricK8sServicePortCount struct {
 func (m *metricK8sServicePortCount) init() {
 	m.data.SetName("k8s.service.port_count")
 	m.data.SetDescription("The number of ports in the service")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 }
 
@@ -2741,17 +2741,25 @@ type MetricsBuilder struct {
 	metricOpenshiftClusterquotaUsed           metricOpenshiftClusterquotaUsed
 }
 
-// metricBuilderOption applies changes to default metrics builder.
-type metricBuilderOption func(*MetricsBuilder)
-
-// WithStartTime sets startTime on the metrics builder.
-func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
-	return func(mb *MetricsBuilder) {
-		mb.startTime = startTime
-	}
+// MetricBuilderOption applies changes to default metrics builder.
+type MetricBuilderOption interface {
+	apply(*MetricsBuilder)
 }
 
-func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...metricBuilderOption) *MetricsBuilder {
+type metricBuilderOptionFunc func(mb *MetricsBuilder)
+
+func (mbof metricBuilderOptionFunc) apply(mb *MetricsBuilder) {
+	mbof(mb)
+}
+
+// WithStartTime sets startTime on the metrics builder.
+func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
+	return metricBuilderOptionFunc(func(mb *MetricsBuilder) {
+		mb.startTime = startTime
+	})
+}
+
+func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
 		config:                                    mbc,
 		startTime:                                 pcommon.NewTimestampFromTime(time.Now()),
@@ -2958,17 +2966,47 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sContainerStatusLastTerminatedReason.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.container.status.last_terminated_reason"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerStatusLastTerminatedReason.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sCronjobConcurrencyPolicy.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.cronjob.concurrency_policy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobConcurrencyPolicy.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobConcurrencyPolicy.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.cronjob.concurrency_policy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobConcurrencyPolicy.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobLastScheduleTime.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.cronjob.last_schedule_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobLastScheduleTime.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobLastScheduleTime.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.cronjob.last_schedule_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobLastScheduleTime.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobLastSuccessfulTime.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.cronjob.last_successful_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobLastSuccessfulTime.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobLastSuccessfulTime.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.cronjob.last_successful_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobLastSuccessfulTime.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sCronjobName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.cronjob.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobName.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sCronjobName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.cronjob.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sCronjobSchedule.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.cronjob.schedule"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobSchedule.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobSchedule.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.cronjob.schedule"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobSchedule.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sCronjobStartTime.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.cronjob.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobStartTime.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sCronjobStartTime.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.cronjob.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobStartTime.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobSuspend.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.cronjob.suspend"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobSuspend.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sCronjobSuspend.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.cronjob.suspend"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobSuspend.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sCronjobUID.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.cronjob.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sCronjobUID.MetricsInclude)
@@ -3602,7 +3640,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 	return mb
 }
@@ -3620,20 +3658,28 @@ func (mb *MetricsBuilder) updateCapacity(rm pmetric.ResourceMetrics) {
 }
 
 // ResourceMetricsOption applies changes to provided resource metrics.
-type ResourceMetricsOption func(pmetric.ResourceMetrics)
+type ResourceMetricsOption interface {
+	apply(pmetric.ResourceMetrics)
+}
+
+type resourceMetricsOptionFunc func(pmetric.ResourceMetrics)
+
+func (rmof resourceMetricsOptionFunc) apply(rm pmetric.ResourceMetrics) {
+	rmof(rm)
+}
 
 // WithResource sets the provided resource on the emitted ResourceMetrics.
 // It's recommended to use ResourceBuilder to create the resource.
 func WithResource(res pcommon.Resource) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		res.CopyTo(rm.Resource())
-	}
+	})
 }
 
 // WithStartTimeOverride overrides start time for all the resource metrics data points.
 // This option should be only used if different start time has to be set on metrics coming from different resources.
 func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		var dps pmetric.NumberDataPointSlice
 		metrics := rm.ScopeMetrics().At(0).Metrics()
 		for i := 0; i < metrics.Len(); i++ {
@@ -3647,7 +3693,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 				dps.At(j).SetStartTimestamp(start)
 			}
 		}
-	}
+	})
 }
 
 // EmitForResource saves all the generated metrics under a new resource and updates the internal state to be ready for
@@ -3655,7 +3701,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 // needs to emit metrics from several resources. Otherwise calling this function is not required,
 // just `Emit` function can be called instead.
 // Resource attributes should be provided as ResourceMetricsOption arguments.
-func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
+func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	rm := pmetric.NewResourceMetrics()
 	rm.SetSchemaUrl(conventions.SchemaURL)
 	ils := rm.ScopeMetrics().AppendEmpty()
@@ -3717,8 +3763,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricOpenshiftClusterquotaLimit.emit(ils.Metrics())
 	mb.metricOpenshiftClusterquotaUsed.emit(ils.Metrics())
 
-	for _, op := range rmo {
-		op(rm)
+	for _, op := range options {
+		op.apply(rm)
 	}
 	for attr, filter := range mb.resourceAttributeIncludeFilter {
 		if val, ok := rm.Resource().Attributes().Get(attr); ok && !filter.Matches(val.AsString()) {
@@ -3740,8 +3786,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 // Emit returns all the metrics accumulated by the metrics builder and updates the internal state to be ready for
 // recording another set of metrics. This function will be responsible for applying all the transformations required to
 // produce metric representation defined in metadata and user config, e.g. delta or cumulative.
-func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
-	mb.EmitForResource(rmo...)
+func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics {
+	mb.EmitForResource(options...)
 	metrics := mb.metricsBuffer
 	mb.metricsBuffer = pmetric.NewMetrics()
 	return metrics
@@ -4019,9 +4065,9 @@ func (mb *MetricsBuilder) RecordOpenshiftClusterquotaUsedDataPoint(ts pcommon.Ti
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
 // and metrics builder should update its startTime and reset it's internal state accordingly.
-func (mb *MetricsBuilder) Reset(options ...metricBuilderOption) {
+func (mb *MetricsBuilder) Reset(options ...MetricBuilderOption) {
 	mb.startTime = pcommon.NewTimestampFromTime(time.Now())
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 }
