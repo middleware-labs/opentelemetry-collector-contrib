@@ -189,6 +189,27 @@ func (rb *ResourceBuilder) SetK8sContainerStatusLastTerminatedReason(val string)
 	}
 }
 
+// SetK8sCronjobConcurrencyPolicy sets provided value as "k8s.cronjob.concurrency_policy" attribute.
+func (rb *ResourceBuilder) SetK8sCronjobConcurrencyPolicy(val string) {
+	if rb.config.K8sCronjobConcurrencyPolicy.Enabled {
+		rb.res.Attributes().PutStr("k8s.cronjob.concurrency_policy", val)
+	}
+}
+
+// SetK8sCronjobLastScheduleTime sets provided value as "k8s.cronjob.last_schedule_time" attribute.
+func (rb *ResourceBuilder) SetK8sCronjobLastScheduleTime(val string) {
+	if rb.config.K8sCronjobLastScheduleTime.Enabled {
+		rb.res.Attributes().PutStr("k8s.cronjob.last_schedule_time", val)
+	}
+}
+
+// SetK8sCronjobLastSuccessfulTime sets provided value as "k8s.cronjob.last_successful_time" attribute.
+func (rb *ResourceBuilder) SetK8sCronjobLastSuccessfulTime(val string) {
+	if rb.config.K8sCronjobLastSuccessfulTime.Enabled {
+		rb.res.Attributes().PutStr("k8s.cronjob.last_successful_time", val)
+	}
+}
+
 // SetK8sCronjobName sets provided value as "k8s.cronjob.name" attribute.
 func (rb *ResourceBuilder) SetK8sCronjobName(val string) {
 	if rb.config.K8sCronjobName.Enabled {
@@ -196,10 +217,24 @@ func (rb *ResourceBuilder) SetK8sCronjobName(val string) {
 	}
 }
 
+// SetK8sCronjobSchedule sets provided value as "k8s.cronjob.schedule" attribute.
+func (rb *ResourceBuilder) SetK8sCronjobSchedule(val string) {
+	if rb.config.K8sCronjobSchedule.Enabled {
+		rb.res.Attributes().PutStr("k8s.cronjob.schedule", val)
+	}
+}
+
 // SetK8sCronjobStartTime sets provided value as "k8s.cronjob.start_time" attribute.
 func (rb *ResourceBuilder) SetK8sCronjobStartTime(val string) {
 	if rb.config.K8sCronjobStartTime.Enabled {
 		rb.res.Attributes().PutStr("k8s.cronjob.start_time", val)
+	}
+}
+
+// SetK8sCronjobSuspend sets provided value as "k8s.cronjob.suspend" attribute.
+func (rb *ResourceBuilder) SetK8sCronjobSuspend(val string) {
+	if rb.config.K8sCronjobSuspend.Enabled {
+		rb.res.Attributes().PutStr("k8s.cronjob.suspend", val)
 	}
 }
 
