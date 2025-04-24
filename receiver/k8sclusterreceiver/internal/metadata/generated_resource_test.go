@@ -9,9 +9,9 @@ import (
 )
 
 func TestResourceBuilder(t *testing.T) {
-	for _, test := range []string{"default", "all_set", "none_set"} {
-		t.Run(test, func(t *testing.T) {
-			cfg := loadResourceAttributesConfig(t, test)
+	for _, tt := range []string{"default", "all_set", "none_set"} {
+		t.Run(tt, func(t *testing.T) {
+			cfg := loadResourceAttributesConfig(t, tt)
 			rb := NewResourceBuilder(cfg)
 			rb.SetContainerID("container.id-val")
 			rb.SetContainerImageName("container.image.name-val")
@@ -37,8 +37,13 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sContainerName("k8s.container.name-val")
 			rb.SetK8sContainerStatusCurrentWaitingReason("k8s.container.status.current_waiting_reason-val")
 			rb.SetK8sContainerStatusLastTerminatedReason("k8s.container.status.last_terminated_reason-val")
+			rb.SetK8sCronjobConcurrencyPolicy("k8s.cronjob.concurrency_policy-val")
+			rb.SetK8sCronjobLastScheduleTime("k8s.cronjob.last_schedule_time-val")
+			rb.SetK8sCronjobLastSuccessfulTime("k8s.cronjob.last_successful_time-val")
 			rb.SetK8sCronjobName("k8s.cronjob.name-val")
+			rb.SetK8sCronjobSchedule("k8s.cronjob.schedule-val")
 			rb.SetK8sCronjobStartTime("k8s.cronjob.start_time-val")
+			rb.SetK8sCronjobSuspend("k8s.cronjob.suspend-val")
 			rb.SetK8sCronjobUID("k8s.cronjob.uid-val")
 			rb.SetK8sDaemonsetName("k8s.daemonset.name-val")
 			rb.SetK8sDaemonsetStartTime("k8s.daemonset.start_time-val")
@@ -151,17 +156,17 @@ func TestResourceBuilder(t *testing.T) {
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
 
-			switch test {
+			switch tt {
 			case "default":
-				assert.Equal(t, 125, res.Attributes().Len())
+				assert.Equal(t, 130, res.Attributes().Len())
 			case "all_set":
 				assert.Equal(t, 40, res.Attributes().Len())
-				assert.Equal(t, 131, res.Attributes().Len())
+				assert.Equal(t, 136, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
 			default:
-				assert.Failf(t, "unexpected test case: %s", test)
+				assert.Failf(t, "unexpected test case: %s", tt)
 			}
 
 			val, ok := res.Attributes().Get("container.id")
@@ -180,12 +185,12 @@ func TestResourceBuilder(t *testing.T) {
 				assert.Equal(t, "container.image.tag-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("container.runtime")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "container.runtime-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("container.runtime.version")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "container.runtime.version-val", val.Str())
 			}
@@ -284,15 +289,40 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.Equal(t, "k8s.container.status.last_terminated_reason-val", val.Str())
 			}
+			val, ok = res.Attributes().Get("k8s.cronjob.concurrency_policy")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.cronjob.concurrency_policy-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.cronjob.last_schedule_time")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.cronjob.last_schedule_time-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.cronjob.last_successful_time")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.cronjob.last_successful_time-val", val.Str())
+			}
 			val, ok = res.Attributes().Get("k8s.cronjob.name")
 			assert.True(t, ok)
 			if ok {
 				assert.Equal(t, "k8s.cronjob.name-val", val.Str())
 			}
+			val, ok = res.Attributes().Get("k8s.cronjob.schedule")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.cronjob.schedule-val", val.Str())
+			}
 			val, ok = res.Attributes().Get("k8s.cronjob.start_time")
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "k8s.cronjob.start_time-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.cronjob.suspend")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.cronjob.suspend-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.cronjob.uid")
 			assert.True(t, ok)
@@ -410,7 +440,7 @@ func TestResourceBuilder(t *testing.T) {
 				assert.Equal(t, "k8s.job.uid-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.kubelet.version")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "k8s.kubelet.version-val", val.Str())
 			}
@@ -585,7 +615,7 @@ func TestResourceBuilder(t *testing.T) {
 				assert.Equal(t, "k8s.pod.name-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.pod.qos_class")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "k8s.pod.qos_class-val", val.Str())
 			}
@@ -825,12 +855,12 @@ func TestResourceBuilder(t *testing.T) {
 				assert.Equal(t, "openshift.clusterquota.uid-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("os.description")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "os.description-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("os.type")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "os.type-val", val.Str())
 			}

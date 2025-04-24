@@ -4,6 +4,8 @@
 package cronjob // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/cronjob"
 
 import (
+	"strconv"
+
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	batchv1 "k8s.io/api/batch/v1"
 
@@ -25,6 +27,23 @@ func RecordMetrics(mb *metadata.MetricsBuilder, cj *batchv1.CronJob, ts pcommon.
 	rb.SetK8sNamespaceName(cj.Namespace)
 	rb.SetK8sCronjobUID(string(cj.UID))
 	rb.SetK8sCronjobName(cj.Name)
+	if cj.Spec.ConcurrencyPolicy != "" {
+		rb.SetK8sCronjobConcurrencyPolicy(string(cj.Spec.ConcurrencyPolicy))
+	}
+	if cj.Spec.Suspend != nil {
+		rb.SetK8sCronjobSuspend(strconv.FormatBool(*cj.Spec.Suspend))
+	}
+	if cj.Spec.Schedule != "" {
+		rb.SetK8sCronjobSchedule(cj.Spec.Schedule)
+	}
+
+	if cj.Status.LastScheduleTime != nil {
+		rb.SetK8sCronjobLastScheduleTime(cj.Status.LastScheduleTime.String())
+	}
+	if cj.Status.LastSuccessfulTime != nil {
+		rb.SetK8sCronjobLastSuccessfulTime(cj.Status.LastSuccessfulTime.String())
+	}
+	
 	rb.SetK8sCronjobStartTime(cj.GetCreationTimestamp().String())
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
