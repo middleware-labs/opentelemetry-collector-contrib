@@ -420,6 +420,8 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sServiceaccountType("k8s.serviceaccount.type-val")
 			rb.SetK8sServiceaccountUID("k8s.serviceaccount.uid-val")
 			rb.SetK8sStatefulsetName("k8s.statefulset.name-val")
+			rb.SetK8sStatefulsetPodManagementPolicy("k8s.statefulset.pod_management_policy-val")
+			rb.SetK8sStatefulsetServiceName("k8s.statefulset.service_name-val")
 			rb.SetK8sStatefulsetStartTime("k8s.statefulset.start_time-val")
 			rb.SetK8sStatefulsetUID("k8s.statefulset.uid-val")
 			rb.SetOpenshiftClusterquotaName("openshift.clusterquota.name-val")

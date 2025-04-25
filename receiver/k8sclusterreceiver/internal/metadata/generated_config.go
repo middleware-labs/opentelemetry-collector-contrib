@@ -416,6 +416,8 @@ type ResourceAttributesConfig struct {
 	K8sServiceaccountType                         ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.type"`
 	K8sServiceaccountUID                          ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.uid"`
 	K8sStatefulsetName                            ResourceAttributeConfig `mapstructure:"k8s.statefulset.name"`
+	K8sStatefulsetPodManagementPolicy             ResourceAttributeConfig `mapstructure:"k8s.statefulset.pod_management_policy"`
+	K8sStatefulsetServiceName                     ResourceAttributeConfig `mapstructure:"k8s.statefulset.service_name"`
 	K8sStatefulsetStartTime                       ResourceAttributeConfig `mapstructure:"k8s.statefulset.start_time"`
 	K8sStatefulsetUID                             ResourceAttributeConfig `mapstructure:"k8s.statefulset.uid"`
 	OpenshiftClusterquotaName                     ResourceAttributeConfig `mapstructure:"openshift.clusterquota.name"`
@@ -823,6 +825,12 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sStatefulsetName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetPodManagementPolicy: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetServiceName: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sStatefulsetStartTime: ResourceAttributeConfig{

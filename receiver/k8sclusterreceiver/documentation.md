@@ -643,6 +643,8 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.serviceaccount.type | The type of the Service Account. | Any Str | true |
 | k8s.serviceaccount.uid | The UID of the Service Account. | Any Str | true |
 | k8s.statefulset.name | The k8s statefulset name. | Any Str | true |
+| k8s.statefulset.pod_management_policy | The k8s statefulset Pod creation and termination order policy. | Any Str | true |
+| k8s.statefulset.service_name | The k8s statefulset service name. | Any Str | true |
 | k8s.statefulset.start_time | The start time of the Statefulset. | Any Str | true |
 | k8s.statefulset.uid | The k8s statefulset uid. | Any Str | true |
 | openshift.clusterquota.name | The k8s ClusterResourceQuota name. | Any Str | true |

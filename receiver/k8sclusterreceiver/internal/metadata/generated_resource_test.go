@@ -146,6 +146,8 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sServiceaccountType("k8s.serviceaccount.type-val")
 			rb.SetK8sServiceaccountUID("k8s.serviceaccount.uid-val")
 			rb.SetK8sStatefulsetName("k8s.statefulset.name-val")
+			rb.SetK8sStatefulsetPodManagementPolicy("k8s.statefulset.pod_management_policy-val")
+			rb.SetK8sStatefulsetServiceName("k8s.statefulset.service_name-val")
 			rb.SetK8sStatefulsetStartTime("k8s.statefulset.start_time-val")
 			rb.SetK8sStatefulsetUID("k8s.statefulset.uid-val")
 			rb.SetOpenshiftClusterquotaName("openshift.clusterquota.name-val")
@@ -158,9 +160,9 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch tt {
 			case "default":
-				assert.Equal(t, 133, res.Attributes().Len())
+				assert.Equal(t, 135, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 139, res.Attributes().Len())
+				assert.Equal(t, 141, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -832,6 +834,16 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "k8s.statefulset.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.statefulset.pod_management_policy")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.statefulset.pod_management_policy-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.statefulset.service_name")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.statefulset.service_name-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.statefulset.start_time")
 			assert.True(t, ok)
