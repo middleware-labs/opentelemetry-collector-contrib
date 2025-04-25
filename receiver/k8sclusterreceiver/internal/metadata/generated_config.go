@@ -316,7 +316,9 @@ type ResourceAttributesConfig struct {
 	K8sCronjobSuspend                             ResourceAttributeConfig `mapstructure:"k8s.cronjob.suspend"`
 	K8sCronjobUID                                 ResourceAttributeConfig `mapstructure:"k8s.cronjob.uid"`
 	K8sDaemonsetName                              ResourceAttributeConfig `mapstructure:"k8s.daemonset.name"`
+	K8sDaemonsetSelectors                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.selectors"`
 	K8sDaemonsetStartTime                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.start_time"`
+	K8sDaemonsetStrategy                          ResourceAttributeConfig `mapstructure:"k8s.daemonset.strategy"`
 	K8sDaemonsetUID                               ResourceAttributeConfig `mapstructure:"k8s.daemonset.uid"`
 	K8sDeploymentName                             ResourceAttributeConfig `mapstructure:"k8s.deployment.name"`
 	K8sDeploymentStartTime                        ResourceAttributeConfig `mapstructure:"k8s.deployment.start_time"`
@@ -523,7 +525,13 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sDaemonsetName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sDaemonsetSelectors: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sDaemonsetStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sDaemonsetStrategy: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sDaemonsetUID: ResourceAttributeConfig{

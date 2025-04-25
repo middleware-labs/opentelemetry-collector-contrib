@@ -658,6 +658,16 @@ resource_attributes:
     enabled: true
     type: string
 
+  k8s.daemonset.selectors:
+    description: "The selectors used to identify which nodes the DaemonSet pods should be scheduled on."
+    enabled: true
+    type: string
+
+  k8s.daemonset.strategy:
+    description: "The deployment strategy used for DaemonSet updates (RollingUpdate or OnDelete)."
+    enabled: true
+    type: string
+
   k8s.deployment.start_time:
     description: "The start time of the Deployment."
     enabled: true

@@ -3071,11 +3071,23 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sDaemonsetName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.daemonset.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.daemonset.selectors"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.daemonset.selectors"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.daemonset.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.daemonset.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.daemonset.strategy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.daemonset.strategy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sDaemonsetUID.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.daemonset.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetUID.MetricsInclude)

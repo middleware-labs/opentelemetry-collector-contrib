@@ -543,7 +543,9 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.cronjob.suspend | The suspension state of the k8s CronJob. | Any Str | true |
 | k8s.cronjob.uid | The k8s CronJob uid. | Any Str | true |
 | k8s.daemonset.name | The k8s daemonset name. | Any Str | true |
+| k8s.daemonset.selectors | The selectors used to identify which nodes the DaemonSet pods should be scheduled on. | Any Str | true |
 | k8s.daemonset.start_time | The start time of the Daemonset. | Any Str | true |
+| k8s.daemonset.strategy | The deployment strategy used for DaemonSet updates (RollingUpdate or OnDelete). | Any Str | true |
 | k8s.daemonset.uid | The k8s daemonset uid. | Any Str | true |
 | k8s.deployment.name | The name of the Deployment. | Any Str | true |
 | k8s.deployment.start_time | The start time of the Deployment. | Any Str | true |
