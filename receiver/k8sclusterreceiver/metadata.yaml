@@ -668,6 +668,11 @@ resource_attributes:
     enabled: true
     type: string
 
+  k8s.job.end_time:
+    description: "The end time of the Job."
+    enabled: true
+    type: string
+
   k8s.cronjob.start_time:
     description: "The start time of the Cronjob."
     enabled: true
@@ -946,6 +951,12 @@ metrics:
     enabled: true
     description: The number of pods which reached phase Succeeded for a job
     unit: "{pod}"
+    gauge:
+      value_type: int
+  k8s.job.backoff_limit:
+    enabled: true
+    description: Specifies the number of retries before marking a job failed
+    unit: ""
     gauge:
       value_type: int
 

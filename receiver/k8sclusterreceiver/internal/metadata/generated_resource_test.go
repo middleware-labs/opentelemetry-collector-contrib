@@ -61,6 +61,7 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetK8sIngressStartTime("k8s.ingress.start_time-val")
 			rb.SetK8sIngressType("k8s.ingress.type-val")
 			rb.SetK8sIngressUID("k8s.ingress.uid-val")
+			rb.SetK8sJobEndTime("k8s.job.end_time-val")
 			rb.SetK8sJobName("k8s.job.name-val")
 			rb.SetK8sJobStartTime("k8s.job.start_time-val")
 			rb.SetK8sJobUID("k8s.job.uid-val")
@@ -155,9 +156,9 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch tt {
 			case "default":
-				assert.Equal(t, 130, res.Attributes().Len())
+				assert.Equal(t, 131, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 136, res.Attributes().Len())
+				assert.Equal(t, 137, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -404,6 +405,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, "k8s.ingress.uid-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("k8s.job.end_time")
+			assert.True(t, ok)
+			if ok {
+				assert.EqualValues(t, "k8s.job.end_time-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("k8s.job.name")
 			assert.True(t, ok)

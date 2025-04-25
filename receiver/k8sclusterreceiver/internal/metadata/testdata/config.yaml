@@ -51,6 +51,8 @@ all_set:
       enabled: true
     k8s.job.active_pods:
       enabled: true
+    k8s.job.backoff_limit:
+      enabled: true
     k8s.job.desired_successful_pods:
       enabled: true
     k8s.job.failed_pods:
@@ -205,6 +207,8 @@ all_set:
     k8s.ingress.type:
       enabled: true
     k8s.ingress.uid:
+      enabled: true
+    k8s.job.end_time:
       enabled: true
     k8s.job.name:
       enabled: true
@@ -434,6 +438,8 @@ none_set:
       enabled: false
     k8s.job.active_pods:
       enabled: false
+    k8s.job.backoff_limit:
+      enabled: false
     k8s.job.desired_successful_pods:
       enabled: false
     k8s.job.failed_pods:
@@ -588,6 +594,8 @@ none_set:
     k8s.ingress.type:
       enabled: false
     k8s.ingress.uid:
+      enabled: false
+    k8s.job.end_time:
       enabled: false
     k8s.job.name:
       enabled: false
@@ -956,6 +964,10 @@ filter_set_include:
       metrics_include:
         - regexp: ".*"
     k8s.ingress.uid:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    k8s.job.end_time:
       enabled: true
       metrics_include:
         - regexp: ".*"
@@ -1505,6 +1517,10 @@ filter_set_exclude:
       enabled: true
       metrics_exclude:
         - strict: "k8s.ingress.uid-val"
+    k8s.job.end_time:
+      enabled: true
+      metrics_exclude:
+        - strict: "k8s.job.end_time-val"
     k8s.job.name:
       enabled: true
       metrics_exclude:

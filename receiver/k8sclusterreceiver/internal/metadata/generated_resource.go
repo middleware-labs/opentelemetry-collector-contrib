@@ -357,6 +357,13 @@ func (rb *ResourceBuilder) SetK8sIngressUID(val string) {
 	}
 }
 
+// SetK8sJobEndTime sets provided value as "k8s.job.end_time" attribute.
+func (rb *ResourceBuilder) SetK8sJobEndTime(val string) {
+	if rb.config.K8sJobEndTime.Enabled {
+		rb.res.Attributes().PutStr("k8s.job.end_time", val)
+	}
+}
+
 // SetK8sJobName sets provided value as "k8s.job.name" attribute.
 func (rb *ResourceBuilder) SetK8sJobName(val string) {
 	if rb.config.K8sJobName.Enabled {

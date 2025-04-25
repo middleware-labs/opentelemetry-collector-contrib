@@ -212,6 +212,14 @@ The number of actively running pods for a job
 | ---- | ----------- | ---------- |
 | {pod} | Gauge | Int |
 
+### k8s.job.backoff_limit
+
+Specifies the number of retries before marking a job failed
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+|  | Gauge | Int |
+
 ### k8s.job.desired_successful_pods
 
 The desired number of successfully finished pods the job should be run with
@@ -550,6 +558,7 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.ingress.start_time | The start time of the Ingress. | Any Str | true |
 | k8s.ingress.type | The type of the Ingress. | Any Str | true |
 | k8s.ingress.uid | The UID of the Ingress. | Any Str | true |
+| k8s.job.end_time | The end time of the Job. | Any Str | true |
 | k8s.job.name | The k8s pod name. | Any Str | true |
 | k8s.job.start_time | The start time of the Job. | Any Str | true |
 | k8s.job.uid | The k8s job uid. | Any Str | true |

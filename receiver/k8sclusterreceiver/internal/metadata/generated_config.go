@@ -53,6 +53,7 @@ type MetricsConfig struct {
 	K8sHpaMinReplicas                   MetricConfig `mapstructure:"k8s.hpa.min_replicas"`
 	K8sIngressRuleCount                 MetricConfig `mapstructure:"k8s.ingress.rule_count"`
 	K8sJobActivePods                    MetricConfig `mapstructure:"k8s.job.active_pods"`
+	K8sJobBackoffLimit                  MetricConfig `mapstructure:"k8s.job.backoff_limit"`
 	K8sJobDesiredSuccessfulPods         MetricConfig `mapstructure:"k8s.job.desired_successful_pods"`
 	K8sJobFailedPods                    MetricConfig `mapstructure:"k8s.job.failed_pods"`
 	K8sJobMaxParallelPods               MetricConfig `mapstructure:"k8s.job.max_parallel_pods"`
@@ -159,6 +160,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		K8sJobActivePods: MetricConfig{
+			Enabled: true,
+		},
+		K8sJobBackoffLimit: MetricConfig{
 			Enabled: true,
 		},
 		K8sJobDesiredSuccessfulPods: MetricConfig{
@@ -327,6 +331,7 @@ type ResourceAttributesConfig struct {
 	K8sIngressStartTime                           ResourceAttributeConfig `mapstructure:"k8s.ingress.start_time"`
 	K8sIngressType                                ResourceAttributeConfig `mapstructure:"k8s.ingress.type"`
 	K8sIngressUID                                 ResourceAttributeConfig `mapstructure:"k8s.ingress.uid"`
+	K8sJobEndTime                                 ResourceAttributeConfig `mapstructure:"k8s.job.end_time"`
 	K8sJobName                                    ResourceAttributeConfig `mapstructure:"k8s.job.name"`
 	K8sJobStartTime                               ResourceAttributeConfig `mapstructure:"k8s.job.start_time"`
 	K8sJobUID                                     ResourceAttributeConfig `mapstructure:"k8s.job.uid"`
@@ -561,6 +566,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sIngressUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sJobEndTime: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sJobName: ResourceAttributeConfig{

@@ -170,6 +170,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordK8sJobBackoffLimitDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
 
 			defaultMetricsCount++
@@ -331,6 +335,7 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sIngressStartTime("k8s.ingress.start_time-val")
 			rb.SetK8sIngressType("k8s.ingress.type-val")
 			rb.SetK8sIngressUID("k8s.ingress.uid-val")
+			rb.SetK8sJobEndTime("k8s.job.end_time-val")
 			rb.SetK8sJobName("k8s.job.name-val")
 			rb.SetK8sJobStartTime("k8s.job.start_time-val")
 			rb.SetK8sJobUID("k8s.job.uid-val")
@@ -736,6 +741,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "The number of actively running pods for a job", ms.At(i).Description())
 					assert.Equal(t, "{pod}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.job.backoff_limit":
+					assert.False(t, validatedMetrics["k8s.job.backoff_limit"], "Found a duplicate in the metrics slice: k8s.job.backoff_limit")
+					validatedMetrics["k8s.job.backoff_limit"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Specifies the number of retries before marking a job failed", ms.At(i).Description())
+					assert.Equal(t, "", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
