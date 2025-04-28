@@ -23,6 +23,9 @@ func RecordMetrics(mb *metadata.MetricsBuilder, j *batchv1.Job, ts pcommon.Times
 	if j.Spec.Parallelism != nil {
 		mb.RecordK8sJobMaxParallelPodsDataPoint(ts, int64(*j.Spec.Parallelism))
 	}
+	if j.Spec.BackoffLimit != nil {
+		mb.RecordK8sJobBackoffLimitDataPoint(ts, int64(*j.Spec.BackoffLimit))
+	}
 
 	rb := mb.NewResourceBuilder()
 	rb.SetK8sNamespaceName(j.Namespace)
@@ -30,6 +33,9 @@ func RecordMetrics(mb *metadata.MetricsBuilder, j *batchv1.Job, ts pcommon.Times
 	rb.SetK8sJobUID(string(j.UID))
 	rb.SetK8sJobStartTime(j.GetCreationTimestamp().String())
 	rb.SetK8sClusterName("unknown")
+	if j.Status.CompletionTime != nil && !j.Status.CompletionTime.IsZero() {
+		rb.SetK8sJobEndTime(j.Status.CompletionTime.String())
+	}
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
@@ -41,11 +47,13 @@ func Transform(job *batchv1.Job) *batchv1.Job {
 		Spec: batchv1.JobSpec{
 			Completions: job.Spec.Completions,
 			Parallelism: job.Spec.Parallelism,
+			BackoffLimit: job.Spec.BackoffLimit,
 		},
 		Status: batchv1.JobStatus{
 			Active:    job.Status.Active,
 			Succeeded: job.Status.Succeeded,
 			Failed:    job.Status.Failed,
+			CompletionTime: job.Status.CompletionTime,
 		},
 	}
 }

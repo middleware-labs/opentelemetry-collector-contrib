@@ -212,6 +212,14 @@ The number of actively running pods for a job
 | ---- | ----------- | ---------- |
 | {pod} | Gauge | Int |
 
+### k8s.job.backoff_limit
+
+Specifies the number of retries before marking a job failed
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+|  | Gauge | Int |
+
 ### k8s.job.desired_successful_pods
 
 The desired number of successfully finished pods the job should be run with
@@ -535,7 +543,9 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.cronjob.suspend | The suspension state of the k8s CronJob. | Any Str | true |
 | k8s.cronjob.uid | The k8s CronJob uid. | Any Str | true |
 | k8s.daemonset.name | The k8s daemonset name. | Any Str | true |
+| k8s.daemonset.selectors | The selectors used to identify which nodes the DaemonSet pods should be scheduled on. | Any Str | true |
 | k8s.daemonset.start_time | The start time of the Daemonset. | Any Str | true |
+| k8s.daemonset.strategy | The deployment strategy used for DaemonSet updates (RollingUpdate or OnDelete). | Any Str | true |
 | k8s.daemonset.uid | The k8s daemonset uid. | Any Str | true |
 | k8s.deployment.name | The name of the Deployment. | Any Str | true |
 | k8s.deployment.start_time | The start time of the Deployment. | Any Str | true |
@@ -550,6 +560,7 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.ingress.start_time | The start time of the Ingress. | Any Str | true |
 | k8s.ingress.type | The type of the Ingress. | Any Str | true |
 | k8s.ingress.uid | The UID of the Ingress. | Any Str | true |
+| k8s.job.end_time | The end time of the Job. | Any Str | true |
 | k8s.job.name | The k8s pod name. | Any Str | true |
 | k8s.job.start_time | The start time of the Job. | Any Str | true |
 | k8s.job.uid | The k8s job uid. | Any Str | true |
@@ -632,6 +643,8 @@ Current status reason of the pod (1 - Evicted, 2 - NodeAffinity, 3 - NodeLost, 4
 | k8s.serviceaccount.type | The type of the Service Account. | Any Str | true |
 | k8s.serviceaccount.uid | The UID of the Service Account. | Any Str | true |
 | k8s.statefulset.name | The k8s statefulset name. | Any Str | true |
+| k8s.statefulset.pod_management_policy | The k8s statefulset Pod creation and termination order policy. | Any Str | true |
+| k8s.statefulset.service_name | The k8s statefulset service name. | Any Str | true |
 | k8s.statefulset.start_time | The start time of the Statefulset. | Any Str | true |
 | k8s.statefulset.uid | The k8s statefulset uid. | Any Str | true |
 | openshift.clusterquota.name | The k8s ClusterResourceQuota name. | Any Str | true |

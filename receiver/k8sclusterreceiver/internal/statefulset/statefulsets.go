@@ -26,6 +26,8 @@ func Transform(statefulset *appsv1.StatefulSet) *appsv1.StatefulSet {
 		ObjectMeta: metadata.TransformObjectMeta(statefulset.ObjectMeta),
 		Spec: appsv1.StatefulSetSpec{
 			Replicas: statefulset.Spec.Replicas,
+			ServiceName: statefulset.Spec.ServiceName,
+			PodManagementPolicy: statefulset.Spec.PodManagementPolicy,
 		},
 		Status: appsv1.StatefulSetStatus{
 			ReadyReplicas:   statefulset.Status.ReadyReplicas,
@@ -53,6 +55,8 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, ss *appsv1.StatefulSet, ts pcom
 	rb.SetK8sNamespaceName(ss.Namespace)
 	rb.SetK8sClusterName("unknown")
 	rb.SetK8sStatefulsetStartTime(ss.GetCreationTimestamp().String())
+	rb.SetK8sStatefulsetServiceName(ss.Spec.ServiceName)
+	rb.SetK8sStatefulsetPodManagementPolicy(string(ss.Spec.PodManagementPolicy))
 	mb.EmitForResource(imetadata.WithResource(rb.Emit()))
 }
 
