@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/awsutil"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscontainerinsightreceiver/internal/awscreds"
 )
 
 // Info contains information about a host
@@ -38,12 +39,21 @@ type Info struct {
 	ec2MetadataCreator  func(context.Context, *session.Session, time.Duration, chan bool, chan bool, *zap.Logger, ...ec2MetadataOption) ec2MetadataProvider
 	ebsVolumeCreator    func(context.Context, *session.Session, string, string, time.Duration, *zap.Logger, ...ebsVolumeOption) ebsVolumeProvider
 	ec2TagsCreator      func(context.Context, *session.Session, string, string, string, time.Duration, *zap.Logger, ...ec2TagsOption) ec2TagsProvider
+	credProvider        awscreds.CredentialsProvider
 }
 
-type machineInfoOption func(*Info)
+// MachineInfoOption is a function that can be used to configure Info struct
+type MachineInfoOption func(*Info)
+
+// WithCredentialsProvider sets a custom AWS credentials provider
+func WithCredentialsProvider(provider awscreds.CredentialsProvider) MachineInfoOption {
+	return func(i *Info) {
+		i.credProvider = provider
+	}
+}
 
 // NewInfo creates a new Info struct
-func NewInfo(containerOrchestrator string, refreshInterval time.Duration, logger *zap.Logger, options ...machineInfoOption) (*Info, error) {
+func NewInfo(containerOrchestrator string, refreshInterval time.Duration, logger *zap.Logger, options ...MachineInfoOption) (*Info, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	mInfo := &Info{
 		cancel:           cancel,
@@ -74,10 +84,20 @@ func NewInfo(containerOrchestrator string, refreshInterval time.Duration, logger
 	}
 	mInfo.nodeCapacity = nodeCapacity
 
-	defaultSessionConfig := awsutil.CreateDefaultSessionConfig()
-	_, session, err := mInfo.awsSessionCreator(logger, &awsutil.Conn{}, &defaultSessionConfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create aws session: %w", err)
+	var session *session.Session
+	if mInfo.credProvider != nil {
+		// Use the custom credentials provider if available
+		session, err = mInfo.credProvider.GetSession()
+		if err != nil {
+			return nil, fmt.Errorf("failed to create aws session with custom credentials: %w", err)
+		}
+	} else {
+		// Fall back to default credentials
+		defaultSessionConfig := awsutil.CreateDefaultSessionConfig()
+		_, session, err = mInfo.awsSessionCreator(logger, &awsutil.Conn{}, &defaultSessionConfig)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create aws session: %w", err)
+		}
 	}
 	mInfo.awsSession = session
 

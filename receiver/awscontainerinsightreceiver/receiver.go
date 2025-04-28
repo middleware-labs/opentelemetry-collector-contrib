@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	ci "github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/containerinsight"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscontainerinsightreceiver/internal/awscreds"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscontainerinsightreceiver/internal/cadvisor"
 	ecsinfo "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscontainerinsightreceiver/internal/ecsInfo"
 	hostInfo "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awscontainerinsightreceiver/internal/host"
@@ -57,7 +58,25 @@ func newAWSContainerInsightReceiver(
 func (acir *awsContainerInsightReceiver) Start(ctx context.Context, host component.Host) error {
 	ctx, acir.cancel = context.WithCancel(ctx)
 
-	hostinfo, err := hostInfo.NewInfo(acir.config.ContainerOrchestrator, acir.config.CollectionInterval, acir.settings.Logger)
+	var hostinfo *hostInfo.Info
+	var err error
+
+	// Set up AWS credentials with role delegation if configured
+	var options []hostInfo.MachineInfoOption
+	if acir.config.RoleARN != "" {
+		credProvider := awscreds.NewAWSCredentials(
+			acir.settings.Logger,
+			acir.config.Region,
+			acir.config.RoleARN,
+			acir.config.ExternalID,
+		)
+		options = append(options, hostInfo.WithCredentialsProvider(credProvider))
+		acir.settings.Logger.Info("Using AWS role delegation",
+			zap.String("roleARN", acir.config.RoleARN),
+			zap.String("region", acir.config.Region))
+	}
+
+	hostinfo, err = hostInfo.NewInfo(acir.config.ContainerOrchestrator, acir.config.CollectionInterval, acir.settings.Logger, options...)
 	if err != nil {
 		return err
 	}
