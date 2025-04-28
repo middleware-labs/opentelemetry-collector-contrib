@@ -532,6 +532,16 @@ resource_attributes:
     description: The k8s statefulset name.
     type: string
     enabled: true
+  
+  k8s.statefulset.service_name:
+    description: The k8s statefulset service name.
+    type: string
+    enabled: true
+
+  k8s.statefulset.pod_management_policy:
+    description: The k8s statefulset Pod creation and termination order policy.
+    type: string
+    enabled: true
 
   k8s.deployment.uid:
     description: The UID of the Deployment.

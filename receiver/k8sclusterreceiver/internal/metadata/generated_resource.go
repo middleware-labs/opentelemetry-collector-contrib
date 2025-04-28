@@ -952,6 +952,20 @@ func (rb *ResourceBuilder) SetK8sStatefulsetName(val string) {
 	}
 }
 
+// SetK8sStatefulsetPodManagementPolicy sets provided value as "k8s.statefulset.pod_management_policy" attribute.
+func (rb *ResourceBuilder) SetK8sStatefulsetPodManagementPolicy(val string) {
+	if rb.config.K8sStatefulsetPodManagementPolicy.Enabled {
+		rb.res.Attributes().PutStr("k8s.statefulset.pod_management_policy", val)
+	}
+}
+
+// SetK8sStatefulsetServiceName sets provided value as "k8s.statefulset.service_name" attribute.
+func (rb *ResourceBuilder) SetK8sStatefulsetServiceName(val string) {
+	if rb.config.K8sStatefulsetServiceName.Enabled {
+		rb.res.Attributes().PutStr("k8s.statefulset.service_name", val)
+	}
+}
+
 // SetK8sStatefulsetStartTime sets provided value as "k8s.statefulset.start_time" attribute.
 func (rb *ResourceBuilder) SetK8sStatefulsetStartTime(val string) {
 	if rb.config.K8sStatefulsetStartTime.Enabled {

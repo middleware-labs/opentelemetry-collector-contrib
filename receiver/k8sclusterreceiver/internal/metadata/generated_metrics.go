@@ -3671,6 +3671,18 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sStatefulsetName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.statefulset.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.statefulset.pod_management_policy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.statefulset.pod_management_policy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.statefulset.service_name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.statefulset.service_name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sStatefulsetStartTime.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.statefulset.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetStartTime.MetricsInclude)
 	}
