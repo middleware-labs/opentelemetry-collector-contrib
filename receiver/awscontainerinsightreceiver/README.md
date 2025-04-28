@@ -39,6 +39,9 @@ receivers:
     add_service_as_attribute: true 
     prefer_full_pod_name: false 
     add_full_pod_name_metric_label: false 
+    region: us-east-1
+    role_arn: arn:aws:iam::123456789012:role/CrossAccountRole
+    external_id: 1234567890
 ```
 There is no need to provide any parameters since they are all optional. 
 
@@ -61,6 +64,18 @@ The "PodName" attribute is set based on the name of the relevant controllers lik
 **add_full_pod_name_metric_label (optional)**
 
 The "FullPodName" attribute is the pod name including suffix. If false FullPodName label is not added. The default value is false
+
+**region (optional)**
+
+The AWS region to use for AWS API calls. If not specified, the region will be determined from the environment.
+
+**role_arn (optional)**
+
+The AWS IAM role ARN to use for cross-account access. This enables the receiver to collect metrics from containers running in different AWS accounts through role delegation.
+
+**external_id (optional)**
+
+The external ID to use when assuming the role. This parameter is required if the role trust policy includes an external ID.
 
 ## Sample configuration for Container Insights 
 This is a sample configuration for AWS Container Insights using the `awscontainerinsightreceiver` and `awsemfexporter` for an EKS cluster:
@@ -889,3 +904,86 @@ When using this component, the collector process needs root permission to be abl
    * `/dev/disk`
 
 This requirement comes from the fact that this component is based on [cAdvisor](https://github.com/google/cadvisor).
+
+## Sample configuration for multi-account collection
+
+This is a sample configuration that collects metrics from multiple AWS accounts using role delegation:
+
+```yaml
+receivers:
+  # Collector for the primary account
+  awscontainerinsightreceiver/primary:
+    collection_interval: 60s
+    container_orchestrator: eks
+  
+  # Collector for a secondary account using role delegation
+  awscontainerinsightreceiver/secondary:
+    collection_interval: 60s
+    container_orchestrator: eks
+    region: us-west-2
+    role_arn: arn:aws:iam::123456789012:role/OtelCollectorCrossAccountRole
+    external_id: unique-id-for-secondary
+
+  # Collector for another secondary account
+  awscontainerinsightreceiver/tertiary:
+    collection_interval: 60s
+    container_orchestrator: eks
+    region: us-east-1
+    role_arn: arn:aws:iam::987654321098:role/OtelCollectorCrossAccountRole
+    external_id: unique-id-for-tertiary
+
+processors:
+  batch:
+    timeout: 60s
+
+exporters:
+  awsemf:
+    namespace: ContainerInsights
+    log_group_name: '/aws/containerinsights/{ClusterName}/performance'
+    log_stream_name: '{NodeName}'
+    dimension_rollup_option: NoDimensionRollup
+    # Additional EMF exporter configuration...
+
+service:
+  pipelines:
+    metrics/primary:
+      receivers: [awscontainerinsightreceiver/primary]
+      processors: [batch]
+      exporters: [awsemf]
+    metrics/secondary:
+      receivers: [awscontainerinsightreceiver/secondary]
+      processors: [batch]
+      exporters: [awsemf]
+    metrics/tertiary:
+      receivers: [awscontainerinsightreceiver/tertiary]
+      processors: [batch]
+      exporters: [awsemf]
+```
+
+To enable cross-account collection, make sure the IAM roles specified in the `role_arn` parameters have:
+1. A trust policy that allows the primary AWS account to assume the role
+2. Permissions to access the necessary EKS/ECS resources and collect metrics
+3. Any external ID requirements properly configured
+
+Example trust policy for the cross-account role:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::111122223333:role/PrimaryAccountOtelCollectorRole"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "unique-id-for-secondary"
+        }
+      }
+    }
+  ]
+}
+```
+
+## Sample configuration for Container Insights

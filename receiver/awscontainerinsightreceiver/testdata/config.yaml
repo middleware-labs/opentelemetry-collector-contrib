@@ -2,3 +2,15 @@ awscontainerinsightreceiver:
   container_orchestrator: eks
 awscontainerinsightreceiver/collection_interval_settings:
   collection_interval: 60s
+
+awscontainerinsightreceiver/customname:
+  collection_interval: 10s
+  container_orchestrator: ecs
+  add_service_as_attribute: false
+  prefer_full_pod_name: true
+  add_full_pod_name_metric_label: true
+
+awscontainerinsightreceiver/role_delegation:
+  region: us-west-2
+  role_arn: arn:aws:iam::123456789012:role/CrossAccountRole
+  external_id: unique-id-for-secondary

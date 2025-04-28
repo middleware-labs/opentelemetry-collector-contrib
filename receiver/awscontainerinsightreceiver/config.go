@@ -27,4 +27,9 @@ type Config struct {
 	// If false FullPodName label is not added
 	// The default value is false
 	AddFullPodNameMetricLabel bool `mapstructure:"add_full_pod_name_metric_label"`
+
+	// AWS credentials settings for role delegation
+	Region     string `mapstructure:"region"`
+	RoleARN    string `mapstructure:"role_arn"`
+	ExternalID string `mapstructure:"external_id"`
 }
