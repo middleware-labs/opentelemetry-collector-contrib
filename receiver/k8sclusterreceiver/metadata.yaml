@@ -532,6 +532,16 @@ resource_attributes:
     description: The k8s statefulset name.
     type: string
     enabled: true
+  
+  k8s.statefulset.service_name:
+    description: The k8s statefulset service name.
+    type: string
+    enabled: true
+
+  k8s.statefulset.pod_management_policy:
+    description: The k8s statefulset Pod creation and termination order policy.
+    type: string
+    enabled: true
 
   k8s.deployment.uid:
     description: The UID of the Deployment.
@@ -655,6 +665,16 @@ resource_attributes:
 
   k8s.daemonset.start_time:
     description: "The start time of the Daemonset."
+    enabled: true
+    type: string
+
+  k8s.daemonset.selectors:
+    description: "The selectors used to identify which nodes the DaemonSet pods should be scheduled on."
+    enabled: true
+    type: string
+
+  k8s.daemonset.strategy:
+    description: "The deployment strategy used for DaemonSet updates (RollingUpdate or OnDelete)."
     enabled: true
     type: string
 

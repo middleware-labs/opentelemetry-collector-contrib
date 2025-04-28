@@ -252,10 +252,24 @@ func (rb *ResourceBuilder) SetK8sDaemonsetName(val string) {
 	}
 }
 
+// SetK8sDaemonsetSelectors sets provided value as "k8s.daemonset.selectors" attribute.
+func (rb *ResourceBuilder) SetK8sDaemonsetSelectors(val string) {
+	if rb.config.K8sDaemonsetSelectors.Enabled {
+		rb.res.Attributes().PutStr("k8s.daemonset.selectors", val)
+	}
+}
+
 // SetK8sDaemonsetStartTime sets provided value as "k8s.daemonset.start_time" attribute.
 func (rb *ResourceBuilder) SetK8sDaemonsetStartTime(val string) {
 	if rb.config.K8sDaemonsetStartTime.Enabled {
 		rb.res.Attributes().PutStr("k8s.daemonset.start_time", val)
+	}
+}
+
+// SetK8sDaemonsetStrategy sets provided value as "k8s.daemonset.strategy" attribute.
+func (rb *ResourceBuilder) SetK8sDaemonsetStrategy(val string) {
+	if rb.config.K8sDaemonsetStrategy.Enabled {
+		rb.res.Attributes().PutStr("k8s.daemonset.strategy", val)
 	}
 }
 
@@ -935,6 +949,20 @@ func (rb *ResourceBuilder) SetK8sServiceaccountUID(val string) {
 func (rb *ResourceBuilder) SetK8sStatefulsetName(val string) {
 	if rb.config.K8sStatefulsetName.Enabled {
 		rb.res.Attributes().PutStr("k8s.statefulset.name", val)
+	}
+}
+
+// SetK8sStatefulsetPodManagementPolicy sets provided value as "k8s.statefulset.pod_management_policy" attribute.
+func (rb *ResourceBuilder) SetK8sStatefulsetPodManagementPolicy(val string) {
+	if rb.config.K8sStatefulsetPodManagementPolicy.Enabled {
+		rb.res.Attributes().PutStr("k8s.statefulset.pod_management_policy", val)
+	}
+}
+
+// SetK8sStatefulsetServiceName sets provided value as "k8s.statefulset.service_name" attribute.
+func (rb *ResourceBuilder) SetK8sStatefulsetServiceName(val string) {
+	if rb.config.K8sStatefulsetServiceName.Enabled {
+		rb.res.Attributes().PutStr("k8s.statefulset.service_name", val)
 	}
 }
 

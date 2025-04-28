@@ -316,7 +316,9 @@ type ResourceAttributesConfig struct {
 	K8sCronjobSuspend                             ResourceAttributeConfig `mapstructure:"k8s.cronjob.suspend"`
 	K8sCronjobUID                                 ResourceAttributeConfig `mapstructure:"k8s.cronjob.uid"`
 	K8sDaemonsetName                              ResourceAttributeConfig `mapstructure:"k8s.daemonset.name"`
+	K8sDaemonsetSelectors                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.selectors"`
 	K8sDaemonsetStartTime                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.start_time"`
+	K8sDaemonsetStrategy                          ResourceAttributeConfig `mapstructure:"k8s.daemonset.strategy"`
 	K8sDaemonsetUID                               ResourceAttributeConfig `mapstructure:"k8s.daemonset.uid"`
 	K8sDeploymentName                             ResourceAttributeConfig `mapstructure:"k8s.deployment.name"`
 	K8sDeploymentStartTime                        ResourceAttributeConfig `mapstructure:"k8s.deployment.start_time"`
@@ -414,6 +416,8 @@ type ResourceAttributesConfig struct {
 	K8sServiceaccountType                         ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.type"`
 	K8sServiceaccountUID                          ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.uid"`
 	K8sStatefulsetName                            ResourceAttributeConfig `mapstructure:"k8s.statefulset.name"`
+	K8sStatefulsetPodManagementPolicy             ResourceAttributeConfig `mapstructure:"k8s.statefulset.pod_management_policy"`
+	K8sStatefulsetServiceName                     ResourceAttributeConfig `mapstructure:"k8s.statefulset.service_name"`
 	K8sStatefulsetStartTime                       ResourceAttributeConfig `mapstructure:"k8s.statefulset.start_time"`
 	K8sStatefulsetUID                             ResourceAttributeConfig `mapstructure:"k8s.statefulset.uid"`
 	OpenshiftClusterquotaName                     ResourceAttributeConfig `mapstructure:"openshift.clusterquota.name"`
@@ -523,7 +527,13 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sDaemonsetName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sDaemonsetSelectors: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sDaemonsetStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sDaemonsetStrategy: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sDaemonsetUID: ResourceAttributeConfig{
@@ -815,6 +825,12 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		K8sStatefulsetName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetPodManagementPolicy: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetServiceName: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sStatefulsetStartTime: ResourceAttributeConfig{
