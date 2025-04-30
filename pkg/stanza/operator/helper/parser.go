@@ -25,15 +25,16 @@ func NewParserConfig(operatorID, operatorType string) ParserConfig {
 
 // ParserConfig provides the basic implementation of a parser config.
 type ParserConfig struct {
-	TransformerConfig `mapstructure:",squash"`
-	ParseFrom         entry.Field         `mapstructure:"parse_from"`
-	ParseTo           entry.RootableField `mapstructure:"parse_to"`
-	BodyField         *entry.Field        `mapstructure:"body"`
-	TimeParser        *TimeParser         `mapstructure:"timestamp,omitempty"`
-	SeverityConfig    *SeverityConfig     `mapstructure:"severity,omitempty"`
-	TraceParser       *TraceParser        `mapstructure:"trace,omitempty"`
-	ScopeNameParser   *ScopeNameParser    `mapstructure:"scope_name,omitempty"`
-	Flatten           bool                `mapstructure:"flatten"`
+	TransformerConfig       `mapstructure:",squash"`
+	ParseFrom               entry.Field              `mapstructure:"parse_from"`
+	ParseTo                 entry.RootableField      `mapstructure:"parse_to"`
+	BodyField               *entry.Field             `mapstructure:"body"`
+	TimeParser              *TimeParser              `mapstructure:"timestamp,omitempty"`
+	SeverityConfig          *SeverityConfig          `mapstructure:"severity,omitempty"`
+	TraceParser             *TraceParser             `mapstructure:"trace,omitempty"`
+	ScopeNameParser         *ScopeNameParser         `mapstructure:"scope_name,omitempty"`
+	Flatten                 bool                     `mapstructure:"flatten"`
+	SeverityDetectionConfig *SeverityDetectionConfig `mapstructure:"severity_detection,omitempty"`
 }
 
 // Build will build a parser operator.
@@ -81,20 +82,28 @@ func (c ParserConfig) Build(set component.TelemetrySettings) (ParserOperator, er
 		parserOperator.ScopeNameParser = c.ScopeNameParser
 	}
 
+	if c.SeverityDetectionConfig != nil {
+		severityDetectionParser, err := c.SeverityDetectionConfig.Build(set)
+		if err != nil {
+			return ParserOperator{}, err
+		}
+		parserOperator.SeverityDetectionParser = &severityDetectionParser
+	}
 	return parserOperator, nil
 }
 
 // ParserOperator provides a basic implementation of a parser operator.
 type ParserOperator struct {
 	TransformerOperator
-	ParseFrom       entry.Field
-	ParseTo         entry.Field
-	BodyField       *entry.Field
-	TimeParser      *TimeParser
-	SeverityParser  *SeverityParser
-	TraceParser     *TraceParser
-	ScopeNameParser *ScopeNameParser
-	Flatten         bool
+	ParseFrom               entry.Field
+	ParseTo                 entry.Field
+	BodyField               *entry.Field
+	TimeParser              *TimeParser
+	SeverityParser          *SeverityParser
+	TraceParser             *TraceParser
+	ScopeNameParser         *ScopeNameParser
+	Flatten                 bool
+	SeverityDetectionParser *SeverityDetectionParser
 }
 
 // ProcessWith will run ParseWith on the entry, then forward the entry on to the next operators.
