@@ -1,0 +1,26 @@
+# pkg/stanza/operator/parser/severitydetect/testdata/config.yaml
+default:
+  type: severity_detection_parser
+on_error_drop:
+  type: severity_detection_parser
+  on_error: drop
+parse_with_preset:
+  type: severity_detection_parser
+  preset: detection
+custom_mapping:
+  type: severity_detection_parser
+  mapping:
+    error:
+      - "exception"
+      - "failed"
+    warn:
+      - "warning:"
+      - "attention"
+    info: 
+      - "success"
+      - "completed"
+overwrite_text:
+  type: severity_detection_parser
+  overwrite_text: true
+  mapping:
+    error: "error occurred"
