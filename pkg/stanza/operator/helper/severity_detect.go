@@ -12,8 +12,9 @@ import (
 
 // SeverityDetectionParser is a helper that detects severity by analyzing the log body content
 type SeverityDetectionParser struct {
-	Mapping       severityMap
-	overwriteText bool
+	Mapping                severityMap
+	overwriteText          bool
+	multiMatchHighSeverity bool
 }
 
 // Parse will analyze the log body for severity indicators and set the entry severity accordingly
@@ -47,9 +48,8 @@ func (p *SeverityDetectionParser) Parse(ent *entry.Entry) error {
 	bodyLower := strings.ToLower(bodyStr)
 
 	// Find the first matching severity from the mapping
-	var matchedSeverity entry.Severity
+	matchedSeverity := entry.Default
 	var matchedText string
-	var found bool
 
 	// Check each pattern in the mapping
 	for pattern, sev := range p.Mapping {
@@ -65,14 +65,22 @@ func (p *SeverityDetectionParser) Parse(ent *entry.Entry) error {
 			)
 		}
 		if matched {
+			if p.multiMatchHighSeverity {
+				if sev > matchedSeverity {
+					matchedSeverity = sev
+					matchedText = pattern
+				}
+				continue
+			}
+
 			matchedSeverity = sev
 			matchedText = pattern
-			found = true
 			break
+
 		}
 	}
 
-	if !found {
+	if matchedSeverity == entry.Default {
 		matchedSeverity = entry.Info
 		matchedText = "INFO"
 	}

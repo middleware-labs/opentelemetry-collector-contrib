@@ -17,9 +17,10 @@ func NewSeverityDetectionConfig() SeverityDetectionConfig {
 
 // SeverityDetectionConfig allows users to specify how to detect severity from log body content
 type SeverityDetectionConfig struct {
-	Preset        string         `mapstructure:"preset,omitempty"`
-	Mapping       map[string]any `mapstructure:"mapping,omitempty"`
-	OverwriteText bool           `mapstructure:"overwrite_text,omitempty"`
+	Preset                 string         `mapstructure:"preset,omitempty"`
+	Mapping                map[string]any `mapstructure:"mapping,omitempty"`
+	OverwriteText          bool           `mapstructure:"overwrite_text,omitempty"`
+	MultiMatchHighSeverity bool           `mapstructure:"multi_match_high_severity,omitempty"`
 }
 
 // Build builds a SeverityDetectionParser from a SeverityDetectionConfig
@@ -66,8 +67,9 @@ func (c *SeverityDetectionConfig) Build(_ component.TelemetrySettings) (Severity
 	}
 
 	p := SeverityDetectionParser{
-		Mapping:       operatorMapping,
-		overwriteText: c.OverwriteText,
+		Mapping:                operatorMapping,
+		overwriteText:          c.OverwriteText,
+		multiMatchHighSeverity: c.MultiMatchHighSeverity,
 	}
 
 	return p, nil
