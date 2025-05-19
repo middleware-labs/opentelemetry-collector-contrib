@@ -882,6 +882,18 @@ metrics:
     unit: "{pod}"
     gauge:
      value_type: int
+  k8s.deployment.current:
+    enabled: true
+    description: Total number of current non-terminated pods targeted by this deployment
+    unit: "{pod}"
+    gauge:
+     value_type: int
+  k8s.deployment.updated:
+    enabled: true
+    description: Total number of non-terminated pods targeted by this deployment that have the updated version specified in the deployment spec
+    unit: "{pod}"
+    gauge:
+     value_type: int
 
   k8s.cronjob.active_jobs:
     enabled: true
@@ -1003,6 +1015,18 @@ metrics:
   k8s.replicaset.available:
     enabled: true
     description: Total number of available pods (ready for at least minReadySeconds) targeted by this replicaset
+    unit: "{pod}"
+    gauge:
+      value_type: int
+  k8s.replicaset.current:
+    enabled: true
+    description: Total number of current pods targeted by this replicaset
+    unit: "{pod}"
+    gauge:
+      value_type: int
+  k8s.replicaset.ready:
+    enabled: true
+    description: Total number of ready pods (pods that have passed readiness checks) targeted by this replicaset
     unit: "{pod}"
     gauge:
       value_type: int

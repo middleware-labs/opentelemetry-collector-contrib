@@ -142,7 +142,15 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordK8sDeploymentCurrentDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordK8sDeploymentDesiredDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -220,7 +228,15 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordK8sReplicasetCurrentDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordK8sReplicasetDesiredDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordK8sReplicasetReadyDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -666,12 +682,36 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.deployment.current":
+					assert.False(t, validatedMetrics["k8s.deployment.current"], "Found a duplicate in the metrics slice: k8s.deployment.current")
+					validatedMetrics["k8s.deployment.current"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of current non-terminated pods targeted by this deployment", ms.At(i).Description())
+					assert.Equal(t, "{pod}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.deployment.desired":
 					assert.False(t, validatedMetrics["k8s.deployment.desired"], "Found a duplicate in the metrics slice: k8s.deployment.desired")
 					validatedMetrics["k8s.deployment.desired"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "Number of desired pods in this deployment", ms.At(i).Description())
+					assert.Equal(t, "{pod}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.deployment.updated":
+					assert.False(t, validatedMetrics["k8s.deployment.updated"], "Found a duplicate in the metrics slice: k8s.deployment.updated")
+					validatedMetrics["k8s.deployment.updated"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of non-terminated pods targeted by this deployment that have the updated version specified in the deployment spec", ms.At(i).Description())
 					assert.Equal(t, "{pod}", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -909,12 +949,36 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.replicaset.current":
+					assert.False(t, validatedMetrics["k8s.replicaset.current"], "Found a duplicate in the metrics slice: k8s.replicaset.current")
+					validatedMetrics["k8s.replicaset.current"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of current pods targeted by this replicaset", ms.At(i).Description())
+					assert.Equal(t, "{pod}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.replicaset.desired":
 					assert.False(t, validatedMetrics["k8s.replicaset.desired"], "Found a duplicate in the metrics slice: k8s.replicaset.desired")
 					validatedMetrics["k8s.replicaset.desired"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "Number of desired pods in this replicaset", ms.At(i).Description())
+					assert.Equal(t, "{pod}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.replicaset.ready":
+					assert.False(t, validatedMetrics["k8s.replicaset.ready"], "Found a duplicate in the metrics slice: k8s.replicaset.ready")
+					validatedMetrics["k8s.replicaset.ready"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of ready pods (pods that have passed readiness checks) targeted by this replicaset", ms.At(i).Description())
 					assert.Equal(t, "{pod}", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())

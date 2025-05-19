@@ -46,7 +46,9 @@ type MetricsConfig struct {
 	K8sDaemonsetMisscheduledNodes       MetricConfig `mapstructure:"k8s.daemonset.misscheduled_nodes"`
 	K8sDaemonsetReadyNodes              MetricConfig `mapstructure:"k8s.daemonset.ready_nodes"`
 	K8sDeploymentAvailable              MetricConfig `mapstructure:"k8s.deployment.available"`
+	K8sDeploymentCurrent                MetricConfig `mapstructure:"k8s.deployment.current"`
 	K8sDeploymentDesired                MetricConfig `mapstructure:"k8s.deployment.desired"`
+	K8sDeploymentUpdated                MetricConfig `mapstructure:"k8s.deployment.updated"`
 	K8sHpaCurrentReplicas               MetricConfig `mapstructure:"k8s.hpa.current_replicas"`
 	K8sHpaDesiredReplicas               MetricConfig `mapstructure:"k8s.hpa.desired_replicas"`
 	K8sHpaMaxReplicas                   MetricConfig `mapstructure:"k8s.hpa.max_replicas"`
@@ -66,7 +68,9 @@ type MetricsConfig struct {
 	K8sPodPhase                         MetricConfig `mapstructure:"k8s.pod.phase"`
 	K8sPodStatusReason                  MetricConfig `mapstructure:"k8s.pod.status_reason"`
 	K8sReplicasetAvailable              MetricConfig `mapstructure:"k8s.replicaset.available"`
+	K8sReplicasetCurrent                MetricConfig `mapstructure:"k8s.replicaset.current"`
 	K8sReplicasetDesired                MetricConfig `mapstructure:"k8s.replicaset.desired"`
+	K8sReplicasetReady                  MetricConfig `mapstructure:"k8s.replicaset.ready"`
 	K8sReplicationControllerAvailable   MetricConfig `mapstructure:"k8s.replication_controller.available"`
 	K8sReplicationControllerDesired     MetricConfig `mapstructure:"k8s.replication_controller.desired"`
 	K8sResourceQuotaHardLimit           MetricConfig `mapstructure:"k8s.resource_quota.hard_limit"`
@@ -141,7 +145,13 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sDeploymentAvailable: MetricConfig{
 			Enabled: true,
 		},
+		K8sDeploymentCurrent: MetricConfig{
+			Enabled: true,
+		},
 		K8sDeploymentDesired: MetricConfig{
+			Enabled: true,
+		},
+		K8sDeploymentUpdated: MetricConfig{
 			Enabled: true,
 		},
 		K8sHpaCurrentReplicas: MetricConfig{
@@ -201,7 +211,13 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sReplicasetAvailable: MetricConfig{
 			Enabled: true,
 		},
+		K8sReplicasetCurrent: MetricConfig{
+			Enabled: true,
+		},
 		K8sReplicasetDesired: MetricConfig{
+			Enabled: true,
+		},
+		K8sReplicasetReady: MetricConfig{
 			Enabled: true,
 		},
 		K8sReplicationControllerAvailable: MetricConfig{
