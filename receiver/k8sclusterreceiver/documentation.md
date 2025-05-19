@@ -156,9 +156,25 @@ Total number of available pods (ready for at least minReadySeconds) targeted by 
 | ---- | ----------- | ---------- |
 | {pod} | Gauge | Int |
 
+### k8s.deployment.current
+
+Total number of current non-terminated pods targeted by this deployment
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {pod} | Gauge | Int |
+
 ### k8s.deployment.desired
 
 Number of desired pods in this deployment
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {pod} | Gauge | Int |
+
+### k8s.deployment.updated
+
+Total number of non-terminated pods targeted by this deployment that have the updated version specified in the deployment spec
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
@@ -300,9 +316,25 @@ Total number of available pods (ready for at least minReadySeconds) targeted by 
 | ---- | ----------- | ---------- |
 | {pod} | Gauge | Int |
 
+### k8s.replicaset.current
+
+Total number of current pods targeted by this replicaset
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {pod} | Gauge | Int |
+
 ### k8s.replicaset.desired
 
 Number of desired pods in this replicaset
+
+| Unit | Metric Type | Value Type |
+| ---- | ----------- | ---------- |
+| {pod} | Gauge | Int |
+
+### k8s.replicaset.ready
+
+Total number of ready pods (pods that have passed readiness checks) targeted by this replicaset
 
 | Unit | Metric Type | Value Type |
 | ---- | ----------- | ---------- |
