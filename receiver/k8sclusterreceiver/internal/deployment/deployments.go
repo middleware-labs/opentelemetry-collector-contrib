@@ -23,6 +23,8 @@ func Transform(deployment *appsv1.Deployment) *appsv1.Deployment {
 		},
 		Status: appsv1.DeploymentStatus{
 			AvailableReplicas: deployment.Status.AvailableReplicas,
+			UpdatedReplicas:   deployment.Status.UpdatedReplicas,
+			Replicas:          deployment.Status.Replicas,
 		},
 	}
 }
@@ -36,6 +38,8 @@ func RecordMetrics(mb *metadata.MetricsBuilder, dep *appsv1.Deployment, ts pcomm
 	eb := mb.ForK8sDeployment(e)
 	eb.RecordK8sDeploymentDesiredDataPoint(ts, int64(*dep.Spec.Replicas))
 	eb.RecordK8sDeploymentAvailableDataPoint(ts, int64(dep.Status.AvailableReplicas))
+	eb.RecordK8sDeploymentCurrentDataPoint(ts, int64(dep.Status.Replicas))
+    eb.RecordK8sDeploymentUpdatedDataPoint(ts, int64(dep.Status.UpdatedReplicas))
 	eb.Emit()
 }
 
