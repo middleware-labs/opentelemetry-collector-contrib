@@ -23,6 +23,8 @@ func Transform(deployment *appsv1.Deployment) *appsv1.Deployment {
 		},
 		Status: appsv1.DeploymentStatus{
 			AvailableReplicas: deployment.Status.AvailableReplicas,
+			UpdatedReplicas:   deployment.Status.UpdatedReplicas,
+			Replicas:          deployment.Status.Replicas,
 		},
 	}
 }
@@ -32,6 +34,8 @@ func RecordMetrics(mb *metadata.MetricsBuilder, dep *appsv1.Deployment, ts pcomm
 	if dep.Spec.Replicas != nil {
 		replicas = int64(*dep.Spec.Replicas)
 	}
+	mb.RecordK8sDeploymentCurrentDataPoint(ts, int64(dep.Status.Replicas))
+	mb.RecordK8sDeploymentUpdatedDataPoint(ts, int64(dep.Status.UpdatedReplicas))
 	mb.RecordK8sDeploymentDesiredDataPoint(ts, replicas)
 	mb.RecordK8sDeploymentAvailableDataPoint(ts, int64(dep.Status.AvailableReplicas))
 	rb := mb.NewResourceBuilder()
