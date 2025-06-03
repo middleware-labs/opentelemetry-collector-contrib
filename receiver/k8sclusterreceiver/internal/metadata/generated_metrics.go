@@ -1238,6 +1238,55 @@ func newMetricK8sJobActivePods(cfg MetricConfig) metricK8sJobActivePods {
 	return m
 }
 
+type metricK8sJobBackoffLimit struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills k8s.job.backoff_limit metric with initial data.
+func (m *metricK8sJobBackoffLimit) init() {
+	m.data.SetName("k8s.job.backoff_limit")
+	m.data.SetDescription("Specifies the number of retries before marking a job failed")
+	m.data.SetUnit("")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sJobBackoffLimit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sJobBackoffLimit) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sJobBackoffLimit) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sJobBackoffLimit(cfg MetricConfig) metricK8sJobBackoffLimit {
+	m := metricK8sJobBackoffLimit{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricK8sJobDesiredSuccessfulPods struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -2710,6 +2759,7 @@ type MetricsBuilder struct {
 	metricK8sHpaMinReplicas                   metricK8sHpaMinReplicas
 	metricK8sIngressRuleCount                 metricK8sIngressRuleCount
 	metricK8sJobActivePods                    metricK8sJobActivePods
+	metricK8sJobBackoffLimit                  metricK8sJobBackoffLimit
 	metricK8sJobDesiredSuccessfulPods         metricK8sJobDesiredSuccessfulPods
 	metricK8sJobFailedPods                    metricK8sJobFailedPods
 	metricK8sJobMaxParallelPods               metricK8sJobMaxParallelPods
@@ -2790,6 +2840,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricK8sHpaMinReplicas:                   newMetricK8sHpaMinReplicas(mbc.Metrics.K8sHpaMinReplicas),
 		metricK8sIngressRuleCount:                 newMetricK8sIngressRuleCount(mbc.Metrics.K8sIngressRuleCount),
 		metricK8sJobActivePods:                    newMetricK8sJobActivePods(mbc.Metrics.K8sJobActivePods),
+		metricK8sJobBackoffLimit:                  newMetricK8sJobBackoffLimit(mbc.Metrics.K8sJobBackoffLimit),
 		metricK8sJobDesiredSuccessfulPods:         newMetricK8sJobDesiredSuccessfulPods(mbc.Metrics.K8sJobDesiredSuccessfulPods),
 		metricK8sJobFailedPods:                    newMetricK8sJobFailedPods(mbc.Metrics.K8sJobFailedPods),
 		metricK8sJobMaxParallelPods:               newMetricK8sJobMaxParallelPods(mbc.Metrics.K8sJobMaxParallelPods),
@@ -3020,11 +3071,23 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sDaemonsetName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.daemonset.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.daemonset.selectors"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.daemonset.selectors"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetSelectors.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.daemonset.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.daemonset.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStartTime.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.daemonset.strategy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.daemonset.strategy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetStrategy.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sDaemonsetUID.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.daemonset.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sDaemonsetUID.MetricsInclude)
@@ -3109,6 +3172,12 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 	if mbc.ResourceAttributes.K8sIngressUID.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.ingress.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sIngressUID.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sJobEndTime.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.job.end_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobEndTime.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sJobEndTime.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.job.end_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobEndTime.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sJobName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.job.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobName.MetricsInclude)
@@ -3602,6 +3671,18 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sStatefulsetName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.statefulset.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.statefulset.pod_management_policy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.statefulset.pod_management_policy"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetPodManagementPolicy.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.statefulset.service_name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.statefulset.service_name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetServiceName.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sStatefulsetStartTime.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.statefulset.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sStatefulsetStartTime.MetricsInclude)
 	}
@@ -3733,6 +3814,7 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricK8sHpaMinReplicas.emit(ils.Metrics())
 	mb.metricK8sIngressRuleCount.emit(ils.Metrics())
 	mb.metricK8sJobActivePods.emit(ils.Metrics())
+	mb.metricK8sJobBackoffLimit.emit(ils.Metrics())
 	mb.metricK8sJobDesiredSuccessfulPods.emit(ils.Metrics())
 	mb.metricK8sJobFailedPods.emit(ils.Metrics())
 	mb.metricK8sJobMaxParallelPods.emit(ils.Metrics())
@@ -3916,6 +3998,11 @@ func (mb *MetricsBuilder) RecordK8sIngressRuleCountDataPoint(ts pcommon.Timestam
 // RecordK8sJobActivePodsDataPoint adds a data point to k8s.job.active_pods metric.
 func (mb *MetricsBuilder) RecordK8sJobActivePodsDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricK8sJobActivePods.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordK8sJobBackoffLimitDataPoint adds a data point to k8s.job.backoff_limit metric.
+func (mb *MetricsBuilder) RecordK8sJobBackoffLimitDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricK8sJobBackoffLimit.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordK8sJobDesiredSuccessfulPodsDataPoint adds a data point to k8s.job.desired_successful_pods metric.

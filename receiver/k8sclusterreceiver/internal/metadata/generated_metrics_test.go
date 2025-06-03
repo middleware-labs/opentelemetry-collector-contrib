@@ -170,6 +170,10 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordK8sJobBackoffLimitDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
 
 			defaultMetricsCount++
@@ -316,7 +320,9 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sCronjobSuspend("k8s.cronjob.suspend-val")
 			rb.SetK8sCronjobUID("k8s.cronjob.uid-val")
 			rb.SetK8sDaemonsetName("k8s.daemonset.name-val")
+			rb.SetK8sDaemonsetSelectors("k8s.daemonset.selectors-val")
 			rb.SetK8sDaemonsetStartTime("k8s.daemonset.start_time-val")
+			rb.SetK8sDaemonsetStrategy("k8s.daemonset.strategy-val")
 			rb.SetK8sDaemonsetUID("k8s.daemonset.uid-val")
 			rb.SetK8sDeploymentName("k8s.deployment.name-val")
 			rb.SetK8sDeploymentStartTime("k8s.deployment.start_time-val")
@@ -331,6 +337,7 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sIngressStartTime("k8s.ingress.start_time-val")
 			rb.SetK8sIngressType("k8s.ingress.type-val")
 			rb.SetK8sIngressUID("k8s.ingress.uid-val")
+			rb.SetK8sJobEndTime("k8s.job.end_time-val")
 			rb.SetK8sJobName("k8s.job.name-val")
 			rb.SetK8sJobStartTime("k8s.job.start_time-val")
 			rb.SetK8sJobUID("k8s.job.uid-val")
@@ -413,6 +420,8 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetK8sServiceaccountType("k8s.serviceaccount.type-val")
 			rb.SetK8sServiceaccountUID("k8s.serviceaccount.uid-val")
 			rb.SetK8sStatefulsetName("k8s.statefulset.name-val")
+			rb.SetK8sStatefulsetPodManagementPolicy("k8s.statefulset.pod_management_policy-val")
+			rb.SetK8sStatefulsetServiceName("k8s.statefulset.service_name-val")
 			rb.SetK8sStatefulsetStartTime("k8s.statefulset.start_time-val")
 			rb.SetK8sStatefulsetUID("k8s.statefulset.uid-val")
 			rb.SetOpenshiftClusterquotaName("openshift.clusterquota.name-val")
@@ -736,6 +745,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
 					assert.Equal(t, "The number of actively running pods for a job", ms.At(i).Description())
 					assert.Equal(t, "{pod}", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.job.backoff_limit":
+					assert.False(t, validatedMetrics["k8s.job.backoff_limit"], "Found a duplicate in the metrics slice: k8s.job.backoff_limit")
+					validatedMetrics["k8s.job.backoff_limit"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Specifies the number of retries before marking a job failed", ms.At(i).Description())
+					assert.Equal(t, "", ms.At(i).Unit())
 					dp := ms.At(i).Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
