@@ -22,6 +22,8 @@ func Transform(rs *appsv1.ReplicaSet) *appsv1.ReplicaSet {
 		},
 		Status: appsv1.ReplicaSetStatus{
 			AvailableReplicas: rs.Status.AvailableReplicas,
+			ReadyReplicas:     rs.Status.ReadyReplicas,
+			Replicas:          rs.Status.Replicas,
 		},
 	}
 }
@@ -37,6 +39,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, rs *appsv1.ReplicaSet, ts pcommo
 		eb.RecordK8sReplicasetDesiredDataPoint(ts, int64(*rs.Spec.Replicas))
 		eb.RecordK8sReplicasetAvailableDataPoint(ts, int64(rs.Status.AvailableReplicas))
 	}
+    eb.RecordK8sReplicasetReadyDataPoint(ts, int64(rs.Status.ReadyReplicas))
 	eb.Emit()
 }
 
