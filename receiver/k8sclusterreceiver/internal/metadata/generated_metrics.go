@@ -895,6 +895,55 @@ func newMetricK8sDeploymentAvailable(cfg MetricConfig) metricK8sDeploymentAvaila
 	return m
 }
 
+type metricK8sDeploymentCurrent struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills k8s.deployment.current metric with initial data.
+func (m *metricK8sDeploymentCurrent) init() {
+	m.data.SetName("k8s.deployment.current")
+	m.data.SetDescription("Total number of current non-terminated pods targeted by this deployment")
+	m.data.SetUnit("{pod}")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sDeploymentCurrent) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sDeploymentCurrent) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sDeploymentCurrent) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sDeploymentCurrent(cfg MetricConfig) metricK8sDeploymentCurrent {
+	m := metricK8sDeploymentCurrent{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricK8sDeploymentDesired struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -937,6 +986,55 @@ func (m *metricK8sDeploymentDesired) emit(metrics pmetric.MetricSlice) {
 
 func newMetricK8sDeploymentDesired(cfg MetricConfig) metricK8sDeploymentDesired {
 	m := metricK8sDeploymentDesired{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricK8sDeploymentUpdated struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills k8s.deployment.updated metric with initial data.
+func (m *metricK8sDeploymentUpdated) init() {
+	m.data.SetName("k8s.deployment.updated")
+	m.data.SetDescription("Total number of non-terminated pods targeted by this deployment that have the updated version specified in the deployment spec")
+	m.data.SetUnit("{pod}")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sDeploymentUpdated) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sDeploymentUpdated) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sDeploymentUpdated) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sDeploymentUpdated(cfg MetricConfig) metricK8sDeploymentUpdated {
+	m := metricK8sDeploymentUpdated{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1877,6 +1975,55 @@ func newMetricK8sReplicasetAvailable(cfg MetricConfig) metricK8sReplicasetAvaila
 	return m
 }
 
+type metricK8sReplicasetCurrent struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills k8s.replicaset.current metric with initial data.
+func (m *metricK8sReplicasetCurrent) init() {
+	m.data.SetName("k8s.replicaset.current")
+	m.data.SetDescription("Total number of current pods targeted by this replicaset")
+	m.data.SetUnit("{pod}")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sReplicasetCurrent) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sReplicasetCurrent) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sReplicasetCurrent) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sReplicasetCurrent(cfg MetricConfig) metricK8sReplicasetCurrent {
+	m := metricK8sReplicasetCurrent{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricK8sReplicasetDesired struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -1919,6 +2066,55 @@ func (m *metricK8sReplicasetDesired) emit(metrics pmetric.MetricSlice) {
 
 func newMetricK8sReplicasetDesired(cfg MetricConfig) metricK8sReplicasetDesired {
 	m := metricK8sReplicasetDesired{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricK8sReplicasetReady struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills k8s.replicaset.ready metric with initial data.
+func (m *metricK8sReplicasetReady) init() {
+	m.data.SetName("k8s.replicaset.ready")
+	m.data.SetDescription("Total number of ready pods (pods that have passed readiness checks) targeted by this replicaset")
+	m.data.SetUnit("{pod}")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sReplicasetReady) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sReplicasetReady) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sReplicasetReady) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sReplicasetReady(cfg MetricConfig) metricK8sReplicasetReady {
+	m := metricK8sReplicasetReady{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2752,7 +2948,9 @@ type MetricsBuilder struct {
 	metricK8sDaemonsetMisscheduledNodes       metricK8sDaemonsetMisscheduledNodes
 	metricK8sDaemonsetReadyNodes              metricK8sDaemonsetReadyNodes
 	metricK8sDeploymentAvailable              metricK8sDeploymentAvailable
+	metricK8sDeploymentCurrent                metricK8sDeploymentCurrent
 	metricK8sDeploymentDesired                metricK8sDeploymentDesired
+	metricK8sDeploymentUpdated                metricK8sDeploymentUpdated
 	metricK8sHpaCurrentReplicas               metricK8sHpaCurrentReplicas
 	metricK8sHpaDesiredReplicas               metricK8sHpaDesiredReplicas
 	metricK8sHpaMaxReplicas                   metricK8sHpaMaxReplicas
@@ -2772,7 +2970,9 @@ type MetricsBuilder struct {
 	metricK8sPodPhase                         metricK8sPodPhase
 	metricK8sPodStatusReason                  metricK8sPodStatusReason
 	metricK8sReplicasetAvailable              metricK8sReplicasetAvailable
+	metricK8sReplicasetCurrent                metricK8sReplicasetCurrent
 	metricK8sReplicasetDesired                metricK8sReplicasetDesired
+	metricK8sReplicasetReady                  metricK8sReplicasetReady
 	metricK8sReplicationControllerAvailable   metricK8sReplicationControllerAvailable
 	metricK8sReplicationControllerDesired     metricK8sReplicationControllerDesired
 	metricK8sResourceQuotaHardLimit           metricK8sResourceQuotaHardLimit
@@ -2833,7 +3033,9 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricK8sDaemonsetMisscheduledNodes:       newMetricK8sDaemonsetMisscheduledNodes(mbc.Metrics.K8sDaemonsetMisscheduledNodes),
 		metricK8sDaemonsetReadyNodes:              newMetricK8sDaemonsetReadyNodes(mbc.Metrics.K8sDaemonsetReadyNodes),
 		metricK8sDeploymentAvailable:              newMetricK8sDeploymentAvailable(mbc.Metrics.K8sDeploymentAvailable),
+		metricK8sDeploymentCurrent:                newMetricK8sDeploymentCurrent(mbc.Metrics.K8sDeploymentCurrent),
 		metricK8sDeploymentDesired:                newMetricK8sDeploymentDesired(mbc.Metrics.K8sDeploymentDesired),
+		metricK8sDeploymentUpdated:                newMetricK8sDeploymentUpdated(mbc.Metrics.K8sDeploymentUpdated),
 		metricK8sHpaCurrentReplicas:               newMetricK8sHpaCurrentReplicas(mbc.Metrics.K8sHpaCurrentReplicas),
 		metricK8sHpaDesiredReplicas:               newMetricK8sHpaDesiredReplicas(mbc.Metrics.K8sHpaDesiredReplicas),
 		metricK8sHpaMaxReplicas:                   newMetricK8sHpaMaxReplicas(mbc.Metrics.K8sHpaMaxReplicas),
@@ -2853,7 +3055,9 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricK8sPodPhase:                         newMetricK8sPodPhase(mbc.Metrics.K8sPodPhase),
 		metricK8sPodStatusReason:                  newMetricK8sPodStatusReason(mbc.Metrics.K8sPodStatusReason),
 		metricK8sReplicasetAvailable:              newMetricK8sReplicasetAvailable(mbc.Metrics.K8sReplicasetAvailable),
+		metricK8sReplicasetCurrent:                newMetricK8sReplicasetCurrent(mbc.Metrics.K8sReplicasetCurrent),
 		metricK8sReplicasetDesired:                newMetricK8sReplicasetDesired(mbc.Metrics.K8sReplicasetDesired),
+		metricK8sReplicasetReady:                  newMetricK8sReplicasetReady(mbc.Metrics.K8sReplicasetReady),
 		metricK8sReplicationControllerAvailable:   newMetricK8sReplicationControllerAvailable(mbc.Metrics.K8sReplicationControllerAvailable),
 		metricK8sReplicationControllerDesired:     newMetricK8sReplicationControllerDesired(mbc.Metrics.K8sReplicationControllerDesired),
 		metricK8sResourceQuotaHardLimit:           newMetricK8sResourceQuotaHardLimit(mbc.Metrics.K8sResourceQuotaHardLimit),
@@ -3807,7 +4011,9 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricK8sDaemonsetMisscheduledNodes.emit(ils.Metrics())
 	mb.metricK8sDaemonsetReadyNodes.emit(ils.Metrics())
 	mb.metricK8sDeploymentAvailable.emit(ils.Metrics())
+	mb.metricK8sDeploymentCurrent.emit(ils.Metrics())
 	mb.metricK8sDeploymentDesired.emit(ils.Metrics())
+	mb.metricK8sDeploymentUpdated.emit(ils.Metrics())
 	mb.metricK8sHpaCurrentReplicas.emit(ils.Metrics())
 	mb.metricK8sHpaDesiredReplicas.emit(ils.Metrics())
 	mb.metricK8sHpaMaxReplicas.emit(ils.Metrics())
@@ -3827,7 +4033,9 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricK8sPodPhase.emit(ils.Metrics())
 	mb.metricK8sPodStatusReason.emit(ils.Metrics())
 	mb.metricK8sReplicasetAvailable.emit(ils.Metrics())
+	mb.metricK8sReplicasetCurrent.emit(ils.Metrics())
 	mb.metricK8sReplicasetDesired.emit(ils.Metrics())
+	mb.metricK8sReplicasetReady.emit(ils.Metrics())
 	mb.metricK8sReplicationControllerAvailable.emit(ils.Metrics())
 	mb.metricK8sReplicationControllerDesired.emit(ils.Metrics())
 	mb.metricK8sResourceQuotaHardLimit.emit(ils.Metrics())
@@ -3965,9 +4173,19 @@ func (mb *MetricsBuilder) RecordK8sDeploymentAvailableDataPoint(ts pcommon.Times
 	mb.metricK8sDeploymentAvailable.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordK8sDeploymentCurrentDataPoint adds a data point to k8s.deployment.current metric.
+func (mb *MetricsBuilder) RecordK8sDeploymentCurrentDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricK8sDeploymentCurrent.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordK8sDeploymentDesiredDataPoint adds a data point to k8s.deployment.desired metric.
 func (mb *MetricsBuilder) RecordK8sDeploymentDesiredDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricK8sDeploymentDesired.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordK8sDeploymentUpdatedDataPoint adds a data point to k8s.deployment.updated metric.
+func (mb *MetricsBuilder) RecordK8sDeploymentUpdatedDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricK8sDeploymentUpdated.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordK8sHpaCurrentReplicasDataPoint adds a data point to k8s.hpa.current_replicas metric.
@@ -4065,9 +4283,19 @@ func (mb *MetricsBuilder) RecordK8sReplicasetAvailableDataPoint(ts pcommon.Times
 	mb.metricK8sReplicasetAvailable.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordK8sReplicasetCurrentDataPoint adds a data point to k8s.replicaset.current metric.
+func (mb *MetricsBuilder) RecordK8sReplicasetCurrentDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricK8sReplicasetCurrent.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordK8sReplicasetDesiredDataPoint adds a data point to k8s.replicaset.desired metric.
 func (mb *MetricsBuilder) RecordK8sReplicasetDesiredDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricK8sReplicasetDesired.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordK8sReplicasetReadyDataPoint adds a data point to k8s.replicaset.ready metric.
+func (mb *MetricsBuilder) RecordK8sReplicasetReadyDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricK8sReplicasetReady.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordK8sReplicationControllerAvailableDataPoint adds a data point to k8s.replication_controller.available metric.
