@@ -569,6 +569,16 @@ resource_attributes:
     description: The k8s namespace name.
     type: string
     enabled: true
+  
+  k8s.statefulset.service_name:
+    description: The k8s statefulset service name.
+    type: string
+    enabled: true
+
+  k8s.statefulset.pod_management_policy:
+    description: The k8s statefulset Pod creation and termination order policy.
+    type: string
+    enabled: true
 
   k8s.namespace.uid:
     description: The k8s namespace uid.
@@ -721,6 +731,16 @@ attributes:
     enabled: true
     type: string
 
+  k8s.daemonset.selectors:
+    description: "The selectors used to identify which nodes the DaemonSet pods should be scheduled on."
+    enabled: true
+    type: string
+
+  k8s.daemonset.strategy:
+    description: "The deployment strategy used for DaemonSet updates (RollingUpdate or OnDelete)."
+    enabled: true
+    type: string
+
   k8s.deployment.start_time:
     description: "The start time of the Deployment."
     enabled: true
@@ -728,6 +748,11 @@ attributes:
 
   k8s.job.start_time:
     description: "The start time of the Job."
+    enabled: true
+    type: string
+
+  k8s.job.end_time:
+    description: "The end time of the Job."
     enabled: true
     type: string
 
@@ -1067,6 +1092,12 @@ metrics:
     unit: "{pod}"
     stability:
       level: development
+    gauge:
+      value_type: int
+  k8s.job.backoff_limit:
+    enabled: true
+    description: Specifies the number of retries before marking a job failed
+    unit: ""
     gauge:
       value_type: int
 
