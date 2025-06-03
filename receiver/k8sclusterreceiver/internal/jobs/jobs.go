@@ -18,6 +18,9 @@ func RecordMetrics(mb *metadata.MetricsBuilder, j *batchv1.Job, ts pcommon.Times
 	e.SetK8sNamespaceName(j.Namespace)
 	e.SetK8sJobStartTime(j.GetCreationTimestamp().String())
 	e.SetK8sClusterName("unknown")
+	if j.Status.CompletionTime != nil && !j.Status.CompletionTime.IsZero() {
+        e.SetK8sJobEndTime(j.Status.CompletionTime.String())
+    }
 	eb := mb.ForK8sJob(e)
 	eb.RecordK8sJobActivePodsDataPoint(ts, int64(j.Status.Active))
 	eb.RecordK8sJobFailedPodsDataPoint(ts, int64(j.Status.Failed))
@@ -40,11 +43,13 @@ func Transform(job *batchv1.Job) *batchv1.Job {
 		Spec: batchv1.JobSpec{
 			Completions: job.Spec.Completions,
 			Parallelism: job.Spec.Parallelism,
+			BackoffLimit: job.Spec.BackoffLimit,
 		},
 		Status: batchv1.JobStatus{
 			Active:    job.Status.Active,
 			Succeeded: job.Status.Succeeded,
 			Failed:    job.Status.Failed,
+			CompletionTime: job.Status.CompletionTime,
 		},
 	}
 }
