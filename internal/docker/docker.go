@@ -131,7 +131,6 @@ func (dc *Client) Containers() []Container {
 func (dc *Client) LoadContainerList(ctx context.Context) error {
 	// Build initial container maps before starting loop
 	filters := make(docker.Filters)
-	filters.Add("status", "running")
 	options := docker.ContainerListOptions{
 		Filters: filters,
 	}
@@ -424,13 +423,12 @@ func (dc *Client) persistContainer(containerJSON *ctypes.InspectResponse) {
 	}
 
 	cid := containerJSON.ID
-	if !containerJSON.State.Running || containerJSON.State.Paused {
-		dc.logger.Debug("Docker container not running.  Will not persist.", zap.String("id", cid))
-		dc.RemoveContainer(cid)
-		return
-	}
+	dc.logger.Debug("Monitoring Docker container",
+		zap.String("id", cid),
+		zap.Bool("running", containerJSON.State.Running),
+		zap.Bool("paused", containerJSON.State.Paused),
+	)
 
-	dc.logger.Debug("Monitoring Docker container", zap.String("id", cid))
 	dc.containersLock.Lock()
 	dc.containers[cid] = Container{
 		InspectResponse: containerJSON,
