@@ -55,12 +55,12 @@ func unstructuredListToLogData(event *unstructured.UnstructuredList, observedAt 
 		if !ok {
 			rl := resourceLogs.AppendEmpty()
 			resourceAttrs := rl.Resource().Attributes()
-			if namespace := e.GetNamespace(); namespace != "" {
+			if namespace := getNamespace(e); namespace != "" {
 				resourceAttrs.PutStr(semconv.AttributeK8SNamespaceName, namespace)
 			}
 			sl := rl.ScopeLogs().AppendEmpty()
 			logSlice = sl.LogRecords()
-			namespaceResourceMap[e.GetNamespace()] = logSlice
+			namespaceResourceMap[getNamespace(e)] = logSlice
 		}
 		record := logSlice.AppendEmpty()
 		record.SetObservedTimestamp(pcommon.NewTimestampFromTime(observedAt))
@@ -78,4 +78,16 @@ func unstructuredListToLogData(event *unstructured.UnstructuredList, observedAt 
 		destMap.FromRaw(e.Object)
 	}
 	return out
+}
+
+func getNamespace(e unstructured.Unstructured) string {
+	// first, try to use the GetNamespace() method, which checks for the metadata.namespace property
+	if namespace := e.GetNamespace(); namespace != "" {
+		return namespace
+	}
+	// try to look up namespace in object.metadata.namespace (for objects reported via watch mode)
+	if namespace, ok, _ := unstructured.NestedString(e.Object, "object", "metadata", "namespace"); ok {
+		return namespace
+	}
+	return ""
 }
