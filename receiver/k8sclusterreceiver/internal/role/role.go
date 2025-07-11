@@ -38,7 +38,7 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, r *rbacv1.Role, ts pcommon.Time
 	rb.SetK8sRoleUID(string(r.GetUID()))
 	rb.SetK8sRoleName(r.GetName())
 	rb.SetK8sClusterName("unknown")
-	rb.SetK8sRoleNamespace(r.GetNamespace())
+	rb.SetK8sNamespaceName(r.GetNamespace())
 	rb.SetK8sRoleLabels(mapToString(r.GetLabels(), "&"))
 	rb.SetK8sRoleAnnotations(mapToString(r.GetAnnotations(), "&"))
 	rb.SetK8sRoleStartTime(r.GetCreationTimestamp().String())

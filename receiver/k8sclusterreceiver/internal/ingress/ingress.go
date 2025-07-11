@@ -38,7 +38,7 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, i *netv1.Ingress, ts pcommon.Ti
 	rb.SetK8sIngressUID(string(i.GetUID()))
 	rb.SetK8sIngressName(i.GetName())
 	rb.SetK8sClusterName("unknown")
-	rb.SetK8sIngressNamespace(i.GetNamespace())
+	rb.SetK8sNamespaceName(i.GetNamespace())
 	rb.SetK8sIngressLabels(mapToString(i.GetLabels(), "&"))
 	rb.SetK8sIngressAnnotations(mapToString(i.GetAnnotations(), "&"))
 	rb.SetK8sIngressStartTime(i.GetCreationTimestamp().String())

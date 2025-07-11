@@ -44,7 +44,7 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, sa *corev1.ServiceAccount, ts p
 	rb.SetK8sServiceaccountUID(string(sa.GetUID()))
 	rb.SetK8sServiceaccountName(sa.GetName())
 	rb.SetK8sClusterName("unknown")
-	rb.SetK8sServiceaccountNamespace(sa.GetNamespace())
+	rb.SetK8sNamespaceName(sa.GetNamespace())
 	rb.SetK8sServiceaccountLabels(mapToString(sa.GetLabels(), "&"))
 	rb.SetK8sServiceaccountAnnotations(mapToString(sa.GetAnnotations(), "&"))
 	rb.SetK8sServiceaccountStartTime(sa.GetCreationTimestamp().String())

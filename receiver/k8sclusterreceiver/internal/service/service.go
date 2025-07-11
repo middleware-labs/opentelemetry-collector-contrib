@@ -50,7 +50,7 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon
 	rb := mb.NewResourceBuilder()
 	rb.SetK8sServiceUID(string(svc.UID))
 	rb.SetK8sServiceName(svc.ObjectMeta.Name)
-	rb.SetK8sServiceNamespace(svc.ObjectMeta.Namespace)
+	rb.SetK8sNamespaceName(svc.ObjectMeta.Namespace)
 	rb.SetK8sServiceClusterIP(svc.Spec.ClusterIP)
 	rb.SetK8sServiceType(string(svc.Spec.Type))
 	rb.SetK8sClusterName("unknown")

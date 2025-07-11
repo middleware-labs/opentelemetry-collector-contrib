@@ -48,7 +48,7 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, pv *corev1.PersistentVolume, ts
 	rb := mb.NewResourceBuilder()
 	rb.SetK8sPersistentvolumeUID(string(pv.GetUID()))
 	rb.SetK8sPersistentvolumeName(pv.GetName())
-	rb.SetK8sPersistentvolumeNamespace(pv.GetNamespace())
+	rb.SetK8sNamespaceName(pv.GetNamespace())
 	rb.SetK8sPersistentvolumeLabels(mapToString(pv.GetLabels(), "&"))
 	rb.SetK8sPersistentvolumeAnnotations(mapToString(pv.GetAnnotations(), "&"))
 	rb.SetK8sPersistentvolumePhase(string(pv.Status.Phase))

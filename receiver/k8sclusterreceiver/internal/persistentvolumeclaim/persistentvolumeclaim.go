@@ -57,7 +57,7 @@ func RecordMetrics(mb *imetadata.MetricsBuilder, pvc *corev1.PersistentVolumeCla
 	rb.SetK8sPersistentvolumeclaimUID(string(pvc.GetUID()))
 	rb.SetK8sPersistentvolumeclaimName(pvc.GetName())
 	rb.SetK8sClusterName("unknown")
-	rb.SetK8sPersistentvolumeclaimNamespace(pvc.GetNamespace())
+	rb.SetK8sNamespaceName(pvc.GetNamespace())
 	rb.SetK8sPersistentvolumeclaimLabels(mapToString(pvc.GetLabels(), "&"))
 	rb.SetK8sPersistentvolumeclaimPhase(string(pvc.Status.Phase))
 	rb.SetK8sPersistentvolumeclaimSelector("")
