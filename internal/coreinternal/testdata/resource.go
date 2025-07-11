@@ -10,6 +10,5 @@ func initResource1(r pcommon.Resource) {
 }
 
 func initResource2(r pcommon.Resource) {
-	
 	r.Attributes().PutStr("resource-attr", "resource-attr-val-2")
 }
