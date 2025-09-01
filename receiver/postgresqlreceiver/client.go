@@ -673,7 +673,6 @@ func (c *postgreSQLClient) getRowStats(ctx context.Context) ([]RowStats, error) 
 			&liveRows,
 			&deadRows,
 		)
-
 		if err != nil {
 			errors = multierr.Append(errors, err)
 		}
@@ -701,14 +700,24 @@ type queryStats struct {
 }
 
 func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
-	query := `SELECT
-		queryid,
-		query,
-		calls,
-		total_exec_time	
-		FROM pg_stat_statements;
+	query := `
+    SELECT 
+      queryid,                          -- Unique identifier for the query
+      regexp_replace(                   -- Outer function: removes line comments
+          regexp_replace(               -- Inner function: removes block comments
+              query,                    -- Original query text from pg_stat_statements
+              '/\*.*?\*/',             -- Pattern for /* ... */ comments
+              '',                      -- Replace with empty string
+              'g'                      -- Global flag (remove all occurrences)
+          ), 
+          '--.*$',                     -- Pattern for -- comments
+          '',                          -- Replace with empty string  
+          'gm'                         -- Global + Multiline flags
+      ) AS query,                      -- Alias the result as 'query'
+      calls,                           -- Number of times query was executed
+      total_exec_time                  -- Total execution time in milliseconds
+    FROM pg_stat_statements;
 	`
-
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
@@ -758,7 +767,6 @@ func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error
 		var hits sql.NullInt64
 
 		err = rows.Scan(&dbname, &hits)
-
 		if err != nil {
 			errors = multierr.Append(errors, err)
 			continue
