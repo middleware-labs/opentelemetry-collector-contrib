@@ -334,7 +334,7 @@ Number of times a table has manually been vacuumed.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| {vacuum} | Sum | Int | Cumulative | true | Development |
+| {vacuum} | Sum | Int | Cumulative | true | development |
 
 ### postgresql.wal.age
 
