@@ -74,13 +74,8 @@ func TestScraper(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp()),
-		)
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "expected_schemaattr.yaml")
@@ -132,13 +127,8 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 
 		cfg.Metrics.PostgresqlWalDelay.Enabled = false
 		cfg.Metrics.PostgresqlDeadlocks.Enabled = false
@@ -162,13 +152,8 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		expectedMetrics, err = golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "expected_schemaattr.yaml", "expected_default_metrics_schemaattr.yaml")
@@ -220,13 +205,8 @@ func TestScraperNoDatabaseMultipleWithoutPreciseLag(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "expected_imprecise_lag_schemaattr.yaml")
@@ -278,13 +258,8 @@ func TestScraperNoDatabaseMultiple(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 		fmt.Println(actualMetrics.ResourceMetrics())
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "expected_schemaattr.yaml")
@@ -337,13 +312,8 @@ func TestScraperWithResourceAttributeFeatureGate(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "expected_schemaattr.yaml")
@@ -395,13 +365,8 @@ func TestScraperWithResourceAttributeFeatureGateSingle(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "expected_schemaattr.yaml")
@@ -428,13 +393,8 @@ func TestScraperExcludeDatabase(t *testing.T) {
 		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
-		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics,
-			pmetrictest.IgnoreMetricsOrder(),
-			pmetrictest.IgnoreResourceMetricsOrder(),
-			pmetrictest.IgnoreMetricDataPointsOrder(),
-			pmetrictest.IgnoreStartTimestamp(),
-			pmetrictest.IgnoreTimestamp(),
-		))
+		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
+			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
 	runTest(true, "exclude_schemaattr.yaml")
@@ -475,7 +435,7 @@ func TestScrapeQuerySample(t *testing.T) {
 	// golden.WriteLogs(t, expectedFile, actualLogs)
 	expectedLogs, err := golden.ReadLogs(expectedFile)
 	require.NoError(t, err)
-	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreTimestamp())
+	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 }
 
@@ -551,7 +511,7 @@ func TestScrapeTopQueries(t *testing.T) {
 	expectedLogs, err := golden.ReadLogs(expectedFile)
 	require.NoError(t, err)
 	// golden.WriteLogs(t, expectedFile, actualLogs)
-	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreTimestamp())
+	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 
 	// Verify the cache has updated with latest counter

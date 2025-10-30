@@ -8,6 +8,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -51,6 +54,7 @@ type postgreSQLScraper struct {
 	separateSchemaAttr   bool
 	queryPlanCache       *expirable.LRU[string, string]
 	newestQueryTimestamp float64
+	serviceInstanceID    string
 }
 
 type errsMux struct {
@@ -105,6 +109,7 @@ func newPostgreSQLScraper(
 		cache:              cache,
 		queryPlanCache:     queryPlanCache,
 		separateSchemaAttr: separateSchemaAttr,
+		serviceInstanceID:  getInstanceID(config.Endpoint, settings.Logger),
 	}
 }
 
@@ -179,16 +184,8 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
 
-	p.collectActiveConnections(ctx, now, listClient, &errs)
-
-	version, err := listClient.getVersionString(ctx)
-	if err != nil {
-		errs.add(err)
-	}
-	rb.SetPostgresqlDbVersion(version)
-
-	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
-	return p.mb.Emit(), errs.combine()
+	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder())
+	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
 }
 
 func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQuery int64) (plog.Logs, error) {
@@ -204,7 +201,8 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 
 	defer dbClient.Close()
 
-	return p.lb.Emit(), nil
+	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder())
+	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
 }
 
 func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (plog.Logs, error) {
@@ -212,7 +210,8 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 
 	p.collectTopQuery(ctx, p.clientFactory, maxRowsPerQuery, topNQuery, maxExplainEachInterval, &errs, p.logger)
 
-	return p.lb.Emit(), nil
+	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder())
+	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
 }
 
 func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient client, limit int64, mux *errsMux, logger *zap.Logger) {
@@ -785,4 +784,27 @@ func (*postgreSQLScraper) retrieveBackends(
 	r.Lock()
 	r.activityMap = activityByDB
 	r.Unlock()
+}
+
+func (p *postgreSQLScraper) setupResourceBuilder(rb *metadata.ResourceBuilder) *metadata.ResourceBuilder {
+	rb.SetServiceInstanceID(p.serviceInstanceID)
+	return rb
+}
+
+func getInstanceID(instanceString string, logger *zap.Logger) string {
+	const fallback = "unknown:5432"
+	host, port, err := net.SplitHostPort(instanceString)
+	if err != nil {
+		return fallback
+	}
+
+	if strings.EqualFold(host, "localhost") || net.ParseIP(host).IsLoopback() {
+		localhost, hostNameErr := os.Hostname()
+		if hostNameErr != nil {
+			logger.Warn("Failed getting localhost machine name to construct service.instance.id.")
+		} else {
+			host = localhost
+		}
+	}
+	return host + ":" + port
 }

@@ -18,6 +18,7 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetPostgresqlIndexName("postgresql.index.name-val")
 			rb.SetPostgresqlSchemaName("postgresql.schema.name-val")
 			rb.SetPostgresqlTableName("postgresql.table.name-val")
+			rb.SetServiceInstanceID("service.instance.id-val")
 
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
@@ -58,6 +59,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.True(t, ok)
 			if ok {
 				assert.Equal(t, "postgresql.table.name-val", val.Str())
+			}
+			val, ok = res.Attributes().Get("service.instance.id")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "service.instance.id-val", val.Str())
 			}
 		})
 	}
