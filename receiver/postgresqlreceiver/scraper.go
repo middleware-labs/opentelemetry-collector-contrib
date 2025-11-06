@@ -184,7 +184,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
 
-	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder())
+	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), "")
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
 }
 
@@ -201,7 +201,7 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 
 	defer dbClient.Close()
 
-	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder())
+	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder(), "")
 	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
 }
 
@@ -210,7 +210,7 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 
 	p.collectTopQuery(ctx, p.clientFactory, maxRowsPerQuery, topNQuery, maxExplainEachInterval, &errs, p.logger)
 
-	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder())
+	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder(), "")
 	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
 }
 
@@ -430,8 +430,7 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 		p.mb.RecordPostgresqlBlksHitDataPoint(now, stats.blksHit)
 		p.mb.RecordPostgresqlBlksReadDataPoint(now, stats.blksRead)
 	}
-	rb := p.mb.NewResourceBuilder()
-	rb.SetPostgresqlDatabaseName(db)
+	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), db)
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
@@ -468,8 +467,7 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 			p.mb.RecordPostgresqlBlocksReadDataPoint(now, br.tidxRead, metadata.AttributeSourceTidxRead)
 			p.mb.RecordPostgresqlBlocksReadDataPoint(now, br.tidxHit, metadata.AttributeSourceTidxHit)
 		}
-		rb := p.mb.NewResourceBuilder()
-		rb.SetPostgresqlDatabaseName(db)
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), db)
 		if p.separateSchemaAttr {
 			rb.SetPostgresqlSchemaName(tm.schema)
 			rb.SetPostgresqlTableName(tm.table)
@@ -497,8 +495,7 @@ func (p *postgreSQLScraper) collectIndexes(
 	for _, stat := range idxStats {
 		p.mb.RecordPostgresqlIndexScansDataPoint(now, stat.scans)
 		p.mb.RecordPostgresqlIndexSizeDataPoint(now, stat.size)
-		rb := p.mb.NewResourceBuilder()
-		rb.SetPostgresqlDatabaseName(database)
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), database)
 		if p.separateSchemaAttr {
 			rb.SetPostgresqlSchemaName(stat.schema)
 			rb.SetPostgresqlTableName(stat.table)
@@ -786,8 +783,11 @@ func (*postgreSQLScraper) retrieveBackends(
 	r.Unlock()
 }
 
-func (p *postgreSQLScraper) setupResourceBuilder(rb *metadata.ResourceBuilder) *metadata.ResourceBuilder {
+func (p *postgreSQLScraper) setupResourceBuilder(rb *metadata.ResourceBuilder, database string) *metadata.ResourceBuilder {
 	rb.SetServiceInstanceID(p.serviceInstanceID)
+	if database != "" {
+		rb.SetPostgresqlDatabaseName(database)
+	}
 	return rb
 }
 
