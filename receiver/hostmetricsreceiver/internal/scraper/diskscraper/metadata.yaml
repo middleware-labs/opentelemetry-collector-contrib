@@ -25,6 +25,8 @@ metrics:
     enabled: true
     description: Disk bytes transferred.
     unit: By
+    stability:
+      level: development
     sum:
       value_type: int
       aggregation_temporality: cumulative
