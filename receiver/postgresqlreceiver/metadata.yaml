@@ -28,10 +28,6 @@ resource_attributes:
     description: The table name.
     enabled: true
     type: string
-  postgresql.index.name:
-    description: The name of the index on a table.
-    enabled: true
-    type: string
   postgresql.db.version:
     description: The version of postgresql databse
     enabled: true
