@@ -61,8 +61,6 @@ type processScraper struct {
 	getProcessCreateTime func(p processHandle, ctx context.Context) (int64, error)
 	getProcessHandles    func(context.Context) (processHandles, error)
 
-	handleCountManager handlecount.Manager
-
 	// for caching
 	currMap map[processDiscriminator]*processMetadata
 	prevMap map[processDiscriminator]*processMetadata
@@ -77,7 +75,6 @@ func newProcessScraper(settings scraper.Settings, cfg *Config) (*processScraper,
 		getProcessHandles:    getGopsutilProcessHandles,
 		scrapeProcessDelay:   cfg.ScrapeProcessDelay,
 		ucals:                make(map[int32]*ucal.CPUUtilizationCalculator),
-		handleCountManager:   handlecount.NewManager(),
 		currMap:              make(map[processDiscriminator]*processMetadata),
 		prevMap:              make(map[processDiscriminator]*processMetadata),
 	}
@@ -298,23 +295,13 @@ func (s *processScraper) getProcessMetadata(ctx context.Context) ([]*processMeta
 			}
 		}
 
-		createTime, err := s.getProcessCreateTime(handle, ctx)
-		if err != nil {
-			errs.AddPartial(0, fmt.Errorf("error reading create time for process %q (pid %v): %w", executable.name, pid, err))
-			// set the start time to now to avoid including this when a scrape_process_delay is set
-			createTime = time.Now().UnixMilli()
-		}
-		if s.scrapeProcessDelay.Milliseconds() > (time.Now().UnixMilli() - createTime) {
-			continue
-		}
-
 		parentProcessID := int32(0)
 		if s.config.ResourceAttributes.ProcessParentPid.Enabled {
 			parentProcessID, err = parentPid(ctx, handle, pid)
-		parentPid, err := parentPid(ctx, handle, pid)
-		if err != nil {
-			if !s.config.AvoidSelectedErrors {
-				errs.AddPartial(0, fmt.Errorf("error reading parent pid for process %q (pid %v): %w", executable.name, pid, err))
+			if err != nil {
+				if !s.config.AvoidSelectedErrors {
+					errs.AddPartial(0, fmt.Errorf("error reading parent pid for process %q (pid %v): %w", executable.name, pid, err))
+				}
 			}
 		}
 
