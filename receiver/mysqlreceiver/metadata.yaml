@@ -273,7 +273,6 @@ events:
       - mysql.events_statements_summary_by_digest.digest
       - mysql.events_statements_summary_by_digest.count_star
       - mysql.events_statements_summary_by_digest.sum_timer_wait
-    enum: [data, index]
   dbname:
     description: The name of the database
     type: string
