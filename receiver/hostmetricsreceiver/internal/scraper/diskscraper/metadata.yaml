@@ -38,17 +38,7 @@ metrics:
     gauge:
       value_type: double
     attributes: [ device, direction ]
-  system.disk.operations:
-    enabled: true
-    description: Disk operations count.
-    unit: "{operations}"
-    stability:
-      level: development
-    sum:
-      value_type: int
-      aggregation_temporality: cumulative
-      monotonic: true
-    attributes: [device, direction]
+
 
   system.disk.io_time:
     enabled: true
