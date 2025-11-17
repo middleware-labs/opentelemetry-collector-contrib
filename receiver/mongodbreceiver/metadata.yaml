@@ -23,10 +23,6 @@ resource_attributes:
     description: The port of the MongoDB host.
     enabled: false
     type: int
-  database:
-    description: The name of a database.
-    enabled: true
-    type: string
   mongodb.database.name:
     description: The name of a database (redundant).
     enabled: true
