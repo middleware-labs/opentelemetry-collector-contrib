@@ -371,7 +371,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [command]
   mysql.connection.count:
-    enabled: false
+    enabled: true
     description: The number of connection attempts (successful or not) to the MySQL server.
     stability:
       level: development
@@ -584,7 +584,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   mysql.query.count:
-    enabled: false
+    enabled: true
     description: The number of statements executed by the server.
     stability:
       level: development
@@ -595,7 +595,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   mysql.query.slow.count:
-    enabled: false
+    enabled: true
     description: The number of slow queries.
     stability:
       level: development
