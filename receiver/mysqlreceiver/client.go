@@ -17,8 +17,8 @@ import (
 	// registers the mysql driver
 	"github.com/go-sql-driver/mysql"
 	"github.com/hashicorp/go-version"
-	"go.uber.org/zap"
 	parser "github.com/middleware-labs/innoParser/pkg/metricParser"
+	"go.uber.org/zap"
 )
 
 type client interface {
@@ -35,7 +35,6 @@ type client interface {
 	getQuerySamples(uint64) ([]querySample, error)
 	getTopQueries(uint64, uint64) ([]topQuery, error)
 	explainQuery(statement, schema string, logger *zap.Logger) string
-	getReplicaStatusStats() ([]ReplicaStatusStats, error)
 	getInnodbStatusStats() (map[string]int64, error, int)
 	getTotalRows() ([]NRows, error)
 	getTotalErrors() (int64, error)
