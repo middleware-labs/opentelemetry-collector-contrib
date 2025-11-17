@@ -388,16 +388,6 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-  postgresql.connection.max:
-    enabled: true
-    description: Configured maximum number of client connections allowed
-    unit: "{connection}"
-    gauge:
-      value_type: int
-  postgresql.rows:
-    enabled: true
-    description: The number of rows in the database.
-    unit: "1"
   postgresql.function.calls:
     enabled: false
     description: The number of calls made to a function. Requires `track_functions=pl|all` in Postgres config.
