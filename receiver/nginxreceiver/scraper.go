@@ -5,9 +5,10 @@ package nginxreceiver // import "github.com/open-telemetry/opentelemetry-collect
 
 import (
 	"context"
+	"net/http"
 	"time"
 
-	"github.com/nginx/nginx-prometheus-exporter/client"
+	//"github.com/nginx/nginx-prometheus-exporter/client"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -18,10 +19,11 @@ import (
 )
 
 type nginxScraper struct {
-	client   *NginxClient
-	settings component.TelemetrySettings
-	cfg      *Config
-	mb       *metadata.MetricsBuilder
+	httpClient *http.Client
+	client     *NginxClient
+	settings   component.TelemetrySettings
+	cfg        *Config
+	mb         *metadata.MetricsBuilder
 }
 
 func newNginxScraper(
@@ -37,11 +39,11 @@ func newNginxScraper(
 }
 
 func (r *nginxScraper) start(ctx context.Context, host component.Host) error {
-	httpClient, err := r.cfg.ClientConfig.ToClient(ctx, host.GetExtensions(), r.settings)
+	httpClient, err := r.cfg.ToClient(ctx, host.GetExtensions(), r.settings)
 	if err != nil {
 		return err
 	}
-	r.client = client.NewNginxClient(httpClient, r.cfg.ClientConfig.Endpoint)
+	r.httpClient = httpClient
 	return nil
 }
 
