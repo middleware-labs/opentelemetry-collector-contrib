@@ -31,8 +31,8 @@ type Config struct {
 	AwsAccessKey string `mapstructure:"aws_access_key"`
 	AwsSecretKey string `mapstructure:"aws_secret_key"`
 
-	Logs LogsConfig    `mapstructure:"logs"`
-	StorageID    *component.ID `mapstructure:"storage"`
+	Logs      LogsConfig    `mapstructure:"logs"`
+	StorageID *component.ID `mapstructure:"storage"`
 }
 
 // LogsConfig is the configuration for the logs portion of this receiver
@@ -60,7 +60,7 @@ type AutodiscoverConfig struct {
 // StreamConfig represents the configuration for the log stream filtering
 type StreamConfig struct {
 	Prefixes []*string `mapstructure:"prefixes"`
-	Names    []string  `mapstructure:"names"`
+	Names    []*string `mapstructure:"names"`
 }
 
 var (
