@@ -486,7 +486,7 @@ resource_attributes:
   k8s.container.status.last_terminated_reason:
     description: Last terminated reason of a container.
     type: string
-    enabled: false
+    enabled: true
 
   k8s.cronjob.name:
     description: The k8s CronJob name
@@ -673,32 +673,6 @@ resource_attributes:
     type: string
     enabled: false
 
-attributes:
-  condition:
-    description: "the name of Kubernetes Node condition. Example: Ready, Memory, PID, DiskPressure"
-    type: string
-  k8s.container.status.reason:
-    description: The reason of the current container status.
-    type: string
-    enum:
-      - ContainerCreating
-      - CrashLoopBackOff
-      - CreateContainerConfigError
-      - ErrImagePull
-      - ImagePullBackOff
-      - OOMKilled
-      - Completed
-      - Error
-      - ContainerCannotRun
-  k8s.container.status.state:
-    description: The state of the container (terminated, running, waiting). See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.30/#containerstate-v1-core for details.
-    type: string
-    enum:
-      - terminated
-      - running
-      - waiting
-    enabled: true
-
   k8s.container.status.current_waiting_reason:
     description: Current waiting reason of the Container.
     type: string
@@ -766,7 +740,32 @@ attributes:
   resource:
     description: the name of the resource on which the quota is applied
     type: string
-
+  condition:
+    description: "the name of Kubernetes Node condition. Example: Ready, Memory, PID, DiskPressure"
+    type: string
+    enabled: true
+  k8s.container.status.reason:
+    description: The reason of the current container status.
+    type: string
+    enum:
+      - ContainerCreating
+      - CrashLoopBackOff
+      - CreateContainerConfigError
+      - ErrImagePull
+      - ImagePullBackOff
+      - OOMKilled
+      - Completed
+      - Error
+      - ContainerCannotRun
+  k8s.container.status.state:
+    description: The state of the container (terminated, running, waiting). See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.30/#containerstate-v1-core for details.
+    type: string
+    enum:
+      - terminated
+      - running
+      - waiting
+    enabled: true
+    
 metrics:
   k8s.container.cpu_limit:
     enabled: true
@@ -1285,14 +1284,6 @@ metrics:
       value_type: int
     attributes:
       - resource
-  k8s.node.condition:
-    enabled: false
-    description: The condition of a particular Node.
-    unit: "{condition}"
-    gauge:
-      value_type: int
-    attributes:
-      - condition
   # k8s.node.condition_* metrics (k8s.node.condition_ready, k8s.node.condition_memory_pressure, etc) are controlled
   # by node_conditions_to_report config option. By default, only k8s.node.condition_ready is enabled.
 
