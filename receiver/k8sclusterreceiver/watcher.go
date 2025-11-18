@@ -251,19 +251,38 @@ func (rw *resourceWatcher) setupInformerForKind(kind schema.GroupVersionKind, fa
 			}
 		}
 	case gvk.PersistentVolume:
-		rw.setupInformer(kind, factory.Core().V1().PersistentVolumes().Informer())
+		// PV → cluster-scoped
+		if factory, ok := factories[metadata.ClusterWideInformerKey]; ok {
+			rw.setupInformer(kind, metadata.ClusterWideInformerKey, factory.Core().V1().PersistentVolumes().Informer())
+		}
 	case gvk.PersistentVolumeClaim:
-		rw.setupInformer(kind, factory.Core().V1().PersistentVolumeClaims().Informer())
+		for ns, factory := range factories {
+			rw.setupInformer(kind, ns, factory.Core().V1().PersistentVolumeClaims().Informer())
+		}
 	case gvk.Role:
-		rw.setupInformer(kind, factory.Rbac().V1().Roles().Informer())
+		for ns, factory := range factories {
+			rw.setupInformer(kind, ns, factory.Rbac().V1().Roles().Informer())
+		}
 	case gvk.RoleBinding:
-		rw.setupInformer(kind, factory.Rbac().V1().RoleBindings().Informer())
+		// RoleBinding → namespaced
+		for ns, factory := range factories {
+			rw.setupInformer(kind, ns, factory.Rbac().V1().RoleBindings().Informer())
+		}
 	case gvk.ClusterRole:
-		rw.setupInformer(kind, factory.Rbac().V1().ClusterRoles().Informer())
+		// ClusterRole → cluster-scoped
+		if factory, ok := factories[metadata.ClusterWideInformerKey]; ok {
+			rw.setupInformer(kind, metadata.ClusterWideInformerKey, factory.Rbac().V1().ClusterRoles().Informer())
+		}
 	case gvk.ClusterRoleBinding:
-		rw.setupInformer(kind, factory.Rbac().V1().ClusterRoleBindings().Informer())
+		// ClusterRoleBinding → cluster-scoped
+		if factory, ok := factories[metadata.ClusterWideInformerKey]; ok {
+			rw.setupInformer(kind, metadata.ClusterWideInformerKey, factory.Rbac().V1().ClusterRoleBindings().Informer())
+		}
 	case gvk.Ingress:
-		rw.setupInformer(kind, factory.Networking().V1().Ingresses().Informer())
+		for ns, factory := range factories {
+			rw.setupInformer(kind, ns, factory.Networking().V1().Ingresses().Informer())
+		}
+
 	case gvk.Namespace:
 		if len(rw.config.Namespaces) == 0 && rw.config.Namespace == "" && len(factories) >= 1 {
 			// if no namespace is provided, the cluster wide informer factory, which is stored under the key "" is used to create the informer
@@ -283,9 +302,10 @@ func (rw *resourceWatcher) setupInformerForKind(kind schema.GroupVersionKind, fa
 		for ns, factory := range factories {
 			rw.setupInformer(kind, ns, factory.Core().V1().Services().Informer())
 		}
-		rw.setupInformer(kind, factory.Core().V1().Services().Informer())
 	case gvk.ServiceAccount:
-		rw.setupInformer(kind, factory.Core().V1().ServiceAccounts().Informer())
+		for ns, factory := range factories {
+			rw.setupInformer(kind, ns, factory.Core().V1().ServiceAccounts().Informer())
+		}
 	case gvk.DaemonSet:
 		for ns, factory := range factories {
 			rw.setupInformer(kind, ns, factory.Apps().V1().DaemonSets().Informer())
@@ -360,33 +380,41 @@ func (rw *resourceWatcher) onAdd(obj any) {
 	rw.waitForInitialInformerSync()
 	switch obj := obj.(type) {
 	case *corev1.Pod:
-		svcList := rw.metadataStore.Get(gvk.Service).List()
-		for _, svcObj := range svcList {
-			svc := svcObj.(*corev1.Service)
-			if svc.Spec.Selector != nil && len(svc.Spec.Selector) > 0 {
-				if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(obj.Labels)) {
-					// only seting the first match ?
-					if obj.ObjectMeta.Labels == nil {
-						obj.ObjectMeta.Labels = make(map[string]string)
+		svcStores := rw.metadataStore.Get(gvk.Service)
+
+		for _, store := range svcStores {
+			for _, svcObj := range store.List() {
+				svc := svcObj.(*corev1.Service)
+				if svc.Spec.Selector != nil && len(svc.Spec.Selector) > 0 {
+					if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(obj.Labels)) {
+						// only seting the first match ?
+						if obj.ObjectMeta.Labels == nil {
+							obj.ObjectMeta.Labels = make(map[string]string)
+						}
+						obj.Labels[constants.MWK8sServiceName] = svc.Name
+						break
 					}
-					obj.Labels[constants.MWK8sServiceName] = svc.Name
-					break
 				}
 			}
 		}
+
 	case *corev1.Service:
-		podList := rw.metadataStore.Get(gvk.Pod).List()
-		for _, podObj := range podList {
-			pod := podObj.(*corev1.Pod)
-			selector := obj.Spec.Selector
-			if labels.Set(selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
-				if pod.ObjectMeta.Labels == nil {
-					pod.ObjectMeta.Labels = make(map[string]string)
+		podStores := rw.metadataStore.Get(gvk.Pod)
+
+		for _, store := range podStores {
+			for _, podObj := range store.List() {
+				pod := podObj.(*corev1.Pod)
+				selector := obj.Spec.Selector
+				if labels.Set(selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
+					if pod.ObjectMeta.Labels == nil {
+						pod.ObjectMeta.Labels = make(map[string]string)
+					}
+					//set the service name in the pod labels
+					pod.ObjectMeta.Labels[constants.MWK8sServiceName] = obj.Name
 				}
-				//set the service name in the pod labels
-				pod.ObjectMeta.Labels[constants.MWK8sServiceName] = obj.Name
 			}
 		}
+
 	}
 
 	// Sync metadata only if there's at least one destination for it to sent.
@@ -413,18 +441,21 @@ func (rw *resourceWatcher) onUpdate(oldObj, newObj any) {
 				zap.Any("newLabels", newLabels))
 			// Get all the svc list and check if the pod labels match with any of the svc selectors
 			foundSvc := false
-			svcList := rw.metadataStore.Get(gvk.Service).List()
-			for _, svcObj := range svcList {
-				svc := svcObj.(*corev1.Service)
-				if svc.Spec.Selector != nil && len(svc.Spec.Selector) > 0 {
-					if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(newLabels)) {
-						// only seting the first match ?
-						if obj.ObjectMeta.Labels == nil {
-							obj.ObjectMeta.Labels = make(map[string]string)
+			svcStores := rw.metadataStore.Get(gvk.Service)
+
+			for _, store := range svcStores {
+				for _, svcObj := range store.List() {
+					svc := svcObj.(*corev1.Service)
+					if svc.Spec.Selector != nil && len(svc.Spec.Selector) > 0 {
+						if labels.Set(svc.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(newLabels)) {
+							// only seting the first match ?
+							if obj.ObjectMeta.Labels == nil {
+								obj.ObjectMeta.Labels = make(map[string]string)
+							}
+							obj.ObjectMeta.Labels[constants.MWK8sServiceName] = svc.Name
+							foundSvc = true
+							break
 						}
-						obj.ObjectMeta.Labels[constants.MWK8sServiceName] = svc.Name
-						foundSvc = true
-						break
 					}
 				}
 			}
@@ -445,22 +476,27 @@ func (rw *resourceWatcher) onUpdate(oldObj, newObj any) {
 				zap.String("namespace", obj.Namespace), zap.Any("oldSelector", oldSelector),
 				zap.Any("newSelector", newSelector))
 			// Get all the pod list and check if the pod labels match with the new svc selectors
-			podList := rw.metadataStore.Get(gvk.Pod).List()
-			for _, podObj := range podList {
-				pod := podObj.(*corev1.Pod)
-				if labels.Set(newSelector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
-					if pod.ObjectMeta.Labels == nil {
-						pod.ObjectMeta.Labels = make(map[string]string)
-					}
-					//set the service name in the pod labes
-					pod.Labels[constants.MWK8sServiceName] = obj.Name
-				} else {
-					svcName, ok := obj.Labels[constants.MWK8sServiceName]
-					if ok && svcName == obj.Name {
-						delete(obj.Labels, constants.MWK8sServiceName)
+
+			podStores := rw.metadataStore.Get(gvk.Pod)
+
+			for _, store := range podStores {
+				for _, podObj := range store.List() {
+					pod := podObj.(*corev1.Pod)
+					if labels.Set(newSelector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
+						if pod.ObjectMeta.Labels == nil {
+							pod.ObjectMeta.Labels = make(map[string]string)
+						}
+						//set the service name in the pod labes
+						pod.Labels[constants.MWK8sServiceName] = obj.Name
+					} else {
+						svcName, ok := obj.Labels[constants.MWK8sServiceName]
+						if ok && svcName == obj.Name {
+							delete(obj.Labels, constants.MWK8sServiceName)
+						}
 					}
 				}
 			}
+
 		}
 	}
 
