@@ -765,7 +765,7 @@ attributes:
       - running
       - waiting
     enabled: true
-    
+
 metrics:
   k8s.container.cpu_limit:
     enabled: true
@@ -920,14 +920,6 @@ metrics:
     gauge:
       value_type: int
 
-  k8s.deployment.desired:
-    enabled: true
-    description: Maximum resource limit set for the container. See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#resourcerequirements-v1-core for details
-    unit: "By"
-    stability:
-      level: development
-    gauge:
-      value_type: int
   k8s.container.storage_request:
     enabled: true
     description: Resource requested for the container. See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#resourcerequirements-v1-core for details
@@ -1284,11 +1276,6 @@ metrics:
       value_type: int
     attributes:
       - resource
-  # k8s.node.condition_* metrics (k8s.node.condition_ready, k8s.node.condition_memory_pressure, etc) are controlled
-  # by node_conditions_to_report config option. By default, only k8s.node.condition_ready is enabled.
-
-  # k8s.node.allocatable_* metrics (k8s.node.allocatable_cpu, k8s.node.allocatable_memory, etc) are controlled
-  # by allocatable_types_to_report config option. By default, none of them are reported.
 
 tests:
   config:
