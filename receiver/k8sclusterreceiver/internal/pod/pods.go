@@ -4,11 +4,7 @@
 package pod // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/pod"
 
 import (
-	"context"
 	"fmt"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
-	"k8s.io/apimachinery/pkg/labels"
-	k8s "k8s.io/client-go/kubernetes"
 	"strings"
 	"time"
 
@@ -81,7 +77,7 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
 
 	var jobName, jobUID string
-	ownerReference := utils.FindOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
+	ownerReference := findOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
 	if ownerReference != nil && ownerReference.Kind == constants.K8sKindJob {
 		jobName = ownerReference.Name
 		jobUID = string(ownerReference.UID)
