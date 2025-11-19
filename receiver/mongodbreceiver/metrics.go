@@ -972,7 +972,7 @@ func (s *mongodbScraper) recordMongodbChunksTotal(now pcommon.Timestamp, doc bso
 	s.mb.RecordMongodbChunksTotalDataPoint(now, val, database)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionAvgobjsize(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionAvgobjsize(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "avgObjSize"}
 	metricName := "mongodb.collection.avgobjsize"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -984,7 +984,7 @@ func (s *mongodbScraper) recordMongodbCollectionAvgobjsize(now pcommon.Timestamp
 	s.mb.RecordMongodbCollectionAvgobjsizeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionCapped(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionCapped(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "capped"}
 	metricName := "mongodb.collection.capped"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -996,7 +996,7 @@ func (s *mongodbScraper) recordMongodbCollectionCapped(now pcommon.Timestamp, do
 	s.mb.RecordMongodbCollectionCappedDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionObjects(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionObjects(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "count"}
 	metricName := "mongodb.collection.objects"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -1008,7 +1008,7 @@ func (s *mongodbScraper) recordMongodbCollectionObjects(now pcommon.Timestamp, d
 	s.mb.RecordMongodbCollectionObjectsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionIndexsizes(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionIndexsizes(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricName := "mongodb.collection.indexsizes"
 	indexNames, err := digForIndexNames(doc)
 	if err != nil {
@@ -1027,7 +1027,7 @@ func (s *mongodbScraper) recordMongodbCollectionIndexsizes(now pcommon.Timestamp
 	}
 }
 
-func (s *mongodbScraper) recordMongodbCollectionMax(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionMax(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "max"}
 	metricName := "mongodb.collection.max"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -1039,7 +1039,7 @@ func (s *mongodbScraper) recordMongodbCollectionMax(now pcommon.Timestamp, doc b
 	s.mb.RecordMongodbCollectionMaxDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionMaxsize(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionMaxsize(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "maxSize"}
 	metricName := "mongodb.collection.maxsize"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -1051,7 +1051,7 @@ func (s *mongodbScraper) recordMongodbCollectionMaxsize(now pcommon.Timestamp, d
 	s.mb.RecordMongodbCollectionMaxsizeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionNindexes(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionNindexes(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "nindexes"}
 	metricName := "mongodb.collection.nindexes"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -1063,7 +1063,7 @@ func (s *mongodbScraper) recordMongodbCollectionNindexes(now pcommon.Timestamp, 
 	s.mb.RecordMongodbCollectionNindexesDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionSize(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionSize(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "size"}
 	metricName := "mongodb.collection.size"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -1075,7 +1075,7 @@ func (s *mongodbScraper) recordMongodbCollectionSize(now pcommon.Timestamp, doc 
 	s.mb.RecordMongodbCollectionSizeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbCollectionStoragesize(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbCollectionStoragesize(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"storageStats", "storageSize"}
 	metricName := "mongodb.collection.storagesize"
 	metricAttributes := fmt.Sprintf("%s, %s", database, collection)
@@ -2957,7 +2957,7 @@ func (s *mongodbScraper) recordMongodbOplogUsedsizemb(now pcommon.Timestamp, doc
 	s.mb.RecordMongodbOplogUsedsizembDataPoint(now, val, database)
 }
 
-func (s *mongodbScraper) recordMongodbReplsetHealth(now pcommon.Timestamp, doc bson.M, database string, replset string, member_name string, member_id string, member_state string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbReplsetHealth(now pcommon.Timestamp, doc bson.M, database, replset, member_name, member_id, member_state string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"health"}
 	metricName := "mongodb.replset.health"
 	val, err := collectMetric(doc, metricPath)
@@ -2969,7 +2969,7 @@ func (s *mongodbScraper) recordMongodbReplsetHealth(now pcommon.Timestamp, doc b
 	s.mb.RecordMongodbReplsetHealthDataPoint(now, val, database, replset, member_name, member_id, member_state)
 }
 
-func (s *mongodbScraper) recordMongodbReplsetOptimeLag(now pcommon.Timestamp, doc bson.M, database string, replset string, member_name string, member_id string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbReplsetOptimeLag(now pcommon.Timestamp, doc bson.M, database, replset, member_name, member_id string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"optimeLag"}
 	metricName := "mongodb.replset.optime_lag"
 	val, err := collectMetric(doc, metricPath)
@@ -2981,7 +2981,7 @@ func (s *mongodbScraper) recordMongodbReplsetOptimeLag(now pcommon.Timestamp, do
 	s.mb.RecordMongodbReplsetOptimeLagDataPoint(now, val, database, replset, member_name, member_id)
 }
 
-func (s *mongodbScraper) recordMongodbReplsetReplicationlag(now pcommon.Timestamp, doc bson.M, database string, replset string, member_name string, member_id string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbReplsetReplicationlag(now pcommon.Timestamp, doc bson.M, database, replset, member_name, member_id string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"replicationLag"}
 	metricName := "mongodb.replset.replicationlag"
 	val, err := collectMetric(doc, metricPath)
@@ -2993,7 +2993,7 @@ func (s *mongodbScraper) recordMongodbReplsetReplicationlag(now pcommon.Timestam
 	s.mb.RecordMongodbReplsetReplicationlagDataPoint(now, val, database, replset, member_name, member_id)
 }
 
-func (s *mongodbScraper) recordMongodbReplsetState(now pcommon.Timestamp, doc bson.M, database string, replset string, member_name string, member_id string, member_state string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbReplsetState(now pcommon.Timestamp, doc bson.M, database, replset, member_name, member_id, member_state string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"state"}
 	metricName := "mongodb.replset.state"
 	val, err := collectMetric(doc, metricPath)
@@ -3005,7 +3005,7 @@ func (s *mongodbScraper) recordMongodbReplsetState(now pcommon.Timestamp, doc bs
 	s.mb.RecordMongodbReplsetStateDataPoint(now, val, database, replset, member_name, member_id, member_state)
 }
 
-func (s *mongodbScraper) recordMongodbReplsetVotefraction(now pcommon.Timestamp, doc bson.M, database string, replset string, member_name string, member_id string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbReplsetVotefraction(now pcommon.Timestamp, doc bson.M, database, replset, member_name, member_id string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"voteFraction"}
 	metricName := "mongodb.replset.votefraction"
 	value := doc[metricPath[0]]
@@ -3019,7 +3019,7 @@ func (s *mongodbScraper) recordMongodbReplsetVotefraction(now pcommon.Timestamp,
 	s.mb.RecordMongodbReplsetVotefractionDataPoint(now, val, database, replset, member_name, member_id)
 }
 
-func (s *mongodbScraper) recordMongodbReplsetVotes(now pcommon.Timestamp, doc bson.M, database string, replset string, member_name string, member_id string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbReplsetVotes(now pcommon.Timestamp, doc bson.M, database, replset, member_name, member_id string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"votes"}
 	metricName := "mongodb.replset.votes"
 	val, err := collectMetric(doc, metricPath)
@@ -3260,7 +3260,7 @@ func (s *mongodbScraper) recordMongodbTcmallocTcmallocTransferCacheFreeBytes(now
 	s.mb.RecordMongodbTcmallocTcmallocTransferCacheFreeBytesDataPoint(now, val, database)
 }
 
-func (s *mongodbScraper) recordMongodbUsageCommandsCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageCommandsCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"commands", "count"}
 	metricName := "mongodb.usage.commands.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3273,7 +3273,7 @@ func (s *mongodbScraper) recordMongodbUsageCommandsCount(now pcommon.Timestamp, 
 	s.mb.RecordMongodbUsageCommandsCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageCommandsTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageCommandsTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"commands", "time"}
 	metricName := "mongodb.usage.commands.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3285,7 +3285,7 @@ func (s *mongodbScraper) recordMongodbUsageCommandsTime(now pcommon.Timestamp, d
 	s.mb.RecordMongodbUsageCommandsTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageGetmoreCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageGetmoreCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"getmore", "count"}
 	metricName := "mongodb.usage.getmore.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3298,7 +3298,7 @@ func (s *mongodbScraper) recordMongodbUsageGetmoreCount(now pcommon.Timestamp, d
 	s.mb.RecordMongodbUsageGetmoreCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageGetmoreTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageGetmoreTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"getmore", "time"}
 	metricName := "mongodb.usage.getmore.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3310,7 +3310,7 @@ func (s *mongodbScraper) recordMongodbUsageGetmoreTime(now pcommon.Timestamp, do
 	s.mb.RecordMongodbUsageGetmoreTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageInsertCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageInsertCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"insert", "count"}
 	metricName := "mongodb.usage.insert.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3323,7 +3323,7 @@ func (s *mongodbScraper) recordMongodbUsageInsertCount(now pcommon.Timestamp, do
 	s.mb.RecordMongodbUsageInsertCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageInsertTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageInsertTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"insert", "time"}
 	metricName := "mongodb.usage.insert.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3335,7 +3335,7 @@ func (s *mongodbScraper) recordMongodbUsageInsertTime(now pcommon.Timestamp, doc
 	s.mb.RecordMongodbUsageInsertTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageQueriesCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageQueriesCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"queries", "count"}
 	metricName := "mongodb.usage.queries.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3348,7 +3348,7 @@ func (s *mongodbScraper) recordMongodbUsageQueriesCount(now pcommon.Timestamp, d
 	s.mb.RecordMongodbUsageQueriesCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageQueriesTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageQueriesTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"queries", "time"}
 	metricName := "mongodb.usage.queries.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3360,7 +3360,7 @@ func (s *mongodbScraper) recordMongodbUsageQueriesTime(now pcommon.Timestamp, do
 	s.mb.RecordMongodbUsageQueriesTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageReadlockCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageReadlockCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"readLock", "count"}
 	metricName := "mongodb.usage.readlock.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3373,7 +3373,7 @@ func (s *mongodbScraper) recordMongodbUsageReadlockCount(now pcommon.Timestamp, 
 	s.mb.RecordMongodbUsageReadlockCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageReadlockTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageReadlockTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"readLock", "time"}
 	metricName := "mongodb.usage.readlock.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3385,7 +3385,7 @@ func (s *mongodbScraper) recordMongodbUsageReadlockTime(now pcommon.Timestamp, d
 	s.mb.RecordMongodbUsageReadlockTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageRemoveCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageRemoveCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"remove", "count"}
 	metricName := "mongodb.usage.remove.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3398,7 +3398,7 @@ func (s *mongodbScraper) recordMongodbUsageRemoveCount(now pcommon.Timestamp, do
 	s.mb.RecordMongodbUsageRemoveCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageRemoveTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageRemoveTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"remove", "time"}
 	metricName := "mongodb.usage.remove.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3410,7 +3410,7 @@ func (s *mongodbScraper) recordMongodbUsageRemoveTime(now pcommon.Timestamp, doc
 	s.mb.RecordMongodbUsageRemoveTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageTotalCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageTotalCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"total", "count"}
 	metricName := "mongodb.usage.total.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3423,7 +3423,7 @@ func (s *mongodbScraper) recordMongodbUsageTotalCount(now pcommon.Timestamp, doc
 	s.mb.RecordMongodbUsageTotalCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageTotalTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageTotalTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"total", "time"}
 	metricName := "mongodb.usage.total.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3435,7 +3435,7 @@ func (s *mongodbScraper) recordMongodbUsageTotalTime(now pcommon.Timestamp, doc 
 	s.mb.RecordMongodbUsageTotalTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageUpdateCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageUpdateCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"update", "count"}
 	metricName := "mongodb.usage.update.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3448,7 +3448,7 @@ func (s *mongodbScraper) recordMongodbUsageUpdateCount(now pcommon.Timestamp, do
 	s.mb.RecordMongodbUsageUpdateCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageUpdateTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageUpdateTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"update", "time"}
 	metricName := "mongodb.usage.update.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3460,7 +3460,7 @@ func (s *mongodbScraper) recordMongodbUsageUpdateTime(now pcommon.Timestamp, doc
 	s.mb.RecordMongodbUsageUpdateTimeDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageWritelockCount(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageWritelockCount(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"writeLock", "count"}
 	metricName := "mongodb.usage.writelock.count"
 	val, err := collectMetric(doc, metricPath)
@@ -3473,7 +3473,7 @@ func (s *mongodbScraper) recordMongodbUsageWritelockCount(now pcommon.Timestamp,
 	s.mb.RecordMongodbUsageWritelockCountpsDataPoint(now, val, database, collection)
 }
 
-func (s *mongodbScraper) recordMongodbUsageWritelockTime(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordMongodbUsageWritelockTime(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	metricPath := []string{"writeLock", "time"}
 	metricName := "mongodb.usage.writelock.time"
 	val, err := collectMetric(doc, metricPath)
@@ -3905,6 +3905,7 @@ func (s *mongodbScraper) recordMongodbProflilingSlowms(now pcommon.Timestamp, do
 	}
 	s.mb.RecordMongodbProfilingSlowmsDataPoint(now, val, database)
 }
+
 func (s *mongodbScraper) RecordMongodbSlowOperationTime(now pcommon.Timestamp, doc []SlowOperationEvent, database string, errs *scrapererror.ScrapeErrors) {
 	metricName := "mongodb.slow_operation.time"
 	if doc == nil {

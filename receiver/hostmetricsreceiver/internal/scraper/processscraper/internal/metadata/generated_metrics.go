@@ -125,6 +125,9 @@ var MetricsInfo = metricsInfo{
 	ProcessContextSwitches: metricInfo{
 		Name: "process.context_switches",
 	},
+	ProcessCPUPercent: metricInfo{
+		Name: "process.cpu.percent",
+	},
 	ProcessCPUTime: metricInfo{
 		Name: "process.cpu.time",
 	},
@@ -139,6 +142,9 @@ var MetricsInfo = metricsInfo{
 	},
 	ProcessHandles: metricInfo{
 		Name: "process.handles",
+	},
+	ProcessMemoryPercent: metricInfo{
+		Name: "process.memory.percent",
 	},
 	ProcessMemoryUsage: metricInfo{
 		Name: "process.memory.usage",
@@ -168,11 +174,13 @@ var MetricsInfo = metricsInfo{
 
 type metricsInfo struct {
 	ProcessContextSwitches     metricInfo
+	ProcessCPUPercent          metricInfo
 	ProcessCPUTime             metricInfo
 	ProcessCPUUtilization      metricInfo
 	ProcessDiskIo              metricInfo
 	ProcessDiskOperations      metricInfo
 	ProcessHandles             metricInfo
+	ProcessMemoryPercent       metricInfo
 	ProcessMemoryUsage         metricInfo
 	ProcessMemoryUtilization   metricInfo
 	ProcessMemoryVirtual       metricInfo

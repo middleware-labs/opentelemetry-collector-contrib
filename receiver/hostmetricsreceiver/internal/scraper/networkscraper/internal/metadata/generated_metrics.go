@@ -79,6 +79,9 @@ var MetricsInfo = metricsInfo{
 	SystemNetworkIo: metricInfo{
 		Name: "system.network.io",
 	},
+	SystemNetworkIoBandwidth: metricInfo{
+		Name: "system.network.io.bandwidth",
+	},
 	SystemNetworkPackets: metricInfo{
 		Name: "system.network.packets",
 	},
@@ -91,6 +94,7 @@ type metricsInfo struct {
 	SystemNetworkDropped        metricInfo
 	SystemNetworkErrors         metricInfo
 	SystemNetworkIo             metricInfo
+	SystemNetworkIoBandwidth    metricInfo
 	SystemNetworkPackets        metricInfo
 }
 

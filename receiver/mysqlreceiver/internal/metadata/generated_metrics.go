@@ -1073,6 +1073,9 @@ var MetricsInfo = metricsInfo{
 	MysqlCommands: metricInfo{
 		Name: "mysql.commands",
 	},
+	MysqlConnectionActiveCount: metricInfo{
+		Name: "mysql.connection.active.count",
+	},
 	MysqlConnectionCount: metricInfo{
 		Name: "mysql.connection.count",
 	},
@@ -1090,6 +1093,18 @@ var MetricsInfo = metricsInfo{
 	},
 	MysqlIndexIoWaitTime: metricInfo{
 		Name: "mysql.index.io.wait.time",
+	},
+	MysqlInnodbRowsDeleted: metricInfo{
+		Name: "mysql.innodb.rows_deleted",
+	},
+	MysqlInnodbRowsInserted: metricInfo{
+		Name: "mysql.innodb.rows_inserted",
+	},
+	MysqlInnodbRowsRead: metricInfo{
+		Name: "mysql.innodb.rows_read",
+	},
+	MysqlInnodbRowsUpdated: metricInfo{
+		Name: "mysql.innodb.rows_updated",
 	},
 	MysqlJoins: metricInfo{
 		Name: "mysql.joins",
@@ -1121,6 +1136,18 @@ var MetricsInfo = metricsInfo{
 	MysqlPageSize: metricInfo{
 		Name: "mysql.page_size",
 	},
+	MysqlPerformanceRowsDeleted: metricInfo{
+		Name: "mysql.performance.rows_deleted",
+	},
+	MysqlPerformanceRowsInserted: metricInfo{
+		Name: "mysql.performance.rows_inserted",
+	},
+	MysqlPerformanceRowsRead: metricInfo{
+		Name: "mysql.performance.rows_read",
+	},
+	MysqlPerformanceRowsUpdated: metricInfo{
+		Name: "mysql.performance.rows_updated",
+	},
 	MysqlPreparedStatements: metricInfo{
 		Name: "mysql.prepared_statements",
 	},
@@ -1132,6 +1159,9 @@ var MetricsInfo = metricsInfo{
 	},
 	MysqlQuerySlowCount: metricInfo{
 		Name: "mysql.query.slow.count",
+	},
+	MysqlQueryTotalErrors: metricInfo{
+		Name: "mysql.query.total_errors",
 	},
 	MysqlReplicaSQLDelay: metricInfo{
 		Name: "mysql.replica.sql_delay",
@@ -1150,6 +1180,12 @@ var MetricsInfo = metricsInfo{
 	},
 	MysqlStatementEventCount: metricInfo{
 		Name: "mysql.statement_event.count",
+	},
+	MysqlStatementEventCountStars: metricInfo{
+		Name: "mysql.statement_event.count_stars",
+	},
+	MysqlStatementEventErrors: metricInfo{
+		Name: "mysql.statement_event.errors",
 	},
 	MysqlStatementEventWaitTime: metricInfo{
 		Name: "mysql.statement_event.wait.time",
@@ -1190,60 +1226,76 @@ var MetricsInfo = metricsInfo{
 	MysqlTmpResources: metricInfo{
 		Name: "mysql.tmp_resources",
 	},
+	MysqlTotalRows: metricInfo{
+		Name: "mysql.total_rows",
+	},
 	MysqlUptime: metricInfo{
 		Name: "mysql.uptime",
 	},
 }
 
 type metricsInfo struct {
-	MysqlBufferPoolDataPages     metricInfo
-	MysqlBufferPoolLimit         metricInfo
-	MysqlBufferPoolOperations    metricInfo
-	MysqlBufferPoolPageFlushes   metricInfo
-	MysqlBufferPoolPages         metricInfo
-	MysqlBufferPoolUsage         metricInfo
-	MysqlClientNetworkIo         metricInfo
-	MysqlCommands                metricInfo
-	MysqlConnectionCount         metricInfo
-	MysqlConnectionErrors        metricInfo
-	MysqlDoubleWrites            metricInfo
-	MysqlHandlers                metricInfo
-	MysqlIndexIoWaitCount        metricInfo
-	MysqlIndexIoWaitTime         metricInfo
-	MysqlJoins                   metricInfo
-	MysqlLocks                   metricInfo
-	MysqlLogOperations           metricInfo
-	MysqlMaxUsedConnections      metricInfo
-	MysqlMysqlxConnections       metricInfo
-	MysqlMysqlxWorkerThreads     metricInfo
-	MysqlOpenedResources         metricInfo
-	MysqlOperations              metricInfo
-	MysqlPageOperations          metricInfo
-	MysqlPageSize                metricInfo
-	MysqlPreparedStatements      metricInfo
-	MysqlQueryClientCount        metricInfo
-	MysqlQueryCount              metricInfo
-	MysqlQuerySlowCount          metricInfo
-	MysqlReplicaSQLDelay         metricInfo
-	MysqlReplicaTimeBehindSource metricInfo
-	MysqlRowLocks                metricInfo
-	MysqlRowOperations           metricInfo
-	MysqlSorts                   metricInfo
-	MysqlStatementEventCount     metricInfo
-	MysqlStatementEventWaitTime  metricInfo
-	MysqlTableAverageRowLength   metricInfo
-	MysqlTableIoWaitCount        metricInfo
-	MysqlTableIoWaitTime         metricInfo
-	MysqlTableLockWaitReadCount  metricInfo
-	MysqlTableLockWaitReadTime   metricInfo
-	MysqlTableLockWaitWriteCount metricInfo
-	MysqlTableLockWaitWriteTime  metricInfo
-	MysqlTableRows               metricInfo
-	MysqlTableSize               metricInfo
-	MysqlTableOpenCache          metricInfo
-	MysqlThreads                 metricInfo
-	MysqlTmpResources            metricInfo
-	MysqlUptime                  metricInfo
+	MysqlBufferPoolDataPages      metricInfo
+	MysqlBufferPoolLimit          metricInfo
+	MysqlBufferPoolOperations     metricInfo
+	MysqlBufferPoolPageFlushes    metricInfo
+	MysqlBufferPoolPages          metricInfo
+	MysqlBufferPoolUsage          metricInfo
+	MysqlClientNetworkIo          metricInfo
+	MysqlCommands                 metricInfo
+	MysqlConnectionActiveCount    metricInfo
+	MysqlConnectionCount          metricInfo
+	MysqlConnectionErrors         metricInfo
+	MysqlDoubleWrites             metricInfo
+	MysqlHandlers                 metricInfo
+	MysqlIndexIoWaitCount         metricInfo
+	MysqlIndexIoWaitTime          metricInfo
+	MysqlInnodbRowsDeleted        metricInfo
+	MysqlInnodbRowsInserted       metricInfo
+	MysqlInnodbRowsRead           metricInfo
+	MysqlInnodbRowsUpdated        metricInfo
+	MysqlJoins                    metricInfo
+	MysqlLocks                    metricInfo
+	MysqlLogOperations            metricInfo
+	MysqlMaxUsedConnections       metricInfo
+	MysqlMysqlxConnections        metricInfo
+	MysqlMysqlxWorkerThreads      metricInfo
+	MysqlOpenedResources          metricInfo
+	MysqlOperations               metricInfo
+	MysqlPageOperations           metricInfo
+	MysqlPageSize                 metricInfo
+	MysqlPerformanceRowsDeleted   metricInfo
+	MysqlPerformanceRowsInserted  metricInfo
+	MysqlPerformanceRowsRead      metricInfo
+	MysqlPerformanceRowsUpdated   metricInfo
+	MysqlPreparedStatements       metricInfo
+	MysqlQueryClientCount         metricInfo
+	MysqlQueryCount               metricInfo
+	MysqlQuerySlowCount           metricInfo
+	MysqlQueryTotalErrors         metricInfo
+	MysqlReplicaSQLDelay          metricInfo
+	MysqlReplicaTimeBehindSource  metricInfo
+	MysqlRowLocks                 metricInfo
+	MysqlRowOperations            metricInfo
+	MysqlSorts                    metricInfo
+	MysqlStatementEventCount      metricInfo
+	MysqlStatementEventCountStars metricInfo
+	MysqlStatementEventErrors     metricInfo
+	MysqlStatementEventWaitTime   metricInfo
+	MysqlTableAverageRowLength    metricInfo
+	MysqlTableIoWaitCount         metricInfo
+	MysqlTableIoWaitTime          metricInfo
+	MysqlTableLockWaitReadCount   metricInfo
+	MysqlTableLockWaitReadTime    metricInfo
+	MysqlTableLockWaitWriteCount  metricInfo
+	MysqlTableLockWaitWriteTime   metricInfo
+	MysqlTableRows                metricInfo
+	MysqlTableSize                metricInfo
+	MysqlTableOpenCache           metricInfo
+	MysqlThreads                  metricInfo
+	MysqlTmpResources             metricInfo
+	MysqlTotalRows                metricInfo
+	MysqlUptime                   metricInfo
 }
 
 type metricInfo struct {
@@ -4500,13 +4552,13 @@ type MetricsBuilder struct {
 	metricMysqlJoins                    metricMysqlJoins
 	metricMysqlLocks                    metricMysqlLocks
 	metricMysqlLogOperations            metricMysqlLogOperations
-	metricMysqlMaxUsedConnections      metricMysqlMaxUsedConnections
+	metricMysqlMaxUsedConnections       metricMysqlMaxUsedConnections
 	metricMysqlMysqlxConnections        metricMysqlMysqlxConnections
 	metricMysqlMysqlxWorkerThreads      metricMysqlMysqlxWorkerThreads
 	metricMysqlOpenedResources          metricMysqlOpenedResources
 	metricMysqlOperations               metricMysqlOperations
 	metricMysqlPageOperations           metricMysqlPageOperations
-	metricMysqlPageSize                metricMysqlPageSize
+	metricMysqlPageSize                 metricMysqlPageSize
 	metricMysqlPerformanceRowsDeleted   metricMysqlPerformanceRowsDeleted
 	metricMysqlPerformanceRowsInserted  metricMysqlPerformanceRowsInserted
 	metricMysqlPerformanceRowsRead      metricMysqlPerformanceRowsRead
@@ -4541,16 +4593,24 @@ type MetricsBuilder struct {
 	metricMysqlUptime                   metricMysqlUptime
 }
 
-// metricBuilderOption applies changes to default metrics builder.
-type metricBuilderOption func(*MetricsBuilder)
+// MetricBuilderOption applies changes to default metrics builder.
+type MetricBuilderOption interface {
+	apply(*MetricsBuilder)
+}
+
+type metricBuilderOptionFunc func(mb *MetricsBuilder)
+
+func (mbof metricBuilderOptionFunc) apply(mb *MetricsBuilder) {
+	mbof(mb)
+}
 
 // WithStartTime sets startTime on the metrics builder.
-func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
-	return func(mb *MetricsBuilder) {
+func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
+	return metricBuilderOptionFunc(func(mb *MetricsBuilder) {
 		mb.startTime = startTime
-	}
+	})
 }
-func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...metricBuilderOption) *MetricsBuilder {
+func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
 		config:                              mbc,
 		startTime:                           pcommon.NewTimestampFromTime(time.Now()),
@@ -4578,13 +4638,13 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMysqlJoins:                    newMetricMysqlJoins(mbc.Metrics.MysqlJoins),
 		metricMysqlLocks:                    newMetricMysqlLocks(mbc.Metrics.MysqlLocks),
 		metricMysqlLogOperations:            newMetricMysqlLogOperations(mbc.Metrics.MysqlLogOperations),
-		metricMysqlMaxUsedConnections:      newMetricMysqlMaxUsedConnections(mbc.Metrics.MysqlMaxUsedConnections),
+		metricMysqlMaxUsedConnections:       newMetricMysqlMaxUsedConnections(mbc.Metrics.MysqlMaxUsedConnections),
 		metricMysqlMysqlxConnections:        newMetricMysqlMysqlxConnections(mbc.Metrics.MysqlMysqlxConnections),
 		metricMysqlMysqlxWorkerThreads:      newMetricMysqlMysqlxWorkerThreads(mbc.Metrics.MysqlMysqlxWorkerThreads),
 		metricMysqlOpenedResources:          newMetricMysqlOpenedResources(mbc.Metrics.MysqlOpenedResources),
 		metricMysqlOperations:               newMetricMysqlOperations(mbc.Metrics.MysqlOperations),
 		metricMysqlPageOperations:           newMetricMysqlPageOperations(mbc.Metrics.MysqlPageOperations),
-		metricMysqlPageSize:                newMetricMysqlPageSize(mbc.Metrics.MysqlPageSize),
+		metricMysqlPageSize:                 newMetricMysqlPageSize(mbc.Metrics.MysqlPageSize),
 		metricMysqlPerformanceRowsDeleted:   newMetricMysqlPerformanceRowsDeleted(mbc.Metrics.MysqlPerformanceRowsDeleted),
 		metricMysqlPerformanceRowsInserted:  newMetricMysqlPerformanceRowsInserted(mbc.Metrics.MysqlPerformanceRowsInserted),
 		metricMysqlPerformanceRowsRead:      newMetricMysqlPerformanceRowsRead(mbc.Metrics.MysqlPerformanceRowsRead),
@@ -4634,7 +4694,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 	return mb
 }
@@ -4652,20 +4712,28 @@ func (mb *MetricsBuilder) updateCapacity(rm pmetric.ResourceMetrics) {
 }
 
 // ResourceMetricsOption applies changes to provided resource metrics.
-type ResourceMetricsOption func(pmetric.ResourceMetrics)
+type ResourceMetricsOption interface {
+	apply(pmetric.ResourceMetrics)
+}
+
+type resourceMetricsOptionFunc func(pmetric.ResourceMetrics)
+
+func (rmof resourceMetricsOptionFunc) apply(rm pmetric.ResourceMetrics) {
+	rmof(rm)
+}
 
 // WithResource sets the provided resource on the emitted ResourceMetrics.
 // It's recommended to use ResourceBuilder to create the resource.
 func WithResource(res pcommon.Resource) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		res.CopyTo(rm.Resource())
-	}
+	})
 }
 
 // WithStartTimeOverride overrides start time for all the resource metrics data points.
 // This option should be only used if different start time has to be set on metrics coming from different resources.
 func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		var dps pmetric.NumberDataPointSlice
 		metrics := rm.ScopeMetrics().At(0).Metrics()
 		for i := 0; i < metrics.Len(); i++ {
@@ -4679,7 +4747,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 				dps.At(j).SetStartTimestamp(start)
 			}
 		}
-	}
+	})
 }
 
 // EmitForResource saves all the generated metrics under a new resource and updates the internal state to be ready for
@@ -4687,7 +4755,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 // needs to emit metrics from several resources. Otherwise calling this function is not required,
 // just `Emit` function can be called instead.
 // Resource attributes should be provided as ResourceMetricsOption arguments.
-func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
+func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	rm := pmetric.NewResourceMetrics()
 	ils := rm.ScopeMetrics().AppendEmpty()
 	ils.Scope().SetName(ScopeName)
@@ -4755,8 +4823,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMysqlTotalRows.emit(ils.Metrics())
 	mb.metricMysqlUptime.emit(ils.Metrics())
 
-	for _, op := range rmo {
-		op(rm)
+	for _, op := range options {
+		op.apply(rm)
 	}
 	for attr, filter := range mb.resourceAttributeIncludeFilter {
 		if val, ok := rm.Resource().Attributes().Get(attr); ok && !filter.Matches(val.AsString()) {
@@ -4778,8 +4846,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 // Emit returns all the metrics accumulated by the metrics builder and updates the internal state to be ready for
 // recording another set of metrics. This function will be responsible for applying all the transformations required to
 // produce metric representation defined in metadata and user config, e.g. delta or cumulative.
-func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
-	mb.EmitForResource(rmo...)
+func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics {
+	mb.EmitForResource(options...)
 	metrics := mb.metricsBuffer
 	mb.metricsBuffer = pmetric.NewMetrics()
 	return metrics
@@ -5287,9 +5355,9 @@ func (mb *MetricsBuilder) RecordMysqlUptimeDataPoint(ts pcommon.Timestamp, input
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
 // and metrics builder should update its startTime and reset it's internal state accordingly.
-func (mb *MetricsBuilder) Reset(options ...metricBuilderOption) {
+func (mb *MetricsBuilder) Reset(options ...MetricBuilderOption) {
 	mb.startTime = pcommon.NewTimestampFromTime(time.Now())
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 }

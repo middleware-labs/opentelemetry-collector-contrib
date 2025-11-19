@@ -75,7 +75,6 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 }
 
 func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
-
 	var jobName, jobUID string
 	ownerReference := findOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
 	if ownerReference != nil && ownerReference.Kind == constants.K8sKindJob {

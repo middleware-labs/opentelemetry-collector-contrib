@@ -24,8 +24,8 @@ func Transform(statefulset *appsv1.StatefulSet) *appsv1.StatefulSet {
 	return &appsv1.StatefulSet{
 		ObjectMeta: metadata.TransformObjectMeta(statefulset.ObjectMeta),
 		Spec: appsv1.StatefulSetSpec{
-			Replicas: statefulset.Spec.Replicas,
-			ServiceName: statefulset.Spec.ServiceName,
+			Replicas:            statefulset.Spec.Replicas,
+			ServiceName:         statefulset.Spec.ServiceName,
 			PodManagementPolicy: statefulset.Spec.PodManagementPolicy,
 		},
 		Status: appsv1.StatefulSetStatus{

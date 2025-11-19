@@ -33,8 +33,8 @@ type Config struct {
 	ReplicaSet       string                    `mapstructure:"replica_set,omitempty"`
 	Timeout          time.Duration             `mapstructure:"timeout"`
 	DirectConnection bool                      `mapstructure:"direct_connection"`
-	ProfilingLevel int32                       `mapstructure:"profiling_level"`
-	SlowMs         int32                       `mapstructure:"slow_ms"`
+	ProfilingLevel   int32                     `mapstructure:"profiling_level"`
+	SlowMs           int32                     `mapstructure:"slow_ms"`
 }
 
 func (c *Config) Validate() error {

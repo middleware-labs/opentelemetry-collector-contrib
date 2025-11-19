@@ -133,6 +133,12 @@ func NewLogsBuilder(lbc LogsBuilderConfig, settings receiver.Settings) *LogsBuil
 		resourceAttributeIncludeFilter: make(map[string]filter.Filter),
 		resourceAttributeExcludeFilter: make(map[string]filter.Filter),
 	}
+	if lbc.ResourceAttributes.MysqlDbVersion.EventsInclude != nil {
+		lb.resourceAttributeIncludeFilter["mysql.db.version"] = filter.CreateFilter(lbc.ResourceAttributes.MysqlDbVersion.EventsInclude)
+	}
+	if lbc.ResourceAttributes.MysqlDbVersion.EventsExclude != nil {
+		lb.resourceAttributeExcludeFilter["mysql.db.version"] = filter.CreateFilter(lbc.ResourceAttributes.MysqlDbVersion.EventsExclude)
+	}
 	if lbc.ResourceAttributes.MysqlInstanceEndpoint.EventsInclude != nil {
 		lb.resourceAttributeIncludeFilter["mysql.instance.endpoint"] = filter.CreateFilter(lbc.ResourceAttributes.MysqlInstanceEndpoint.EventsInclude)
 	}

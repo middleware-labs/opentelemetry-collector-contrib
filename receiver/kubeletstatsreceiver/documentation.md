@@ -56,9 +56,9 @@ Container filesystem usage
 
 Container filesystem utilization
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Double | Development |
 
 ### container.memory.available
 
@@ -152,9 +152,9 @@ Node filesystem usage
 
 Node filesystem utilization
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Double | Development |
 
 ### k8s.node.memory.available
 
@@ -278,9 +278,9 @@ Pod filesystem usage
 
 Pod filesystem utilization
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Double | Development |
 
 ### k8s.pod.memory.available
 

@@ -348,9 +348,9 @@ type ResourceAttributesConfig struct {
 	K8sDeploymentStartTime                        ResourceAttributeConfig `mapstructure:"k8s.deployment.start_time"`
 	K8sDeploymentUID                              ResourceAttributeConfig `mapstructure:"k8s.deployment.uid"`
 	K8sHpaName                                    ResourceAttributeConfig `mapstructure:"k8s.hpa.name"`
-	K8sHpaScaletargetrefApiversion         ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.apiversion"`
-	K8sHpaScaletargetrefKind               ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.kind"`
-	K8sHpaScaletargetrefName               ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.name"`
+	K8sHpaScaletargetrefApiversion                ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.apiversion"`
+	K8sHpaScaletargetrefKind                      ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.kind"`
+	K8sHpaScaletargetrefName                      ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.name"`
 	K8sHpaUID                                     ResourceAttributeConfig `mapstructure:"k8s.hpa.uid"`
 	K8sIngressAnnotations                         ResourceAttributeConfig `mapstructure:"k8s.ingress.annotations"`
 	K8sIngressLabels                              ResourceAttributeConfig `mapstructure:"k8s.ingress.labels"`

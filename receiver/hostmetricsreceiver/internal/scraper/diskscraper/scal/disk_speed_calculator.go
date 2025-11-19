@@ -63,8 +63,7 @@ func (n *DiskSpeedCalculator) CalculateAndRecord(now pcommon.Timestamp, diskIOCo
 }
 
 // diskSpeed calculates the difference between 2 disk.IOCountersStat using spent time between them
-func diskSpeed(lastRecordTime float64, timeStart disk.IOCountersStat, timeEnd disk.IOCountersStat, device string) map[string]DiskSpeed {
-
+func diskSpeed(lastRecordTime float64, timeStart, timeEnd disk.IOCountersStat, device string) map[string]DiskSpeed {
 	elapsedSeconds := getCurrentTime() - lastRecordTime
 	if elapsedSeconds <= 0 {
 		return map[string]DiskSpeed{

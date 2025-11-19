@@ -63,7 +63,7 @@ func (n *NetworkBandwidthCalculator) CalculateAndRecord(now pcommon.Timestamp, n
 }
 
 // networkBandwidth calculates the difference between 2 net.IOCountersStat using spent time between them
-func networkBandwidth(lastRecordTime float64, timeStart net.IOCountersStat, timeEnd net.IOCountersStat, device string) map[string]NetworkBandwidth {
+func networkBandwidth(lastRecordTime float64, timeStart, timeEnd net.IOCountersStat, device string) map[string]NetworkBandwidth {
 	elapsedSeconds := getCurrentTime() - lastRecordTime
 	if elapsedSeconds <= 0 {
 		return map[string]NetworkBandwidth{

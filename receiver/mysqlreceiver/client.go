@@ -317,7 +317,6 @@ func (c *mySQLClient) getRowOperationStats() (RowOperationStats, error) {
 		var rowsSent int64
 		var statementType string
 		err := rows.Scan(&statementType, &rowsAffected, &rowsSent)
-
 		if err != nil {
 			return *rowOpsStats, err
 		}
@@ -388,8 +387,8 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	}
 
 	innodbParser.SetInnodbStatusFromString(status)
-	//Some metrics fail to get parserd, then they are recorded into errs as a value with key as)
-	//the metric name. We don't want to panic if there are a few errors but we do want to record them.
+	// Some metrics fail to get parserd, then they are recorded into errs as a value with key as)
+	// the metric name. We don't want to panic if there are a few errors but we do want to record them.
 	metrics, errs := innodbParser.ParseStatus()
 
 	total_errs := 0
@@ -422,7 +421,6 @@ func (c *mySQLClient) getTotalRows() ([]NRows, error) {
 	`
 
 	rows, err := c.client.Query(query)
-
 	if err != nil {
 		return nil, err
 	}
@@ -433,7 +431,6 @@ func (c *mySQLClient) getTotalRows() ([]NRows, error) {
 		var r NRows
 		err := rows.Scan(&r.dbname, &r.totalRows)
 		if err != nil {
-
 			return nil, err
 		}
 		nr = append(nr, r)
@@ -467,7 +464,6 @@ func (c *mySQLClient) getTableStats() ([]tableStats, error) {
 			&s.indexLength,
 		)
 		if err != nil {
-
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -485,7 +481,6 @@ func (c *mySQLClient) getTableIoWaitsStats() ([]tableIoWaitsStats, error) {
 		"WHERE OBJECT_SCHEMA NOT IN ('mysql', 'performance_schema');"
 	rows, err := c.client.Query(query)
 	if err != nil {
-
 		return nil, err
 	}
 	defer rows.Close()
@@ -496,7 +491,6 @@ func (c *mySQLClient) getTableIoWaitsStats() ([]tableIoWaitsStats, error) {
 			&s.countDelete, &s.countFetch, &s.countInsert, &s.countUpdate,
 			&s.timeDelete, &s.timeFetch, &s.timeInsert, &s.timeUpdate)
 		if err != nil {
-
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -515,7 +509,6 @@ func (c *mySQLClient) getIndexIoWaitsStats() ([]indexIoWaitsStats, error) {
 
 	rows, err := c.client.Query(query)
 	if err != nil {
-
 		return nil, err
 	}
 	defer rows.Close()
@@ -526,7 +519,6 @@ func (c *mySQLClient) getIndexIoWaitsStats() ([]indexIoWaitsStats, error) {
 			&s.countDelete, &s.countFetch, &s.countInsert, &s.countUpdate,
 			&s.timeDelete, &s.timeFetch, &s.timeInsert, &s.timeUpdate)
 		if err != nil {
-
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -591,7 +583,6 @@ func (c *mySQLClient) getStatementEventsStats() ([]statementEventStats, error) {
 			&s.countStar,
 		)
 		if err != nil {
-
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -604,7 +595,6 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 
 	rows, err := c.client.Query(query)
 	if err != nil {
-
 		return -1, err
 	}
 
@@ -615,7 +605,6 @@ func (c *mySQLClient) getTotalErrors() (int64, error) {
 
 		err := rows.Scan(&ec)
 		if err != nil {
-
 			return -1, err
 		}
 		nerrors += ec
@@ -656,7 +645,6 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 
 	rows, err := c.client.Query(query)
 	if err != nil {
-
 		return nil, err
 	}
 	defer rows.Close()
@@ -670,7 +658,6 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 			&s.sumTimerReadNormal, &s.sumTimerReadWithSharedLocks, &s.sumTimerReadHighPriority, &s.sumTimerReadNoInsert, &s.sumTimerReadExternal,
 			&s.sumTimerWriteAllowWrite, &s.sumTimerWriteConcurrentInsert, &s.sumTimerWriteLowPriority, &s.sumTimerWriteNormal, &s.sumTimerWriteExternal)
 		if err != nil {
-
 			return nil, err
 		}
 		stats = append(stats, s)
@@ -682,7 +669,6 @@ func (c *mySQLClient) getTableLockWaitEventStats() ([]tableLockWaitEventStats, e
 func (c *mySQLClient) getReplicaStatusStats() ([]replicaStatusStats, error) {
 	mysqlVersion, err := c.getVersion()
 	if err != nil {
-
 		return nil, err
 	}
 
@@ -696,14 +682,12 @@ func (c *mySQLClient) getReplicaStatusStats() ([]replicaStatusStats, error) {
 
 	rows, err := c.client.Query(query)
 	if err != nil {
-
 		return nil, err
 	}
 
 	defer rows.Close()
 	cols, err := rows.Columns()
 	if err != nil {
-
 		return nil, err
 	}
 
@@ -931,7 +915,6 @@ func (c *mySQLClient) getReplicaStatusStats() ([]replicaStatusStats, error) {
 		}
 		err := rows.Scan(dest...)
 		if err != nil {
-
 			return nil, err
 		}
 		stats = append(stats, s)

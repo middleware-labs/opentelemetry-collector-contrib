@@ -165,7 +165,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		ProcessStartedOn: ResourceAttributeConfig{
-			Enabled: false,
+			Enabled: true,
 		},
 	}
 }

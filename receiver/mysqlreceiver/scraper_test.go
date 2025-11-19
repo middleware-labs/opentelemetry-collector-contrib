@@ -6,7 +6,6 @@ package mysqlreceiver
 import (
 	"bufio"
 	"database/sql"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -311,7 +310,6 @@ func (c *mockClient) getActiveConnections() (int64, error) {
 func (c *mockClient) getRowOperationStats() (RowOperationStats, error) {
 	rowOpsStats := new(RowOperationStats)
 	file, err := os.Open(filepath.Join("testdata", "scraper", c.rowOperationsStatsFile+".txt"))
-
 	if err != nil {
 		return *rowOpsStats, err
 	}
@@ -395,13 +393,11 @@ func (c *mockClient) getTotalErrors() (int64, error) {
 		"scraper",
 		c.totalErrorsFile+".txt",
 	))
-
 	if err != nil {
 		return -1, err
 	}
 
 	stats, err := file.Stat()
-
 	if err != nil {
 		return -1, err
 	}
@@ -417,7 +413,6 @@ func (c *mockClient) getTotalErrors() (int64, error) {
 			return -1, fmt.Errorf("wrong format for the mock file")
 		}
 		nErrs, err := strconv.ParseInt(text[1], 10, 64)
-
 		if err != nil {
 			return -1, err
 		}

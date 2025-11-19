@@ -11,9 +11,6 @@ status:
 sem_conv_version: 1.9.0
 
 resource_attributes:
-  process.started_on:
-    description: Process Start Time.
-    type: int
   process.cgroup:
     description: cgroup associated with the process (Linux only).
     enabled: false
@@ -59,7 +56,10 @@ resource_attributes:
     description: Process identifier (PID).
     enabled: true
     type: int
-
+  process.started_on:
+    description: Process Start Time.
+    enabled: true
+    type: int
 attributes:
   context_switch_type:
     name_override: type
@@ -96,6 +96,8 @@ metrics:
     attributes: [context_switch_type]
   process.cpu.percent:
     enabled: true
+    stability:
+      level: development
     description: "Percent of CPU used by the process."
     unit: "%"
     gauge:
@@ -125,13 +127,6 @@ metrics:
     gauge:
       value_type: double
     attributes: [state]
-
-  process.memory.percent:
-    enabled: true
-    description: "Percent of Memory used by the process."
-    unit: "%"
-    gauge:
-      value_type: double
 
   process.disk.io:
     enabled: true
@@ -167,7 +162,14 @@ metrics:
       value_type: int
       aggregation_temporality: cumulative
       monotonic: false
-
+  process.memory.percent:
+    enabled: true
+    description: "Percent of Memory used by the process."
+    unit: "%"
+    stability:
+      level: development
+    gauge:
+      value_type: double
   process.memory.usage:
     enabled: true
     description: The amount of physical memory in use.

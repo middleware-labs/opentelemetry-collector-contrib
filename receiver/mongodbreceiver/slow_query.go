@@ -353,7 +353,6 @@ func obfuscateSlowOperation(slowOperation bson.M, dbName string) bson.M {
 
 // Function to collect slow operations from the profiler
 func collectSlowOperationsFromProfiler(ctx context.Context, client *mongo.Client, dbName string, lastTs time.Time) ([]bson.M, error) {
-
 	// Query for profiling data from the system.profile collection
 	filter := bson.D{
 		{"ts", bson.D{{"$gte", lastTs}}}, // Filter for timestamps greater than or equal to lastTs(collection_interval)

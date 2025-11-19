@@ -81,7 +81,6 @@ func TestScraper(t *testing.T) {
 			pmetrictest.IgnoreStartTimestamp(),
 			pmetrictest.IgnoreTimestamp()),
 		)
-
 	}
 
 	runTest(true, "expected_schemaattr.yaml")

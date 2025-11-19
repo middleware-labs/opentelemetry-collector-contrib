@@ -55,16 +55,108 @@ var MetricsInfo = metricsInfo{
 	NginxConnectionsHandled: metricInfo{
 		Name: "nginx.connections_handled",
 	},
+	NginxLoadTimestamp: metricInfo{
+		Name: "nginx.load_timestamp",
+	},
+	NginxNetReading: metricInfo{
+		Name: "nginx.net.reading",
+	},
+	NginxNetWaiting: metricInfo{
+		Name: "nginx.net.waiting",
+	},
+	NginxNetWriting: metricInfo{
+		Name: "nginx.net.writing",
+	},
 	NginxRequests: metricInfo{
 		Name: "nginx.requests",
+	},
+	NginxServerZoneReceived: metricInfo{
+		Name: "nginx.server_zone.received",
+	},
+	NginxServerZoneResponses1xx: metricInfo{
+		Name: "nginx.server_zone.responses.1xx",
+	},
+	NginxServerZoneResponses2xx: metricInfo{
+		Name: "nginx.server_zone.responses.2xx",
+	},
+	NginxServerZoneResponses3xx: metricInfo{
+		Name: "nginx.server_zone.responses.3xx",
+	},
+	NginxServerZoneResponses4xx: metricInfo{
+		Name: "nginx.server_zone.responses.4xx",
+	},
+	NginxServerZoneResponses5xx: metricInfo{
+		Name: "nginx.server_zone.responses.5xx",
+	},
+	NginxServerZoneSent: metricInfo{
+		Name: "nginx.server_zone.sent",
+	},
+	NginxUpstreamPeersBackup: metricInfo{
+		Name: "nginx.upstream.peers.backup",
+	},
+	NginxUpstreamPeersHealthChecksLastPassed: metricInfo{
+		Name: "nginx.upstream.peers.health_checks.last_passed",
+	},
+	NginxUpstreamPeersReceived: metricInfo{
+		Name: "nginx.upstream.peers.received",
+	},
+	NginxUpstreamPeersRequests: metricInfo{
+		Name: "nginx.upstream.peers.requests",
+	},
+	NginxUpstreamPeersResponseTime: metricInfo{
+		Name: "nginx.upstream.peers.response_time",
+	},
+	NginxUpstreamPeersResponses1xx: metricInfo{
+		Name: "nginx.upstream.peers.responses.1xx",
+	},
+	NginxUpstreamPeersResponses2xx: metricInfo{
+		Name: "nginx.upstream.peers.responses.2xx",
+	},
+	NginxUpstreamPeersResponses3xx: metricInfo{
+		Name: "nginx.upstream.peers.responses.3xx",
+	},
+	NginxUpstreamPeersResponses4xx: metricInfo{
+		Name: "nginx.upstream.peers.responses.4xx",
+	},
+	NginxUpstreamPeersResponses5xx: metricInfo{
+		Name: "nginx.upstream.peers.responses.5xx",
+	},
+	NginxUpstreamPeersSent: metricInfo{
+		Name: "nginx.upstream.peers.sent",
+	},
+	NginxUpstreamPeersWeight: metricInfo{
+		Name: "nginx.upstream.peers.weight",
 	},
 }
 
 type metricsInfo struct {
-	NginxConnectionsAccepted metricInfo
-	NginxConnectionsCurrent  metricInfo
-	NginxConnectionsHandled  metricInfo
-	NginxRequests            metricInfo
+	NginxConnectionsAccepted                 metricInfo
+	NginxConnectionsCurrent                  metricInfo
+	NginxConnectionsHandled                  metricInfo
+	NginxLoadTimestamp                       metricInfo
+	NginxNetReading                          metricInfo
+	NginxNetWaiting                          metricInfo
+	NginxNetWriting                          metricInfo
+	NginxRequests                            metricInfo
+	NginxServerZoneReceived                  metricInfo
+	NginxServerZoneResponses1xx              metricInfo
+	NginxServerZoneResponses2xx              metricInfo
+	NginxServerZoneResponses3xx              metricInfo
+	NginxServerZoneResponses4xx              metricInfo
+	NginxServerZoneResponses5xx              metricInfo
+	NginxServerZoneSent                      metricInfo
+	NginxUpstreamPeersBackup                 metricInfo
+	NginxUpstreamPeersHealthChecksLastPassed metricInfo
+	NginxUpstreamPeersReceived               metricInfo
+	NginxUpstreamPeersRequests               metricInfo
+	NginxUpstreamPeersResponseTime           metricInfo
+	NginxUpstreamPeersResponses1xx           metricInfo
+	NginxUpstreamPeersResponses2xx           metricInfo
+	NginxUpstreamPeersResponses3xx           metricInfo
+	NginxUpstreamPeersResponses4xx           metricInfo
+	NginxUpstreamPeersResponses5xx           metricInfo
+	NginxUpstreamPeersSent                   metricInfo
+	NginxUpstreamPeersWeight                 metricInfo
 }
 
 type metricInfo struct {
@@ -1521,16 +1613,24 @@ type MetricsBuilder struct {
 	metricNginxUpstreamPeersWeight                 metricNginxUpstreamPeersWeight
 }
 
-// metricBuilderOption applies changes to default metrics builder.
-type metricBuilderOption func(*MetricsBuilder)
+// MetricBuilderOption applies changes to default metrics builder.
+type MetricBuilderOption interface {
+	apply(*MetricsBuilder)
+}
+
+type metricBuilderOptionFunc func(mb *MetricsBuilder)
+
+func (mbof metricBuilderOptionFunc) apply(mb *MetricsBuilder) {
+	mbof(mb)
+}
 
 // WithStartTime sets startTime on the metrics builder.
-func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
-	return func(mb *MetricsBuilder) {
+func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
+	return metricBuilderOptionFunc(func(mb *MetricsBuilder) {
 		mb.startTime = startTime
-	}
+	})
 }
-func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...metricBuilderOption) *MetricsBuilder {
+func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
 		config:                                         mbc,
 		startTime:                                      pcommon.NewTimestampFromTime(time.Now()),
@@ -1566,7 +1666,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 	return mb
 }
@@ -1579,20 +1679,28 @@ func (mb *MetricsBuilder) updateCapacity(rm pmetric.ResourceMetrics) {
 }
 
 // ResourceMetricsOption applies changes to provided resource metrics.
-type ResourceMetricsOption func(pmetric.ResourceMetrics)
+type ResourceMetricsOption interface {
+	apply(pmetric.ResourceMetrics)
+}
+
+type resourceMetricsOptionFunc func(pmetric.ResourceMetrics)
+
+func (rmof resourceMetricsOptionFunc) apply(rm pmetric.ResourceMetrics) {
+	rmof(rm)
+}
 
 // WithResource sets the provided resource on the emitted ResourceMetrics.
 // It's recommended to use ResourceBuilder to create the resource.
 func WithResource(res pcommon.Resource) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		res.CopyTo(rm.Resource())
-	}
+	})
 }
 
 // WithStartTimeOverride overrides start time for all the resource metrics data points.
 // This option should be only used if different start time has to be set on metrics coming from different resources.
 func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		var dps pmetric.NumberDataPointSlice
 		metrics := rm.ScopeMetrics().At(0).Metrics()
 		for i := 0; i < metrics.Len(); i++ {
@@ -1606,7 +1714,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 				dps.At(j).SetStartTimestamp(start)
 			}
 		}
-	}
+	})
 }
 
 // EmitForResource saves all the generated metrics under a new resource and updates the internal state to be ready for
@@ -1614,7 +1722,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 // needs to emit metrics from several resources. Otherwise calling this function is not required,
 // just `Emit` function can be called instead.
 // Resource attributes should be provided as ResourceMetricsOption arguments.
-func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
+func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	rm := pmetric.NewResourceMetrics()
 	ils := rm.ScopeMetrics().AppendEmpty()
 	ils.Scope().SetName(ScopeName)
@@ -1648,8 +1756,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricNginxUpstreamPeersSent.emit(ils.Metrics())
 	mb.metricNginxUpstreamPeersWeight.emit(ils.Metrics())
 
-	for _, op := range rmo {
-		op(rm)
+	for _, op := range options {
+		op.apply(rm)
 	}
 
 	if ils.Metrics().Len() > 0 {
@@ -1661,8 +1769,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 // Emit returns all the metrics accumulated by the metrics builder and updates the internal state to be ready for
 // recording another set of metrics. This function will be responsible for applying all the transformations required to
 // produce metric representation defined in metadata and user config, e.g. delta or cumulative.
-func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
-	mb.EmitForResource(rmo...)
+func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics {
+	mb.EmitForResource(options...)
 	metrics := mb.metricsBuffer
 	mb.metricsBuffer = pmetric.NewMetrics()
 	return metrics
@@ -1805,9 +1913,9 @@ func (mb *MetricsBuilder) RecordNginxUpstreamPeersWeightDataPoint(ts pcommon.Tim
 
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
 // and metrics builder should update its startTime and reset it's internal state accordingly.
-func (mb *MetricsBuilder) Reset(options ...metricBuilderOption) {
+func (mb *MetricsBuilder) Reset(options ...MetricBuilderOption) {
 	mb.startTime = pcommon.NewTimestampFromTime(time.Now())
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 }
