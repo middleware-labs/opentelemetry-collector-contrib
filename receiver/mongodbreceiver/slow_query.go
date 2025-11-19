@@ -11,7 +11,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 // SlowOperationEvent represents the structure of a slow operation event
@@ -411,7 +411,8 @@ func collectSlowOperations(ctx context.Context, client *mongo.Client, dbName str
 func ConvertToJSONString(data interface{}) string {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		log.Printf("error convert to json string: %w", err)
+		log.Printf("failed to parse slow query: %v", err)
+
 		return ""
 	}
 	return string(jsonData)
