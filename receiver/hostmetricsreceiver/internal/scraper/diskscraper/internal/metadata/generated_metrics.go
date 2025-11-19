@@ -42,6 +42,9 @@ var MetricsInfo = metricsInfo{
 	SystemDiskIo: metricInfo{
 		Name: "system.disk.io",
 	},
+	SystemDiskIoSpeed: metricInfo{
+		Name: "system.disk.io.speed",
+	},
 	SystemDiskIoTime: metricInfo{
 		Name: "system.disk.io_time",
 	},
@@ -64,6 +67,7 @@ var MetricsInfo = metricsInfo{
 
 type metricsInfo struct {
 	SystemDiskIo                metricInfo
+	SystemDiskIoSpeed           metricInfo
 	SystemDiskIoTime            metricInfo
 	SystemDiskMerged            metricInfo
 	SystemDiskOperationTime     metricInfo

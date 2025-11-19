@@ -96,15 +96,15 @@ The number of blocks read.
 
 The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {hit}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {hit}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbname | name of the database | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| dbname | name of the database | Any Str | Recommended |
 
 ### postgresql.commits
 
@@ -118,9 +118,9 @@ The number of commits.
 
 The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 ### postgresql.connection.max
 
@@ -166,15 +166,15 @@ The size of the index on disk.
 
 The approximate number of live rows, tagged with relation name.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {row} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.operations
 
@@ -194,31 +194,31 @@ The number of db row operations.
 
 Number of times the statement was executed.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | false | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_text | Text of a representative statement | Any Str |
-| query_id | Hash code to identify identical normalized queries. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_text | Text of a representative statement | Any Str | Recommended |
+| query_id | Hash code to identify identical normalized queries. | Any Str | Recommended |
 
 ### postgresql.query.total_exec_time
 
 Total wait time of the normalised timed events in nanaoseconds.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| ns | Sum | Int | Cumulative | false | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_text | Text of a representative statement | Any Str |
-| query_id | Hash code to identify identical normalized queries. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_text | Text of a representative statement | Any Str | Recommended |
+| query_id | Hash code to identify identical normalized queries. | Any Str | Recommended |
 
 ### postgresql.replication.data_delay
 
@@ -260,57 +260,57 @@ The number of rows in the database.
 
 Rows deleted by queries in this db, tagged with relation name.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {row}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.rows_fetched
 
 Rows fetched by queries in this db, tagged with relation name.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {row}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.rows_inserted
 
 Rows inserted by queries in the db, tagged with relation name.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {row}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.rows_updated
 
 Rows updated by queries in the db, tagged with relation name.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {row}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {row}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| relation_name | name of the relation | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.table.count
 

@@ -2,8 +2,6 @@ module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongod
 
 go 1.24.0
 
-toolchain go1.22.2
-
 require (
 	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/go-version v1.7.0
@@ -34,6 +32,8 @@ require (
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d
 )
+
+require github.com/montanaflynn/stats v0.7.1 // indirect
 
 require (
 	dario.cat/mergo v1.0.2 // indirect
@@ -100,6 +100,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+	go.mongodb.org/mongo-driver v1.17.6
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/collector/consumer/consumererror v0.139.0 // indirect
 	go.opentelemetry.io/collector/consumer/xconsumer v0.139.0 // indirect

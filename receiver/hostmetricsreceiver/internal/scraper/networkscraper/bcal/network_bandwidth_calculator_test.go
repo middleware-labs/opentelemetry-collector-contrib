@@ -183,7 +183,6 @@ func TestNetworkBandwidthCalculator_Calculate(t *testing.T) {
 }
 
 func Test_NetworkBandwidth(t *testing.T) {
-
 	timeStart := net.IOCountersStat{
 		Name:      "interface0",
 		BytesRecv: 1,
@@ -210,7 +209,6 @@ func Test_NetworkBandwidth(t *testing.T) {
 		assert.InDelta(t, expectedUtilization.InboundRate, actualUtilizationObj.InboundRate, 0.00001)
 		assert.InDelta(t, expectedUtilization.OutboundRate, actualUtilizationObj.OutboundRate, 0.00001)
 	}
-
 }
 
 func Test_networkCounterForName(t *testing.T) {

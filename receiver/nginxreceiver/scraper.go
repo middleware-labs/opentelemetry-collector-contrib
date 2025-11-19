@@ -51,7 +51,6 @@ func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	if r.client == nil {
 		var err error
 		r.client, err = NewNginxClient(r.httpClient, r.cfg.ClientConfig.Endpoint, r.cfg.VTSEndpoint)
-
 		if err != nil {
 			r.client = nil
 			return pmetric.Metrics{}, err
@@ -65,7 +64,6 @@ func (r *nginxScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	}
 
 	vtsStats, err := r.client.GetVtsStats()
-
 	if err != nil {
 		r.settings.Logger.Error("Failed to fetch nginx stats", zap.Error(err))
 		return pmetric.Metrics{}, err
@@ -174,10 +172,8 @@ func (r *nginxScraper) recordVtsConnectionStats(now pcommon.Timestamp, vtsStats 
 }
 
 func (r *nginxScraper) recordTimingStats(now pcommon.Timestamp, vtsStats *NginxVtsStatus) {
-
 	for upstreamZones, v := range vtsStats.UpstreamZones {
 		for _, val := range v {
-
 			r.mb.RecordNginxUpstreamPeersResponseTimeDataPoint(
 				now, val.ResponseMsec, upstreamZones, val.Server,
 			)

@@ -28,7 +28,7 @@ func TestResourceBuilder(t *testing.T) {
 
 			switch tt {
 			case "default":
-				assert.Equal(t, 7, res.Attributes().Len())
+				assert.Equal(t, 8, res.Attributes().Len())
 			case "all_set":
 				assert.Equal(t, 9, res.Attributes().Len())
 			case "none_set":
@@ -79,7 +79,7 @@ func TestResourceBuilder(t *testing.T) {
 				assert.EqualValues(t, 11, val.Int())
 			}
 			val, ok = res.Attributes().Get("process.started_on")
-			assert.Equal(t, test == "all_set", ok)
+			assert.True(t, ok)
 			if ok {
 				assert.EqualValues(t, 18, val.Int())
 			}

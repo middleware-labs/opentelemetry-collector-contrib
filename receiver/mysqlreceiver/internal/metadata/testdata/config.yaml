@@ -191,6 +191,8 @@ none_set:
       enabled: false
     mysql.page_operations:
       enabled: false
+    mysql.page_size:
+      enabled: false
     mysql.performance.rows_deleted:
       enabled: false
     mysql.performance.rows_inserted:
@@ -198,8 +200,6 @@ none_set:
     mysql.performance.rows_read:
       enabled: false
     mysql.performance.rows_updated:
-      enabled: false
-    mysql.page_size:
       enabled: false
     mysql.prepared_statements:
       enabled: false
@@ -273,6 +273,8 @@ filter_set_include:
       enabled: true
       metrics_include:
         - regexp: ".*"
+      events_include:
+        - regexp: ".*"
     mysql.instance.endpoint:
       enabled: true
       metrics_include:
@@ -284,6 +286,8 @@ filter_set_exclude:
     mysql.db.version:
       enabled: true
       metrics_exclude:
+        - strict: "mysql.db.version-val"
+      events_exclude:
         - strict: "mysql.db.version-val"
     mysql.instance.endpoint:
       enabled: true

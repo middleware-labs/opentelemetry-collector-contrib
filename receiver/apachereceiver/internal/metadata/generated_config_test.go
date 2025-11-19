@@ -27,20 +27,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					ApacheConnectionsAsync:   MetricConfig{Enabled: true},
-					ApacheCPULoad:            MetricConfig{Enabled: true},
-					ApacheCPUTime:            MetricConfig{Enabled: true},
-					ApacheCurrentConnections: MetricConfig{Enabled: true},
-					ApacheLoad1:              MetricConfig{Enabled: true},
-					ApacheLoad15:             MetricConfig{Enabled: true},
-					ApacheLoad5:              MetricConfig{Enabled: true},
-					ApacheRequestTime:        MetricConfig{Enabled: true},
-					ApacheRequests:           MetricConfig{Enabled: true},
-					ApacheScoreboard:         MetricConfig{Enabled: true},
-					ApacheTraffic:            MetricConfig{Enabled: true},
-					ApacheUptime:             MetricConfig{Enabled: true},
-					ApacheWorkers:            MetricConfig{Enabled: true},
 					ApacheBytesPerSec:         MetricConfig{Enabled: true},
+					ApacheConnectionsAsync:    MetricConfig{Enabled: true},
 					ApacheConnsAsyncClosing:   MetricConfig{Enabled: true},
 					ApacheConnsAsyncKeepAlive: MetricConfig{Enabled: true},
 					ApacheConnsAsyncWriting:   MetricConfig{Enabled: true},
@@ -69,20 +57,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					ApacheConnectionsAsync:   MetricConfig{Enabled: false},
-					ApacheCPULoad:            MetricConfig{Enabled: false},
-					ApacheCPUTime:            MetricConfig{Enabled: false},
-					ApacheCurrentConnections: MetricConfig{Enabled: false},
-					ApacheLoad1:              MetricConfig{Enabled: false},
-					ApacheLoad15:             MetricConfig{Enabled: false},
-					ApacheLoad5:              MetricConfig{Enabled: false},
-					ApacheRequestTime:        MetricConfig{Enabled: false},
-					ApacheRequests:           MetricConfig{Enabled: false},
-					ApacheScoreboard:         MetricConfig{Enabled: false},
-					ApacheTraffic:            MetricConfig{Enabled: false},
-					ApacheUptime:             MetricConfig{Enabled: false},
-					ApacheWorkers:            MetricConfig{Enabled: false},
 					ApacheBytesPerSec:         MetricConfig{Enabled: false},
+					ApacheConnectionsAsync:    MetricConfig{Enabled: false},
 					ApacheConnsAsyncClosing:   MetricConfig{Enabled: false},
 					ApacheConnsAsyncKeepAlive: MetricConfig{Enabled: false},
 					ApacheConnsAsyncWriting:   MetricConfig{Enabled: false},
@@ -111,9 +87,8 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{})); diff != "" {
-				t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
-			}
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
+			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
 }
@@ -155,9 +130,8 @@ func TestResourceAttributesConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, tt.name)
-			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{})); diff != "" {
-				t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
-			}
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{}))
+			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
 }

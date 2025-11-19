@@ -28,53 +28,8 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for mongodb metrics.
 type MetricsConfig struct {
-	MongodbActiveReads            MetricConfig `mapstructure:"mongodb.active.reads"`
-	MongodbActiveWrites           MetricConfig `mapstructure:"mongodb.active.writes"`
-	MongodbCacheOperations        MetricConfig `mapstructure:"mongodb.cache.operations"`
-	MongodbCollectionCount        MetricConfig `mapstructure:"mongodb.collection.count"`
-	MongodbCommandsRate           MetricConfig `mapstructure:"mongodb.commands.rate"`
-	MongodbConnectionCount        MetricConfig `mapstructure:"mongodb.connection.count"`
-	MongodbCursorCount            MetricConfig `mapstructure:"mongodb.cursor.count"`
-	MongodbCursorTimeoutCount     MetricConfig `mapstructure:"mongodb.cursor.timeout.count"`
-	MongodbDataSize               MetricConfig `mapstructure:"mongodb.data.size"`
-	MongodbDatabaseCount          MetricConfig `mapstructure:"mongodb.database.count"`
-	MongodbDeletesRate            MetricConfig `mapstructure:"mongodb.deletes.rate"`
-	MongodbDocumentOperationCount MetricConfig `mapstructure:"mongodb.document.operation.count"`
-	MongodbExtentCount            MetricConfig `mapstructure:"mongodb.extent.count"`
-	MongodbFlushesRate            MetricConfig `mapstructure:"mongodb.flushes.rate"`
-	MongodbGetmoresRate           MetricConfig `mapstructure:"mongodb.getmores.rate"`
-	MongodbGlobalLockTime         MetricConfig `mapstructure:"mongodb.global_lock.time"`
-	MongodbHealth                 MetricConfig `mapstructure:"mongodb.health"`
-	MongodbIndexAccessCount       MetricConfig `mapstructure:"mongodb.index.access.count"`
-	MongodbIndexCount             MetricConfig `mapstructure:"mongodb.index.count"`
-	MongodbIndexSize              MetricConfig `mapstructure:"mongodb.index.size"`
-	MongodbInsertsRate            MetricConfig `mapstructure:"mongodb.inserts.rate"`
-	MongodbLockAcquireCount       MetricConfig `mapstructure:"mongodb.lock.acquire.count"`
-	MongodbLockAcquireTime        MetricConfig `mapstructure:"mongodb.lock.acquire.time"`
-	MongodbLockAcquireWaitCount   MetricConfig `mapstructure:"mongodb.lock.acquire.wait_count"`
-	MongodbLockDeadlockCount      MetricConfig `mapstructure:"mongodb.lock.deadlock.count"`
-	MongodbMemoryUsage            MetricConfig `mapstructure:"mongodb.memory.usage"`
-	MongodbNetworkIoReceive       MetricConfig `mapstructure:"mongodb.network.io.receive"`
-	MongodbNetworkIoTransmit      MetricConfig `mapstructure:"mongodb.network.io.transmit"`
-	MongodbNetworkRequestCount    MetricConfig `mapstructure:"mongodb.network.request.count"`
-	MongodbObjectCount            MetricConfig `mapstructure:"mongodb.object.count"`
-	MongodbOperationCount         MetricConfig `mapstructure:"mongodb.operation.count"`
-	MongodbOperationLatencyTime   MetricConfig `mapstructure:"mongodb.operation.latency.time"`
-	MongodbOperationReplCount     MetricConfig `mapstructure:"mongodb.operation.repl.count"`
-	MongodbOperationTime          MetricConfig `mapstructure:"mongodb.operation.time"`
-	MongodbPageFaults             MetricConfig `mapstructure:"mongodb.page_faults"`
-	MongodbQueriesRate            MetricConfig `mapstructure:"mongodb.queries.rate"`
-	MongodbReplCommandsPerSec     MetricConfig `mapstructure:"mongodb.repl_commands_per_sec"`
-	MongodbReplDeletesPerSec      MetricConfig `mapstructure:"mongodb.repl_deletes_per_sec"`
-	MongodbReplGetmoresPerSec     MetricConfig `mapstructure:"mongodb.repl_getmores_per_sec"`
-	MongodbReplInsertsPerSec      MetricConfig `mapstructure:"mongodb.repl_inserts_per_sec"`
-	MongodbReplQueriesPerSec      MetricConfig `mapstructure:"mongodb.repl_queries_per_sec"`
-	MongodbReplUpdatesPerSec      MetricConfig `mapstructure:"mongodb.repl_updates_per_sec"`
-	MongodbSessionCount           MetricConfig `mapstructure:"mongodb.session.count"`
-	MongodbStorageSize            MetricConfig `mapstructure:"mongodb.storage.size"`
-	MongodbUpdatesRate            MetricConfig `mapstructure:"mongodb.updates.rate"`
-	MongodbUptime                 MetricConfig `mapstructure:"mongodb.uptime"`
-	MongodbWtcacheBytesRead       MetricConfig `mapstructure:"mongodb.wtcache.bytes.read"`
+	MongodbActiveReads                                                       MetricConfig `mapstructure:"mongodb.active.reads"`
+	MongodbActiveWrites                                                      MetricConfig `mapstructure:"mongodb.active.writes"`
 	MongodbAssertsMsgps                                                      MetricConfig `mapstructure:"mongodb.asserts.msgps"`
 	MongodbAssertsRegularps                                                  MetricConfig `mapstructure:"mongodb.asserts.regularps"`
 	MongodbAssertsRolloversps                                                MetricConfig `mapstructure:"mongodb.asserts.rolloversps"`
@@ -97,6 +52,7 @@ type MetricsConfig struct {
 	MongodbCollectionObjects                                                 MetricConfig `mapstructure:"mongodb.collection.objects"`
 	MongodbCollectionSize                                                    MetricConfig `mapstructure:"mongodb.collection.size"`
 	MongodbCollectionStoragesize                                             MetricConfig `mapstructure:"mongodb.collection.storagesize"`
+	MongodbCommandsRate                                                      MetricConfig `mapstructure:"mongodb.commands.rate"`
 	MongodbConnectionCount                                                   MetricConfig `mapstructure:"mongodb.connection.count"`
 	MongodbConnectionPoolNumascopedconnections                               MetricConfig `mapstructure:"mongodb.connection_pool.numascopedconnections"`
 	MongodbConnectionPoolNumclientconnections                                MetricConfig `mapstructure:"mongodb.connection_pool.numclientconnections"`
@@ -120,6 +76,7 @@ type MetricsConfig struct {
 	MongodbCursorsTotalopen                                                  MetricConfig `mapstructure:"mongodb.cursors.totalopen"`
 	MongodbDataSize                                                          MetricConfig `mapstructure:"mongodb.data.size"`
 	MongodbDatabaseCount                                                     MetricConfig `mapstructure:"mongodb.database.count"`
+	MongodbDeletesRate                                                       MetricConfig `mapstructure:"mongodb.deletes.rate"`
 	MongodbDocumentOperationCount                                            MetricConfig `mapstructure:"mongodb.document.operation.count"`
 	MongodbDurCommits                                                        MetricConfig `mapstructure:"mongodb.dur.commits"`
 	MongodbDurCommitsinwritelock                                             MetricConfig `mapstructure:"mongodb.dur.commitsinwritelock"`
@@ -137,7 +94,9 @@ type MetricsConfig struct {
 	MongodbExtentCount                                                       MetricConfig `mapstructure:"mongodb.extent.count"`
 	MongodbExtraInfoHeapUsageBytesps                                         MetricConfig `mapstructure:"mongodb.extra_info.heap_usage_bytesps"`
 	MongodbExtraInfoPageFaultsps                                             MetricConfig `mapstructure:"mongodb.extra_info.page_faultsps"`
+	MongodbFlushesRate                                                       MetricConfig `mapstructure:"mongodb.flushes.rate"`
 	MongodbFsynclocked                                                       MetricConfig `mapstructure:"mongodb.fsynclocked"`
+	MongodbGetmoresRate                                                      MetricConfig `mapstructure:"mongodb.getmores.rate"`
 	MongodbGlobalLockTime                                                    MetricConfig `mapstructure:"mongodb.global_lock.time"`
 	MongodbGloballockActiveclientsReaders                                    MetricConfig `mapstructure:"mongodb.globallock.activeclients.readers"`
 	MongodbGloballockActiveclientsTotal                                      MetricConfig `mapstructure:"mongodb.globallock.activeclients.total"`
@@ -157,6 +116,7 @@ type MetricsConfig struct {
 	MongodbIndexcountersMissesps                                             MetricConfig `mapstructure:"mongodb.indexcounters.missesps"`
 	MongodbIndexcountersMissratio                                            MetricConfig `mapstructure:"mongodb.indexcounters.missratio"`
 	MongodbIndexcountersResetsps                                             MetricConfig `mapstructure:"mongodb.indexcounters.resetsps"`
+	MongodbInsertsRate                                                       MetricConfig `mapstructure:"mongodb.inserts.rate"`
 	MongodbLockAcquireCount                                                  MetricConfig `mapstructure:"mongodb.lock.acquire.count"`
 	MongodbLockAcquireTime                                                   MetricConfig `mapstructure:"mongodb.lock.acquire.time"`
 	MongodbLockAcquireWaitCount                                              MetricConfig `mapstructure:"mongodb.lock.acquire.wait_count"`
@@ -294,8 +254,16 @@ type MetricsConfig struct {
 	MongodbOplogLogsizemb                                                    MetricConfig `mapstructure:"mongodb.oplog.logsizemb"`
 	MongodbOplogTimediff                                                     MetricConfig `mapstructure:"mongodb.oplog.timediff"`
 	MongodbOplogUsedsizemb                                                   MetricConfig `mapstructure:"mongodb.oplog.usedsizemb"`
+	MongodbPageFaults                                                        MetricConfig `mapstructure:"mongodb.page_faults"`
 	MongodbProfilingLevel                                                    MetricConfig `mapstructure:"mongodb.profiling.level"`
 	MongodbProfilingSlowms                                                   MetricConfig `mapstructure:"mongodb.profiling.slowms"`
+	MongodbQueriesRate                                                       MetricConfig `mapstructure:"mongodb.queries.rate"`
+	MongodbReplCommandsPerSec                                                MetricConfig `mapstructure:"mongodb.repl_commands_per_sec"`
+	MongodbReplDeletesPerSec                                                 MetricConfig `mapstructure:"mongodb.repl_deletes_per_sec"`
+	MongodbReplGetmoresPerSec                                                MetricConfig `mapstructure:"mongodb.repl_getmores_per_sec"`
+	MongodbReplInsertsPerSec                                                 MetricConfig `mapstructure:"mongodb.repl_inserts_per_sec"`
+	MongodbReplQueriesPerSec                                                 MetricConfig `mapstructure:"mongodb.repl_queries_per_sec"`
+	MongodbReplUpdatesPerSec                                                 MetricConfig `mapstructure:"mongodb.repl_updates_per_sec"`
 	MongodbReplsetHealth                                                     MetricConfig `mapstructure:"mongodb.replset.health"`
 	MongodbReplsetOptimeLag                                                  MetricConfig `mapstructure:"mongodb.replset.optime_lag"`
 	MongodbReplsetReplicationlag                                             MetricConfig `mapstructure:"mongodb.replset.replicationlag"`
@@ -338,6 +306,7 @@ type MetricsConfig struct {
 	MongodbTcmallocTcmallocSpinlockTotalDelayNs                              MetricConfig `mapstructure:"mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns"`
 	MongodbTcmallocTcmallocThreadCacheFreeBytes                              MetricConfig `mapstructure:"mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes"`
 	MongodbTcmallocTcmallocTransferCacheFreeBytes                            MetricConfig `mapstructure:"mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes"`
+	MongodbUpdatesRate                                                       MetricConfig `mapstructure:"mongodb.updates.rate"`
 	MongodbUptime                                                            MetricConfig `mapstructure:"mongodb.uptime"`
 	MongodbUsageCommandsCount                                                MetricConfig `mapstructure:"mongodb.usage.commands.count"`
 	MongodbUsageCommandsCountps                                              MetricConfig `mapstructure:"mongodb.usage.commands.countps"`
@@ -385,6 +354,7 @@ type MetricsConfig struct {
 	MongodbWiredtigerConcurrenttransactionsWriteAvailable                    MetricConfig `mapstructure:"mongodb.wiredtiger.concurrenttransactions.write.available"`
 	MongodbWiredtigerConcurrenttransactionsWriteOut                          MetricConfig `mapstructure:"mongodb.wiredtiger.concurrenttransactions.write.out"`
 	MongodbWiredtigerConcurrenttransactionsWriteTotaltickets                 MetricConfig `mapstructure:"mongodb.wiredtiger.concurrenttransactions.write.totaltickets"`
+	MongodbWtcacheBytesRead                                                  MetricConfig `mapstructure:"mongodb.wtcache.bytes.read"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
@@ -440,9 +410,6 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbCollectionCount: MetricConfig{
 			Enabled: true,
 		},
-		MongodbCommandsRate: MetricConfig{
-			Enabled: false,
-		},
 		MongodbCollectionIndexsizes: MetricConfig{
 			Enabled: true,
 		},
@@ -463,6 +430,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		MongodbCollectionStoragesize: MetricConfig{
 			Enabled: true,
+		},
+		MongodbCommandsRate: MetricConfig{
+			Enabled: false,
 		},
 		MongodbConnectionCount: MetricConfig{
 			Enabled: true,
@@ -587,11 +557,11 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbExtraInfoPageFaultsps: MetricConfig{
 			Enabled: true,
 		},
-		MongodbFsynclocked: MetricConfig{
-			Enabled: true,
-		},
 		MongodbFlushesRate: MetricConfig{
 			Enabled: false,
+		},
+		MongodbFsynclocked: MetricConfig{
+			Enabled: true,
 		},
 		MongodbGetmoresRate: MetricConfig{
 			Enabled: false,
@@ -638,9 +608,6 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbIndexSize: MetricConfig{
 			Enabled: true,
 		},
-		MongodbInsertsRate: MetricConfig{
-			Enabled: false,
-		},
 		MongodbIndexcountersAccessesps: MetricConfig{
 			Enabled: true,
 		},
@@ -655,6 +622,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		MongodbIndexcountersResetsps: MetricConfig{
 			Enabled: true,
+		},
+		MongodbInsertsRate: MetricConfig{
+			Enabled: false,
 		},
 		MongodbLockAcquireCount: MetricConfig{
 			Enabled: false,
@@ -1067,32 +1037,14 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbOplogUsedsizemb: MetricConfig{
 			Enabled: true,
 		},
+		MongodbPageFaults: MetricConfig{
+			Enabled: false,
+		},
 		MongodbProfilingLevel: MetricConfig{
 			Enabled: true,
 		},
 		MongodbProfilingSlowms: MetricConfig{
 			Enabled: true,
-		},
-		MongodbReplsetHealth: MetricConfig{
-			Enabled: true,
-		},
-		MongodbReplsetOptimeLag: MetricConfig{
-			Enabled: true,
-		},
-		MongodbReplsetReplicationlag: MetricConfig{
-			Enabled: true,
-		},
-		MongodbReplsetState: MetricConfig{
-			Enabled: true,
-		},
-		MongodbReplsetVotefraction: MetricConfig{
-			Enabled: true,
-		},
-		MongodbReplsetVotes: MetricConfig{
-			Enabled: true,
-		},
-		MongodbPageFaults: MetricConfig{
-			Enabled: false,
 		},
 		MongodbQueriesRate: MetricConfig{
 			Enabled: false,
@@ -1114,6 +1066,24 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		MongodbReplUpdatesPerSec: MetricConfig{
 			Enabled: false,
+		},
+		MongodbReplsetHealth: MetricConfig{
+			Enabled: true,
+		},
+		MongodbReplsetOptimeLag: MetricConfig{
+			Enabled: true,
+		},
+		MongodbReplsetReplicationlag: MetricConfig{
+			Enabled: true,
+		},
+		MongodbReplsetState: MetricConfig{
+			Enabled: true,
+		},
+		MongodbReplsetVotefraction: MetricConfig{
+			Enabled: true,
+		},
+		MongodbReplsetVotes: MetricConfig{
+			Enabled: true,
 		},
 		MongodbSessionCount: MetricConfig{
 			Enabled: true,
@@ -1190,9 +1160,6 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbStorageSize: MetricConfig{
 			Enabled: true,
 		},
-		MongodbUpdatesRate: MetricConfig{
-			Enabled: false,
-		},
 		MongodbTcmallocGenericCurrentAllocatedBytes: MetricConfig{
 			Enabled: true,
 		},
@@ -1226,10 +1193,10 @@ func DefaultMetricsConfig() MetricsConfig {
 		MongodbTcmallocTcmallocTransferCacheFreeBytes: MetricConfig{
 			Enabled: true,
 		},
-		MongodbUptime: MetricConfig{
+		MongodbUpdatesRate: MetricConfig{
 			Enabled: false,
 		},
-		MongodbWtcacheBytesRead: MetricConfig{
+		MongodbUptime: MetricConfig{
 			Enabled: false,
 		},
 		MongodbUsageCommandsCount: MetricConfig{
@@ -1369,6 +1336,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		MongodbWiredtigerConcurrenttransactionsWriteTotaltickets: MetricConfig{
 			Enabled: true,
+		},
+		MongodbWtcacheBytesRead: MetricConfig{
+			Enabled: false,
 		},
 	}
 }

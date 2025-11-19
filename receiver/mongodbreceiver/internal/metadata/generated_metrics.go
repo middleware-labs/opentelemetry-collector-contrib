@@ -257,11 +257,71 @@ var MetricsInfo = metricsInfo{
 	MongodbActiveWrites: metricInfo{
 		Name: "mongodb.active.writes",
 	},
+	MongodbAssertsMsgps: metricInfo{
+		Name: "mongodb.asserts.msgps",
+	},
+	MongodbAssertsRegularps: metricInfo{
+		Name: "mongodb.asserts.regularps",
+	},
+	MongodbAssertsRolloversps: metricInfo{
+		Name: "mongodb.asserts.rolloversps",
+	},
+	MongodbAssertsUserps: metricInfo{
+		Name: "mongodb.asserts.userps",
+	},
+	MongodbAssertsWarningps: metricInfo{
+		Name: "mongodb.asserts.warningps",
+	},
+	MongodbBackgroundflushingAverageMs: metricInfo{
+		Name: "mongodb.backgroundflushing.average_ms",
+	},
+	MongodbBackgroundflushingFlushesps: metricInfo{
+		Name: "mongodb.backgroundflushing.flushesps",
+	},
+	MongodbBackgroundflushingLastMs: metricInfo{
+		Name: "mongodb.backgroundflushing.last_ms",
+	},
+	MongodbBackgroundflushingTotalMs: metricInfo{
+		Name: "mongodb.backgroundflushing.total_ms",
+	},
 	MongodbCacheOperations: metricInfo{
 		Name: "mongodb.cache.operations",
 	},
+	MongodbChunksJumbo: metricInfo{
+		Name: "mongodb.chunks.jumbo",
+	},
+	MongodbChunksTotal: metricInfo{
+		Name: "mongodb.chunks.total",
+	},
+	MongodbCollectionAvgobjsize: metricInfo{
+		Name: "mongodb.collection.avgobjsize",
+	},
+	MongodbCollectionCapped: metricInfo{
+		Name: "mongodb.collection.capped",
+	},
 	MongodbCollectionCount: metricInfo{
 		Name: "mongodb.collection.count",
+	},
+	MongodbCollectionIndexsizes: metricInfo{
+		Name: "mongodb.collection.indexsizes",
+	},
+	MongodbCollectionMax: metricInfo{
+		Name: "mongodb.collection.max",
+	},
+	MongodbCollectionMaxsize: metricInfo{
+		Name: "mongodb.collection.maxsize",
+	},
+	MongodbCollectionNindexes: metricInfo{
+		Name: "mongodb.collection.nindexes",
+	},
+	MongodbCollectionObjects: metricInfo{
+		Name: "mongodb.collection.objects",
+	},
+	MongodbCollectionSize: metricInfo{
+		Name: "mongodb.collection.size",
+	},
+	MongodbCollectionStoragesize: metricInfo{
+		Name: "mongodb.collection.storagesize",
 	},
 	MongodbCommandsRate: metricInfo{
 		Name: "mongodb.commands.rate",
@@ -269,11 +329,65 @@ var MetricsInfo = metricsInfo{
 	MongodbConnectionCount: metricInfo{
 		Name: "mongodb.connection.count",
 	},
+	MongodbConnectionPoolNumascopedconnections: metricInfo{
+		Name: "mongodb.connection_pool.numascopedconnections",
+	},
+	MongodbConnectionPoolNumclientconnections: metricInfo{
+		Name: "mongodb.connection_pool.numclientconnections",
+	},
+	MongodbConnectionPoolTotalavailable: metricInfo{
+		Name: "mongodb.connection_pool.totalavailable",
+	},
+	MongodbConnectionPoolTotalcreatedps: metricInfo{
+		Name: "mongodb.connection_pool.totalcreatedps",
+	},
+	MongodbConnectionPoolTotalinuse: metricInfo{
+		Name: "mongodb.connection_pool.totalinuse",
+	},
+	MongodbConnectionPoolTotalrefreshing: metricInfo{
+		Name: "mongodb.connection_pool.totalrefreshing",
+	},
+	MongodbConnectionsActive: metricInfo{
+		Name: "mongodb.connections.active",
+	},
+	MongodbConnectionsAvailable: metricInfo{
+		Name: "mongodb.connections.available",
+	},
+	MongodbConnectionsAwaitingtopologychanges: metricInfo{
+		Name: "mongodb.connections.awaitingtopologychanges",
+	},
+	MongodbConnectionsCurrent: metricInfo{
+		Name: "mongodb.connections.current",
+	},
+	MongodbConnectionsExhausthello: metricInfo{
+		Name: "mongodb.connections.exhausthello",
+	},
+	MongodbConnectionsExhaustismaster: metricInfo{
+		Name: "mongodb.connections.exhaustismaster",
+	},
+	MongodbConnectionsLoadbalanced: metricInfo{
+		Name: "mongodb.connections.loadbalanced",
+	},
+	MongodbConnectionsRejected: metricInfo{
+		Name: "mongodb.connections.rejected",
+	},
+	MongodbConnectionsThreaded: metricInfo{
+		Name: "mongodb.connections.threaded",
+	},
+	MongodbConnectionsTotalcreated: metricInfo{
+		Name: "mongodb.connections.totalcreated",
+	},
 	MongodbCursorCount: metricInfo{
 		Name: "mongodb.cursor.count",
 	},
 	MongodbCursorTimeoutCount: metricInfo{
 		Name: "mongodb.cursor.timeout.count",
+	},
+	MongodbCursorsTimedout: metricInfo{
+		Name: "mongodb.cursors.timedout",
+	},
+	MongodbCursorsTotalopen: metricInfo{
+		Name: "mongodb.cursors.totalopen",
 	},
 	MongodbDataSize: metricInfo{
 		Name: "mongodb.data.size",
@@ -287,17 +401,92 @@ var MetricsInfo = metricsInfo{
 	MongodbDocumentOperationCount: metricInfo{
 		Name: "mongodb.document.operation.count",
 	},
+	MongodbDurCommits: metricInfo{
+		Name: "mongodb.dur.commits",
+	},
+	MongodbDurCommitsinwritelock: metricInfo{
+		Name: "mongodb.dur.commitsinwritelock",
+	},
+	MongodbDurCompression: metricInfo{
+		Name: "mongodb.dur.compression",
+	},
+	MongodbDurEarlycommits: metricInfo{
+		Name: "mongodb.dur.earlycommits",
+	},
+	MongodbDurJournaledmb: metricInfo{
+		Name: "mongodb.dur.journaledmb",
+	},
+	MongodbDurTimemsCommits: metricInfo{
+		Name: "mongodb.dur.timems.commits",
+	},
+	MongodbDurTimemsCommitsinwritelock: metricInfo{
+		Name: "mongodb.dur.timems.commitsinwritelock",
+	},
+	MongodbDurTimemsDt: metricInfo{
+		Name: "mongodb.dur.timems.dt",
+	},
+	MongodbDurTimemsPreplogbuffer: metricInfo{
+		Name: "mongodb.dur.timems.preplogbuffer",
+	},
+	MongodbDurTimemsRemapprivateview: metricInfo{
+		Name: "mongodb.dur.timems.remapprivateview",
+	},
+	MongodbDurTimemsWritetodatafiles: metricInfo{
+		Name: "mongodb.dur.timems.writetodatafiles",
+	},
+	MongodbDurTimemsWritetojournal: metricInfo{
+		Name: "mongodb.dur.timems.writetojournal",
+	},
+	MongodbDurWritetodatafilesmb: metricInfo{
+		Name: "mongodb.dur.writetodatafilesmb",
+	},
 	MongodbExtentCount: metricInfo{
 		Name: "mongodb.extent.count",
 	},
+	MongodbExtraInfoHeapUsageBytesps: metricInfo{
+		Name: "mongodb.extra_info.heap_usage_bytesps",
+	},
+	MongodbExtraInfoPageFaultsps: metricInfo{
+		Name: "mongodb.extra_info.page_faultsps",
+	},
 	MongodbFlushesRate: metricInfo{
 		Name: "mongodb.flushes.rate",
+	},
+	MongodbFsynclocked: metricInfo{
+		Name: "mongodb.fsynclocked",
 	},
 	MongodbGetmoresRate: metricInfo{
 		Name: "mongodb.getmores.rate",
 	},
 	MongodbGlobalLockTime: metricInfo{
 		Name: "mongodb.global_lock.time",
+	},
+	MongodbGloballockActiveclientsReaders: metricInfo{
+		Name: "mongodb.globallock.activeclients.readers",
+	},
+	MongodbGloballockActiveclientsTotal: metricInfo{
+		Name: "mongodb.globallock.activeclients.total",
+	},
+	MongodbGloballockActiveclientsWriters: metricInfo{
+		Name: "mongodb.globallock.activeclients.writers",
+	},
+	MongodbGloballockCurrentqueueReaders: metricInfo{
+		Name: "mongodb.globallock.currentqueue.readers",
+	},
+	MongodbGloballockCurrentqueueTotal: metricInfo{
+		Name: "mongodb.globallock.currentqueue.total",
+	},
+	MongodbGloballockCurrentqueueWriters: metricInfo{
+		Name: "mongodb.globallock.currentqueue.writers",
+	},
+	MongodbGloballockLocktime: metricInfo{
+		Name: "mongodb.globallock.locktime",
+	},
+	MongodbGloballockRatio: metricInfo{
+		Name: "mongodb.globallock.ratio",
+	},
+	MongodbGloballockTotaltime: metricInfo{
+		Name: "mongodb.globallock.totaltime",
 	},
 	MongodbHealth: metricInfo{
 		Name: "mongodb.health",
@@ -310,6 +499,21 @@ var MetricsInfo = metricsInfo{
 	},
 	MongodbIndexSize: metricInfo{
 		Name: "mongodb.index.size",
+	},
+	MongodbIndexcountersAccessesps: metricInfo{
+		Name: "mongodb.indexcounters.accessesps",
+	},
+	MongodbIndexcountersHitsps: metricInfo{
+		Name: "mongodb.indexcounters.hitsps",
+	},
+	MongodbIndexcountersMissesps: metricInfo{
+		Name: "mongodb.indexcounters.missesps",
+	},
+	MongodbIndexcountersMissratio: metricInfo{
+		Name: "mongodb.indexcounters.missratio",
+	},
+	MongodbIndexcountersResetsps: metricInfo{
+		Name: "mongodb.indexcounters.resetsps",
 	},
 	MongodbInsertsRate: metricInfo{
 		Name: "mongodb.inserts.rate",
@@ -326,8 +530,314 @@ var MetricsInfo = metricsInfo{
 	MongodbLockDeadlockCount: metricInfo{
 		Name: "mongodb.lock.deadlock.count",
 	},
+	MongodbLocksCollectionAcquirecountExclusiveps: metricInfo{
+		Name: "mongodb.locks.collection.acquirecount.exclusiveps",
+	},
+	MongodbLocksCollectionAcquirecountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.collection.acquirecount.intent_exclusiveps",
+	},
+	MongodbLocksCollectionAcquirecountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.collection.acquirecount.intent_sharedps",
+	},
+	MongodbLocksCollectionAcquirecountSharedps: metricInfo{
+		Name: "mongodb.locks.collection.acquirecount.sharedps",
+	},
+	MongodbLocksCollectionAcquirewaitcountExclusiveps: metricInfo{
+		Name: "mongodb.locks.collection.acquirewaitcount.exclusiveps",
+	},
+	MongodbLocksCollectionAcquirewaitcountSharedps: metricInfo{
+		Name: "mongodb.locks.collection.acquirewaitcount.sharedps",
+	},
+	MongodbLocksCollectionTimeacquiringmicrosExclusiveps: metricInfo{
+		Name: "mongodb.locks.collection.timeacquiringmicros.exclusiveps",
+	},
+	MongodbLocksCollectionTimeacquiringmicrosSharedps: metricInfo{
+		Name: "mongodb.locks.collection.timeacquiringmicros.sharedps",
+	},
+	MongodbLocksDatabaseAcquirecountExclusiveps: metricInfo{
+		Name: "mongodb.locks.database.acquirecount.exclusiveps",
+	},
+	MongodbLocksDatabaseAcquirecountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.database.acquirecount.intent_exclusiveps",
+	},
+	MongodbLocksDatabaseAcquirecountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.database.acquirecount.intent_sharedps",
+	},
+	MongodbLocksDatabaseAcquirecountSharedps: metricInfo{
+		Name: "mongodb.locks.database.acquirecount.sharedps",
+	},
+	MongodbLocksDatabaseAcquirewaitcountExclusiveps: metricInfo{
+		Name: "mongodb.locks.database.acquirewaitcount.exclusiveps",
+	},
+	MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.database.acquirewaitcount.intent_exclusiveps",
+	},
+	MongodbLocksDatabaseAcquirewaitcountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.database.acquirewaitcount.intent_sharedps",
+	},
+	MongodbLocksDatabaseAcquirewaitcountSharedps: metricInfo{
+		Name: "mongodb.locks.database.acquirewaitcount.sharedps",
+	},
+	MongodbLocksDatabaseTimeacquiringmicrosExclusiveps: metricInfo{
+		Name: "mongodb.locks.database.timeacquiringmicros.exclusiveps",
+	},
+	MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.database.timeacquiringmicros.intent_exclusiveps",
+	},
+	MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps: metricInfo{
+		Name: "mongodb.locks.database.timeacquiringmicros.intent_sharedps",
+	},
+	MongodbLocksDatabaseTimeacquiringmicrosSharedps: metricInfo{
+		Name: "mongodb.locks.database.timeacquiringmicros.sharedps",
+	},
+	MongodbLocksGlobalAcquirecountExclusiveps: metricInfo{
+		Name: "mongodb.locks.global.acquirecount.exclusiveps",
+	},
+	MongodbLocksGlobalAcquirecountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.global.acquirecount.intent_exclusiveps",
+	},
+	MongodbLocksGlobalAcquirecountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.global.acquirecount.intent_sharedps",
+	},
+	MongodbLocksGlobalAcquirecountSharedps: metricInfo{
+		Name: "mongodb.locks.global.acquirecount.sharedps",
+	},
+	MongodbLocksGlobalAcquirewaitcountExclusiveps: metricInfo{
+		Name: "mongodb.locks.global.acquirewaitcount.exclusiveps",
+	},
+	MongodbLocksGlobalAcquirewaitcountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.global.acquirewaitcount.intent_exclusiveps",
+	},
+	MongodbLocksGlobalAcquirewaitcountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.global.acquirewaitcount.intent_sharedps",
+	},
+	MongodbLocksGlobalAcquirewaitcountSharedps: metricInfo{
+		Name: "mongodb.locks.global.acquirewaitcount.sharedps",
+	},
+	MongodbLocksGlobalTimeacquiringmicrosExclusiveps: metricInfo{
+		Name: "mongodb.locks.global.timeacquiringmicros.exclusiveps",
+	},
+	MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.global.timeacquiringmicros.intent_exclusiveps",
+	},
+	MongodbLocksGlobalTimeacquiringmicrosIntentSharedps: metricInfo{
+		Name: "mongodb.locks.global.timeacquiringmicros.intent_sharedps",
+	},
+	MongodbLocksGlobalTimeacquiringmicrosSharedps: metricInfo{
+		Name: "mongodb.locks.global.timeacquiringmicros.sharedps",
+	},
+	MongodbLocksMetadataAcquirecountExclusiveps: metricInfo{
+		Name: "mongodb.locks.metadata.acquirecount.exclusiveps",
+	},
+	MongodbLocksMetadataAcquirecountSharedps: metricInfo{
+		Name: "mongodb.locks.metadata.acquirecount.sharedps",
+	},
+	MongodbLocksMmapv1journalAcquirecountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.mmapv1journal.acquirecount.intent_exclusiveps",
+	},
+	MongodbLocksMmapv1journalAcquirecountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.mmapv1journal.acquirecount.intent_sharedps",
+	},
+	MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.mmapv1journal.acquirewaitcount.intent_exclusiveps",
+	},
+	MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps: metricInfo{
+		Name: "mongodb.locks.mmapv1journal.acquirewaitcount.intent_sharedps",
+	},
+	MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.mmapv1journal.timeacquiringmicros.intent_exclusiveps",
+	},
+	MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps: metricInfo{
+		Name: "mongodb.locks.mmapv1journal.timeacquiringmicros.intent_sharedps",
+	},
+	MongodbLocksOplogAcquirecountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.oplog.acquirecount.intent_exclusiveps",
+	},
+	MongodbLocksOplogAcquirecountSharedps: metricInfo{
+		Name: "mongodb.locks.oplog.acquirecount.sharedps",
+	},
+	MongodbLocksOplogAcquirewaitcountIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.oplog.acquirewaitcount.intent_exclusiveps",
+	},
+	MongodbLocksOplogAcquirewaitcountSharedps: metricInfo{
+		Name: "mongodb.locks.oplog.acquirewaitcount.sharedps",
+	},
+	MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps: metricInfo{
+		Name: "mongodb.locks.oplog.timeacquiringmicros.intent_exclusiveps",
+	},
+	MongodbLocksOplogTimeacquiringmicrosSharedps: metricInfo{
+		Name: "mongodb.locks.oplog.timeacquiringmicros.sharedps",
+	},
+	MongodbMemBits: metricInfo{
+		Name: "mongodb.mem.bits",
+	},
+	MongodbMemMapped: metricInfo{
+		Name: "mongodb.mem.mapped",
+	},
+	MongodbMemMappedwithjournal: metricInfo{
+		Name: "mongodb.mem.mappedwithjournal",
+	},
+	MongodbMemResident: metricInfo{
+		Name: "mongodb.mem.resident",
+	},
+	MongodbMemVirtual: metricInfo{
+		Name: "mongodb.mem.virtual",
+	},
 	MongodbMemoryUsage: metricInfo{
 		Name: "mongodb.memory.usage",
+	},
+	MongodbMetricsCommandsCountFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.count.failedps",
+	},
+	MongodbMetricsCommandsCountTotal: metricInfo{
+		Name: "mongodb.metrics.commands.count.total",
+	},
+	MongodbMetricsCommandsCreateindexesFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.createindexes.failedps",
+	},
+	MongodbMetricsCommandsCreateindexesTotal: metricInfo{
+		Name: "mongodb.metrics.commands.createindexes.total",
+	},
+	MongodbMetricsCommandsDeleteFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.delete.failedps",
+	},
+	MongodbMetricsCommandsDeleteTotal: metricInfo{
+		Name: "mongodb.metrics.commands.delete.total",
+	},
+	MongodbMetricsCommandsEvalFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.eval.failedps",
+	},
+	MongodbMetricsCommandsEvalTotal: metricInfo{
+		Name: "mongodb.metrics.commands.eval.total",
+	},
+	MongodbMetricsCommandsFindandmodifyFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.findandmodify.failedps",
+	},
+	MongodbMetricsCommandsFindandmodifyTotal: metricInfo{
+		Name: "mongodb.metrics.commands.findandmodify.total",
+	},
+	MongodbMetricsCommandsInsertFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.insert.failedps",
+	},
+	MongodbMetricsCommandsInsertTotal: metricInfo{
+		Name: "mongodb.metrics.commands.insert.total",
+	},
+	MongodbMetricsCommandsUpdateFailedps: metricInfo{
+		Name: "mongodb.metrics.commands.update.failedps",
+	},
+	MongodbMetricsCommandsUpdateTotal: metricInfo{
+		Name: "mongodb.metrics.commands.update.total",
+	},
+	MongodbMetricsCursorOpenNotimeout: metricInfo{
+		Name: "mongodb.metrics.cursor.open.notimeout",
+	},
+	MongodbMetricsCursorOpenPinned: metricInfo{
+		Name: "mongodb.metrics.cursor.open.pinned",
+	},
+	MongodbMetricsCursorOpenTotal: metricInfo{
+		Name: "mongodb.metrics.cursor.open.total",
+	},
+	MongodbMetricsCursorTimedoutps: metricInfo{
+		Name: "mongodb.metrics.cursor.timedoutps",
+	},
+	MongodbMetricsDocumentDeletedps: metricInfo{
+		Name: "mongodb.metrics.document.deletedps",
+	},
+	MongodbMetricsDocumentInsertedps: metricInfo{
+		Name: "mongodb.metrics.document.insertedps",
+	},
+	MongodbMetricsDocumentReturnedps: metricInfo{
+		Name: "mongodb.metrics.document.returnedps",
+	},
+	MongodbMetricsDocumentUpdatedps: metricInfo{
+		Name: "mongodb.metrics.document.updatedps",
+	},
+	MongodbMetricsGetlasterrorWtimeNumps: metricInfo{
+		Name: "mongodb.metrics.getlasterror.wtime.numps",
+	},
+	MongodbMetricsGetlasterrorWtimeTotalmillisps: metricInfo{
+		Name: "mongodb.metrics.getlasterror.wtime.totalmillisps",
+	},
+	MongodbMetricsGetlasterrorWtimeoutsps: metricInfo{
+		Name: "mongodb.metrics.getlasterror.wtimeoutsps",
+	},
+	MongodbMetricsOperationFastmodps: metricInfo{
+		Name: "mongodb.metrics.operation.fastmodps",
+	},
+	MongodbMetricsOperationIdhackps: metricInfo{
+		Name: "mongodb.metrics.operation.idhackps",
+	},
+	MongodbMetricsOperationScanandorderps: metricInfo{
+		Name: "mongodb.metrics.operation.scanandorderps",
+	},
+	MongodbMetricsOperationWriteconflictsps: metricInfo{
+		Name: "mongodb.metrics.operation.writeconflictsps",
+	},
+	MongodbMetricsQueryexecutorScannedobjectsps: metricInfo{
+		Name: "mongodb.metrics.queryexecutor.scannedobjectsps",
+	},
+	MongodbMetricsQueryexecutorScannedps: metricInfo{
+		Name: "mongodb.metrics.queryexecutor.scannedps",
+	},
+	MongodbMetricsRecordMovesps: metricInfo{
+		Name: "mongodb.metrics.record.movesps",
+	},
+	MongodbMetricsReplApplyBatchesNumps: metricInfo{
+		Name: "mongodb.metrics.repl.apply.batches.numps",
+	},
+	MongodbMetricsReplApplyBatchesTotalmillisps: metricInfo{
+		Name: "mongodb.metrics.repl.apply.batches.totalmillisps",
+	},
+	MongodbMetricsReplApplyOpsps: metricInfo{
+		Name: "mongodb.metrics.repl.apply.opsps",
+	},
+	MongodbMetricsReplBufferCount: metricInfo{
+		Name: "mongodb.metrics.repl.buffer.count",
+	},
+	MongodbMetricsReplBufferMaxsizebytes: metricInfo{
+		Name: "mongodb.metrics.repl.buffer.maxsizebytes",
+	},
+	MongodbMetricsReplBufferSizebytes: metricInfo{
+		Name: "mongodb.metrics.repl.buffer.sizebytes",
+	},
+	MongodbMetricsReplNetworkBytesps: metricInfo{
+		Name: "mongodb.metrics.repl.network.bytesps",
+	},
+	MongodbMetricsReplNetworkGetmoresNumps: metricInfo{
+		Name: "mongodb.metrics.repl.network.getmores.numps",
+	},
+	MongodbMetricsReplNetworkGetmoresTotalmillisps: metricInfo{
+		Name: "mongodb.metrics.repl.network.getmores.totalmillisps",
+	},
+	MongodbMetricsReplNetworkOpsps: metricInfo{
+		Name: "mongodb.metrics.repl.network.opsps",
+	},
+	MongodbMetricsReplNetworkReaderscreatedps: metricInfo{
+		Name: "mongodb.metrics.repl.network.readerscreatedps",
+	},
+	MongodbMetricsReplPreloadDocsNumps: metricInfo{
+		Name: "mongodb.metrics.repl.preload.docs.numps",
+	},
+	MongodbMetricsReplPreloadDocsTotalmillisps: metricInfo{
+		Name: "mongodb.metrics.repl.preload.docs.totalmillisps",
+	},
+	MongodbMetricsReplPreloadIndexesNumps: metricInfo{
+		Name: "mongodb.metrics.repl.preload.indexes.numps",
+	},
+	MongodbMetricsReplPreloadIndexesTotalmillisps: metricInfo{
+		Name: "mongodb.metrics.repl.preload.indexes.totalmillisps",
+	},
+	MongodbMetricsTTLDeleteddocumentsps: metricInfo{
+		Name: "mongodb.metrics.ttl.deleteddocumentsps",
+	},
+	MongodbMetricsTTLPassesps: metricInfo{
+		Name: "mongodb.metrics.ttl.passesps",
+	},
+	MongodbNetworkBytesinps: metricInfo{
+		Name: "mongodb.network.bytesinps",
+	},
+	MongodbNetworkBytesoutps: metricInfo{
+		Name: "mongodb.network.bytesoutps",
 	},
 	MongodbNetworkIoReceive: metricInfo{
 		Name: "mongodb.network.io.receive",
@@ -335,11 +845,50 @@ var MetricsInfo = metricsInfo{
 	MongodbNetworkIoTransmit: metricInfo{
 		Name: "mongodb.network.io.transmit",
 	},
+	MongodbNetworkNumrequestsps: metricInfo{
+		Name: "mongodb.network.numrequestsps",
+	},
 	MongodbNetworkRequestCount: metricInfo{
 		Name: "mongodb.network.request.count",
 	},
 	MongodbObjectCount: metricInfo{
 		Name: "mongodb.object.count",
+	},
+	MongodbOpcountersCommandps: metricInfo{
+		Name: "mongodb.opcounters.commandps",
+	},
+	MongodbOpcountersDeleteps: metricInfo{
+		Name: "mongodb.opcounters.deleteps",
+	},
+	MongodbOpcountersGetmoreps: metricInfo{
+		Name: "mongodb.opcounters.getmoreps",
+	},
+	MongodbOpcountersInsertps: metricInfo{
+		Name: "mongodb.opcounters.insertps",
+	},
+	MongodbOpcountersQueryps: metricInfo{
+		Name: "mongodb.opcounters.queryps",
+	},
+	MongodbOpcountersUpdateps: metricInfo{
+		Name: "mongodb.opcounters.updateps",
+	},
+	MongodbOpcountersreplCommandps: metricInfo{
+		Name: "mongodb.opcountersrepl.commandps",
+	},
+	MongodbOpcountersreplDeleteps: metricInfo{
+		Name: "mongodb.opcountersrepl.deleteps",
+	},
+	MongodbOpcountersreplGetmoreps: metricInfo{
+		Name: "mongodb.opcountersrepl.getmoreps",
+	},
+	MongodbOpcountersreplInsertps: metricInfo{
+		Name: "mongodb.opcountersrepl.insertps",
+	},
+	MongodbOpcountersreplQueryps: metricInfo{
+		Name: "mongodb.opcountersrepl.queryps",
+	},
+	MongodbOpcountersreplUpdateps: metricInfo{
+		Name: "mongodb.opcountersrepl.updateps",
 	},
 	MongodbOperationCount: metricInfo{
 		Name: "mongodb.operation.count",
@@ -353,8 +902,41 @@ var MetricsInfo = metricsInfo{
 	MongodbOperationTime: metricInfo{
 		Name: "mongodb.operation.time",
 	},
+	MongodbOplatenciesCommandsLatency: metricInfo{
+		Name: "mongodb.oplatencies.commands.latency",
+	},
+	MongodbOplatenciesCommandsLatencyps: metricInfo{
+		Name: "mongodb.oplatencies.commands.latencyps",
+	},
+	MongodbOplatenciesReadsLatency: metricInfo{
+		Name: "mongodb.oplatencies.reads.latency",
+	},
+	MongodbOplatenciesReadsLatencyps: metricInfo{
+		Name: "mongodb.oplatencies.reads.latencyps",
+	},
+	MongodbOplatenciesWritesLatency: metricInfo{
+		Name: "mongodb.oplatencies.writes.latency",
+	},
+	MongodbOplatenciesWritesLatencyps: metricInfo{
+		Name: "mongodb.oplatencies.writes.latencyps",
+	},
+	MongodbOplogLogsizemb: metricInfo{
+		Name: "mongodb.oplog.logsizemb",
+	},
+	MongodbOplogTimediff: metricInfo{
+		Name: "mongodb.oplog.timediff",
+	},
+	MongodbOplogUsedsizemb: metricInfo{
+		Name: "mongodb.oplog.usedsizemb",
+	},
 	MongodbPageFaults: metricInfo{
 		Name: "mongodb.page_faults",
+	},
+	MongodbProfilingLevel: metricInfo{
+		Name: "mongodb.profiling.level",
+	},
+	MongodbProfilingSlowms: metricInfo{
+		Name: "mongodb.profiling.slowms",
 	},
 	MongodbQueriesRate: metricInfo{
 		Name: "mongodb.queries.rate",
@@ -377,11 +959,131 @@ var MetricsInfo = metricsInfo{
 	MongodbReplUpdatesPerSec: metricInfo{
 		Name: "mongodb.repl_updates_per_sec",
 	},
+	MongodbReplsetHealth: metricInfo{
+		Name: "mongodb.replset.health",
+	},
+	MongodbReplsetOptimeLag: metricInfo{
+		Name: "mongodb.replset.optime_lag",
+	},
+	MongodbReplsetReplicationlag: metricInfo{
+		Name: "mongodb.replset.replicationlag",
+	},
+	MongodbReplsetState: metricInfo{
+		Name: "mongodb.replset.state",
+	},
+	MongodbReplsetVotefraction: metricInfo{
+		Name: "mongodb.replset.votefraction",
+	},
+	MongodbReplsetVotes: metricInfo{
+		Name: "mongodb.replset.votes",
+	},
 	MongodbSessionCount: metricInfo{
 		Name: "mongodb.session.count",
 	},
+	MongodbSlowOperationCPUNanos: metricInfo{
+		Name: "mongodb.slow_operation.cpu_nanos",
+	},
+	MongodbSlowOperationDocsExamined: metricInfo{
+		Name: "mongodb.slow_operation.docs_examined",
+	},
+	MongodbSlowOperationKeysExamined: metricInfo{
+		Name: "mongodb.slow_operation.keys_examined",
+	},
+	MongodbSlowOperationKeysInserted: metricInfo{
+		Name: "mongodb.slow_operation.keys_inserted",
+	},
+	MongodbSlowOperationNdeleted: metricInfo{
+		Name: "mongodb.slow_operation.ndeleted",
+	},
+	MongodbSlowOperationNinserted: metricInfo{
+		Name: "mongodb.slow_operation.ninserted",
+	},
+	MongodbSlowOperationNmatched: metricInfo{
+		Name: "mongodb.slow_operation.nmatched",
+	},
+	MongodbSlowOperationNmodified: metricInfo{
+		Name: "mongodb.slow_operation.nmodified",
+	},
+	MongodbSlowOperationNreturned: metricInfo{
+		Name: "mongodb.slow_operation.nreturned",
+	},
+	MongodbSlowOperationNumYields: metricInfo{
+		Name: "mongodb.slow_operation.num_yields",
+	},
+	MongodbSlowOperationPlanningTimeMicros: metricInfo{
+		Name: "mongodb.slow_operation.planning_time_micros",
+	},
+	MongodbSlowOperationResponseLength: metricInfo{
+		Name: "mongodb.slow_operation.response_length",
+	},
+	MongodbSlowOperationTime: metricInfo{
+		Name: "mongodb.slow_operation.time",
+	},
+	MongodbSlowOperationWriteConflicts: metricInfo{
+		Name: "mongodb.slow_operation.write_conflicts",
+	},
+	MongodbStatsAvgobjsize: metricInfo{
+		Name: "mongodb.stats.avgobjsize",
+	},
+	MongodbStatsCollections: metricInfo{
+		Name: "mongodb.stats.collections",
+	},
+	MongodbStatsDatasize: metricInfo{
+		Name: "mongodb.stats.datasize",
+	},
+	MongodbStatsFilesize: metricInfo{
+		Name: "mongodb.stats.filesize",
+	},
+	MongodbStatsIndexes: metricInfo{
+		Name: "mongodb.stats.indexes",
+	},
+	MongodbStatsIndexsize: metricInfo{
+		Name: "mongodb.stats.indexsize",
+	},
+	MongodbStatsNumextents: metricInfo{
+		Name: "mongodb.stats.numextents",
+	},
+	MongodbStatsObjects: metricInfo{
+		Name: "mongodb.stats.objects",
+	},
+	MongodbStatsStoragesize: metricInfo{
+		Name: "mongodb.stats.storagesize",
+	},
 	MongodbStorageSize: metricInfo{
 		Name: "mongodb.storage.size",
+	},
+	MongodbTcmallocGenericCurrentAllocatedBytes: metricInfo{
+		Name: "mongodb.tcmalloc.generic.current_allocated_bytes",
+	},
+	MongodbTcmallocGenericHeapSize: metricInfo{
+		Name: "mongodb.tcmalloc.generic.heap_size",
+	},
+	MongodbTcmallocTcmallocAggressiveMemoryDecommit: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.aggressive_memory_decommit",
+	},
+	MongodbTcmallocTcmallocCentralCacheFreeBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.central_cache_free_bytes",
+	},
+	MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.current_total_thread_cache_bytes",
+	},
+	MongodbTcmallocTcmallocMaxTotalThreadCacheBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.max_total_thread_cache_bytes",
+	},
+	MongodbTcmallocTcmallocPageheapFreeBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.pageheap_free_bytes",
+	},
+	MongodbTcmallocTcmallocPageheapUnmappedBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.pageheap_unmapped_bytes",
+	},
+	MongodbTcmallocTcmallocSpinlockTotalDelayNs: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns",
+	},
+	MongodbTcmallocTcmallocThreadCacheFreeBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes",
+	},
+	MongodbTcmallocTcmallocTransferCacheFreeBytes: metricInfo{
+		Name: "mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes",
 	},
 	MongodbUpdatesRate: metricInfo{
 		Name: "mongodb.updates.rate",
@@ -389,59 +1091,477 @@ var MetricsInfo = metricsInfo{
 	MongodbUptime: metricInfo{
 		Name: "mongodb.uptime",
 	},
+	MongodbUsageCommandsCount: metricInfo{
+		Name: "mongodb.usage.commands.count",
+	},
+	MongodbUsageCommandsCountps: metricInfo{
+		Name: "mongodb.usage.commands.countps",
+	},
+	MongodbUsageCommandsTime: metricInfo{
+		Name: "mongodb.usage.commands.time",
+	},
+	MongodbUsageGetmoreCount: metricInfo{
+		Name: "mongodb.usage.getmore.count",
+	},
+	MongodbUsageGetmoreCountps: metricInfo{
+		Name: "mongodb.usage.getmore.countps",
+	},
+	MongodbUsageGetmoreTime: metricInfo{
+		Name: "mongodb.usage.getmore.time",
+	},
+	MongodbUsageInsertCount: metricInfo{
+		Name: "mongodb.usage.insert.count",
+	},
+	MongodbUsageInsertCountps: metricInfo{
+		Name: "mongodb.usage.insert.countps",
+	},
+	MongodbUsageInsertTime: metricInfo{
+		Name: "mongodb.usage.insert.time",
+	},
+	MongodbUsageQueriesCount: metricInfo{
+		Name: "mongodb.usage.queries.count",
+	},
+	MongodbUsageQueriesCountps: metricInfo{
+		Name: "mongodb.usage.queries.countps",
+	},
+	MongodbUsageQueriesTime: metricInfo{
+		Name: "mongodb.usage.queries.time",
+	},
+	MongodbUsageReadlockCount: metricInfo{
+		Name: "mongodb.usage.readlock.count",
+	},
+	MongodbUsageReadlockCountps: metricInfo{
+		Name: "mongodb.usage.readlock.countps",
+	},
+	MongodbUsageReadlockTime: metricInfo{
+		Name: "mongodb.usage.readlock.time",
+	},
+	MongodbUsageRemoveCount: metricInfo{
+		Name: "mongodb.usage.remove.count",
+	},
+	MongodbUsageRemoveCountps: metricInfo{
+		Name: "mongodb.usage.remove.countps",
+	},
+	MongodbUsageRemoveTime: metricInfo{
+		Name: "mongodb.usage.remove.time",
+	},
+	MongodbUsageTotalCount: metricInfo{
+		Name: "mongodb.usage.total.count",
+	},
+	MongodbUsageTotalCountps: metricInfo{
+		Name: "mongodb.usage.total.countps",
+	},
+	MongodbUsageTotalTime: metricInfo{
+		Name: "mongodb.usage.total.time",
+	},
+	MongodbUsageUpdateCount: metricInfo{
+		Name: "mongodb.usage.update.count",
+	},
+	MongodbUsageUpdateCountps: metricInfo{
+		Name: "mongodb.usage.update.countps",
+	},
+	MongodbUsageUpdateTime: metricInfo{
+		Name: "mongodb.usage.update.time",
+	},
+	MongodbUsageWritelockCount: metricInfo{
+		Name: "mongodb.usage.writelock.count",
+	},
+	MongodbUsageWritelockCountps: metricInfo{
+		Name: "mongodb.usage.writelock.countps",
+	},
+	MongodbUsageWritelockTime: metricInfo{
+		Name: "mongodb.usage.writelock.time",
+	},
+	MongodbWiredtigerCacheBytesCurrentlyInCache: metricInfo{
+		Name: "mongodb.wiredtiger.cache.bytes_currently_in_cache",
+	},
+	MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps: metricInfo{
+		Name: "mongodb.wiredtiger.cache.failed_eviction_of_pages_exceeding_the_in_memory_maximumps",
+	},
+	MongodbWiredtigerCacheInMemoryPageSplits: metricInfo{
+		Name: "mongodb.wiredtiger.cache.in_memory_page_splits",
+	},
+	MongodbWiredtigerCacheMaximumBytesConfigured: metricInfo{
+		Name: "mongodb.wiredtiger.cache.maximum_bytes_configured",
+	},
+	MongodbWiredtigerCacheMaximumPageSizeAtEviction: metricInfo{
+		Name: "mongodb.wiredtiger.cache.maximum_page_size_at_eviction",
+	},
+	MongodbWiredtigerCacheModifiedPagesEvicted: metricInfo{
+		Name: "mongodb.wiredtiger.cache.modified_pages_evicted",
+	},
+	MongodbWiredtigerCachePagesCurrentlyHeldInCache: metricInfo{
+		Name: "mongodb.wiredtiger.cache.pages_currently_held_in_cache",
+	},
+	MongodbWiredtigerCachePagesEvictedByApplicationThreadsps: metricInfo{
+		Name: "mongodb.wiredtiger.cache.pages_evicted_by_application_threadsps",
+	},
+	MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps: metricInfo{
+		Name: "mongodb.wiredtiger.cache.pages_evicted_exceeding_the_in_memory_maximumps",
+	},
+	MongodbWiredtigerCachePagesReadIntoCache: metricInfo{
+		Name: "mongodb.wiredtiger.cache.pages_read_into_cache",
+	},
+	MongodbWiredtigerCachePagesWrittenFromCache: metricInfo{
+		Name: "mongodb.wiredtiger.cache.pages_written_from_cache",
+	},
+	MongodbWiredtigerCacheTrackedDirtyBytesInCache: metricInfo{
+		Name: "mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache",
+	},
+	MongodbWiredtigerCacheUnmodifiedPagesEvicted: metricInfo{
+		Name: "mongodb.wiredtiger.cache.unmodified_pages_evicted",
+	},
+	MongodbWiredtigerConcurrenttransactionsReadAvailable: metricInfo{
+		Name: "mongodb.wiredtiger.concurrenttransactions.read.available",
+	},
+	MongodbWiredtigerConcurrenttransactionsReadOut: metricInfo{
+		Name: "mongodb.wiredtiger.concurrenttransactions.read.out",
+	},
+	MongodbWiredtigerConcurrenttransactionsReadTotaltickets: metricInfo{
+		Name: "mongodb.wiredtiger.concurrenttransactions.read.totaltickets",
+	},
+	MongodbWiredtigerConcurrenttransactionsWriteAvailable: metricInfo{
+		Name: "mongodb.wiredtiger.concurrenttransactions.write.available",
+	},
+	MongodbWiredtigerConcurrenttransactionsWriteOut: metricInfo{
+		Name: "mongodb.wiredtiger.concurrenttransactions.write.out",
+	},
+	MongodbWiredtigerConcurrenttransactionsWriteTotaltickets: metricInfo{
+		Name: "mongodb.wiredtiger.concurrenttransactions.write.totaltickets",
+	},
 	MongodbWtcacheBytesRead: metricInfo{
 		Name: "mongodb.wtcache.bytes.read",
 	},
 }
 
 type metricsInfo struct {
-	MongodbActiveReads            metricInfo
-	MongodbActiveWrites           metricInfo
-	MongodbCacheOperations        metricInfo
-	MongodbCollectionCount        metricInfo
-	MongodbCommandsRate           metricInfo
-	MongodbConnectionCount        metricInfo
-	MongodbCursorCount            metricInfo
-	MongodbCursorTimeoutCount     metricInfo
-	MongodbDataSize               metricInfo
-	MongodbDatabaseCount          metricInfo
-	MongodbDeletesRate            metricInfo
-	MongodbDocumentOperationCount metricInfo
-	MongodbExtentCount            metricInfo
-	MongodbFlushesRate            metricInfo
-	MongodbGetmoresRate           metricInfo
-	MongodbGlobalLockTime         metricInfo
-	MongodbHealth                 metricInfo
-	MongodbIndexAccessCount       metricInfo
-	MongodbIndexCount             metricInfo
-	MongodbIndexSize              metricInfo
-	MongodbInsertsRate            metricInfo
-	MongodbLockAcquireCount       metricInfo
-	MongodbLockAcquireTime        metricInfo
-	MongodbLockAcquireWaitCount   metricInfo
-	MongodbLockDeadlockCount      metricInfo
-	MongodbMemoryUsage            metricInfo
-	MongodbNetworkIoReceive       metricInfo
-	MongodbNetworkIoTransmit      metricInfo
-	MongodbNetworkRequestCount    metricInfo
-	MongodbObjectCount            metricInfo
-	MongodbOperationCount         metricInfo
-	MongodbOperationLatencyTime   metricInfo
-	MongodbOperationReplCount     metricInfo
-	MongodbOperationTime          metricInfo
-	MongodbPageFaults             metricInfo
-	MongodbQueriesRate            metricInfo
-	MongodbReplCommandsPerSec     metricInfo
-	MongodbReplDeletesPerSec      metricInfo
-	MongodbReplGetmoresPerSec     metricInfo
-	MongodbReplInsertsPerSec      metricInfo
-	MongodbReplQueriesPerSec      metricInfo
-	MongodbReplUpdatesPerSec      metricInfo
-	MongodbSessionCount           metricInfo
-	MongodbStorageSize            metricInfo
-	MongodbUpdatesRate            metricInfo
-	MongodbUptime                 metricInfo
-	MongodbWtcacheBytesRead       metricInfo
+	MongodbActiveReads                                                       metricInfo
+	MongodbActiveWrites                                                      metricInfo
+	MongodbAssertsMsgps                                                      metricInfo
+	MongodbAssertsRegularps                                                  metricInfo
+	MongodbAssertsRolloversps                                                metricInfo
+	MongodbAssertsUserps                                                     metricInfo
+	MongodbAssertsWarningps                                                  metricInfo
+	MongodbBackgroundflushingAverageMs                                       metricInfo
+	MongodbBackgroundflushingFlushesps                                       metricInfo
+	MongodbBackgroundflushingLastMs                                          metricInfo
+	MongodbBackgroundflushingTotalMs                                         metricInfo
+	MongodbCacheOperations                                                   metricInfo
+	MongodbChunksJumbo                                                       metricInfo
+	MongodbChunksTotal                                                       metricInfo
+	MongodbCollectionAvgobjsize                                              metricInfo
+	MongodbCollectionCapped                                                  metricInfo
+	MongodbCollectionCount                                                   metricInfo
+	MongodbCollectionIndexsizes                                              metricInfo
+	MongodbCollectionMax                                                     metricInfo
+	MongodbCollectionMaxsize                                                 metricInfo
+	MongodbCollectionNindexes                                                metricInfo
+	MongodbCollectionObjects                                                 metricInfo
+	MongodbCollectionSize                                                    metricInfo
+	MongodbCollectionStoragesize                                             metricInfo
+	MongodbCommandsRate                                                      metricInfo
+	MongodbConnectionCount                                                   metricInfo
+	MongodbConnectionPoolNumascopedconnections                               metricInfo
+	MongodbConnectionPoolNumclientconnections                                metricInfo
+	MongodbConnectionPoolTotalavailable                                      metricInfo
+	MongodbConnectionPoolTotalcreatedps                                      metricInfo
+	MongodbConnectionPoolTotalinuse                                          metricInfo
+	MongodbConnectionPoolTotalrefreshing                                     metricInfo
+	MongodbConnectionsActive                                                 metricInfo
+	MongodbConnectionsAvailable                                              metricInfo
+	MongodbConnectionsAwaitingtopologychanges                                metricInfo
+	MongodbConnectionsCurrent                                                metricInfo
+	MongodbConnectionsExhausthello                                           metricInfo
+	MongodbConnectionsExhaustismaster                                        metricInfo
+	MongodbConnectionsLoadbalanced                                           metricInfo
+	MongodbConnectionsRejected                                               metricInfo
+	MongodbConnectionsThreaded                                               metricInfo
+	MongodbConnectionsTotalcreated                                           metricInfo
+	MongodbCursorCount                                                       metricInfo
+	MongodbCursorTimeoutCount                                                metricInfo
+	MongodbCursorsTimedout                                                   metricInfo
+	MongodbCursorsTotalopen                                                  metricInfo
+	MongodbDataSize                                                          metricInfo
+	MongodbDatabaseCount                                                     metricInfo
+	MongodbDeletesRate                                                       metricInfo
+	MongodbDocumentOperationCount                                            metricInfo
+	MongodbDurCommits                                                        metricInfo
+	MongodbDurCommitsinwritelock                                             metricInfo
+	MongodbDurCompression                                                    metricInfo
+	MongodbDurEarlycommits                                                   metricInfo
+	MongodbDurJournaledmb                                                    metricInfo
+	MongodbDurTimemsCommits                                                  metricInfo
+	MongodbDurTimemsCommitsinwritelock                                       metricInfo
+	MongodbDurTimemsDt                                                       metricInfo
+	MongodbDurTimemsPreplogbuffer                                            metricInfo
+	MongodbDurTimemsRemapprivateview                                         metricInfo
+	MongodbDurTimemsWritetodatafiles                                         metricInfo
+	MongodbDurTimemsWritetojournal                                           metricInfo
+	MongodbDurWritetodatafilesmb                                             metricInfo
+	MongodbExtentCount                                                       metricInfo
+	MongodbExtraInfoHeapUsageBytesps                                         metricInfo
+	MongodbExtraInfoPageFaultsps                                             metricInfo
+	MongodbFlushesRate                                                       metricInfo
+	MongodbFsynclocked                                                       metricInfo
+	MongodbGetmoresRate                                                      metricInfo
+	MongodbGlobalLockTime                                                    metricInfo
+	MongodbGloballockActiveclientsReaders                                    metricInfo
+	MongodbGloballockActiveclientsTotal                                      metricInfo
+	MongodbGloballockActiveclientsWriters                                    metricInfo
+	MongodbGloballockCurrentqueueReaders                                     metricInfo
+	MongodbGloballockCurrentqueueTotal                                       metricInfo
+	MongodbGloballockCurrentqueueWriters                                     metricInfo
+	MongodbGloballockLocktime                                                metricInfo
+	MongodbGloballockRatio                                                   metricInfo
+	MongodbGloballockTotaltime                                               metricInfo
+	MongodbHealth                                                            metricInfo
+	MongodbIndexAccessCount                                                  metricInfo
+	MongodbIndexCount                                                        metricInfo
+	MongodbIndexSize                                                         metricInfo
+	MongodbIndexcountersAccessesps                                           metricInfo
+	MongodbIndexcountersHitsps                                               metricInfo
+	MongodbIndexcountersMissesps                                             metricInfo
+	MongodbIndexcountersMissratio                                            metricInfo
+	MongodbIndexcountersResetsps                                             metricInfo
+	MongodbInsertsRate                                                       metricInfo
+	MongodbLockAcquireCount                                                  metricInfo
+	MongodbLockAcquireTime                                                   metricInfo
+	MongodbLockAcquireWaitCount                                              metricInfo
+	MongodbLockDeadlockCount                                                 metricInfo
+	MongodbLocksCollectionAcquirecountExclusiveps                            metricInfo
+	MongodbLocksCollectionAcquirecountIntentExclusiveps                      metricInfo
+	MongodbLocksCollectionAcquirecountIntentSharedps                         metricInfo
+	MongodbLocksCollectionAcquirecountSharedps                               metricInfo
+	MongodbLocksCollectionAcquirewaitcountExclusiveps                        metricInfo
+	MongodbLocksCollectionAcquirewaitcountSharedps                           metricInfo
+	MongodbLocksCollectionTimeacquiringmicrosExclusiveps                     metricInfo
+	MongodbLocksCollectionTimeacquiringmicrosSharedps                        metricInfo
+	MongodbLocksDatabaseAcquirecountExclusiveps                              metricInfo
+	MongodbLocksDatabaseAcquirecountIntentExclusiveps                        metricInfo
+	MongodbLocksDatabaseAcquirecountIntentSharedps                           metricInfo
+	MongodbLocksDatabaseAcquirecountSharedps                                 metricInfo
+	MongodbLocksDatabaseAcquirewaitcountExclusiveps                          metricInfo
+	MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps                    metricInfo
+	MongodbLocksDatabaseAcquirewaitcountIntentSharedps                       metricInfo
+	MongodbLocksDatabaseAcquirewaitcountSharedps                             metricInfo
+	MongodbLocksDatabaseTimeacquiringmicrosExclusiveps                       metricInfo
+	MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps                 metricInfo
+	MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps                    metricInfo
+	MongodbLocksDatabaseTimeacquiringmicrosSharedps                          metricInfo
+	MongodbLocksGlobalAcquirecountExclusiveps                                metricInfo
+	MongodbLocksGlobalAcquirecountIntentExclusiveps                          metricInfo
+	MongodbLocksGlobalAcquirecountIntentSharedps                             metricInfo
+	MongodbLocksGlobalAcquirecountSharedps                                   metricInfo
+	MongodbLocksGlobalAcquirewaitcountExclusiveps                            metricInfo
+	MongodbLocksGlobalAcquirewaitcountIntentExclusiveps                      metricInfo
+	MongodbLocksGlobalAcquirewaitcountIntentSharedps                         metricInfo
+	MongodbLocksGlobalAcquirewaitcountSharedps                               metricInfo
+	MongodbLocksGlobalTimeacquiringmicrosExclusiveps                         metricInfo
+	MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps                   metricInfo
+	MongodbLocksGlobalTimeacquiringmicrosIntentSharedps                      metricInfo
+	MongodbLocksGlobalTimeacquiringmicrosSharedps                            metricInfo
+	MongodbLocksMetadataAcquirecountExclusiveps                              metricInfo
+	MongodbLocksMetadataAcquirecountSharedps                                 metricInfo
+	MongodbLocksMmapv1journalAcquirecountIntentExclusiveps                   metricInfo
+	MongodbLocksMmapv1journalAcquirecountIntentSharedps                      metricInfo
+	MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps               metricInfo
+	MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps                  metricInfo
+	MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps            metricInfo
+	MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps               metricInfo
+	MongodbLocksOplogAcquirecountIntentExclusiveps                           metricInfo
+	MongodbLocksOplogAcquirecountSharedps                                    metricInfo
+	MongodbLocksOplogAcquirewaitcountIntentExclusiveps                       metricInfo
+	MongodbLocksOplogAcquirewaitcountSharedps                                metricInfo
+	MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps                    metricInfo
+	MongodbLocksOplogTimeacquiringmicrosSharedps                             metricInfo
+	MongodbMemBits                                                           metricInfo
+	MongodbMemMapped                                                         metricInfo
+	MongodbMemMappedwithjournal                                              metricInfo
+	MongodbMemResident                                                       metricInfo
+	MongodbMemVirtual                                                        metricInfo
+	MongodbMemoryUsage                                                       metricInfo
+	MongodbMetricsCommandsCountFailedps                                      metricInfo
+	MongodbMetricsCommandsCountTotal                                         metricInfo
+	MongodbMetricsCommandsCreateindexesFailedps                              metricInfo
+	MongodbMetricsCommandsCreateindexesTotal                                 metricInfo
+	MongodbMetricsCommandsDeleteFailedps                                     metricInfo
+	MongodbMetricsCommandsDeleteTotal                                        metricInfo
+	MongodbMetricsCommandsEvalFailedps                                       metricInfo
+	MongodbMetricsCommandsEvalTotal                                          metricInfo
+	MongodbMetricsCommandsFindandmodifyFailedps                              metricInfo
+	MongodbMetricsCommandsFindandmodifyTotal                                 metricInfo
+	MongodbMetricsCommandsInsertFailedps                                     metricInfo
+	MongodbMetricsCommandsInsertTotal                                        metricInfo
+	MongodbMetricsCommandsUpdateFailedps                                     metricInfo
+	MongodbMetricsCommandsUpdateTotal                                        metricInfo
+	MongodbMetricsCursorOpenNotimeout                                        metricInfo
+	MongodbMetricsCursorOpenPinned                                           metricInfo
+	MongodbMetricsCursorOpenTotal                                            metricInfo
+	MongodbMetricsCursorTimedoutps                                           metricInfo
+	MongodbMetricsDocumentDeletedps                                          metricInfo
+	MongodbMetricsDocumentInsertedps                                         metricInfo
+	MongodbMetricsDocumentReturnedps                                         metricInfo
+	MongodbMetricsDocumentUpdatedps                                          metricInfo
+	MongodbMetricsGetlasterrorWtimeNumps                                     metricInfo
+	MongodbMetricsGetlasterrorWtimeTotalmillisps                             metricInfo
+	MongodbMetricsGetlasterrorWtimeoutsps                                    metricInfo
+	MongodbMetricsOperationFastmodps                                         metricInfo
+	MongodbMetricsOperationIdhackps                                          metricInfo
+	MongodbMetricsOperationScanandorderps                                    metricInfo
+	MongodbMetricsOperationWriteconflictsps                                  metricInfo
+	MongodbMetricsQueryexecutorScannedobjectsps                              metricInfo
+	MongodbMetricsQueryexecutorScannedps                                     metricInfo
+	MongodbMetricsRecordMovesps                                              metricInfo
+	MongodbMetricsReplApplyBatchesNumps                                      metricInfo
+	MongodbMetricsReplApplyBatchesTotalmillisps                              metricInfo
+	MongodbMetricsReplApplyOpsps                                             metricInfo
+	MongodbMetricsReplBufferCount                                            metricInfo
+	MongodbMetricsReplBufferMaxsizebytes                                     metricInfo
+	MongodbMetricsReplBufferSizebytes                                        metricInfo
+	MongodbMetricsReplNetworkBytesps                                         metricInfo
+	MongodbMetricsReplNetworkGetmoresNumps                                   metricInfo
+	MongodbMetricsReplNetworkGetmoresTotalmillisps                           metricInfo
+	MongodbMetricsReplNetworkOpsps                                           metricInfo
+	MongodbMetricsReplNetworkReaderscreatedps                                metricInfo
+	MongodbMetricsReplPreloadDocsNumps                                       metricInfo
+	MongodbMetricsReplPreloadDocsTotalmillisps                               metricInfo
+	MongodbMetricsReplPreloadIndexesNumps                                    metricInfo
+	MongodbMetricsReplPreloadIndexesTotalmillisps                            metricInfo
+	MongodbMetricsTTLDeleteddocumentsps                                      metricInfo
+	MongodbMetricsTTLPassesps                                                metricInfo
+	MongodbNetworkBytesinps                                                  metricInfo
+	MongodbNetworkBytesoutps                                                 metricInfo
+	MongodbNetworkIoReceive                                                  metricInfo
+	MongodbNetworkIoTransmit                                                 metricInfo
+	MongodbNetworkNumrequestsps                                              metricInfo
+	MongodbNetworkRequestCount                                               metricInfo
+	MongodbObjectCount                                                       metricInfo
+	MongodbOpcountersCommandps                                               metricInfo
+	MongodbOpcountersDeleteps                                                metricInfo
+	MongodbOpcountersGetmoreps                                               metricInfo
+	MongodbOpcountersInsertps                                                metricInfo
+	MongodbOpcountersQueryps                                                 metricInfo
+	MongodbOpcountersUpdateps                                                metricInfo
+	MongodbOpcountersreplCommandps                                           metricInfo
+	MongodbOpcountersreplDeleteps                                            metricInfo
+	MongodbOpcountersreplGetmoreps                                           metricInfo
+	MongodbOpcountersreplInsertps                                            metricInfo
+	MongodbOpcountersreplQueryps                                             metricInfo
+	MongodbOpcountersreplUpdateps                                            metricInfo
+	MongodbOperationCount                                                    metricInfo
+	MongodbOperationLatencyTime                                              metricInfo
+	MongodbOperationReplCount                                                metricInfo
+	MongodbOperationTime                                                     metricInfo
+	MongodbOplatenciesCommandsLatency                                        metricInfo
+	MongodbOplatenciesCommandsLatencyps                                      metricInfo
+	MongodbOplatenciesReadsLatency                                           metricInfo
+	MongodbOplatenciesReadsLatencyps                                         metricInfo
+	MongodbOplatenciesWritesLatency                                          metricInfo
+	MongodbOplatenciesWritesLatencyps                                        metricInfo
+	MongodbOplogLogsizemb                                                    metricInfo
+	MongodbOplogTimediff                                                     metricInfo
+	MongodbOplogUsedsizemb                                                   metricInfo
+	MongodbPageFaults                                                        metricInfo
+	MongodbProfilingLevel                                                    metricInfo
+	MongodbProfilingSlowms                                                   metricInfo
+	MongodbQueriesRate                                                       metricInfo
+	MongodbReplCommandsPerSec                                                metricInfo
+	MongodbReplDeletesPerSec                                                 metricInfo
+	MongodbReplGetmoresPerSec                                                metricInfo
+	MongodbReplInsertsPerSec                                                 metricInfo
+	MongodbReplQueriesPerSec                                                 metricInfo
+	MongodbReplUpdatesPerSec                                                 metricInfo
+	MongodbReplsetHealth                                                     metricInfo
+	MongodbReplsetOptimeLag                                                  metricInfo
+	MongodbReplsetReplicationlag                                             metricInfo
+	MongodbReplsetState                                                      metricInfo
+	MongodbReplsetVotefraction                                               metricInfo
+	MongodbReplsetVotes                                                      metricInfo
+	MongodbSessionCount                                                      metricInfo
+	MongodbSlowOperationCPUNanos                                             metricInfo
+	MongodbSlowOperationDocsExamined                                         metricInfo
+	MongodbSlowOperationKeysExamined                                         metricInfo
+	MongodbSlowOperationKeysInserted                                         metricInfo
+	MongodbSlowOperationNdeleted                                             metricInfo
+	MongodbSlowOperationNinserted                                            metricInfo
+	MongodbSlowOperationNmatched                                             metricInfo
+	MongodbSlowOperationNmodified                                            metricInfo
+	MongodbSlowOperationNreturned                                            metricInfo
+	MongodbSlowOperationNumYields                                            metricInfo
+	MongodbSlowOperationPlanningTimeMicros                                   metricInfo
+	MongodbSlowOperationResponseLength                                       metricInfo
+	MongodbSlowOperationTime                                                 metricInfo
+	MongodbSlowOperationWriteConflicts                                       metricInfo
+	MongodbStatsAvgobjsize                                                   metricInfo
+	MongodbStatsCollections                                                  metricInfo
+	MongodbStatsDatasize                                                     metricInfo
+	MongodbStatsFilesize                                                     metricInfo
+	MongodbStatsIndexes                                                      metricInfo
+	MongodbStatsIndexsize                                                    metricInfo
+	MongodbStatsNumextents                                                   metricInfo
+	MongodbStatsObjects                                                      metricInfo
+	MongodbStatsStoragesize                                                  metricInfo
+	MongodbStorageSize                                                       metricInfo
+	MongodbTcmallocGenericCurrentAllocatedBytes                              metricInfo
+	MongodbTcmallocGenericHeapSize                                           metricInfo
+	MongodbTcmallocTcmallocAggressiveMemoryDecommit                          metricInfo
+	MongodbTcmallocTcmallocCentralCacheFreeBytes                             metricInfo
+	MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes                      metricInfo
+	MongodbTcmallocTcmallocMaxTotalThreadCacheBytes                          metricInfo
+	MongodbTcmallocTcmallocPageheapFreeBytes                                 metricInfo
+	MongodbTcmallocTcmallocPageheapUnmappedBytes                             metricInfo
+	MongodbTcmallocTcmallocSpinlockTotalDelayNs                              metricInfo
+	MongodbTcmallocTcmallocThreadCacheFreeBytes                              metricInfo
+	MongodbTcmallocTcmallocTransferCacheFreeBytes                            metricInfo
+	MongodbUpdatesRate                                                       metricInfo
+	MongodbUptime                                                            metricInfo
+	MongodbUsageCommandsCount                                                metricInfo
+	MongodbUsageCommandsCountps                                              metricInfo
+	MongodbUsageCommandsTime                                                 metricInfo
+	MongodbUsageGetmoreCount                                                 metricInfo
+	MongodbUsageGetmoreCountps                                               metricInfo
+	MongodbUsageGetmoreTime                                                  metricInfo
+	MongodbUsageInsertCount                                                  metricInfo
+	MongodbUsageInsertCountps                                                metricInfo
+	MongodbUsageInsertTime                                                   metricInfo
+	MongodbUsageQueriesCount                                                 metricInfo
+	MongodbUsageQueriesCountps                                               metricInfo
+	MongodbUsageQueriesTime                                                  metricInfo
+	MongodbUsageReadlockCount                                                metricInfo
+	MongodbUsageReadlockCountps                                              metricInfo
+	MongodbUsageReadlockTime                                                 metricInfo
+	MongodbUsageRemoveCount                                                  metricInfo
+	MongodbUsageRemoveCountps                                                metricInfo
+	MongodbUsageRemoveTime                                                   metricInfo
+	MongodbUsageTotalCount                                                   metricInfo
+	MongodbUsageTotalCountps                                                 metricInfo
+	MongodbUsageTotalTime                                                    metricInfo
+	MongodbUsageUpdateCount                                                  metricInfo
+	MongodbUsageUpdateCountps                                                metricInfo
+	MongodbUsageUpdateTime                                                   metricInfo
+	MongodbUsageWritelockCount                                               metricInfo
+	MongodbUsageWritelockCountps                                             metricInfo
+	MongodbUsageWritelockTime                                                metricInfo
+	MongodbWiredtigerCacheBytesCurrentlyInCache                              metricInfo
+	MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps metricInfo
+	MongodbWiredtigerCacheInMemoryPageSplits                                 metricInfo
+	MongodbWiredtigerCacheMaximumBytesConfigured                             metricInfo
+	MongodbWiredtigerCacheMaximumPageSizeAtEviction                          metricInfo
+	MongodbWiredtigerCacheModifiedPagesEvicted                               metricInfo
+	MongodbWiredtigerCachePagesCurrentlyHeldInCache                          metricInfo
+	MongodbWiredtigerCachePagesEvictedByApplicationThreadsps                 metricInfo
+	MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps          metricInfo
+	MongodbWiredtigerCachePagesReadIntoCache                                 metricInfo
+	MongodbWiredtigerCachePagesWrittenFromCache                              metricInfo
+	MongodbWiredtigerCacheTrackedDirtyBytesInCache                           metricInfo
+	MongodbWiredtigerCacheUnmodifiedPagesEvicted                             metricInfo
+	MongodbWiredtigerConcurrenttransactionsReadAvailable                     metricInfo
+	MongodbWiredtigerConcurrenttransactionsReadOut                           metricInfo
+	MongodbWiredtigerConcurrenttransactionsReadTotaltickets                  metricInfo
+	MongodbWiredtigerConcurrenttransactionsWriteAvailable                    metricInfo
+	MongodbWiredtigerConcurrenttransactionsWriteOut                          metricInfo
+	MongodbWiredtigerConcurrenttransactionsWriteTotaltickets                 metricInfo
+	MongodbWtcacheBytesRead                                                  metricInfo
 }
 
 type metricInfo struct {
@@ -1319,55 +2439,6 @@ func newMetricMongodbCollectionCount(cfg MetricConfig) metricMongodbCollectionCo
 	return m
 }
 
-type metricMongodbCommandsRate struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.commands.rate metric with initial data.
-func (m *metricMongodbCommandsRate) init() {
-	m.data.SetName("mongodb.commands.rate")
-	m.data.SetDescription("The number of commands executed per second.")
-	m.data.SetUnit("{command}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMongodbCommandsRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetDoubleValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbCommandsRate) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbCommandsRate) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbCommandsRate(cfg MetricConfig) metricMongodbCommandsRate {
-	m := metricMongodbCommandsRate{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
 type metricMongodbCollectionIndexsizes struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -1726,6 +2797,55 @@ func (m *metricMongodbCollectionStoragesize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbCollectionStoragesize(cfg MetricConfig) metricMongodbCollectionStoragesize {
 	m := metricMongodbCollectionStoragesize{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbCommandsRate struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.commands.rate metric with initial data.
+func (m *metricMongodbCommandsRate) init() {
+	m.data.SetName("mongodb.commands.rate")
+	m.data.SetDescription("The number of commands executed per second.")
+	m.data.SetUnit("{command}/s")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMongodbCommandsRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbCommandsRate) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbCommandsRate) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbCommandsRate(cfg MetricConfig) metricMongodbCommandsRate {
+	m := metricMongodbCommandsRate{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3826,6 +4946,55 @@ func newMetricMongodbExtraInfoPageFaultsps(cfg MetricConfig) metricMongodbExtraI
 	return m
 }
 
+type metricMongodbFlushesRate struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.flushes.rate metric with initial data.
+func (m *metricMongodbFlushesRate) init() {
+	m.data.SetName("mongodb.flushes.rate")
+	m.data.SetDescription("The number of flushes executed per second.")
+	m.data.SetUnit("{flush}/s")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMongodbFlushesRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbFlushesRate) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbFlushesRate) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbFlushesRate(cfg MetricConfig) metricMongodbFlushesRate {
+	m := metricMongodbFlushesRate{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMongodbFsynclocked struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3870,55 +5039,6 @@ func (m *metricMongodbFsynclocked) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbFsynclocked(cfg MetricConfig) metricMongodbFsynclocked {
 	m := metricMongodbFsynclocked{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbFlushesRate struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.flushes.rate metric with initial data.
-func (m *metricMongodbFlushesRate) init() {
-	m.data.SetName("mongodb.flushes.rate")
-	m.data.SetDescription("The number of flushes executed per second.")
-	m.data.SetUnit("{flush}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMongodbFlushesRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetDoubleValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbFlushesRate) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbFlushesRate) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbFlushesRate(cfg MetricConfig) metricMongodbFlushesRate {
-	m := metricMongodbFlushesRate{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -4689,55 +5809,6 @@ func newMetricMongodbIndexSize(cfg MetricConfig) metricMongodbIndexSize {
 	return m
 }
 
-type metricMongodbInsertsRate struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.inserts.rate metric with initial data.
-func (m *metricMongodbInsertsRate) init() {
-	m.data.SetName("mongodb.inserts.rate")
-	m.data.SetDescription("The number of insertions executed per second.")
-	m.data.SetUnit("{insert}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMongodbInsertsRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetDoubleValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbInsertsRate) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbInsertsRate) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbInsertsRate(cfg MetricConfig) metricMongodbInsertsRate {
-	m := metricMongodbInsertsRate{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
 type metricMongodbIndexcountersAccessesps struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -4986,6 +6057,55 @@ func (m *metricMongodbIndexcountersResetsps) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbIndexcountersResetsps(cfg MetricConfig) metricMongodbIndexcountersResetsps {
 	m := metricMongodbIndexcountersResetsps{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbInsertsRate struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.inserts.rate metric with initial data.
+func (m *metricMongodbInsertsRate) init() {
+	m.data.SetName("mongodb.inserts.rate")
+	m.data.SetDescription("The number of insertions executed per second.")
+	m.data.SetUnit("{insert}/s")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMongodbInsertsRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbInsertsRate) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbInsertsRate) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbInsertsRate(cfg MetricConfig) metricMongodbInsertsRate {
+	m := metricMongodbInsertsRate{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -12000,6 +13120,57 @@ func newMetricMongodbOplogUsedsizemb(cfg MetricConfig) metricMongodbOplogUsedsiz
 	return m
 }
 
+type metricMongodbPageFaults struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.page_faults metric with initial data.
+func (m *metricMongodbPageFaults) init() {
+	m.data.SetName("mongodb.page_faults")
+	m.data.SetDescription("The number of page faults.")
+	m.data.SetUnit("{faults}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMongodbPageFaults) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbPageFaults) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbPageFaults) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbPageFaults(cfg MetricConfig) metricMongodbPageFaults {
+	m := metricMongodbPageFaults{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMongodbProfilingLevel struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -12095,383 +13266,6 @@ func (m *metricMongodbProfilingSlowms) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbProfilingSlowms(cfg MetricConfig) metricMongodbProfilingSlowms {
 	m := metricMongodbProfilingSlowms{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbReplsetHealth struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.replset.health metric with initial data.
-func (m *metricMongodbReplsetHealth) init() {
-	m.data.SetName("mongodb.replset.health")
-	m.data.SetDescription("Member health value of the replica set: conveys if the member is up (i.e. 1) or down (i.e. 0).")
-	m.data.SetUnit("1")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-}
-
-func (m *metricMongodbReplsetHealth) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string, memberStateAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-	dp.Attributes().PutStr("database", databaseAttributeValue)
-	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
-	dp.Attributes().PutStr("name", memberNameAttributeValue)
-	dp.Attributes().PutStr("id", memberIDAttributeValue)
-	dp.Attributes().PutStr("state", memberStateAttributeValue)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbReplsetHealth) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbReplsetHealth) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbReplsetHealth(cfg MetricConfig) metricMongodbReplsetHealth {
-	m := metricMongodbReplsetHealth{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbReplsetOptimeLag struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.replset.optime_lag metric with initial data.
-func (m *metricMongodbReplsetOptimeLag) init() {
-	m.data.SetName("mongodb.replset.optime_lag")
-	m.data.SetDescription("Delay between a write operation on the primary and its copy to a secondary. Computed only on primary and tagged by 'member'.")
-	m.data.SetUnit("s")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-}
-
-func (m *metricMongodbReplsetOptimeLag) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-	dp.Attributes().PutStr("database", databaseAttributeValue)
-	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
-	dp.Attributes().PutStr("name", memberNameAttributeValue)
-	dp.Attributes().PutStr("id", memberIDAttributeValue)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbReplsetOptimeLag) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbReplsetOptimeLag) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbReplsetOptimeLag(cfg MetricConfig) metricMongodbReplsetOptimeLag {
-	m := metricMongodbReplsetOptimeLag{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbReplsetReplicationlag struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.replset.replicationlag metric with initial data.
-func (m *metricMongodbReplsetReplicationlag) init() {
-	m.data.SetName("mongodb.replset.replicationlag")
-	m.data.SetDescription("Delay between a write operation on the primary and its copy to a secondary. Computed on each node and tagged by 'host', but may not be representative of cluster health. Negative values do not indicate that the secondary is ahead of the primary. To use a more up-to-date metric, use mongodb.replset.optime_lag instead.")
-	m.data.SetUnit("s")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-}
-
-func (m *metricMongodbReplsetReplicationlag) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-	dp.Attributes().PutStr("database", databaseAttributeValue)
-	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
-	dp.Attributes().PutStr("name", memberNameAttributeValue)
-	dp.Attributes().PutStr("id", memberIDAttributeValue)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbReplsetReplicationlag) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbReplsetReplicationlag) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbReplsetReplicationlag(cfg MetricConfig) metricMongodbReplsetReplicationlag {
-	m := metricMongodbReplsetReplicationlag{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbReplsetState struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.replset.state metric with initial data.
-func (m *metricMongodbReplsetState) init() {
-	m.data.SetName("mongodb.replset.state")
-	m.data.SetDescription("State of a replica that reflects its disposition within the set.")
-	m.data.SetUnit("1")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-}
-
-func (m *metricMongodbReplsetState) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string, memberStateAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-	dp.Attributes().PutStr("database", databaseAttributeValue)
-	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
-	dp.Attributes().PutStr("name", memberNameAttributeValue)
-	dp.Attributes().PutStr("id", memberIDAttributeValue)
-	dp.Attributes().PutStr("state", memberStateAttributeValue)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbReplsetState) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbReplsetState) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbReplsetState(cfg MetricConfig) metricMongodbReplsetState {
-	m := metricMongodbReplsetState{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbReplsetVotefraction struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.replset.votefraction metric with initial data.
-func (m *metricMongodbReplsetVotefraction) init() {
-	m.data.SetName("mongodb.replset.votefraction")
-	m.data.SetDescription("Fraction of votes a server will cast in a replica set election.")
-	m.data.SetUnit("{fraction}")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-}
-
-func (m *metricMongodbReplsetVotefraction) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetDoubleValue(val)
-	dp.Attributes().PutStr("database", databaseAttributeValue)
-	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
-	dp.Attributes().PutStr("name", memberNameAttributeValue)
-	dp.Attributes().PutStr("id", memberIDAttributeValue)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbReplsetVotefraction) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbReplsetVotefraction) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbReplsetVotefraction(cfg MetricConfig) metricMongodbReplsetVotefraction {
-	m := metricMongodbReplsetVotefraction{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbReplsetVotes struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.replset.votes metric with initial data.
-func (m *metricMongodbReplsetVotes) init() {
-	m.data.SetName("mongodb.replset.votes")
-	m.data.SetDescription("The number of votes a server will cast in a replica set election.")
-	m.data.SetUnit("{item}")
-	m.data.SetEmptyGauge()
-	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
-}
-
-func (m *metricMongodbReplsetVotes) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-	dp.Attributes().PutStr("database", databaseAttributeValue)
-	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
-	dp.Attributes().PutStr("name", memberNameAttributeValue)
-	dp.Attributes().PutStr("id", memberIDAttributeValue)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbReplsetVotes) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbReplsetVotes) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbReplsetVotes(cfg MetricConfig) metricMongodbReplsetVotes {
-	m := metricMongodbReplsetVotes{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbPageFaults struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.page_faults metric with initial data.
-func (m *metricMongodbPageFaults) init() {
-	m.data.SetName("mongodb.page_faults")
-	m.data.SetDescription("The number of page faults.")
-	m.data.SetUnit("{faults}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-}
-
-func (m *metricMongodbPageFaults) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Sum().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbPageFaults) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbPageFaults) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbPageFaults(cfg MetricConfig) metricMongodbPageFaults {
-	m := metricMongodbPageFaults{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -12822,6 +13616,332 @@ func newMetricMongodbReplUpdatesPerSec(cfg MetricConfig) metricMongodbReplUpdate
 	return m
 }
 
+type metricMongodbReplsetHealth struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.replset.health metric with initial data.
+func (m *metricMongodbReplsetHealth) init() {
+	m.data.SetName("mongodb.replset.health")
+	m.data.SetDescription("Member health value of the replica set: conveys if the member is up (i.e. 1) or down (i.e. 0).")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbReplsetHealth) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string, memberStateAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
+	dp.Attributes().PutStr("name", memberNameAttributeValue)
+	dp.Attributes().PutStr("id", memberIDAttributeValue)
+	dp.Attributes().PutStr("state", memberStateAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbReplsetHealth) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbReplsetHealth) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbReplsetHealth(cfg MetricConfig) metricMongodbReplsetHealth {
+	m := metricMongodbReplsetHealth{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbReplsetOptimeLag struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.replset.optime_lag metric with initial data.
+func (m *metricMongodbReplsetOptimeLag) init() {
+	m.data.SetName("mongodb.replset.optime_lag")
+	m.data.SetDescription("Delay between a write operation on the primary and its copy to a secondary. Computed only on primary and tagged by 'member'.")
+	m.data.SetUnit("s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbReplsetOptimeLag) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
+	dp.Attributes().PutStr("name", memberNameAttributeValue)
+	dp.Attributes().PutStr("id", memberIDAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbReplsetOptimeLag) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbReplsetOptimeLag) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbReplsetOptimeLag(cfg MetricConfig) metricMongodbReplsetOptimeLag {
+	m := metricMongodbReplsetOptimeLag{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbReplsetReplicationlag struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.replset.replicationlag metric with initial data.
+func (m *metricMongodbReplsetReplicationlag) init() {
+	m.data.SetName("mongodb.replset.replicationlag")
+	m.data.SetDescription("Delay between a write operation on the primary and its copy to a secondary. Computed on each node and tagged by 'host', but may not be representative of cluster health. Negative values do not indicate that the secondary is ahead of the primary. To use a more up-to-date metric, use mongodb.replset.optime_lag instead.")
+	m.data.SetUnit("s")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbReplsetReplicationlag) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
+	dp.Attributes().PutStr("name", memberNameAttributeValue)
+	dp.Attributes().PutStr("id", memberIDAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbReplsetReplicationlag) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbReplsetReplicationlag) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbReplsetReplicationlag(cfg MetricConfig) metricMongodbReplsetReplicationlag {
+	m := metricMongodbReplsetReplicationlag{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbReplsetState struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.replset.state metric with initial data.
+func (m *metricMongodbReplsetState) init() {
+	m.data.SetName("mongodb.replset.state")
+	m.data.SetDescription("State of a replica that reflects its disposition within the set.")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbReplsetState) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string, memberStateAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
+	dp.Attributes().PutStr("name", memberNameAttributeValue)
+	dp.Attributes().PutStr("id", memberIDAttributeValue)
+	dp.Attributes().PutStr("state", memberStateAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbReplsetState) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbReplsetState) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbReplsetState(cfg MetricConfig) metricMongodbReplsetState {
+	m := metricMongodbReplsetState{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbReplsetVotefraction struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.replset.votefraction metric with initial data.
+func (m *metricMongodbReplsetVotefraction) init() {
+	m.data.SetName("mongodb.replset.votefraction")
+	m.data.SetDescription("Fraction of votes a server will cast in a replica set election.")
+	m.data.SetUnit("{fraction}")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbReplsetVotefraction) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
+	dp.Attributes().PutStr("name", memberNameAttributeValue)
+	dp.Attributes().PutStr("id", memberIDAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbReplsetVotefraction) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbReplsetVotefraction) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbReplsetVotefraction(cfg MetricConfig) metricMongodbReplsetVotefraction {
+	m := metricMongodbReplsetVotefraction{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricMongodbReplsetVotes struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.replset.votes metric with initial data.
+func (m *metricMongodbReplsetVotes) init() {
+	m.data.SetName("mongodb.replset.votes")
+	m.data.SetDescription("The number of votes a server will cast in a replica set election.")
+	m.data.SetUnit("{item}")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricMongodbReplsetVotes) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, databaseAttributeValue string, replicaSetAttributeValue string, memberNameAttributeValue string, memberIDAttributeValue string) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("database", databaseAttributeValue)
+	dp.Attributes().PutStr("replset", replicaSetAttributeValue)
+	dp.Attributes().PutStr("name", memberNameAttributeValue)
+	dp.Attributes().PutStr("id", memberIDAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbReplsetVotes) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbReplsetVotes) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbReplsetVotes(cfg MetricConfig) metricMongodbReplsetVotes {
+	m := metricMongodbReplsetVotes{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMongodbSessionCount struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -12935,7 +14055,7 @@ type metricMongodbSlowOperationDocsExamined struct {
 func (m *metricMongodbSlowOperationDocsExamined) init() {
 	m.data.SetName("mongodb.slow_operation.docs_examined")
 	m.data.SetDescription("Number of documents examined during execution.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -12987,7 +14107,7 @@ type metricMongodbSlowOperationKeysExamined struct {
 func (m *metricMongodbSlowOperationKeysExamined) init() {
 	m.data.SetName("mongodb.slow_operation.keys_examined")
 	m.data.SetDescription("Number of index keys examined during execution.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13039,7 +14159,7 @@ type metricMongodbSlowOperationKeysInserted struct {
 func (m *metricMongodbSlowOperationKeysInserted) init() {
 	m.data.SetName("mongodb.slow_operation.keys_inserted")
 	m.data.SetDescription("Number of index keys inserted during execution.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13091,7 +14211,7 @@ type metricMongodbSlowOperationNdeleted struct {
 func (m *metricMongodbSlowOperationNdeleted) init() {
 	m.data.SetName("mongodb.slow_operation.ndeleted")
 	m.data.SetDescription("Number of documents deleted by the operation.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13143,7 +14263,7 @@ type metricMongodbSlowOperationNinserted struct {
 func (m *metricMongodbSlowOperationNinserted) init() {
 	m.data.SetName("mongodb.slow_operation.ninserted")
 	m.data.SetDescription("Number of documents inserted by the operation.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13195,7 +14315,7 @@ type metricMongodbSlowOperationNmatched struct {
 func (m *metricMongodbSlowOperationNmatched) init() {
 	m.data.SetName("mongodb.slow_operation.nmatched")
 	m.data.SetDescription("Number of documents matched by the query.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13247,7 +14367,7 @@ type metricMongodbSlowOperationNmodified struct {
 func (m *metricMongodbSlowOperationNmodified) init() {
 	m.data.SetName("mongodb.slow_operation.nmodified")
 	m.data.SetDescription("Number of documents modified by the operation.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13299,7 +14419,7 @@ type metricMongodbSlowOperationNreturned struct {
 func (m *metricMongodbSlowOperationNreturned) init() {
 	m.data.SetName("mongodb.slow_operation.nreturned")
 	m.data.SetDescription("Number of documents returned by the query.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13351,7 +14471,7 @@ type metricMongodbSlowOperationNumYields struct {
 func (m *metricMongodbSlowOperationNumYields) init() {
 	m.data.SetName("mongodb.slow_operation.num_yields")
 	m.data.SetDescription("Number of times the operation yielded control (for long-running operations).")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -13598,7 +14718,7 @@ type metricMongodbSlowOperationWriteConflicts struct {
 func (m *metricMongodbSlowOperationWriteConflicts) init() {
 	m.data.SetName("mongodb.slow_operation.write_conflicts")
 	m.data.SetDescription("Number of write conflicts encountered during execution.")
-	m.data.SetUnit("1")
+	m.data.SetUnit("")
 	m.data.SetEmptyGauge()
 	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
@@ -14143,55 +15263,6 @@ func (m *metricMongodbStorageSize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbStorageSize(cfg MetricConfig) metricMongodbStorageSize {
 	m := metricMongodbStorageSize{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbUpdatesRate struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.updates.rate metric with initial data.
-func (m *metricMongodbUpdatesRate) init() {
-	m.data.SetName("mongodb.updates.rate")
-	m.data.SetDescription("The number of updates executed per second.")
-	m.data.SetUnit("{update}/s")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricMongodbUpdatesRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetDoubleValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbUpdatesRate) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbUpdatesRate) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbUpdatesRate(cfg MetricConfig) metricMongodbUpdatesRate {
-	m := metricMongodbUpdatesRate{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -14760,6 +15831,55 @@ func newMetricMongodbTcmallocTcmallocTransferCacheFreeBytes(cfg MetricConfig) me
 	return m
 }
 
+type metricMongodbUpdatesRate struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.updates.rate metric with initial data.
+func (m *metricMongodbUpdatesRate) init() {
+	m.data.SetName("mongodb.updates.rate")
+	m.data.SetDescription("The number of updates executed per second.")
+	m.data.SetUnit("{update}/s")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricMongodbUpdatesRate) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbUpdatesRate) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbUpdatesRate) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbUpdatesRate(cfg MetricConfig) metricMongodbUpdatesRate {
+	m := metricMongodbUpdatesRate{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricMongodbUptime struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -14804,57 +15924,6 @@ func (m *metricMongodbUptime) emit(metrics pmetric.MetricSlice) {
 
 func newMetricMongodbUptime(cfg MetricConfig) metricMongodbUptime {
 	m := metricMongodbUptime{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricMongodbWtcacheBytesRead struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
-}
-
-// init fills mongodb.wtcache.bytes.read metric with initial data.
-func (m *metricMongodbWtcacheBytesRead) init() {
-	m.data.SetName("mongodb.wtcache.bytes.read")
-	m.data.SetDescription("The number of bytes read into the WiredTiger cache.")
-	m.data.SetUnit("By")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(true)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-}
-
-func (m *metricMongodbWtcacheBytesRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Sum().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricMongodbWtcacheBytesRead) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricMongodbWtcacheBytesRead) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricMongodbWtcacheBytesRead(cfg MetricConfig) metricMongodbWtcacheBytesRead {
-	m := metricMongodbWtcacheBytesRead{config: cfg}
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -17235,63 +18304,60 @@ func newMetricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets(cfg Metri
 	return m
 }
 
+type metricMongodbWtcacheBytesRead struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills mongodb.wtcache.bytes.read metric with initial data.
+func (m *metricMongodbWtcacheBytesRead) init() {
+	m.data.SetName("mongodb.wtcache.bytes.read")
+	m.data.SetDescription("The number of bytes read into the WiredTiger cache.")
+	m.data.SetUnit("By")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricMongodbWtcacheBytesRead) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricMongodbWtcacheBytesRead) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricMongodbWtcacheBytesRead) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricMongodbWtcacheBytesRead(cfg MetricConfig) metricMongodbWtcacheBytesRead {
+	m := metricMongodbWtcacheBytesRead{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 // MetricsBuilder provides an interface for scrapers to report metrics while taking care of all the transformations
 // required to produce metric representation defined in metadata and user config.
 type MetricsBuilder struct {
-	config                              MetricsBuilderConfig // config of the metrics builder.
-	startTime                           pcommon.Timestamp    // start time that will be applied to all recorded data points.
-	metricsCapacity                     int                  // maximum observed number of metrics per resource.
-	metricsBuffer                       pmetric.Metrics      // accumulates metrics data before emitting.
-	buildInfo                           component.BuildInfo  // contains version information.
-	resourceAttributeIncludeFilter      map[string]filter.Filter
-	resourceAttributeExcludeFilter      map[string]filter.Filter
-	metricMongodbActiveReads            metricMongodbActiveReads
-	metricMongodbActiveWrites           metricMongodbActiveWrites
-	metricMongodbCacheOperations        metricMongodbCacheOperations
-	metricMongodbCollectionCount        metricMongodbCollectionCount
-	metricMongodbCommandsRate           metricMongodbCommandsRate
-	metricMongodbConnectionCount        metricMongodbConnectionCount
-	metricMongodbCursorCount            metricMongodbCursorCount
-	metricMongodbCursorTimeoutCount     metricMongodbCursorTimeoutCount
-	metricMongodbDataSize               metricMongodbDataSize
-	metricMongodbDatabaseCount          metricMongodbDatabaseCount
-	metricMongodbDeletesRate            metricMongodbDeletesRate
-	metricMongodbDocumentOperationCount metricMongodbDocumentOperationCount
-	metricMongodbExtentCount            metricMongodbExtentCount
-	metricMongodbFlushesRate            metricMongodbFlushesRate
-	metricMongodbGetmoresRate           metricMongodbGetmoresRate
-	metricMongodbGlobalLockTime         metricMongodbGlobalLockTime
-	metricMongodbHealth                 metricMongodbHealth
-	metricMongodbIndexAccessCount       metricMongodbIndexAccessCount
-	metricMongodbIndexCount             metricMongodbIndexCount
-	metricMongodbIndexSize              metricMongodbIndexSize
-	metricMongodbInsertsRate            metricMongodbInsertsRate
-	metricMongodbLockAcquireCount       metricMongodbLockAcquireCount
-	metricMongodbLockAcquireTime        metricMongodbLockAcquireTime
-	metricMongodbLockAcquireWaitCount   metricMongodbLockAcquireWaitCount
-	metricMongodbLockDeadlockCount      metricMongodbLockDeadlockCount
-	metricMongodbMemoryUsage            metricMongodbMemoryUsage
-	metricMongodbNetworkIoReceive       metricMongodbNetworkIoReceive
-	metricMongodbNetworkIoTransmit      metricMongodbNetworkIoTransmit
-	metricMongodbNetworkRequestCount    metricMongodbNetworkRequestCount
-	metricMongodbObjectCount            metricMongodbObjectCount
-	metricMongodbOperationCount         metricMongodbOperationCount
-	metricMongodbOperationLatencyTime   metricMongodbOperationLatencyTime
-	metricMongodbOperationReplCount     metricMongodbOperationReplCount
-	metricMongodbOperationTime          metricMongodbOperationTime
-	metricMongodbPageFaults             metricMongodbPageFaults
-	metricMongodbQueriesRate            metricMongodbQueriesRate
-	metricMongodbReplCommandsPerSec     metricMongodbReplCommandsPerSec
-	metricMongodbReplDeletesPerSec      metricMongodbReplDeletesPerSec
-	metricMongodbReplGetmoresPerSec     metricMongodbReplGetmoresPerSec
-	metricMongodbReplInsertsPerSec      metricMongodbReplInsertsPerSec
-	metricMongodbReplQueriesPerSec      metricMongodbReplQueriesPerSec
-	metricMongodbReplUpdatesPerSec      metricMongodbReplUpdatesPerSec
-	metricMongodbSessionCount           metricMongodbSessionCount
-	metricMongodbStorageSize            metricMongodbStorageSize
-	metricMongodbUpdatesRate            metricMongodbUpdatesRate
-	metricMongodbUptime                 metricMongodbUptime
-	metricMongodbWtcacheBytesRead       metricMongodbWtcacheBytesRead
 	config                                                                         MetricsBuilderConfig // config of the metrics builder.
 	startTime                                                                      pcommon.Timestamp    // start time that will be applied to all recorded data points.
 	metricsCapacity                                                                int                  // maximum observed number of metrics per resource.
@@ -17299,6 +18365,8 @@ type MetricsBuilder struct {
 	buildInfo                                                                      component.BuildInfo  // contains version information.
 	resourceAttributeIncludeFilter                                                 map[string]filter.Filter
 	resourceAttributeExcludeFilter                                                 map[string]filter.Filter
+	metricMongodbActiveReads                                                       metricMongodbActiveReads
+	metricMongodbActiveWrites                                                      metricMongodbActiveWrites
 	metricMongodbAssertsMsgps                                                      metricMongodbAssertsMsgps
 	metricMongodbAssertsRegularps                                                  metricMongodbAssertsRegularps
 	metricMongodbAssertsRolloversps                                                metricMongodbAssertsRolloversps
@@ -17321,6 +18389,7 @@ type MetricsBuilder struct {
 	metricMongodbCollectionObjects                                                 metricMongodbCollectionObjects
 	metricMongodbCollectionSize                                                    metricMongodbCollectionSize
 	metricMongodbCollectionStoragesize                                             metricMongodbCollectionStoragesize
+	metricMongodbCommandsRate                                                      metricMongodbCommandsRate
 	metricMongodbConnectionCount                                                   metricMongodbConnectionCount
 	metricMongodbConnectionPoolNumascopedconnections                               metricMongodbConnectionPoolNumascopedconnections
 	metricMongodbConnectionPoolNumclientconnections                                metricMongodbConnectionPoolNumclientconnections
@@ -17344,6 +18413,7 @@ type MetricsBuilder struct {
 	metricMongodbCursorsTotalopen                                                  metricMongodbCursorsTotalopen
 	metricMongodbDataSize                                                          metricMongodbDataSize
 	metricMongodbDatabaseCount                                                     metricMongodbDatabaseCount
+	metricMongodbDeletesRate                                                       metricMongodbDeletesRate
 	metricMongodbDocumentOperationCount                                            metricMongodbDocumentOperationCount
 	metricMongodbDurCommits                                                        metricMongodbDurCommits
 	metricMongodbDurCommitsinwritelock                                             metricMongodbDurCommitsinwritelock
@@ -17361,7 +18431,9 @@ type MetricsBuilder struct {
 	metricMongodbExtentCount                                                       metricMongodbExtentCount
 	metricMongodbExtraInfoHeapUsageBytesps                                         metricMongodbExtraInfoHeapUsageBytesps
 	metricMongodbExtraInfoPageFaultsps                                             metricMongodbExtraInfoPageFaultsps
+	metricMongodbFlushesRate                                                       metricMongodbFlushesRate
 	metricMongodbFsynclocked                                                       metricMongodbFsynclocked
+	metricMongodbGetmoresRate                                                      metricMongodbGetmoresRate
 	metricMongodbGlobalLockTime                                                    metricMongodbGlobalLockTime
 	metricMongodbGloballockActiveclientsReaders                                    metricMongodbGloballockActiveclientsReaders
 	metricMongodbGloballockActiveclientsTotal                                      metricMongodbGloballockActiveclientsTotal
@@ -17381,6 +18453,7 @@ type MetricsBuilder struct {
 	metricMongodbIndexcountersMissesps                                             metricMongodbIndexcountersMissesps
 	metricMongodbIndexcountersMissratio                                            metricMongodbIndexcountersMissratio
 	metricMongodbIndexcountersResetsps                                             metricMongodbIndexcountersResetsps
+	metricMongodbInsertsRate                                                       metricMongodbInsertsRate
 	metricMongodbLockAcquireCount                                                  metricMongodbLockAcquireCount
 	metricMongodbLockAcquireTime                                                   metricMongodbLockAcquireTime
 	metricMongodbLockAcquireWaitCount                                              metricMongodbLockAcquireWaitCount
@@ -17518,8 +18591,16 @@ type MetricsBuilder struct {
 	metricMongodbOplogLogsizemb                                                    metricMongodbOplogLogsizemb
 	metricMongodbOplogTimediff                                                     metricMongodbOplogTimediff
 	metricMongodbOplogUsedsizemb                                                   metricMongodbOplogUsedsizemb
+	metricMongodbPageFaults                                                        metricMongodbPageFaults
 	metricMongodbProfilingLevel                                                    metricMongodbProfilingLevel
 	metricMongodbProfilingSlowms                                                   metricMongodbProfilingSlowms
+	metricMongodbQueriesRate                                                       metricMongodbQueriesRate
+	metricMongodbReplCommandsPerSec                                                metricMongodbReplCommandsPerSec
+	metricMongodbReplDeletesPerSec                                                 metricMongodbReplDeletesPerSec
+	metricMongodbReplGetmoresPerSec                                                metricMongodbReplGetmoresPerSec
+	metricMongodbReplInsertsPerSec                                                 metricMongodbReplInsertsPerSec
+	metricMongodbReplQueriesPerSec                                                 metricMongodbReplQueriesPerSec
+	metricMongodbReplUpdatesPerSec                                                 metricMongodbReplUpdatesPerSec
 	metricMongodbReplsetHealth                                                     metricMongodbReplsetHealth
 	metricMongodbReplsetOptimeLag                                                  metricMongodbReplsetOptimeLag
 	metricMongodbReplsetReplicationlag                                             metricMongodbReplsetReplicationlag
@@ -17562,6 +18643,7 @@ type MetricsBuilder struct {
 	metricMongodbTcmallocTcmallocSpinlockTotalDelayNs                              metricMongodbTcmallocTcmallocSpinlockTotalDelayNs
 	metricMongodbTcmallocTcmallocThreadCacheFreeBytes                              metricMongodbTcmallocTcmallocThreadCacheFreeBytes
 	metricMongodbTcmallocTcmallocTransferCacheFreeBytes                            metricMongodbTcmallocTcmallocTransferCacheFreeBytes
+	metricMongodbUpdatesRate                                                       metricMongodbUpdatesRate
 	metricMongodbUptime                                                            metricMongodbUptime
 	metricMongodbUsageCommandsCount                                                metricMongodbUsageCommandsCount
 	metricMongodbUsageCommandsCountps                                              metricMongodbUsageCommandsCountps
@@ -17609,76 +18691,34 @@ type MetricsBuilder struct {
 	metricMongodbWiredtigerConcurrenttransactionsWriteAvailable                    metricMongodbWiredtigerConcurrenttransactionsWriteAvailable
 	metricMongodbWiredtigerConcurrenttransactionsWriteOut                          metricMongodbWiredtigerConcurrenttransactionsWriteOut
 	metricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets                 metricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets
+	metricMongodbWtcacheBytesRead                                                  metricMongodbWtcacheBytesRead
 }
 
-// metricBuilderOption applies changes to default metrics builder.
-type metricBuilderOption func(*MetricsBuilder)
+// MetricBuilderOption applies changes to default metrics builder.
+type MetricBuilderOption interface {
+	apply(*MetricsBuilder)
+}
+
+type metricBuilderOptionFunc func(mb *MetricsBuilder)
+
+func (mbof metricBuilderOptionFunc) apply(mb *MetricsBuilder) {
+	mbof(mb)
+}
 
 // WithStartTime sets startTime on the metrics builder.
-func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
-	return func(mb *MetricsBuilder) {
+func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
+	return metricBuilderOptionFunc(func(mb *MetricsBuilder) {
 		mb.startTime = startTime
-	}
+	})
 }
-func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...metricBuilderOption) *MetricsBuilder {
+func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
-		config:                              mbc,
-		startTime:                           pcommon.NewTimestampFromTime(time.Now()),
-		metricsBuffer:                       pmetric.NewMetrics(),
-		buildInfo:                           settings.BuildInfo,
-		metricMongodbActiveReads:            newMetricMongodbActiveReads(mbc.Metrics.MongodbActiveReads),
-		metricMongodbActiveWrites:           newMetricMongodbActiveWrites(mbc.Metrics.MongodbActiveWrites),
-		metricMongodbCacheOperations:        newMetricMongodbCacheOperations(mbc.Metrics.MongodbCacheOperations),
-		metricMongodbCollectionCount:        newMetricMongodbCollectionCount(mbc.Metrics.MongodbCollectionCount),
-		metricMongodbCommandsRate:           newMetricMongodbCommandsRate(mbc.Metrics.MongodbCommandsRate),
-		metricMongodbConnectionCount:        newMetricMongodbConnectionCount(mbc.Metrics.MongodbConnectionCount),
-		metricMongodbCursorCount:            newMetricMongodbCursorCount(mbc.Metrics.MongodbCursorCount),
-		metricMongodbCursorTimeoutCount:     newMetricMongodbCursorTimeoutCount(mbc.Metrics.MongodbCursorTimeoutCount),
-		metricMongodbDataSize:               newMetricMongodbDataSize(mbc.Metrics.MongodbDataSize),
-		metricMongodbDatabaseCount:          newMetricMongodbDatabaseCount(mbc.Metrics.MongodbDatabaseCount),
-		metricMongodbDeletesRate:            newMetricMongodbDeletesRate(mbc.Metrics.MongodbDeletesRate),
-		metricMongodbDocumentOperationCount: newMetricMongodbDocumentOperationCount(mbc.Metrics.MongodbDocumentOperationCount),
-		metricMongodbExtentCount:            newMetricMongodbExtentCount(mbc.Metrics.MongodbExtentCount),
-		metricMongodbFlushesRate:            newMetricMongodbFlushesRate(mbc.Metrics.MongodbFlushesRate),
-		metricMongodbGetmoresRate:           newMetricMongodbGetmoresRate(mbc.Metrics.MongodbGetmoresRate),
-		metricMongodbGlobalLockTime:         newMetricMongodbGlobalLockTime(mbc.Metrics.MongodbGlobalLockTime),
-		metricMongodbHealth:                 newMetricMongodbHealth(mbc.Metrics.MongodbHealth),
-		metricMongodbIndexAccessCount:       newMetricMongodbIndexAccessCount(mbc.Metrics.MongodbIndexAccessCount),
-		metricMongodbIndexCount:             newMetricMongodbIndexCount(mbc.Metrics.MongodbIndexCount),
-		metricMongodbIndexSize:              newMetricMongodbIndexSize(mbc.Metrics.MongodbIndexSize),
-		metricMongodbInsertsRate:            newMetricMongodbInsertsRate(mbc.Metrics.MongodbInsertsRate),
-		metricMongodbLockAcquireCount:       newMetricMongodbLockAcquireCount(mbc.Metrics.MongodbLockAcquireCount),
-		metricMongodbLockAcquireTime:        newMetricMongodbLockAcquireTime(mbc.Metrics.MongodbLockAcquireTime),
-		metricMongodbLockAcquireWaitCount:   newMetricMongodbLockAcquireWaitCount(mbc.Metrics.MongodbLockAcquireWaitCount),
-		metricMongodbLockDeadlockCount:      newMetricMongodbLockDeadlockCount(mbc.Metrics.MongodbLockDeadlockCount),
-		metricMongodbMemoryUsage:            newMetricMongodbMemoryUsage(mbc.Metrics.MongodbMemoryUsage),
-		metricMongodbNetworkIoReceive:       newMetricMongodbNetworkIoReceive(mbc.Metrics.MongodbNetworkIoReceive),
-		metricMongodbNetworkIoTransmit:      newMetricMongodbNetworkIoTransmit(mbc.Metrics.MongodbNetworkIoTransmit),
-		metricMongodbNetworkRequestCount:    newMetricMongodbNetworkRequestCount(mbc.Metrics.MongodbNetworkRequestCount),
-		metricMongodbObjectCount:            newMetricMongodbObjectCount(mbc.Metrics.MongodbObjectCount),
-		metricMongodbOperationCount:         newMetricMongodbOperationCount(mbc.Metrics.MongodbOperationCount),
-		metricMongodbOperationLatencyTime:   newMetricMongodbOperationLatencyTime(mbc.Metrics.MongodbOperationLatencyTime),
-		metricMongodbOperationReplCount:     newMetricMongodbOperationReplCount(mbc.Metrics.MongodbOperationReplCount),
-		metricMongodbOperationTime:          newMetricMongodbOperationTime(mbc.Metrics.MongodbOperationTime),
-		metricMongodbPageFaults:             newMetricMongodbPageFaults(mbc.Metrics.MongodbPageFaults),
-		metricMongodbQueriesRate:            newMetricMongodbQueriesRate(mbc.Metrics.MongodbQueriesRate),
-		metricMongodbReplCommandsPerSec:     newMetricMongodbReplCommandsPerSec(mbc.Metrics.MongodbReplCommandsPerSec),
-		metricMongodbReplDeletesPerSec:      newMetricMongodbReplDeletesPerSec(mbc.Metrics.MongodbReplDeletesPerSec),
-		metricMongodbReplGetmoresPerSec:     newMetricMongodbReplGetmoresPerSec(mbc.Metrics.MongodbReplGetmoresPerSec),
-		metricMongodbReplInsertsPerSec:      newMetricMongodbReplInsertsPerSec(mbc.Metrics.MongodbReplInsertsPerSec),
-		metricMongodbReplQueriesPerSec:      newMetricMongodbReplQueriesPerSec(mbc.Metrics.MongodbReplQueriesPerSec),
-		metricMongodbReplUpdatesPerSec:      newMetricMongodbReplUpdatesPerSec(mbc.Metrics.MongodbReplUpdatesPerSec),
-		metricMongodbSessionCount:           newMetricMongodbSessionCount(mbc.Metrics.MongodbSessionCount),
-		metricMongodbStorageSize:            newMetricMongodbStorageSize(mbc.Metrics.MongodbStorageSize),
-		metricMongodbUpdatesRate:            newMetricMongodbUpdatesRate(mbc.Metrics.MongodbUpdatesRate),
-		metricMongodbUptime:                 newMetricMongodbUptime(mbc.Metrics.MongodbUptime),
-		metricMongodbWtcacheBytesRead:       newMetricMongodbWtcacheBytesRead(mbc.Metrics.MongodbWtcacheBytesRead),
-		resourceAttributeIncludeFilter:      make(map[string]filter.Filter),
-		resourceAttributeExcludeFilter:      make(map[string]filter.Filter),
 		config:                                                                         mbc,
 		startTime:                                                                      pcommon.NewTimestampFromTime(time.Now()),
 		metricsBuffer:                                                                  pmetric.NewMetrics(),
 		buildInfo:                                                                      settings.BuildInfo,
+		metricMongodbActiveReads:                                                       newMetricMongodbActiveReads(mbc.Metrics.MongodbActiveReads),
+		metricMongodbActiveWrites:                                                      newMetricMongodbActiveWrites(mbc.Metrics.MongodbActiveWrites),
 		metricMongodbAssertsMsgps:                                                      newMetricMongodbAssertsMsgps(mbc.Metrics.MongodbAssertsMsgps),
 		metricMongodbAssertsRegularps:                                                  newMetricMongodbAssertsRegularps(mbc.Metrics.MongodbAssertsRegularps),
 		metricMongodbAssertsRolloversps:                                                newMetricMongodbAssertsRolloversps(mbc.Metrics.MongodbAssertsRolloversps),
@@ -17701,6 +18741,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbCollectionObjects:                                                 newMetricMongodbCollectionObjects(mbc.Metrics.MongodbCollectionObjects),
 		metricMongodbCollectionSize:                                                    newMetricMongodbCollectionSize(mbc.Metrics.MongodbCollectionSize),
 		metricMongodbCollectionStoragesize:                                             newMetricMongodbCollectionStoragesize(mbc.Metrics.MongodbCollectionStoragesize),
+		metricMongodbCommandsRate:                                                      newMetricMongodbCommandsRate(mbc.Metrics.MongodbCommandsRate),
 		metricMongodbConnectionCount:                                                   newMetricMongodbConnectionCount(mbc.Metrics.MongodbConnectionCount),
 		metricMongodbConnectionPoolNumascopedconnections:                               newMetricMongodbConnectionPoolNumascopedconnections(mbc.Metrics.MongodbConnectionPoolNumascopedconnections),
 		metricMongodbConnectionPoolNumclientconnections:                                newMetricMongodbConnectionPoolNumclientconnections(mbc.Metrics.MongodbConnectionPoolNumclientconnections),
@@ -17724,6 +18765,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbCursorsTotalopen:                                                  newMetricMongodbCursorsTotalopen(mbc.Metrics.MongodbCursorsTotalopen),
 		metricMongodbDataSize:                                                          newMetricMongodbDataSize(mbc.Metrics.MongodbDataSize),
 		metricMongodbDatabaseCount:                                                     newMetricMongodbDatabaseCount(mbc.Metrics.MongodbDatabaseCount),
+		metricMongodbDeletesRate:                                                       newMetricMongodbDeletesRate(mbc.Metrics.MongodbDeletesRate),
 		metricMongodbDocumentOperationCount:                                            newMetricMongodbDocumentOperationCount(mbc.Metrics.MongodbDocumentOperationCount),
 		metricMongodbDurCommits:                                                        newMetricMongodbDurCommits(mbc.Metrics.MongodbDurCommits),
 		metricMongodbDurCommitsinwritelock:                                             newMetricMongodbDurCommitsinwritelock(mbc.Metrics.MongodbDurCommitsinwritelock),
@@ -17741,7 +18783,9 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbExtentCount:                                                       newMetricMongodbExtentCount(mbc.Metrics.MongodbExtentCount),
 		metricMongodbExtraInfoHeapUsageBytesps:                                         newMetricMongodbExtraInfoHeapUsageBytesps(mbc.Metrics.MongodbExtraInfoHeapUsageBytesps),
 		metricMongodbExtraInfoPageFaultsps:                                             newMetricMongodbExtraInfoPageFaultsps(mbc.Metrics.MongodbExtraInfoPageFaultsps),
+		metricMongodbFlushesRate:                                                       newMetricMongodbFlushesRate(mbc.Metrics.MongodbFlushesRate),
 		metricMongodbFsynclocked:                                                       newMetricMongodbFsynclocked(mbc.Metrics.MongodbFsynclocked),
+		metricMongodbGetmoresRate:                                                      newMetricMongodbGetmoresRate(mbc.Metrics.MongodbGetmoresRate),
 		metricMongodbGlobalLockTime:                                                    newMetricMongodbGlobalLockTime(mbc.Metrics.MongodbGlobalLockTime),
 		metricMongodbGloballockActiveclientsReaders:                                    newMetricMongodbGloballockActiveclientsReaders(mbc.Metrics.MongodbGloballockActiveclientsReaders),
 		metricMongodbGloballockActiveclientsTotal:                                      newMetricMongodbGloballockActiveclientsTotal(mbc.Metrics.MongodbGloballockActiveclientsTotal),
@@ -17761,6 +18805,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbIndexcountersMissesps:                                             newMetricMongodbIndexcountersMissesps(mbc.Metrics.MongodbIndexcountersMissesps),
 		metricMongodbIndexcountersMissratio:                                            newMetricMongodbIndexcountersMissratio(mbc.Metrics.MongodbIndexcountersMissratio),
 		metricMongodbIndexcountersResetsps:                                             newMetricMongodbIndexcountersResetsps(mbc.Metrics.MongodbIndexcountersResetsps),
+		metricMongodbInsertsRate:                                                       newMetricMongodbInsertsRate(mbc.Metrics.MongodbInsertsRate),
 		metricMongodbLockAcquireCount:                                                  newMetricMongodbLockAcquireCount(mbc.Metrics.MongodbLockAcquireCount),
 		metricMongodbLockAcquireTime:                                                   newMetricMongodbLockAcquireTime(mbc.Metrics.MongodbLockAcquireTime),
 		metricMongodbLockAcquireWaitCount:                                              newMetricMongodbLockAcquireWaitCount(mbc.Metrics.MongodbLockAcquireWaitCount),
@@ -17898,8 +18943,16 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbOplogLogsizemb:                                                    newMetricMongodbOplogLogsizemb(mbc.Metrics.MongodbOplogLogsizemb),
 		metricMongodbOplogTimediff:                                                     newMetricMongodbOplogTimediff(mbc.Metrics.MongodbOplogTimediff),
 		metricMongodbOplogUsedsizemb:                                                   newMetricMongodbOplogUsedsizemb(mbc.Metrics.MongodbOplogUsedsizemb),
+		metricMongodbPageFaults:                                                        newMetricMongodbPageFaults(mbc.Metrics.MongodbPageFaults),
 		metricMongodbProfilingLevel:                                                    newMetricMongodbProfilingLevel(mbc.Metrics.MongodbProfilingLevel),
 		metricMongodbProfilingSlowms:                                                   newMetricMongodbProfilingSlowms(mbc.Metrics.MongodbProfilingSlowms),
+		metricMongodbQueriesRate:                                                       newMetricMongodbQueriesRate(mbc.Metrics.MongodbQueriesRate),
+		metricMongodbReplCommandsPerSec:                                                newMetricMongodbReplCommandsPerSec(mbc.Metrics.MongodbReplCommandsPerSec),
+		metricMongodbReplDeletesPerSec:                                                 newMetricMongodbReplDeletesPerSec(mbc.Metrics.MongodbReplDeletesPerSec),
+		metricMongodbReplGetmoresPerSec:                                                newMetricMongodbReplGetmoresPerSec(mbc.Metrics.MongodbReplGetmoresPerSec),
+		metricMongodbReplInsertsPerSec:                                                 newMetricMongodbReplInsertsPerSec(mbc.Metrics.MongodbReplInsertsPerSec),
+		metricMongodbReplQueriesPerSec:                                                 newMetricMongodbReplQueriesPerSec(mbc.Metrics.MongodbReplQueriesPerSec),
+		metricMongodbReplUpdatesPerSec:                                                 newMetricMongodbReplUpdatesPerSec(mbc.Metrics.MongodbReplUpdatesPerSec),
 		metricMongodbReplsetHealth:                                                     newMetricMongodbReplsetHealth(mbc.Metrics.MongodbReplsetHealth),
 		metricMongodbReplsetOptimeLag:                                                  newMetricMongodbReplsetOptimeLag(mbc.Metrics.MongodbReplsetOptimeLag),
 		metricMongodbReplsetReplicationlag:                                             newMetricMongodbReplsetReplicationlag(mbc.Metrics.MongodbReplsetReplicationlag),
@@ -17942,6 +18995,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbTcmallocTcmallocSpinlockTotalDelayNs:                              newMetricMongodbTcmallocTcmallocSpinlockTotalDelayNs(mbc.Metrics.MongodbTcmallocTcmallocSpinlockTotalDelayNs),
 		metricMongodbTcmallocTcmallocThreadCacheFreeBytes:                              newMetricMongodbTcmallocTcmallocThreadCacheFreeBytes(mbc.Metrics.MongodbTcmallocTcmallocThreadCacheFreeBytes),
 		metricMongodbTcmallocTcmallocTransferCacheFreeBytes:                            newMetricMongodbTcmallocTcmallocTransferCacheFreeBytes(mbc.Metrics.MongodbTcmallocTcmallocTransferCacheFreeBytes),
+		metricMongodbUpdatesRate:                                                       newMetricMongodbUpdatesRate(mbc.Metrics.MongodbUpdatesRate),
 		metricMongodbUptime:                                                            newMetricMongodbUptime(mbc.Metrics.MongodbUptime),
 		metricMongodbUsageCommandsCount:                                                newMetricMongodbUsageCommandsCount(mbc.Metrics.MongodbUsageCommandsCount),
 		metricMongodbUsageCommandsCountps:                                              newMetricMongodbUsageCommandsCountps(mbc.Metrics.MongodbUsageCommandsCountps),
@@ -17989,6 +19043,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricMongodbWiredtigerConcurrenttransactionsWriteAvailable:                    newMetricMongodbWiredtigerConcurrenttransactionsWriteAvailable(mbc.Metrics.MongodbWiredtigerConcurrenttransactionsWriteAvailable),
 		metricMongodbWiredtigerConcurrenttransactionsWriteOut:                          newMetricMongodbWiredtigerConcurrenttransactionsWriteOut(mbc.Metrics.MongodbWiredtigerConcurrenttransactionsWriteOut),
 		metricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets:                 newMetricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets(mbc.Metrics.MongodbWiredtigerConcurrenttransactionsWriteTotaltickets),
+		metricMongodbWtcacheBytesRead:                                                  newMetricMongodbWtcacheBytesRead(mbc.Metrics.MongodbWtcacheBytesRead),
 		resourceAttributeIncludeFilter:                                                 make(map[string]filter.Filter),
 		resourceAttributeExcludeFilter:                                                 make(map[string]filter.Filter),
 	}
@@ -18018,7 +19073,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	}
 
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 	return mb
 }
@@ -18036,20 +19091,28 @@ func (mb *MetricsBuilder) updateCapacity(rm pmetric.ResourceMetrics) {
 }
 
 // ResourceMetricsOption applies changes to provided resource metrics.
-type ResourceMetricsOption func(pmetric.ResourceMetrics)
+type ResourceMetricsOption interface {
+	apply(pmetric.ResourceMetrics)
+}
+
+type resourceMetricsOptionFunc func(pmetric.ResourceMetrics)
+
+func (rmof resourceMetricsOptionFunc) apply(rm pmetric.ResourceMetrics) {
+	rmof(rm)
+}
 
 // WithResource sets the provided resource on the emitted ResourceMetrics.
 // It's recommended to use ResourceBuilder to create the resource.
 func WithResource(res pcommon.Resource) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		res.CopyTo(rm.Resource())
-	}
+	})
 }
 
 // WithStartTimeOverride overrides start time for all the resource metrics data points.
 // This option should be only used if different start time has to be set on metrics coming from different resources.
 func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
-	return func(rm pmetric.ResourceMetrics) {
+	return resourceMetricsOptionFunc(func(rm pmetric.ResourceMetrics) {
 		var dps pmetric.NumberDataPointSlice
 		metrics := rm.ScopeMetrics().At(0).Metrics()
 		for i := 0; i < metrics.Len(); i++ {
@@ -18063,7 +19126,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 				dps.At(j).SetStartTimestamp(start)
 			}
 		}
-	}
+	})
 }
 
 // EmitForResource saves all the generated metrics under a new resource and updates the internal state to be ready for
@@ -18071,7 +19134,7 @@ func WithStartTimeOverride(start pcommon.Timestamp) ResourceMetricsOption {
 // needs to emit metrics from several resources. Otherwise calling this function is not required,
 // just `Emit` function can be called instead.
 // Resource attributes should be provided as ResourceMetricsOption arguments.
-func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
+func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	rm := pmetric.NewResourceMetrics()
 	ils := rm.ScopeMetrics().AppendEmpty()
 	ils.Scope().SetName(ScopeName)
@@ -18094,7 +19157,6 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbCollectionAvgobjsize.emit(ils.Metrics())
 	mb.metricMongodbCollectionCapped.emit(ils.Metrics())
 	mb.metricMongodbCollectionCount.emit(ils.Metrics())
-	mb.metricMongodbCommandsRate.emit(ils.Metrics())
 	mb.metricMongodbCollectionIndexsizes.emit(ils.Metrics())
 	mb.metricMongodbCollectionMax.emit(ils.Metrics())
 	mb.metricMongodbCollectionMaxsize.emit(ils.Metrics())
@@ -18102,6 +19164,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbCollectionObjects.emit(ils.Metrics())
 	mb.metricMongodbCollectionSize.emit(ils.Metrics())
 	mb.metricMongodbCollectionStoragesize.emit(ils.Metrics())
+	mb.metricMongodbCommandsRate.emit(ils.Metrics())
 	mb.metricMongodbConnectionCount.emit(ils.Metrics())
 	mb.metricMongodbConnectionPoolNumascopedconnections.emit(ils.Metrics())
 	mb.metricMongodbConnectionPoolNumclientconnections.emit(ils.Metrics())
@@ -18141,11 +19204,11 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbDurTimemsWritetojournal.emit(ils.Metrics())
 	mb.metricMongodbDurWritetodatafilesmb.emit(ils.Metrics())
 	mb.metricMongodbExtentCount.emit(ils.Metrics())
-	mb.metricMongodbFlushesRate.emit(ils.Metrics())
-	mb.metricMongodbGetmoresRate.emit(ils.Metrics())
 	mb.metricMongodbExtraInfoHeapUsageBytesps.emit(ils.Metrics())
 	mb.metricMongodbExtraInfoPageFaultsps.emit(ils.Metrics())
+	mb.metricMongodbFlushesRate.emit(ils.Metrics())
 	mb.metricMongodbFsynclocked.emit(ils.Metrics())
+	mb.metricMongodbGetmoresRate.emit(ils.Metrics())
 	mb.metricMongodbGlobalLockTime.emit(ils.Metrics())
 	mb.metricMongodbGloballockActiveclientsReaders.emit(ils.Metrics())
 	mb.metricMongodbGloballockActiveclientsTotal.emit(ils.Metrics())
@@ -18160,12 +19223,12 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbIndexAccessCount.emit(ils.Metrics())
 	mb.metricMongodbIndexCount.emit(ils.Metrics())
 	mb.metricMongodbIndexSize.emit(ils.Metrics())
-	mb.metricMongodbInsertsRate.emit(ils.Metrics())
 	mb.metricMongodbIndexcountersAccessesps.emit(ils.Metrics())
 	mb.metricMongodbIndexcountersHitsps.emit(ils.Metrics())
 	mb.metricMongodbIndexcountersMissesps.emit(ils.Metrics())
 	mb.metricMongodbIndexcountersMissratio.emit(ils.Metrics())
 	mb.metricMongodbIndexcountersResetsps.emit(ils.Metrics())
+	mb.metricMongodbInsertsRate.emit(ils.Metrics())
 	mb.metricMongodbLockAcquireCount.emit(ils.Metrics())
 	mb.metricMongodbLockAcquireTime.emit(ils.Metrics())
 	mb.metricMongodbLockAcquireWaitCount.emit(ils.Metrics())
@@ -18294,14 +19357,6 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbOperationLatencyTime.emit(ils.Metrics())
 	mb.metricMongodbOperationReplCount.emit(ils.Metrics())
 	mb.metricMongodbOperationTime.emit(ils.Metrics())
-	mb.metricMongodbPageFaults.emit(ils.Metrics())
-	mb.metricMongodbQueriesRate.emit(ils.Metrics())
-	mb.metricMongodbReplCommandsPerSec.emit(ils.Metrics())
-	mb.metricMongodbReplDeletesPerSec.emit(ils.Metrics())
-	mb.metricMongodbReplGetmoresPerSec.emit(ils.Metrics())
-	mb.metricMongodbReplInsertsPerSec.emit(ils.Metrics())
-	mb.metricMongodbReplQueriesPerSec.emit(ils.Metrics())
-	mb.metricMongodbReplUpdatesPerSec.emit(ils.Metrics())
 	mb.metricMongodbOplatenciesCommandsLatency.emit(ils.Metrics())
 	mb.metricMongodbOplatenciesCommandsLatencyps.emit(ils.Metrics())
 	mb.metricMongodbOplatenciesReadsLatency.emit(ils.Metrics())
@@ -18311,8 +19366,16 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbOplogLogsizemb.emit(ils.Metrics())
 	mb.metricMongodbOplogTimediff.emit(ils.Metrics())
 	mb.metricMongodbOplogUsedsizemb.emit(ils.Metrics())
+	mb.metricMongodbPageFaults.emit(ils.Metrics())
 	mb.metricMongodbProfilingLevel.emit(ils.Metrics())
 	mb.metricMongodbProfilingSlowms.emit(ils.Metrics())
+	mb.metricMongodbQueriesRate.emit(ils.Metrics())
+	mb.metricMongodbReplCommandsPerSec.emit(ils.Metrics())
+	mb.metricMongodbReplDeletesPerSec.emit(ils.Metrics())
+	mb.metricMongodbReplGetmoresPerSec.emit(ils.Metrics())
+	mb.metricMongodbReplInsertsPerSec.emit(ils.Metrics())
+	mb.metricMongodbReplQueriesPerSec.emit(ils.Metrics())
+	mb.metricMongodbReplUpdatesPerSec.emit(ils.Metrics())
 	mb.metricMongodbReplsetHealth.emit(ils.Metrics())
 	mb.metricMongodbReplsetOptimeLag.emit(ils.Metrics())
 	mb.metricMongodbReplsetReplicationlag.emit(ils.Metrics())
@@ -18344,7 +19407,6 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbStatsObjects.emit(ils.Metrics())
 	mb.metricMongodbStatsStoragesize.emit(ils.Metrics())
 	mb.metricMongodbStorageSize.emit(ils.Metrics())
-	mb.metricMongodbUpdatesRate.emit(ils.Metrics())
 	mb.metricMongodbTcmallocGenericCurrentAllocatedBytes.emit(ils.Metrics())
 	mb.metricMongodbTcmallocGenericHeapSize.emit(ils.Metrics())
 	mb.metricMongodbTcmallocTcmallocAggressiveMemoryDecommit.emit(ils.Metrics())
@@ -18356,8 +19418,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbTcmallocTcmallocSpinlockTotalDelayNs.emit(ils.Metrics())
 	mb.metricMongodbTcmallocTcmallocThreadCacheFreeBytes.emit(ils.Metrics())
 	mb.metricMongodbTcmallocTcmallocTransferCacheFreeBytes.emit(ils.Metrics())
+	mb.metricMongodbUpdatesRate.emit(ils.Metrics())
 	mb.metricMongodbUptime.emit(ils.Metrics())
-	mb.metricMongodbWtcacheBytesRead.emit(ils.Metrics())
 	mb.metricMongodbUsageCommandsCount.emit(ils.Metrics())
 	mb.metricMongodbUsageCommandsCountps.emit(ils.Metrics())
 	mb.metricMongodbUsageCommandsTime.emit(ils.Metrics())
@@ -18404,9 +19466,10 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricMongodbWiredtigerConcurrenttransactionsWriteAvailable.emit(ils.Metrics())
 	mb.metricMongodbWiredtigerConcurrenttransactionsWriteOut.emit(ils.Metrics())
 	mb.metricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets.emit(ils.Metrics())
+	mb.metricMongodbWtcacheBytesRead.emit(ils.Metrics())
 
-	for _, op := range rmo {
-		op(rm)
+	for _, op := range options {
+		op.apply(rm)
 	}
 	for attr, filter := range mb.resourceAttributeIncludeFilter {
 		if val, ok := rm.Resource().Attributes().Get(attr); ok && !filter.Matches(val.AsString()) {
@@ -18428,8 +19491,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 // Emit returns all the metrics accumulated by the metrics builder and updates the internal state to be ready for
 // recording another set of metrics. This function will be responsible for applying all the transformations required to
 // produce metric representation defined in metadata and user config, e.g. delta or cumulative.
-func (mb *MetricsBuilder) Emit(rmo ...ResourceMetricsOption) pmetric.Metrics {
-	mb.EmitForResource(rmo...)
+func (mb *MetricsBuilder) Emit(options ...ResourceMetricsOption) pmetric.Metrics {
+	mb.EmitForResource(options...)
 	metrics := mb.metricsBuffer
 	mb.metricsBuffer = pmetric.NewMetrics()
 	return metrics
@@ -18520,11 +19583,6 @@ func (mb *MetricsBuilder) RecordMongodbCollectionCountDataPoint(ts pcommon.Times
 	mb.metricMongodbCollectionCount.recordDataPoint(mb.startTime, ts, val)
 }
 
-// RecordMongodbCommandsRateDataPoint adds a data point to mongodb.commands.rate metric.
-func (mb *MetricsBuilder) RecordMongodbCommandsRateDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbCommandsRate.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordMongodbCollectionIndexsizesDataPoint adds a data point to mongodb.collection.indexsizes metric.
 func (mb *MetricsBuilder) RecordMongodbCollectionIndexsizesDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string, collectionAttributeValue string, indexAttributeValue string) {
 	mb.metricMongodbCollectionIndexsizes.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue, collectionAttributeValue, indexAttributeValue)
@@ -18558,6 +19616,11 @@ func (mb *MetricsBuilder) RecordMongodbCollectionSizeDataPoint(ts pcommon.Timest
 // RecordMongodbCollectionStoragesizeDataPoint adds a data point to mongodb.collection.storagesize metric.
 func (mb *MetricsBuilder) RecordMongodbCollectionStoragesizeDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string, collectionAttributeValue string) {
 	mb.metricMongodbCollectionStoragesize.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue, collectionAttributeValue)
+}
+
+// RecordMongodbCommandsRateDataPoint adds a data point to mongodb.commands.rate metric.
+func (mb *MetricsBuilder) RecordMongodbCommandsRateDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbCommandsRate.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMongodbConnectionCountDataPoint adds a data point to mongodb.connection.count metric.
@@ -18755,16 +19818,6 @@ func (mb *MetricsBuilder) RecordMongodbExtentCountDataPoint(ts pcommon.Timestamp
 	mb.metricMongodbExtentCount.recordDataPoint(mb.startTime, ts, val)
 }
 
-// RecordMongodbFlushesRateDataPoint adds a data point to mongodb.flushes.rate metric.
-func (mb *MetricsBuilder) RecordMongodbFlushesRateDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbFlushesRate.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbGetmoresRateDataPoint adds a data point to mongodb.getmores.rate metric.
-func (mb *MetricsBuilder) RecordMongodbGetmoresRateDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbGetmoresRate.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordMongodbExtraInfoHeapUsageBytespsDataPoint adds a data point to mongodb.extra_info.heap_usage_bytesps metric.
 func (mb *MetricsBuilder) RecordMongodbExtraInfoHeapUsageBytespsDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbExtraInfoHeapUsageBytesps.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
@@ -18775,9 +19828,19 @@ func (mb *MetricsBuilder) RecordMongodbExtraInfoPageFaultspsDataPoint(ts pcommon
 	mb.metricMongodbExtraInfoPageFaultsps.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
 }
 
+// RecordMongodbFlushesRateDataPoint adds a data point to mongodb.flushes.rate metric.
+func (mb *MetricsBuilder) RecordMongodbFlushesRateDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbFlushesRate.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordMongodbFsynclockedDataPoint adds a data point to mongodb.fsynclocked metric.
 func (mb *MetricsBuilder) RecordMongodbFsynclockedDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbFsynclocked.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
+}
+
+// RecordMongodbGetmoresRateDataPoint adds a data point to mongodb.getmores.rate metric.
+func (mb *MetricsBuilder) RecordMongodbGetmoresRateDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbGetmoresRate.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMongodbGlobalLockTimeDataPoint adds a data point to mongodb.global_lock.time metric.
@@ -18850,11 +19913,6 @@ func (mb *MetricsBuilder) RecordMongodbIndexSizeDataPoint(ts pcommon.Timestamp, 
 	mb.metricMongodbIndexSize.recordDataPoint(mb.startTime, ts, val)
 }
 
-// RecordMongodbInsertsRateDataPoint adds a data point to mongodb.inserts.rate metric.
-func (mb *MetricsBuilder) RecordMongodbInsertsRateDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbInsertsRate.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordMongodbIndexcountersAccessespsDataPoint adds a data point to mongodb.indexcounters.accessesps metric.
 func (mb *MetricsBuilder) RecordMongodbIndexcountersAccessespsDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbIndexcountersAccessesps.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
@@ -18878,6 +19936,11 @@ func (mb *MetricsBuilder) RecordMongodbIndexcountersMissratioDataPoint(ts pcommo
 // RecordMongodbIndexcountersResetspsDataPoint adds a data point to mongodb.indexcounters.resetsps metric.
 func (mb *MetricsBuilder) RecordMongodbIndexcountersResetspsDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbIndexcountersResetsps.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
+}
+
+// RecordMongodbInsertsRateDataPoint adds a data point to mongodb.inserts.rate metric.
+func (mb *MetricsBuilder) RecordMongodbInsertsRateDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbInsertsRate.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMongodbLockAcquireCountDataPoint adds a data point to mongodb.lock.acquire.count metric.
@@ -19520,46 +20583,6 @@ func (mb *MetricsBuilder) RecordMongodbOperationTimeDataPoint(ts pcommon.Timesta
 	mb.metricMongodbOperationTime.recordDataPoint(mb.startTime, ts, val, operationAttributeValue.String())
 }
 
-// RecordMongodbPageFaultsDataPoint adds a data point to mongodb.page_faults metric.
-func (mb *MetricsBuilder) RecordMongodbPageFaultsDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMongodbPageFaults.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbQueriesRateDataPoint adds a data point to mongodb.queries.rate metric.
-func (mb *MetricsBuilder) RecordMongodbQueriesRateDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbQueriesRate.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbReplCommandsPerSecDataPoint adds a data point to mongodb.repl_commands_per_sec metric.
-func (mb *MetricsBuilder) RecordMongodbReplCommandsPerSecDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbReplCommandsPerSec.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbReplDeletesPerSecDataPoint adds a data point to mongodb.repl_deletes_per_sec metric.
-func (mb *MetricsBuilder) RecordMongodbReplDeletesPerSecDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbReplDeletesPerSec.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbReplGetmoresPerSecDataPoint adds a data point to mongodb.repl_getmores_per_sec metric.
-func (mb *MetricsBuilder) RecordMongodbReplGetmoresPerSecDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbReplGetmoresPerSec.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbReplInsertsPerSecDataPoint adds a data point to mongodb.repl_inserts_per_sec metric.
-func (mb *MetricsBuilder) RecordMongodbReplInsertsPerSecDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbReplInsertsPerSec.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbReplQueriesPerSecDataPoint adds a data point to mongodb.repl_queries_per_sec metric.
-func (mb *MetricsBuilder) RecordMongodbReplQueriesPerSecDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbReplQueriesPerSec.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbReplUpdatesPerSecDataPoint adds a data point to mongodb.repl_updates_per_sec metric.
-func (mb *MetricsBuilder) RecordMongodbReplUpdatesPerSecDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbReplUpdatesPerSec.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordMongodbOplatenciesCommandsLatencyDataPoint adds a data point to mongodb.oplatencies.commands.latency metric.
 func (mb *MetricsBuilder) RecordMongodbOplatenciesCommandsLatencyDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbOplatenciesCommandsLatency.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
@@ -19605,6 +20628,11 @@ func (mb *MetricsBuilder) RecordMongodbOplogUsedsizembDataPoint(ts pcommon.Times
 	mb.metricMongodbOplogUsedsizemb.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
 }
 
+// RecordMongodbPageFaultsDataPoint adds a data point to mongodb.page_faults metric.
+func (mb *MetricsBuilder) RecordMongodbPageFaultsDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricMongodbPageFaults.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordMongodbProfilingLevelDataPoint adds a data point to mongodb.profiling.level metric.
 func (mb *MetricsBuilder) RecordMongodbProfilingLevelDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbProfilingLevel.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
@@ -19613,6 +20641,41 @@ func (mb *MetricsBuilder) RecordMongodbProfilingLevelDataPoint(ts pcommon.Timest
 // RecordMongodbProfilingSlowmsDataPoint adds a data point to mongodb.profiling.slowms metric.
 func (mb *MetricsBuilder) RecordMongodbProfilingSlowmsDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbProfilingSlowms.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
+}
+
+// RecordMongodbQueriesRateDataPoint adds a data point to mongodb.queries.rate metric.
+func (mb *MetricsBuilder) RecordMongodbQueriesRateDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbQueriesRate.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbReplCommandsPerSecDataPoint adds a data point to mongodb.repl_commands_per_sec metric.
+func (mb *MetricsBuilder) RecordMongodbReplCommandsPerSecDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbReplCommandsPerSec.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbReplDeletesPerSecDataPoint adds a data point to mongodb.repl_deletes_per_sec metric.
+func (mb *MetricsBuilder) RecordMongodbReplDeletesPerSecDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbReplDeletesPerSec.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbReplGetmoresPerSecDataPoint adds a data point to mongodb.repl_getmores_per_sec metric.
+func (mb *MetricsBuilder) RecordMongodbReplGetmoresPerSecDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbReplGetmoresPerSec.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbReplInsertsPerSecDataPoint adds a data point to mongodb.repl_inserts_per_sec metric.
+func (mb *MetricsBuilder) RecordMongodbReplInsertsPerSecDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbReplInsertsPerSec.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbReplQueriesPerSecDataPoint adds a data point to mongodb.repl_queries_per_sec metric.
+func (mb *MetricsBuilder) RecordMongodbReplQueriesPerSecDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbReplQueriesPerSec.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordMongodbReplUpdatesPerSecDataPoint adds a data point to mongodb.repl_updates_per_sec metric.
+func (mb *MetricsBuilder) RecordMongodbReplUpdatesPerSecDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbReplUpdatesPerSec.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMongodbReplsetHealthDataPoint adds a data point to mongodb.replset.health metric.
@@ -19770,11 +20833,6 @@ func (mb *MetricsBuilder) RecordMongodbStorageSizeDataPoint(ts pcommon.Timestamp
 	mb.metricMongodbStorageSize.recordDataPoint(mb.startTime, ts, val)
 }
 
-// RecordMongodbUpdatesRateDataPoint adds a data point to mongodb.updates.rate metric.
-func (mb *MetricsBuilder) RecordMongodbUpdatesRateDataPoint(ts pcommon.Timestamp, val float64) {
-	mb.metricMongodbUpdatesRate.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordMongodbTcmallocGenericCurrentAllocatedBytesDataPoint adds a data point to mongodb.tcmalloc.generic.current_allocated_bytes metric.
 func (mb *MetricsBuilder) RecordMongodbTcmallocGenericCurrentAllocatedBytesDataPoint(ts pcommon.Timestamp, val int64, databaseAttributeValue string) {
 	mb.metricMongodbTcmallocGenericCurrentAllocatedBytes.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
@@ -19830,14 +20888,14 @@ func (mb *MetricsBuilder) RecordMongodbTcmallocTcmallocTransferCacheFreeBytesDat
 	mb.metricMongodbTcmallocTcmallocTransferCacheFreeBytes.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
 }
 
+// RecordMongodbUpdatesRateDataPoint adds a data point to mongodb.updates.rate metric.
+func (mb *MetricsBuilder) RecordMongodbUpdatesRateDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricMongodbUpdatesRate.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordMongodbUptimeDataPoint adds a data point to mongodb.uptime metric.
 func (mb *MetricsBuilder) RecordMongodbUptimeDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricMongodbUptime.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordMongodbWtcacheBytesReadDataPoint adds a data point to mongodb.wtcache.bytes.read metric.
-func (mb *MetricsBuilder) RecordMongodbWtcacheBytesReadDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricMongodbWtcacheBytesRead.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordMongodbUsageCommandsCountDataPoint adds a data point to mongodb.usage.commands.count metric.
@@ -20070,11 +21128,16 @@ func (mb *MetricsBuilder) RecordMongodbWiredtigerConcurrenttransactionsWriteTota
 	mb.metricMongodbWiredtigerConcurrenttransactionsWriteTotaltickets.recordDataPoint(mb.startTime, ts, val, databaseAttributeValue)
 }
 
+// RecordMongodbWtcacheBytesReadDataPoint adds a data point to mongodb.wtcache.bytes.read metric.
+func (mb *MetricsBuilder) RecordMongodbWtcacheBytesReadDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricMongodbWtcacheBytesRead.recordDataPoint(mb.startTime, ts, val)
+}
+
 // Reset resets metrics builder to its initial state. It should be used when external metrics source is restarted,
 // and metrics builder should update its startTime and reset it's internal state accordingly.
-func (mb *MetricsBuilder) Reset(options ...metricBuilderOption) {
+func (mb *MetricsBuilder) Reset(options ...MetricBuilderOption) {
 	mb.startTime = pcommon.NewTimestampFromTime(time.Now())
 	for _, op := range options {
-		op(mb)
+		op.apply(mb)
 	}
 }

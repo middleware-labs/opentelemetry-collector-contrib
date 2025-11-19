@@ -409,7 +409,7 @@ func (rw *resourceWatcher) onAdd(obj any) {
 					if pod.ObjectMeta.Labels == nil {
 						pod.ObjectMeta.Labels = make(map[string]string)
 					}
-					//set the service name in the pod labels
+					// set the service name in the pod labels
 					pod.ObjectMeta.Labels[constants.MWK8sServiceName] = obj.Name
 				}
 			}
@@ -486,7 +486,7 @@ func (rw *resourceWatcher) onUpdate(oldObj, newObj any) {
 						if pod.ObjectMeta.Labels == nil {
 							pod.ObjectMeta.Labels = make(map[string]string)
 						}
-						//set the service name in the pod labes
+						// set the service name in the pod labes
 						pod.Labels[constants.MWK8sServiceName] = obj.Name
 					} else {
 						svcName, ok := obj.Labels[constants.MWK8sServiceName]

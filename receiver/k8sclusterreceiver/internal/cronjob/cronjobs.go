@@ -43,11 +43,10 @@ func RecordMetrics(mb *metadata.MetricsBuilder, cj *batchv1.CronJob, ts pcommon.
 	if cj.Status.LastSuccessfulTime != nil {
 		rb.SetK8sCronjobLastSuccessfulTime(cj.Status.LastSuccessfulTime.String())
 	}
-	
+
 	rb.SetK8sCronjobStartTime(cj.GetCreationTimestamp().String())
 	rb.SetK8sClusterName("unknown")
 	mb.EmitForResource(metadata.WithResource(rb.Emit()))
-
 }
 
 func GetMetadata(cj *batchv1.CronJob) map[experimentalmetricmetadata.ResourceID]*metadata.KubernetesMetadata {

@@ -10,9 +10,10 @@ import (
 	"fmt"
 	"time"
 
+	"go.opentelemetry.io/collector/pdata/pcommon"
+
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
-	"go.opentelemetry.io/collector/pdata/pcommon"
 )
 
 const (

@@ -6,17 +6,15 @@
 package networkscraper // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper"
 import (
 	"context"
-)
 
-const (
-	conntrackMetricsLen = 0
-)
-
-import (
 	"go.opentelemetry.io/collector/pdata/pcommon"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/bcal"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver/internal/scraper/networkscraper/internal/metadata"
+)
+
+const (
+	conntrackMetricsLen = 0
 )
 
 var allTCPStates = []string{

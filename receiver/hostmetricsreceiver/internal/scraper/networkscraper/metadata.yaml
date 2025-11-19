@@ -96,6 +96,8 @@ metrics:
     enabled: false
     description: The rate of transmission and reception.
     unit: "By/s"
+    stability:
+      level: development
     gauge:
       value_type: double
     attributes: [ device, direction ]

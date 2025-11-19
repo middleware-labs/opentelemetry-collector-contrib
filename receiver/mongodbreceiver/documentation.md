@@ -16,127 +16,127 @@ metrics:
 
 Number of message assertions raised per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {assertion}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {assertion}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.asserts.regularps
 
 Number of regular assertions raised per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {assertion}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {assertion}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.asserts.rolloversps
 
 Number of times that the rollover counters roll over per second. The counters rollover to zero every 2^30 assertions.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {assertion}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {assertion}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.asserts.userps
 
 Number of user assertions raised per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {assertion}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {assertion}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.asserts.warningps
 
 Number of warnings raised per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {assertion}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {assertion}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.backgroundflushing.average_ms
 
 Average time for each flush to disk.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.backgroundflushing.flushesps
 
 Number of times the database has flushed all writes to disk.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {flush}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {flush}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.backgroundflushing.last_ms
 
 Amount of time that the last flush operation took to complete.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.backgroundflushing.total_ms
 
 Total number of time that the `mongod` processes have spent writing (i.e. flushing) data to disk.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.cache.operations
 
@@ -156,59 +156,59 @@ The number of cache operations of the instance.
 
 Total number of 'jumbo' chunks in the mongo cluster.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.chunks.total
 
 Total number of chunks in the mongo cluster.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.collection.avgobjsize
 
 The size of the average object in the collection in bytes.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.capped
 
 Whether or not the collection is capped. 1 if it's capped and 0 if it's not.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {record} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {record} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.count
 
@@ -222,107 +222,107 @@ The number of collections.
 
 Size of index in bytes.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
-| index | The name of a index. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
+| index | The name of a index. | Any Str | Recommended |
 
 ### mongodb.collection.max
 
 Maximum number of documents in a capped collection.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.maxsize
 
 Maximum size of a capped collection in bytes.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.nindexes
 
 Total number of indices on the collection.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {index} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {index} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.objects
 
 Total number of objects in the collection.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {item} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {item} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.size
 
 The total size in bytes of the data in the collection plus the size of every indexes on the mongodb.collection.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.collection.storagesize
 
 Total storage space allocated to this collection for document storage.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.connection.count
 
@@ -342,225 +342,225 @@ The number of connections.
 
 Number of active and stored outgoing scoped synchronous connections from the current mongos instance to other members of the sharded cluster or replica set.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connection_pool.numclientconnections
 
 Reports the number of active and stored outgoing synchronous connections from the current mongos instance to other members of the sharded cluster or replica set.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connection_pool.totalavailable
 
 Reports the total number of available outgoing connections from the current mongos instance to other members of the sharded cluster or replica set.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connection_pool.totalcreatedps
 
 Reports the total number of outgoing connections created per second by the current mongos instance to other members of the sharded cluster or replica set.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connection_pool.totalinuse
 
 Reports the total number of outgoing connections from the current mongod/mongos instance to other members of the sharded cluster or replica set that are currently in use.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connection_pool.totalrefreshing
 
 Reports the total number of outgoing connections from the current mongos instance to other members of the sharded cluster or replica set that are currently being refreshed.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.active
 
 Total number of active client connections.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.available
 
 Number of unused available incoming connections the database can provide.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.awaitingtopologychanges
 
 Total number of connections currently waiting in a hello or isMaster request for a topology change.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.current
 
 Number of connections to the database server from clients.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.exhausthello
 
 Total number of connections whose last request was a 'hello' request with exhaustAllowed.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.exhaustismaster
 
 Total number of connections whose last request was an 'isMaster' request with exhaustAllowed.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.loadbalanced
 
 Total number of connections received through the load balancer.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.rejected
 
 Total number of connections server rejected.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.threaded
 
 Total number of connections assigned to threads.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.connections.totalcreated
 
 Total number of connections created.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.cursor.count
 
@@ -582,29 +582,29 @@ The number of cursors that have timed out.
 
 Total number of cursors that have timed out since the server process started.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {cursor} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cursor} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.cursors.totalopen
 
 Number of cursors that MongoDB is maintaining for clients
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {cursor} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cursor} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.data.size
 
@@ -640,183 +640,183 @@ The number of document operations executed.
 
 Number of transactions written to the journal during the last journal group commit interval.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {transaction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {transaction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.commitsinwritelock
 
 Count of the commits that occurred while a write lock was held.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.compression
 
 Compression ratio of the data written to the journal.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.earlycommits
 
 Number of times MongoDB requested a commit before the scheduled journal group commit interval.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.journaledmb
 
 Amount of data written to journal during the last journal group commit interval.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.commits
 
 Amount of time spent for commits.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.commitsinwritelock
 
 Amount of time spent for commits that occurred while a write lock was held.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.dt
 
 Amount of time over which MongoDB collected the `dur.timeMS` data.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.preplogbuffer
 
 Amount of time spent preparing to write to the journal.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.remapprivateview
 
 Amount of time spent remapping copy-on-write memory mapped views.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.writetodatafiles
 
 Amount of time spent writing to data files after journaling.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.timems.writetojournal
 
 Amount of time spent writing to the journal
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.dur.writetodatafilesmb
 
 Amount of data written from journal to the data files during the last journal group commit interval.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.extent.count
 
@@ -830,43 +830,43 @@ The number of extents.
 
 The total size in bytes of heap space used by the database process. Available on Unix/Linux systems only.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.extra_info.page_faultsps
 
 Number of page faults per second that require disk operations.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fault}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fault}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.fsynclocked
 
 Metric representing the fsynclock state of a database. 1 if it's locked and 0 if it's not.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.global_lock.time
 
@@ -880,127 +880,127 @@ The time the global lock has been held.
 
 Count of the active client connections performing read operations.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.activeclients.total
 
 Total number of active client connections to the database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.activeclients.writers
 
 Count of active client connections performing write operations.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connection} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connection} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.currentqueue.readers
 
 Number of operations that are currently queued and waiting for the read lock.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.currentqueue.total
 
 Total number of operations queued waiting for the lock.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.currentqueue.writers
 
 Number of operations that are currently queued and waiting for the write lock.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.locktime
 
 Time since the database last started that the globalLock has been held.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.ratio
 
 Ratio of the time that the globalLock has been held to the total time since it was created.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.globallock.totaltime
 
 Time since the database last started and created the global lock.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.index.access.count
 
@@ -1036,785 +1036,785 @@ Sum of the space allocated to all indexes in the database, including free index 
 
 Number of times that operations have accessed indexes per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {event}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {event}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.indexcounters.hitsps
 
 Number of times per second that an index has been accessed and mongod is able to return the index from memory.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {hit}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {hit}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.indexcounters.missesps
 
 Number of times per second that an operation attempted to access an index that was not in memory.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {miss}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {miss}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.indexcounters.missratio
 
 Ratio of index hits to misses.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.indexcounters.resetsps
 
 Number of times per second the index counters have been reset.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {event}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {event}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.acquirecount.exclusiveps
 
 Number of times the collection lock type was acquired in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.acquirecount.intent_exclusiveps
 
 Number of times the collection lock type was acquired in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.acquirecount.intent_sharedps
 
 Number of times the collection lock type was acquired in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.acquirecount.sharedps
 
 Number of times the collection lock type was acquired in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.acquirewaitcount.exclusiveps
 
 Number of times the collection lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.acquirewaitcount.sharedps
 
 Number of times the collection lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.timeacquiringmicros.exclusiveps
 
 Wait time for the collection lock type acquisitions in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.collection.timeacquiringmicros.sharedps
 
 Wait time for the collection lock type acquisitions in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirecount.exclusiveps
 
 Number of times the database lock type was acquired in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirecount.intent_exclusiveps
 
 Number of times the database lock type was acquired in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirecount.intent_sharedps
 
 Number of times the database lock type was acquired in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirecount.sharedps
 
 Number of times the database lock type was acquired in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirewaitcount.exclusiveps
 
 Number of times the database lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirewaitcount.intent_exclusiveps
 
 Number of times the database lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirewaitcount.intent_sharedps
 
 Number of times the database lock type acquisition in the Intent Shared (IS) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.acquirewaitcount.sharedps
 
 Number of times the database lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.timeacquiringmicros.exclusiveps
 
 Wait time for the database lock type acquisitions in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.timeacquiringmicros.intent_exclusiveps
 
 Wait time for the database lock type acquisitions in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.timeacquiringmicros.intent_sharedps
 
 Wait time for the database lock type acquisitions in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.database.timeacquiringmicros.sharedps
 
 Wait time for the database lock type acquisitions in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirecount.exclusiveps
 
 Number of times the global lock type was acquired in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirecount.intent_exclusiveps
 
 Number of times the global lock type was acquired in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirecount.intent_sharedps
 
 Number of times the global lock type was acquired in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirecount.sharedps
 
 Number of times the global lock type was acquired in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirewaitcount.exclusiveps
 
 Number of times the global lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirewaitcount.intent_exclusiveps
 
 Number of times the global lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirewaitcount.intent_sharedps
 
 Number of times the global lock type acquisition in the Intent Shared (IS) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.acquirewaitcount.sharedps
 
 Number of times the global lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.timeacquiringmicros.exclusiveps
 
 Wait time for the global lock type acquisitions in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.timeacquiringmicros.intent_exclusiveps
 
 Wait time for the global lock type acquisitions in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.timeacquiringmicros.intent_sharedps
 
 Wait time for the global lock type acquisitions in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.global.timeacquiringmicros.sharedps
 
 Wait time for the global lock type acquisitions in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.metadata.acquirecount.exclusiveps
 
 Number of times the metadata lock type was acquired in the Exclusive (X) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.metadata.acquirecount.sharedps
 
 Number of times the metadata lock type was acquired in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.mmapv1journal.acquirecount.intent_exclusiveps
 
 Number of times the MMAPv1 storage engine lock type was acquired in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.mmapv1journal.acquirecount.intent_sharedps
 
 Number of times the MMAPv1 storage engine lock type was acquired in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.mmapv1journal.acquirewaitcount.intent_exclusiveps
 
 Number of times the MMAPv1 storage engine lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.mmapv1journal.acquirewaitcount.intent_sharedps
 
 Number of times the MMAPv1 storage engine lock type acquisition in the Intent Shared (IS) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.mmapv1journal.timeacquiringmicros.intent_exclusiveps
 
 Wait time for the MMAPv1 storage engine lock type acquisitions in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.mmapv1journal.timeacquiringmicros.intent_sharedps
 
 Wait time for the MMAPv1 storage engine lock type acquisitions in the Intent Shared (IS) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.oplog.acquirecount.intent_exclusiveps
 
 Number of times the oplog lock type was acquired in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.oplog.acquirecount.sharedps
 
 Number of times the oplog lock type was acquired in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.oplog.acquirewaitcount.intent_exclusiveps
 
 Number of times the oplog lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.oplog.acquirewaitcount.sharedps
 
 Number of times the oplog lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {wait}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {wait}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.oplog.timeacquiringmicros.intent_exclusiveps
 
 Wait time for the oplog lock type acquisitions in the Intent Exclusive (IX) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.locks.oplog.timeacquiringmicros.sharedps
 
 Wait time for the oplog lock type acquisitions in the Shared (S) mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.mem.bits
 
 Size of the in-memory storage engine.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.mem.mapped
 
 Amount of mapped memory by the database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.mem.mappedwithjournal
 
 The amount of mapped memory, including the memory used for journaling.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.mem.resident
 
 Amount of memory currently used by the database process.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.mem.virtual
 
 Amount of virtual memory used by the mongod process.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.memory.usage
 
@@ -1834,715 +1834,715 @@ The amount of memory used.
 
 Number of times count failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.count.total
 
 Number of times count executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.createindexes.failedps
 
 Number of times createIndexes failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.createindexes.total
 
 Number of times createIndexes executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.delete.failedps
 
 Number of times delete failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.delete.total
 
 Number of times delete executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.eval.failedps
 
 Number of times eval failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.eval.total
 
 Number of times eval executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.findandmodify.failedps
 
 Number of times findAndModify failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.findandmodify.total
 
 Number of times findAndModify executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.insert.failedps
 
 Number of times insert failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.insert.total
 
 Number of times insert executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.update.failedps
 
 Number of times update failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.commands.update.total
 
 Number of times update executed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.cursor.open.notimeout
 
 Number of open cursors with the option `DBQuery.Option.noTimeout` set to prevent timeout after a period of inactivity.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {cursor} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cursor} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.cursor.open.pinned
 
 Number of pinned open cursors.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {cursor} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cursor} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.cursor.open.total
 
 Number of cursors that MongoDB is maintaining for clients.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {cursor} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cursor} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.cursor.timedoutps
 
 Number of cursors that time out, per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {cursor}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cursor}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.document.deletedps
 
 Number of documents deleted per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.document.insertedps
 
 Number of documents inserted per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.document.returnedps
 
 Number of documents returned by queries per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.document.updatedps
 
 Number of documents updated per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.getlasterror.wtime.numps
 
 Number of getLastError operations per second with a specified write concern (i.e. w) that wait for one or more members of a replica set to acknowledge the write operation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.getlasterror.wtime.totalmillisps
 
 Fraction of time (ms/s) that the mongod has spent performing getLastError operations with write concern (i.e. w) that wait for one or more members of a replica set to acknowledge the write operation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.getlasterror.wtimeoutsps
 
 Number of times per second that write concern operations have timed out as a result of the wtimeout threshold to getLastError
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {event}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {event}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.operation.fastmodps
 
 Number of update operations per second that neither cause documents to grow nor require updates to the index.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.operation.idhackps
 
 Number of queries per second that contain the _id field.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {query}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.operation.scanandorderps
 
 Number of queries per second that return sorted numbers that cannot perform the sort operation using an index.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {query}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.operation.writeconflictsps
 
 Number of times per second that write concern operations has encounter a conflict.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {event}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {event}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.queryexecutor.scannedobjectsps
 
 Number of documents scanned per second during queries and query-plan evaluation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.queryexecutor.scannedps
 
 Number of index items scanned per second during queries and query-plan evaluation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.record.movesps
 
 Number of times per second documents move within the on-disk representation of the MongoDB data set.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.apply.batches.numps
 
 Number of batches applied across all databases per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.apply.batches.totalmillisps
 
 Fraction of time (ms/s) the mongod has spent applying operations from the oplog.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.apply.opsps
 
 Number of oplog operations applied per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.buffer.count
 
 Number of operations in the oplog buffer.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.buffer.maxsizebytes
 
 Maximum size of the buffer.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.buffer.sizebytes
 
 Current size of the contents of the oplog buffer.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.network.bytesps
 
 Amount of data read from the replication sync source per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.network.getmores.numps
 
 Number of getmore operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.network.getmores.totalmillisps
 
 Fraction of time (ms/s) required to collect data from getmore operations.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.network.opsps
 
 Number of operations read from the replication source per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.network.readerscreatedps
 
 Number of oplog query processes created per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {process}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {process}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.preload.docs.numps
 
 Number of documents loaded per second during the pre-fetch stage of replication.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.preload.docs.totalmillisps
 
 Fraction of time (ms/s) spent loading documents as part of the pre-fetch stage of replication.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.preload.indexes.numps
 
 Number of index entries loaded by members before updating documents as part of the pre-fetch stage of replication.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.repl.preload.indexes.totalmillisps
 
 Fraction of time (ms/s) spent loading documents as part of the pre-fetch stage of replication.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.ttl.deleteddocumentsps
 
 Number of documents deleted from collections with a ttl index per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {document}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {document}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.metrics.ttl.passesps
 
 Number of times per second the background process removes documents from collections with a ttl index.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.network.bytesinps
 
 The number of bytes that reflects the amount of network traffic received by this database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.network.bytesoutps
 
 The number of bytes that reflects the amount of network traffic sent from this database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.network.io.receive
 
@@ -2564,15 +2564,15 @@ The number of by transmitted.
 
 Number of distinct requests that the server has received.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {request}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {request}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.network.request.count
 
@@ -2594,169 +2594,169 @@ The number of objects.
 
 Total number of commands per second issued to the database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcounters.deleteps
 
 Number of delete operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcounters.getmoreps
 
 Number of getmore operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcounters.insertps
 
 Number of insert operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcounters.queryps
 
 Total number of queries per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {query}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcounters.updateps
 
 Number of update operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcountersrepl.commandps
 
 Total number of replicated commands issued to the database per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcountersrepl.deleteps
 
 Number of replicated delete operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcountersrepl.getmoreps
 
 Number of replicated getmore operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcountersrepl.insertps
 
 Number of replicated insert operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcountersrepl.queryps
 
 Total number of replicated queries per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {query}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.opcountersrepl.updateps
 
 Number of replicated update operations per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.operation.count
 
@@ -2790,259 +2790,259 @@ The total time spent performing operations.
 
 Total combined latency for database commands.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplatencies.commands.latencyps
 
 Total latency statistics for database commands per second (deprecated).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplatencies.reads.latency
 
 Total combined latency for read requests.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplatencies.reads.latencyps
 
 Total latency statistics for read requests per second (deprecated).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplatencies.writes.latency
 
 Total combined latency for write requests.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplatencies.writes.latencyps
 
 Total latency statistics for write operations per second (deprecated).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {operation}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {operation}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplog.logsizemb
 
 Total size of the oplog.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Double | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplog.timediff
 
 Oplog window: difference between the first and last operation in the oplog.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.oplog.usedsizemb
 
 Total amount of space used by the oplog.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {mebibyte} | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {mebibyte} | Gauge | Double | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.profiling.level
 
 Specifies which operations should be profiled.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.profiling.slowms
 
 Specifies which operations should be profiled based on slowms in milliseconds. Works only for profile level '1',
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.replset.health
 
 Member health value of the replica set: conveys if the member is up (i.e. 1) or down (i.e. 0).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| replset | The name of a Replica set. | Any Str |
-| name | The name of a member in a Replica set. | Any Str |
-| id | The id of a member in a Replica set. | Any Str |
-| state | The state of a member in a Replica set. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| replset | The name of a Replica set. | Any Str | Recommended |
+| name | The name of a member in a Replica set. | Any Str | Recommended |
+| id | The id of a member in a Replica set. | Any Str | Recommended |
+| state | The state of a member in a Replica set. | Any Str | Recommended |
 
 ### mongodb.replset.optime_lag
 
 Delay between a write operation on the primary and its copy to a secondary. Computed only on primary and tagged by 'member'.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| replset | The name of a Replica set. | Any Str |
-| name | The name of a member in a Replica set. | Any Str |
-| id | The id of a member in a Replica set. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| replset | The name of a Replica set. | Any Str | Recommended |
+| name | The name of a member in a Replica set. | Any Str | Recommended |
+| id | The id of a member in a Replica set. | Any Str | Recommended |
 
 ### mongodb.replset.replicationlag
 
 Delay between a write operation on the primary and its copy to a secondary. Computed on each node and tagged by 'host', but may not be representative of cluster health. Negative values do not indicate that the secondary is ahead of the primary. To use a more up-to-date metric, use mongodb.replset.optime_lag instead.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| replset | The name of a Replica set. | Any Str |
-| name | The name of a member in a Replica set. | Any Str |
-| id | The id of a member in a Replica set. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| replset | The name of a Replica set. | Any Str | Recommended |
+| name | The name of a member in a Replica set. | Any Str | Recommended |
+| id | The id of a member in a Replica set. | Any Str | Recommended |
 
 ### mongodb.replset.state
 
 State of a replica that reflects its disposition within the set.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| replset | The name of a Replica set. | Any Str |
-| name | The name of a member in a Replica set. | Any Str |
-| id | The id of a member in a Replica set. | Any Str |
-| state | The state of a member in a Replica set. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| replset | The name of a Replica set. | Any Str | Recommended |
+| name | The name of a member in a Replica set. | Any Str | Recommended |
+| id | The id of a member in a Replica set. | Any Str | Recommended |
+| state | The state of a member in a Replica set. | Any Str | Recommended |
 
 ### mongodb.replset.votefraction
 
 Fraction of votes a server will cast in a replica set election.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fraction} | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fraction} | Gauge | Double | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| replset | The name of a Replica set. | Any Str |
-| name | The name of a member in a Replica set. | Any Str |
-| id | The id of a member in a Replica set. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| replset | The name of a Replica set. | Any Str | Recommended |
+| name | The name of a member in a Replica set. | Any Str | Recommended |
+| id | The id of a member in a Replica set. | Any Str | Recommended |
 
 ### mongodb.replset.votes
 
 The number of votes a server will cast in a replica set election.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {item} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {item} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| replset | The name of a Replica set. | Any Str |
-| name | The name of a member in a Replica set. | Any Str |
-| id | The id of a member in a Replica set. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| replset | The name of a Replica set. | Any Str | Recommended |
+| name | The name of a member in a Replica set. | Any Str | Recommended |
+| id | The id of a member in a Replica set. | Any Str | Recommended |
 
 ### mongodb.session.count
 
@@ -3056,376 +3056,376 @@ The total number of active sessions.
 
 CPU time consumed by the operation in nanoseconds.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ns | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ns | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.docs_examined
 
 Number of documents examined during execution.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.keys_examined
 
 Number of index keys examined during execution.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.keys_inserted
 
 Number of index keys inserted during execution.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.ndeleted
 
 Number of documents deleted by the operation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.ninserted
 
 Number of documents inserted by the operation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.nmatched
 
 Number of documents matched by the query.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.nmodified
 
 Number of documents modified by the operation.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.nreturned
 
 Number of documents returned by the query.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.num_yields
 
 Number of times the operation yielded control (for long-running operations).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.planning_time_micros
 
 Time taken to plan the query in microseconds (only available with profiling).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| us | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| us | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.response_length
 
 Length of the response returned by the operation
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.slow_operation.time
 
 The total time spent performing operations with slowms. Works only for profile level '1' & '2',
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ms | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_timestamp | The time when the slow operation occurred. | Any Int |
-| database | The name of a database. | Any Str |
-| operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` |
-| ns | The namespace of the operation (typically "database.collection"). | Any Str |
-| plan_summary | A summary of the execution plan used for the query. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| user | The user who executed the operation (only available with profiling). | Any Str |
-| application | The application name that executed the operation (only available with profiling). | Any Str |
-| statement | The actual command or query that was executed. | Any Str |
-| raw_query | The raw representation of the query as it was sent to MongoDB. | Any Str |
-| query_hash | A hash that uniquely identifies the query (only available with profiling). | Any Str |
-| query_shape_hash | A hash representing the shape of the query. | Any Str |
-| plan_cache_key | A key used to identify the execution plan in the cache (only available with profiling). | Any Str |
-| query_framework | The framework used for executing the query. | Any Str |
-| comment | Any comments associated with the command. | Any Str |
-| mills | Duration of the operation in milliseconds. | Any Int |
-| num_yields | Number of times the operation yielded control (for long-running operations). | Any Int |
-| response_length | Length of the response returned by the operation. | Any Int |
-| nreturned | Number of documents returned by the query. | Any Int |
-| nmatched | Number of documents matched by the query. | Any Int |
-| nmodified | Number of documents modified by the operation. | Any Int |
-| ninserted | Number of documents inserted by the operation. | Any Int |
-| ndeleted | Number of documents deleted by the operation. | Any Int |
-| keys_examined | Number of index keys examined during execution. | Any Int |
-| docs_examined | Number of documents examined during execution. | Any Int |
-| keys_inserted | Number of index keys inserted during execution. | Any Int |
-| write_conflicts | Number of write conflicts encountered during execution. | Any Int |
-| cpu_nanos | CPU time consumed by the operation in nanoseconds. | Any Int |
-| planning_time_micros | Time taken to plan the query in microseconds (only available with profiling). | Any Int |
-| cursor_exhausted | Indicates whether the cursor was exhausted during execution. | Any Bool |
-| upsert | Indicates if an upsert operation was performed (only available with profiling). | Any Bool |
-| has_sort_stage | Indicates if a sort stage was present in the operation (only available with profiling). | Any Bool |
-| used_disk | Disk usage information related to this operation (only available with profiling). | Any Str |
-| from_multi_planner | Indicates if this operation came from a multi-planner (only available with profiling). | Any Str |
-| replanned | Indicates if this operation was replanned (only available with profiling). | Any Str |
-| replan_reason | Reason for replanning this operation (only available with profiling). | Any Str |
-| client | Information about the client that executed this operation (only available with profiling). | Any Str |
-| cursor | Cursor details related to this operation (only available with profiling). | Any Str |
-| lock_stats | Lock statistics related to this operation (only available with profiling). | Any Str |
-| flow_control_stats | Flow control statistics related to this operation (only available with profiling). | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_timestamp | The time when the slow operation occurred. | Any Int | Recommended |
+| database | The name of a database. | Any Str | Recommended |
+| operation | The MongoDB operation being counted. | Str: ``insert``, ``query``, ``update``, ``delete``, ``getmore``, ``command`` | Recommended |
+| ns | The namespace of the operation (typically "database.collection"). | Any Str | Recommended |
+| plan_summary | A summary of the execution plan used for the query. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| user | The user who executed the operation (only available with profiling). | Any Str | Recommended |
+| application | The application name that executed the operation (only available with profiling). | Any Str | Recommended |
+| statement | The actual command or query that was executed. | Any Str | Recommended |
+| raw_query | The raw representation of the query as it was sent to MongoDB. | Any Str | Recommended |
+| query_hash | A hash that uniquely identifies the query (only available with profiling). | Any Str | Recommended |
+| query_shape_hash | A hash representing the shape of the query. | Any Str | Recommended |
+| plan_cache_key | A key used to identify the execution plan in the cache (only available with profiling). | Any Str | Recommended |
+| query_framework | The framework used for executing the query. | Any Str | Recommended |
+| comment | Any comments associated with the command. | Any Str | Recommended |
+| mills | Duration of the operation in milliseconds. | Any Int | Recommended |
+| num_yields | Number of times the operation yielded control (for long-running operations). | Any Int | Recommended |
+| response_length | Length of the response returned by the operation. | Any Int | Recommended |
+| nreturned | Number of documents returned by the query. | Any Int | Recommended |
+| nmatched | Number of documents matched by the query. | Any Int | Recommended |
+| nmodified | Number of documents modified by the operation. | Any Int | Recommended |
+| ninserted | Number of documents inserted by the operation. | Any Int | Recommended |
+| ndeleted | Number of documents deleted by the operation. | Any Int | Recommended |
+| keys_examined | Number of index keys examined during execution. | Any Int | Recommended |
+| docs_examined | Number of documents examined during execution. | Any Int | Recommended |
+| keys_inserted | Number of index keys inserted during execution. | Any Int | Recommended |
+| write_conflicts | Number of write conflicts encountered during execution. | Any Int | Recommended |
+| cpu_nanos | CPU time consumed by the operation in nanoseconds. | Any Int | Recommended |
+| planning_time_micros | Time taken to plan the query in microseconds (only available with profiling). | Any Int | Recommended |
+| cursor_exhausted | Indicates whether the cursor was exhausted during execution. | Any Bool | Recommended |
+| upsert | Indicates if an upsert operation was performed (only available with profiling). | Any Bool | Recommended |
+| has_sort_stage | Indicates if a sort stage was present in the operation (only available with profiling). | Any Bool | Recommended |
+| used_disk | Disk usage information related to this operation (only available with profiling). | Any Str | Recommended |
+| from_multi_planner | Indicates if this operation came from a multi-planner (only available with profiling). | Any Str | Recommended |
+| replanned | Indicates if this operation was replanned (only available with profiling). | Any Str | Recommended |
+| replan_reason | Reason for replanning this operation (only available with profiling). | Any Str | Recommended |
+| client | Information about the client that executed this operation (only available with profiling). | Any Str | Recommended |
+| cursor | Cursor details related to this operation (only available with profiling). | Any Str | Recommended |
+| lock_stats | Lock statistics related to this operation (only available with profiling). | Any Str | Recommended |
+| flow_control_stats | Flow control statistics related to this operation (only available with profiling). | Any Str | Recommended |
 
 ### mongodb.slow_operation.write_conflicts
 
 Number of write conflicts encountered during execution.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| query_id | Id that uniquely identifies the query for performance analysis. | Any Str |
-| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_id | Id that uniquely identifies the query for performance analysis. | Any Str | Recommended |
+| query_signature | A signature that uniquely identifies same queries for performance analysis. | Any Str | Recommended |
 
 ### mongodb.stats.avgobjsize
 
 The average size of each document in bytes.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.collections
 
 Contains a count of the number of collections in that database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.datasize
 
 Total size of the data held in this database including the padding factor.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.filesize
 
 Total size of the data held in this database including the padding factor (only available with the mmapv1 storage engine).
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.indexes
 
 Total number of indexes across all collections in the database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {index} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {index} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.indexsize
 
 Total size of all indexes created on this database.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.numextents
 
 Contains a count of the number of extents in the database across all collections.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.objects
 
 Number of objects (documents) in the database across all collections.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {object} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {object} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.stats.storagesize
 
 Total amount of space allocated to collections in this database for document storage.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.storage.size
 
@@ -3441,826 +3441,826 @@ If collection data is compressed it reflects the compressed size.
 
 Number of bytes used by the application.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.generic.heap_size
 
 Bytes of system memory reserved by TCMalloc.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.aggressive_memory_decommit
 
 Status of aggressive memory decommit mode.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.central_cache_free_bytes
 
 Number of free bytes in the central cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.current_total_thread_cache_bytes
 
 Number of bytes used across all thread caches.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.max_total_thread_cache_bytes
 
 Upper limit on total number of bytes stored across all per-thread caches.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.pageheap_free_bytes
 
 Number of bytes in free mapped pages in page heap.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.pageheap_unmapped_bytes
 
 Number of bytes in free unmapped pages in page heap.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns
 
 Spinlock delay time.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| ns | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ns | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes
 
 Number of free bytes in thread caches.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes
 
 Number of free bytes that are waiting to be transferred between the central cache and a thread cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.usage.commands.count
 
 Number of commands since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.commands.countps
 
 Number of commands per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.commands.time
 
 Total time spent performing commands in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.getmore.count
 
 Number of getmore since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fetch} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fetch} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.getmore.countps
 
 Number of getmore per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {fetch}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {fetch}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.getmore.time
 
 Total time spent performing getmore in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.insert.count
 
 Number of inserts since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.insert.countps
 
 Number of inserts per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.insert.time
 
 Total time spent performing inserts in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.queries.count
 
 Number of queries since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {query} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.queries.countps
 
 Number of queries per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {query}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {query}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.queries.time
 
 Total time spent performing queries in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.readlock.count
 
 Number of read locks since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.readlock.countps
 
 Number of read locks per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.readlock.time
 
 Total time spent performing read locks in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.remove.count
 
 Number of removes since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.remove.countps
 
 Number of removes per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.remove.time
 
 Total time spent performing removes in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.total.count
 
 Number of operations since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.total.countps
 
 Number of operations per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {command}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {command}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.total.time
 
 Total time spent holding locks in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.update.count
 
 Number of updates since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.update.countps
 
 Number of updates per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {commit}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {commit}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.update.time
 
 Total time spent performing updates in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.writelock.count
 
 Number of write locks since server start (deprecated)
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.writelock.countps
 
 Number of write locks per second
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {lock}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {lock}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.usage.writelock.time
 
 Total time spent performing write locks in microseconds
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {microsecond} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {microsecond} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
-| collection | The name of a collection. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
+| collection | The name of a collection. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.bytes_currently_in_cache
 
 Size of the data currently in cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.failed_eviction_of_pages_exceeding_the_in_memory_maximumps
 
 Number of failed eviction of pages that exceeded the in-memory maximum, per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.in_memory_page_splits
 
 In-memory page splits.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {split} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {split} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.maximum_bytes_configured
 
 Maximum cache size.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.maximum_page_size_at_eviction
 
 Maximum page size at eviction.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.modified_pages_evicted
 
 Number of pages, that have been modified, evicted from the cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.pages_currently_held_in_cache
 
 Number of pages currently held in the cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.pages_evicted_by_application_threadsps
 
 Number of page evicted by application threads per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.pages_evicted_exceeding_the_in_memory_maximumps
 
 Number of pages evicted because they exceeded the cache in-memory maximum, per second.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page}/s | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page}/s | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.pages_read_into_cache
 
 Number of pages read into the cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.pages_written_from_cache
 
 Number of pages writtent from the cache
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache
 
 Size of the dirty data in the cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.cache.unmodified_pages_evicted
 
 Number of pages, that were not modified, evicted from the cache.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {page} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {page} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.concurrenttransactions.read.available
 
 Number of available read tickets (concurrent transactions) remaining.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {ticket} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {ticket} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.concurrenttransactions.read.out
 
 Number of read tickets (concurrent transactions) in use.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {ticket} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {ticket} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.concurrenttransactions.read.totaltickets
 
 Total number of read tickets (concurrent transactions) available.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {ticket} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {ticket} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.concurrenttransactions.write.available
 
 Number of available write tickets (concurrent transactions) remaining.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {ticket} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {ticket} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.concurrenttransactions.write.out
 
 Number of write tickets (concurrent transactions) in use.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {ticket} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {ticket} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ### mongodb.wiredtiger.concurrenttransactions.write.totaltickets
 
 Total number of write tickets (concurrent transactions) available.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {ticket} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {ticket} | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| database | The name of a database. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| database | The name of a database. | Any Str | Recommended |
 
 ## Optional Metrics
 
