@@ -254,13 +254,6 @@ resource_attributes:
     type: string
     enabled: true
 
-
-
-  k8s.namespace.uid:
-    description: The k8s namespace uid.
-    type: string
-    enabled: true
-
   k8s.namespace.name:
     description: The k8s namespace name.
     type: string
@@ -699,7 +692,7 @@ resource_attributes:
   k8s.container.status.last_terminated_reason:
     description: Last terminated reason of a container.
     type: string
-    enabled: false
+    enabled: true
 
   k8s.cronjob.name:
     description: The k8s CronJob name
@@ -770,11 +763,6 @@ resource_attributes:
     description: The version of Kubelet running on the node.
     type: string
     enabled: false
-
-  k8s.namespace.name:
-    description: The k8s namespace name.
-    type: string
-    enabled: true
 
   k8s.statefulset.service_name:
     description: The k8s statefulset service name.
@@ -1095,6 +1083,31 @@ attributes:
   resource:
     description: the name of the resource on which the quota is applied
     type: string
+  condition:
+    description: "the name of Kubernetes Node condition. Example: Ready, Memory, PID, DiskPressure"
+    type: string
+    enabled: true
+  k8s.container.status.reason:
+    description: The reason of the current container status.
+    type: string
+    enum:
+      - ContainerCreating
+      - CrashLoopBackOff
+      - CreateContainerConfigError
+      - ErrImagePull
+      - ImagePullBackOff
+      - OOMKilled
+      - Completed
+      - Error
+      - ContainerCannotRun
+  k8s.container.status.state:
+    description: The state of the container (terminated, running, waiting). See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.30/#containerstate-v1-core for details.
+    type: string
+    enum:
+      - terminated
+      - running
+      - waiting
+    enabled: true
     requirement_level: required
 
 metrics:
