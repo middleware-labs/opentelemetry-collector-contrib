@@ -4,9 +4,8 @@
 package datadogreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogreceiver"
 
 import (
-	"compress/gzip"
-	"compress/zlib"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -15,10 +14,6 @@ import (
 	"strings"
 
 	"github.com/DataDog/agent-payload/v5/gogen"
-	"io"
-	"net/http"
-	"strings"
-
 	pb "github.com/DataDog/datadog-agent/pkg/proto/pbgo/trace"
 	"github.com/hashicorp/golang-lru/v2/simplelru"
 	"github.com/tinylib/msgp/msgp"
@@ -207,17 +202,11 @@ func newDataDogReceiver(ctx context.Context, config *Config, params receiver.Set
 
 func (ddr *datadogReceiver) Start(ctx context.Context, host component.Host) error {
 	ddmux := http.NewServeMux()
-	ddmux.HandleFunc("/api/v0.2/traces", ddr.handleV2Traces)
-	ddmux.HandleFunc("/v0.2/traces", ddr.handleV2Traces)
-	ddmux.HandleFunc("/api/v0.3/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/v0.3/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/api/v0.4/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/v0.4/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/api/v0.5/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/v0.5/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/api/v0.7/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/v0.7/traces", ddr.handleTraces)
-	ddmux.HandleFunc("/api/v0.2/traces", ddr.handleTraces)
+	endpoints := ddr.getEndpoints()
+
+	for _, e := range endpoints {
+		ddmux.HandleFunc(e.Pattern, e.Handler)
+	}
 
 	var err error
 	ddr.server, err = ddr.config.ToServer(
@@ -238,7 +227,7 @@ func (ddr *datadogReceiver) Start(ctx context.Context, host component.Host) erro
 
 	go func() {
 		if err := ddr.server.Serve(hln); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			ddr.params.TelemetrySettings.ReportStatus(component.NewFatalErrorEvent(fmt.Errorf("error starting datadog receiver: %w", err)))
+			componentstatus.ReportStatus(host, componentstatus.NewFatalErrorEvent(fmt.Errorf("error starting datadog receiver: %w", err)))
 		}
 	}()
 	return nil
@@ -253,81 +242,23 @@ func (ddr *datadogReceiver) buildInfoResponse(endpoints []endpoint) ([]byte, err
 	for _, e := range endpoints {
 		endpointPaths = append(endpointPaths, e.Pattern)
 	}
-	if req.Header.Get("Accept-Encoding") == "gzip" {
-		gz, err := gzip.NewReader(req.Body)
-		if err != nil {
-			return nil, err
-		}
-		defer gz.Close()
-		rc.Reader = gz
-	}
-	return rc, nil
+
+	return json.MarshalIndent(translator.DDInfo{
+		Version:          fmt.Sprintf("datadogreceiver-%s-%s", ddr.params.BuildInfo.Command, ddr.params.BuildInfo.Version),
+		Endpoints:        endpointPaths,
+		ClientDropP0s:    false,
+		SpanMetaStructs:  false,
+		LongRunningSpans: false,
+	}, "", "\t")
 }
 
-func readAndCloseBody(resp http.ResponseWriter, req *http.Request) ([]byte, bool) {
-	// Check if the request body is compressed
-	var reader io.Reader = req.Body
-	if strings.Contains(req.Header.Get("Content-Encoding"), "gzip") {
-		// Decompress gzip
-		gz, err := gzip.NewReader(req.Body)
-		if err != nil {
-			fmt.Println("err", err)
-			//            return
-		}
-		defer gz.Close()
-		reader = gz
-	} else if strings.Contains(req.Header.Get("Content-Encoding"), "deflate") {
-		// Decompress deflate
-		zlibReader, err := zlib.NewReader(req.Body)
-		if err != nil {
-			fmt.Println("err", err)
-			// return
-		}
-		defer zlibReader.Close()
-		reader = zlibReader
-	}
-
-	body, err := io.ReadAll(reader)
+// handleInfo handles incoming /info payloads.
+func (ddr *datadogReceiver) handleInfo(w http.ResponseWriter, _ *http.Request, infoResponse []byte) {
+	_, err := fmt.Fprintf(w, "%s", infoResponse)
 	if err != nil {
-		fmt.Println("err", err)
-		return nil, false
-	}
-	if err = req.Body.Close(); err != nil {
-		fmt.Println("err", err)
-		return nil, false
-	}
-	return body, true
-}
-
-func (ddr *datadogReceiver) handleV2Traces(w http.ResponseWriter, req *http.Request) {
-	body, err := readAndCloseBody(w, req)
-	if !err {
-		http.Error(w, "Unable to unmarshal reqs", http.StatusBadRequest)
-		ddr.params.Logger.Error("Unable to unmarshal reqs")
+		ddr.params.Logger.Error("Error writing /info endpoint response", zap.Error(err))
+		http.Error(w, "Error writing /info endpoint response", http.StatusInternalServerError)
 		return
-	}
-	var tracerPayload pb.AgentPayload
-	err1 := tracerPayload.UnmarshalVT(body)
-	if err1 != nil {
-		http.Error(w, "Unable to unmarshal reqs", http.StatusBadRequest)
-		ddr.params.Logger.Error("Unable to unmarshal reqs")
-		return
-	}
-	obsCtx := ddr.tReceiver.StartTracesOp(req.Context())
-	tracs := tracerPayload.GetTracerPayloads()
-	if len(tracs) > 0 {
-		for _, trace := range tracs {
-			otelTraces := toTraces(trace, req)
-			errs := ddr.nextConsumer.ConsumeTraces(obsCtx, otelTraces)
-			if errs != nil {
-				http.Error(w, "Trace consumer errored out", http.StatusInternalServerError)
-				ddr.params.Logger.Error("Trace consumer errored out")
-			} else {
-				_, _ = w.Write([]byte("OK"))
-			}
-		}
-	} else {
-		_, _ = w.Write([]byte("OK"))
 	}
 }
 
@@ -344,20 +275,20 @@ func (ddr *datadogReceiver) handleTraces(w http.ResponseWriter, req *http.Reques
 	}(&spanCount)
 
 	var ddTraces []*pb.TracerPayload
-	ddTraces, err = handlePayload(req)
+	ddTraces, err = translator.HandleTracesPayload(req)
 	if err != nil {
 		http.Error(w, "Unable to unmarshal reqs", http.StatusBadRequest)
-		ddr.params.Logger.Error("Unable to unmarshal reqs")
+		ddr.params.Logger.Error("Unable to unmarshal reqs", zap.Error(err))
 		return
 	}
 	for _, ddTrace := range ddTraces {
-		otelTraces, err := toTraces(ddr.params.Logger, ddTrace, req, ddr.traceIDCache)
+		otelTraces, err := translator.ToTraces(ddr.params.Logger, ddTrace, req, ddr.traceIDCache)
 		if err != nil {
 			ddr.params.Logger.Error("Error converting traces", zap.Error(err))
 			continue
 		}
 		spanCount = otelTraces.SpanCount()
-		err = ddr.nextConsumer.ConsumeTraces(obsCtx, otelTraces)
+		err = ddr.nextTracesConsumer.ConsumeTraces(obsCtx, otelTraces)
 		if err != nil {
 			errorutil.HTTPError(w, err)
 			ddr.params.Logger.Error("Trace consumer errored out", zap.Error(err))
@@ -593,7 +524,6 @@ func (ddr *datadogReceiver) handleStats(w http.ResponseWriter, req *http.Request
 	}
 
 	_, _ = w.Write([]byte("OK"))
-
 }
 
 func createIntakeReverseProxyDirector(site, key string) func(*http.Request) {

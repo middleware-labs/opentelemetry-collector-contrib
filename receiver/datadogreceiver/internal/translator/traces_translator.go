@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-package datadogreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogreceiver"
+package translator // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogreceiver/internal/translator"
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -24,6 +25,8 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/datadogreceiver/internal/translator/header"
 )
 
 const (
@@ -55,10 +58,10 @@ var spanProcessor = map[string]func(*pb.Span, *ptrace.Span){
 }
 
 func upsertHeadersAttributes(req *http.Request, attrs pcommon.Map) {
-	if ddTracerVersion := req.Header.Get("Datadog-Meta-Tracer-Version"); ddTracerVersion != "" {
+	if ddTracerVersion := req.Header.Get(header.TracerVersion); ddTracerVersion != "" {
 		attrs.PutStr(string(semconv.TelemetrySDKVersionKey), "Datadog-"+ddTracerVersion)
 	}
-	if ddTracerLang := req.Header.Get("Datadog-Meta-Lang"); ddTracerLang != "" {
+	if ddTracerLang := req.Header.Get(header.Lang); ddTracerLang != "" {
 		otelLang := ddTracerLang
 		if ddTracerLang == ".NET" {
 			otelLang = "dotnet"
@@ -138,7 +141,7 @@ func processSpanByName(span *pb.Span, newSpan *ptrace.Span) {
 	}
 }
 
-func toTraces(logger *zap.Logger, payload *pb.TracerPayload, req *http.Request, traceIDCache *simplelru.LRU[uint64, pcommon.TraceID]) (ptrace.Traces, error) {
+func ToTraces(logger *zap.Logger, payload *pb.TracerPayload, req *http.Request, traceIDCache *simplelru.LRU[uint64, pcommon.TraceID]) (ptrace.Traces, error) {
 	var traces pb.Traces
 	for _, p := range payload.GetChunks() {
 		traces = append(traces, p.GetSpans())
@@ -160,7 +163,7 @@ func toTraces(logger *zap.Logger, payload *pb.TracerPayload, req *http.Request, 
 	}
 
 	for k, v := range payload.Tags {
-		if k = translateDataDogKeyToOtel(k); v != "" {
+		if k = translateDatadogKeyToOTel(k); v != "" {
 			sharedAttributes.PutStr(k, v)
 		}
 	}
@@ -172,7 +175,7 @@ func toTraces(logger *zap.Logger, payload *pb.TracerPayload, req *http.Request, 
 	// is added as a resource attribute in most systems
 	// now instead of being a span level attribute.
 	groupByService := make(map[string]ptrace.SpanSlice)
-	hostName := ""
+
 	for _, trace := range traces {
 		for _, span := range trace {
 			// Restore base service name as the service name.
@@ -205,24 +208,19 @@ func toTraces(logger *zap.Logger, payload *pb.TracerPayload, req *http.Request, 
 			newSpan.SetStartTimestamp(pcommon.Timestamp(span.Start))
 			newSpan.SetEndTimestamp(pcommon.Timestamp(span.Start + span.Duration))
 			newSpan.SetParentSpanID(uInt64ToSpanID(span.ParentID))
-			newSpan.SetName(span.Resource)
+			newSpan.SetName(span.Name)
 			newSpan.Status().SetCode(ptrace.StatusCodeOk)
 			newSpan.Attributes().PutStr("dd.span.Resource", span.Resource)
-
+			if samplingPriority, ok := span.Metrics["_sampling_priority_v1"]; ok {
+				newSpan.Attributes().PutStr("sampling.priority", fmt.Sprintf("%f", samplingPriority))
+			}
 			if span.Error > 0 {
 				newSpan.Status().SetCode(ptrace.StatusCodeError)
 			}
 			newSpan.Attributes().PutStr(attributeDatadogSpanID, strconv.FormatUint(span.SpanID, 10))
 			newSpan.Attributes().PutStr(attributeDatadogTraceID, strconv.FormatUint(span.TraceID, 10))
-			meta := span.GetMeta()
-			if _, ok := meta["db.system"]; ok {
-				newSpan.Attributes().PutStr("db.statement", span.Resource)
-			}
-			if value, ok := meta["_dd.tracer_hostname"]; ok {
-				hostName = value
-			}
-			for k, v := range meta {
-				if k = translateDataDogKeyToOtel(k); k != "" {
+			for k, v := range span.GetMeta() {
+				if k = translateDatadogKeyToOTel(k); k != "" {
 					newSpan.Attributes().PutStr(k, v)
 				}
 			}
@@ -270,17 +268,14 @@ func toTraces(logger *zap.Logger, payload *pb.TracerPayload, req *http.Request, 
 			processSpanByName(span, &newSpan)
 		}
 	}
-	mwAPIKey := req.Header.Get("dd-api-key")
+
 	results := ptrace.NewTraces()
 	for service, spans := range groupByService {
 		rs := results.ResourceSpans().AppendEmpty()
 		rs.SetSchemaUrl(semconv.SchemaURL)
 		sharedAttributes.CopyTo(rs.Resource().Attributes())
 		rs.Resource().Attributes().PutStr(string(semconv.ServiceNameKey), service)
-		if mwAPIKey != "" {
-			rs.Resource().Attributes().PutStr("mw.account_key", mwAPIKey)
-		}
-		rs.Resource().Attributes().PutStr("host.name", hostName)
+
 		in := rs.ScopeSpans().AppendEmpty()
 		in.Scope().SetName("Datadog")
 		in.Scope().SetVersion(payload.TracerVersion)
@@ -341,49 +336,23 @@ func tagsToSpanLinks(tags map[string]string, dest ptrace.SpanLinkSlice) error {
 	return nil
 }
 
-func translateDataDogKeyToOtel(k string) string {
-	switch strings.ToLower(k) {
-	case "env":
-		return semconv.AttributeDeploymentEnvironment
-	case "version":
-		return semconv.AttributeServiceVersion
-	case "container_id":
-		return semconv.AttributeContainerID
-	case "container_name":
-		return semconv.AttributeContainerName
-	case "image_name":
-		return semconv.AttributeContainerImageName
-	case "image_tag":
-		return semconv.AttributeContainerImageTag
-	case "process_id":
-		return semconv.AttributeProcessPID
-	case "error.stacktrace":
-		return semconv.AttributeExceptionStacktrace
-	case "error.msg":
-		return semconv.AttributeExceptionMessage
-	default:
-		return k
-	}
-
-}
-
 var bufferPool = sync.Pool{
 	New: func() any {
 		return new(bytes.Buffer)
 	},
 }
 
-func getBuffer() *bytes.Buffer {
+func GetBuffer() *bytes.Buffer {
 	buffer := bufferPool.Get().(*bytes.Buffer)
 	buffer.Reset()
 	return buffer
 }
 
-func putBuffer(buffer *bytes.Buffer) {
+func PutBuffer(buffer *bytes.Buffer) {
 	bufferPool.Put(buffer)
 }
 
-func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
+func HandleTracesPayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 	var tracerPayloads []*pb.TracerPayload
 
 	defer func() {
@@ -392,9 +361,9 @@ func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 	}()
 
 	switch {
-	case strings.Contains(req.URL.Path, "/v0.7"):
-		buf := getBuffer()
-		defer putBuffer(buf)
+	case strings.HasPrefix(req.URL.Path, "/v0.7"):
+		buf := GetBuffer()
+		defer PutBuffer(buf)
 		if _, err = io.Copy(buf, req.Body); err != nil {
 			return nil, err
 		}
@@ -405,8 +374,8 @@ func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 
 		tracerPayloads = append(tracerPayloads, &tracerPayload)
 	case strings.HasPrefix(req.URL.Path, "/v0.5"):
-		buf := getBuffer()
-		defer putBuffer(buf)
+		buf := GetBuffer()
+		defer PutBuffer(buf)
 		if _, err = io.Copy(buf, req.Body); err != nil {
 			return nil, err
 		}
@@ -421,9 +390,10 @@ func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 		appVersion := appVersionFromTraceChunks(traceChunks)
 
 		tracerPayload := &pb.TracerPayload{
-			LanguageName:    req.Header.Get("Datadog-Meta-Lang"),
-			LanguageVersion: req.Header.Get("Datadog-Meta-Lang-Version"),
-			TracerVersion:   req.Header.Get("Datadog-Meta-Tracer-Version"),
+			LanguageName:    req.Header.Get(header.Lang),
+			LanguageVersion: req.Header.Get(header.LangVersion),
+			TracerVersion:   req.Header.Get(header.TracerVersion),
+			ContainerID:     req.Header.Get(header.ContainerID),
 			Chunks:          traceChunks,
 			AppVersion:      appVersion,
 		}
@@ -436,15 +406,15 @@ func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 			return nil, err
 		}
 		tracerPayload := &pb.TracerPayload{
-			LanguageName:    req.Header.Get("Datadog-Meta-Lang"),
-			LanguageVersion: req.Header.Get("Datadog-Meta-Lang-Version"),
-			TracerVersion:   req.Header.Get("Datadog-Meta-Tracer-Version"),
+			LanguageName:    req.Header.Get(header.Lang),
+			LanguageVersion: req.Header.Get(header.LangVersion),
+			TracerVersion:   req.Header.Get(header.TracerVersion),
 			Chunks:          traceChunksFromSpans(spans),
 		}
 		tracerPayloads = append(tracerPayloads, tracerPayload)
 	case strings.HasPrefix(req.URL.Path, "/api/v0.2"):
-		buf := getBuffer()
-		defer putBuffer(buf)
+		buf := GetBuffer()
+		defer PutBuffer(buf)
 		if _, err = io.Copy(buf, req.Body); err != nil {
 			return nil, err
 		}
@@ -466,9 +436,9 @@ func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 		traceChunks := traceChunksFromTraces(traces)
 		appVersion := appVersionFromTraceChunks(traceChunks)
 		tracerPayload := &pb.TracerPayload{
-			LanguageName:    req.Header.Get("Datadog-Meta-Lang"),
-			LanguageVersion: req.Header.Get("Datadog-Meta-Lang-Version"),
-			TracerVersion:   req.Header.Get("Datadog-Meta-Tracer-Version"),
+			LanguageName:    req.Header.Get(header.Lang),
+			LanguageVersion: req.Header.Get(header.LangVersion),
+			TracerVersion:   req.Header.Get(header.TracerVersion),
 			Chunks:          traceChunks,
 			AppVersion:      appVersion,
 		}
@@ -481,8 +451,8 @@ func handlePayload(req *http.Request) (tp []*pb.TracerPayload, err error) {
 func decodeRequest(req *http.Request, dest *pb.Traces) (err error) {
 	switch mediaType := getMediaType(req); mediaType {
 	case "application/msgpack":
-		buf := getBuffer()
-		defer putBuffer(buf)
+		buf := GetBuffer()
+		defer PutBuffer(buf)
 		_, err = io.Copy(buf, req.Body)
 		if err != nil {
 			return err
@@ -495,8 +465,8 @@ func decodeRequest(req *http.Request, dest *pb.Traces) (err error) {
 	default:
 		// do our best
 		if err1 := json.NewDecoder(req.Body).Decode(&dest); err1 != nil {
-			buf := getBuffer()
-			defer putBuffer(buf)
+			buf := GetBuffer()
+			defer PutBuffer(buf)
 			_, err2 := io.Copy(buf, req.Body)
 			if err2 != nil {
 				return err2
