@@ -94,6 +94,9 @@ func RecordSpecMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, c corev1
 		if cs.LastTerminationState.Terminated != nil {
 			rb.SetK8sContainerStatusLastTerminatedReason(cs.LastTerminationState.Terminated.Reason)
 		}
+		if cs.State.Waiting != nil {
+			rb.SetK8sContainerStatusCurrentWaitingReason(cs.State.Waiting.Reason)
+		}
 		switch {
 		case cs.State.Running != nil:
 			mb.RecordK8sContainerStatusStateDataPoint(ts, 1, metadata.AttributeK8sContainerStatusStateRunning)
@@ -128,11 +131,6 @@ func RecordSpecMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, c corev1
 			mb.RecordK8sContainerStatusReasonDataPoint(ts, val, attrVal)
 		}
 		break
-			if cs.State.Waiting != nil {
-				rb.SetK8sContainerStatusCurrentWaitingReason(cs.State.Waiting.Reason)
-			}
-			break
-		}
 	}
 
 	rb.SetK8sPodUID(string(pod.UID))
