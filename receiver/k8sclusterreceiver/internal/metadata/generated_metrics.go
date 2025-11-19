@@ -98,6 +98,12 @@ var MapAttributeK8sContainerStatusState = map[string]AttributeK8sContainerStatus
 }
 
 var MetricsInfo = metricsInfo{
+	K8sClusterroleRuleCount: metricInfo{
+		Name: "k8s.clusterrole.rule_count",
+	},
+	K8sClusterrolebindingSubjectCount: metricInfo{
+		Name: "k8s.clusterrolebinding.subject_count",
+	},
 	K8sContainerCPULimit: metricInfo{
 		Name: "k8s.container.cpu_limit",
 	},
@@ -152,8 +158,14 @@ var MetricsInfo = metricsInfo{
 	K8sDeploymentAvailable: metricInfo{
 		Name: "k8s.deployment.available",
 	},
+	K8sDeploymentCurrent: metricInfo{
+		Name: "k8s.deployment.current",
+	},
 	K8sDeploymentDesired: metricInfo{
 		Name: "k8s.deployment.desired",
+	},
+	K8sDeploymentUpdated: metricInfo{
+		Name: "k8s.deployment.updated",
 	},
 	K8sHpaCurrentReplicas: metricInfo{
 		Name: "k8s.hpa.current_replicas",
@@ -167,8 +179,14 @@ var MetricsInfo = metricsInfo{
 	K8sHpaMinReplicas: metricInfo{
 		Name: "k8s.hpa.min_replicas",
 	},
+	K8sIngressRuleCount: metricInfo{
+		Name: "k8s.ingress.rule_count",
+	},
 	K8sJobActivePods: metricInfo{
 		Name: "k8s.job.active_pods",
+	},
+	K8sJobBackoffLimit: metricInfo{
+		Name: "k8s.job.backoff_limit",
 	},
 	K8sJobDesiredSuccessfulPods: metricInfo{
 		Name: "k8s.job.desired_successful_pods",
@@ -188,6 +206,15 @@ var MetricsInfo = metricsInfo{
 	K8sNodeCondition: metricInfo{
 		Name: "k8s.node.condition",
 	},
+	K8sPersistentvolumeCapacity: metricInfo{
+		Name: "k8s.persistentvolume.capacity",
+	},
+	K8sPersistentvolumeclaimAllocated: metricInfo{
+		Name: "k8s.persistentvolumeclaim.allocated",
+	},
+	K8sPersistentvolumeclaimCapacity: metricInfo{
+		Name: "k8s.persistentvolumeclaim.capacity",
+	},
 	K8sPodPhase: metricInfo{
 		Name: "k8s.pod.phase",
 	},
@@ -197,8 +224,14 @@ var MetricsInfo = metricsInfo{
 	K8sReplicasetAvailable: metricInfo{
 		Name: "k8s.replicaset.available",
 	},
+	K8sReplicasetCurrent: metricInfo{
+		Name: "k8s.replicaset.current",
+	},
 	K8sReplicasetDesired: metricInfo{
 		Name: "k8s.replicaset.desired",
+	},
+	K8sReplicasetReady: metricInfo{
+		Name: "k8s.replicaset.ready",
 	},
 	K8sReplicationControllerAvailable: metricInfo{
 		Name: "k8s.replication_controller.available",
@@ -211,6 +244,18 @@ var MetricsInfo = metricsInfo{
 	},
 	K8sResourceQuotaUsed: metricInfo{
 		Name: "k8s.resource_quota.used",
+	},
+	K8sRoleRuleCount: metricInfo{
+		Name: "k8s.role.rule_count",
+	},
+	K8sRolebindingSubjectCount: metricInfo{
+		Name: "k8s.rolebinding.subject_count",
+	},
+	K8sServicePortCount: metricInfo{
+		Name: "k8s.service.port_count",
+	},
+	K8sServiceaccountSecretCount: metricInfo{
+		Name: "k8s.serviceaccount.secret_count",
 	},
 	K8sStatefulsetCurrentPods: metricInfo{
 		Name: "k8s.statefulset.current_pods",
@@ -239,6 +284,8 @@ var MetricsInfo = metricsInfo{
 }
 
 type metricsInfo struct {
+	K8sClusterroleRuleCount             metricInfo
+	K8sClusterrolebindingSubjectCount   metricInfo
 	K8sContainerCPULimit                metricInfo
 	K8sContainerCPURequest              metricInfo
 	K8sContainerEphemeralstorageLimit   metricInfo
@@ -257,26 +304,39 @@ type metricsInfo struct {
 	K8sDaemonsetMisscheduledNodes       metricInfo
 	K8sDaemonsetReadyNodes              metricInfo
 	K8sDeploymentAvailable              metricInfo
+	K8sDeploymentCurrent                metricInfo
 	K8sDeploymentDesired                metricInfo
+	K8sDeploymentUpdated                metricInfo
 	K8sHpaCurrentReplicas               metricInfo
 	K8sHpaDesiredReplicas               metricInfo
 	K8sHpaMaxReplicas                   metricInfo
 	K8sHpaMinReplicas                   metricInfo
+	K8sIngressRuleCount                 metricInfo
 	K8sJobActivePods                    metricInfo
+	K8sJobBackoffLimit                  metricInfo
 	K8sJobDesiredSuccessfulPods         metricInfo
 	K8sJobFailedPods                    metricInfo
 	K8sJobMaxParallelPods               metricInfo
 	K8sJobSuccessfulPods                metricInfo
 	K8sNamespacePhase                   metricInfo
 	K8sNodeCondition                    metricInfo
+	K8sPersistentvolumeCapacity         metricInfo
+	K8sPersistentvolumeclaimAllocated   metricInfo
+	K8sPersistentvolumeclaimCapacity    metricInfo
 	K8sPodPhase                         metricInfo
 	K8sPodStatusReason                  metricInfo
 	K8sReplicasetAvailable              metricInfo
+	K8sReplicasetCurrent                metricInfo
 	K8sReplicasetDesired                metricInfo
+	K8sReplicasetReady                  metricInfo
 	K8sReplicationControllerAvailable   metricInfo
 	K8sReplicationControllerDesired     metricInfo
 	K8sResourceQuotaHardLimit           metricInfo
 	K8sResourceQuotaUsed                metricInfo
+	K8sRoleRuleCount                    metricInfo
+	K8sRolebindingSubjectCount          metricInfo
+	K8sServicePortCount                 metricInfo
+	K8sServiceaccountSecretCount        metricInfo
 	K8sStatefulsetCurrentPods           metricInfo
 	K8sStatefulsetDesiredPods           metricInfo
 	K8sStatefulsetReadyPods             metricInfo

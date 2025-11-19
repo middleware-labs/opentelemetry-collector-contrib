@@ -117,13 +117,13 @@ The limit for entries in the conntrack table.
 
 The rate of transmission and reception.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By/s | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By/s | Gauge | Double | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| device | Name of the network interface. | Any Str |
-| direction | Direction of flow of bytes/operations (receive or transmit). | Str: ``receive``, ``transmit`` |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| device | Name of the network interface. | Any Str | Recommended |
+| direction | Direction of flow of bytes/operations (receive or transmit). | Str: ``receive``, ``transmit`` | Recommended |

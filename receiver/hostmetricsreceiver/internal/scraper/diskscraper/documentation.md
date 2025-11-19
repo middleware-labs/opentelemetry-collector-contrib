@@ -128,13 +128,13 @@ metrics:
 
 The rate of transmission and reception.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By/s | Gauge | Double |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By/s | Gauge | Double | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| device | Name of the disk. | Any Str |
-| direction | Direction of flow of bytes/operations (read or write). | Str: ``read``, ``write`` |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| device | Name of the disk. | Any Str | Recommended |
+| direction | Direction of flow of bytes/operations (read or write). | Str: ``read``, ``write`` | Recommended |

@@ -37,7 +37,7 @@ func TestMetricAccumulator(t *testing.T) {
 	metadataProvider := NewMetadataProvider(rc)
 	podsMetadata, _ := metadataProvider.Pods()
 	nodesMetadata, _ := metadataProvider.Nodes()
-	k8sMetadata := NewMetadata([]MetadataLabel{MetadataLabelContainerID}, podsMetadata, nodesMetadata, NodeCapacity{}, nil)
+	k8sMetadata := NewMetadata([]MetadataLabel{MetadataLabelContainerID}, podsMetadata, nodesMetadata, NodeInfo{}, nil)
 	mbs := &metadata.MetricsBuilders{
 		NodeMetricsBuilder:      metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),
 		PodMetricsBuilder:       metadata.NewMetricsBuilder(metadata.DefaultMetricsBuilderConfig(), receivertest.NewNopSettings(metadata.Type)),

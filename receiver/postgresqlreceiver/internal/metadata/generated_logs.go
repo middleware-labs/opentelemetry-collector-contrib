@@ -149,6 +149,12 @@ func NewLogsBuilder(lbc LogsBuilderConfig, settings receiver.Settings) *LogsBuil
 	if lbc.ResourceAttributes.PostgresqlDatabaseName.EventsExclude != nil {
 		lb.resourceAttributeExcludeFilter["postgresql.database.name"] = filter.CreateFilter(lbc.ResourceAttributes.PostgresqlDatabaseName.EventsExclude)
 	}
+	if lbc.ResourceAttributes.PostgresqlDbVersion.EventsInclude != nil {
+		lb.resourceAttributeIncludeFilter["postgresql.db.version"] = filter.CreateFilter(lbc.ResourceAttributes.PostgresqlDbVersion.EventsInclude)
+	}
+	if lbc.ResourceAttributes.PostgresqlDbVersion.EventsExclude != nil {
+		lb.resourceAttributeExcludeFilter["postgresql.db.version"] = filter.CreateFilter(lbc.ResourceAttributes.PostgresqlDbVersion.EventsExclude)
+	}
 	if lbc.ResourceAttributes.PostgresqlIndexName.EventsInclude != nil {
 		lb.resourceAttributeIncludeFilter["postgresql.index.name"] = filter.CreateFilter(lbc.ResourceAttributes.PostgresqlIndexName.EventsInclude)
 	}

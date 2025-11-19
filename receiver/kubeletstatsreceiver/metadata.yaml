@@ -9,22 +9,10 @@ status:
     active: [dmitryax, TylerHelmuth, ChrsMark]
 
 resource_attributes:
-  k8s.node.uid:
-    description: "The UID of the Node"
-    enabled: true
-    type: string
-  k8s.node.name:
-    description: "The name of the Node"
   aws.volume.id:
     description: "The id of the AWS Volume"
     enabled: true
     type: string
-  k8s.node.start_time:
-    description: "The start time of the Node."
-    enabled: true
-    type: string
-  k8s.pod.uid:
-    description: "The UID of the Pod"
   container.id:
     description: "Container id used to identify container"
     enabled: true
@@ -33,32 +21,6 @@ resource_attributes:
     description: "The filesystem type of the Volume"
     enabled: true
     type: string
-  k8s.pod.start_time:
-    description: "The start time of the Pod."
-    enabled: true
-    type: string
-  k8s.service.name:
-    description: "The name of the Service"
-    type: string
-    enabled: true
-  k8s.job.uid:
-    description: "The UID of the Job"
-    type: string
-    enabled: true
-  k8s.job.name:
-    description: "The name of the Job"
-    type: string
-    enabled: true
-  k8s.service_account.name:
-    description: "The name of the Service-account"
-    type: string
-    enabled: true
-  k8s.cluster.name:
-    description: "The name of the Cluster"
-    type: string
-    enabled: true
-  k8s.namespace.name:
-    description: "The name of the namespace that the pod is running in"
   gce.pd.name:
     description: "The name of the persistent disk in GCE"
     enabled: true
@@ -71,17 +33,36 @@ resource_attributes:
     description: "Glusterfs volume path"
     enabled: true
     type: string
-
+  k8s.cluster.name:
+    description: "The name of the Cluster"
+    type: string
+    enabled: true
   k8s.container.name:
     description: "Container name used by container runtime"
     enabled: true
     type: string
+  k8s.job.name:
+    description: "The name of the Job"
+    type: string
+    enabled: true
+  k8s.job.uid:
+    description: "The UID of the Job"
+    type: string
+    enabled: true
   k8s.namespace.name:
     description: "The name of the namespace that the pod is running in"
     enabled: true
     type: string
   k8s.node.name:
     description: "The name of the Node"
+    enabled: true
+    type: string
+  k8s.node.start_time:
+    description: "The start time of the Node."
+    enabled: true
+    type: string
+  k8s.node.uid:
+    description: "The UID of the Node"
     enabled: true
     type: string
   k8s.persistentvolumeclaim.name:
@@ -92,10 +73,22 @@ resource_attributes:
     description: "The name of the Pod"
     enabled: true
     type: string
+  k8s.pod.start_time:
+    description: "The start time of the Pod."
+    enabled: true
+    type: string
   k8s.pod.uid:
     description: "The UID of the Pod"
     enabled: true
     type: string
+  k8s.service.name:
+    description: "The name of the Service"
+    type: string
+    enabled: true
+  k8s.service_account.name:
+    description: "The name of the Service-account"
+    type: string
+    enabled: true
   k8s.volume.name:
     description: "The name of the Volume"
     enabled: true
@@ -108,6 +101,7 @@ resource_attributes:
     description: "The partition in the Volume"
     enabled: true
     type: string
+
 attributes:
   direction:
     description: Direction of flow of bytes/operations (receive or transmit).
@@ -165,6 +159,15 @@ metrics:
     gauge:
       value_type: int
     attributes: []
+  container.filesystem.utilization:
+    enabled: true
+    description: "Container filesystem utilization"
+    unit: ""
+    stability:
+      level: development
+    gauge:
+      value_type: double
+    attributes: []
   container.memory.available:
     enabled: true
     description: "Container memory available"
@@ -219,43 +222,7 @@ metrics:
     gauge:
       value_type: int
     attributes: []
-  k8s.node.filesystem.utilization:
-    enabled: true
-    description: "Node filesystem utilization"
-    unit: 1
-    gauge:
-      value_type: double
-    attributes: [ ]
-  k8s.node.network.io:
-    enabled: true
-    description: "Node network IO"
-    unit: By
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
-  k8s.node.network.errors:
-    enabled: true
-    description: "Node network errors"
-    unit: "1"
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
   container.uptime:
-    enabled: false
-    description: "The time since the container started"
-    unit: s
-    stability:
-      level: development
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: [ ]
-  k8s.node.uptime:
     enabled: false
     description: "The time since the container started"
     unit: s
@@ -367,6 +334,15 @@ metrics:
     gauge:
       value_type: int
     attributes: []
+  k8s.node.filesystem.utilization:
+    enabled: true
+    description: "Node filesystem utilization"
+    unit: ""
+    stability:
+      level: development
+    gauge:
+      value_type: double
+    attributes: []
   k8s.node.memory.available:
     enabled: true
     description: "Node memory available"
@@ -420,13 +396,6 @@ metrics:
       level: development
     gauge:
       value_type: int
-    attributes: []
-  k8s.pod.filesystem.utilization:
-    enabled: true
-    description: "Pod filesystem utilization"
-    unit: 1
-    gauge:
-      value_type: double
     attributes: []
   k8s.node.network.errors:
     enabled: true
@@ -535,6 +504,15 @@ metrics:
     gauge:
       value_type: int
     attributes: []
+  k8s.pod.filesystem.utilization:
+    enabled: true
+    description: "Pod filesystem utilization"
+    unit: ""
+    stability:
+      level: development
+    gauge:
+      value_type: double
+    attributes: []
   k8s.pod.memory.available:
     enabled: true
     description: "Pod memory available"
@@ -598,14 +576,6 @@ metrics:
     gauge:
       value_type: int
     attributes: []
-  container.filesystem.utilization:
-    enabled: true
-    description: "Container filesystem utilization"
-    unit: 1
-    gauge:
-      value_type: double
-    attributes: [ ]
-  container.uptime:
   k8s.pod.memory_limit_utilization:
     enabled: false
     description: "Pod memory utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted."

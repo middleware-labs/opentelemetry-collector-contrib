@@ -67,6 +67,18 @@ attributes:
       - idle
 
 metrics:
+  apache.bytes_per_sec:
+    enabled: true
+    description: Served bytes per second
+    unit: "{bytes/second}"
+    stability:
+      level: development
+    sum:
+      value_type: int
+      input_type: ""
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: []
   apache.connections.async:
     enabled: true
     stability:
@@ -77,6 +89,36 @@ metrics:
       value_type: int
       input_type: string
     attributes: [connection_state]
+  apache.conns_async_closing:
+    enabled: true
+    description: The number of asynchronous closing connections.
+    unit: "{connections}"
+    stability:
+      level: development
+    gauge:
+      value_type: int
+      input_type: string
+    attributes: []
+  apache.conns_async_keep_alive:
+    enabled: true
+    description: The number of asynchronous keep alive connections.
+    unit: "{connections}"
+    stability:
+      level: development
+    gauge:
+      value_type: int
+      input_type: string
+    attributes: []
+  apache.conns_async_writing:
+    enabled: true
+    description: The number of asynchronous writes connections.
+    unit: "{connections}"
+    stability:
+      level: development
+    gauge:
+      value_type: int
+      input_type: string
+    attributes: []
   apache.cpu.load:
     enabled: true
     stability:
@@ -141,6 +183,16 @@ metrics:
       value_type: double
       input_type: string
     attributes: []
+  apache.max_workers:
+    enabled: true
+    stability:
+      level: development
+    description: The maximum number of workers apache web server can start.
+    unit: "{thread}"
+    gauge:
+      value_type: int
+      input_type: ""
+    attributes: []
   apache.request.time:
     enabled: true
     stability:
@@ -159,6 +211,18 @@ metrics:
       level: development
     description: The number of requests serviced by the HTTP server per second.
     unit: "{requests}"
+    sum:
+      value_type: int
+      input_type: string
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: []
+  apache.requests_per_sec:
+    enabled: true
+    description: Incoming requests per second
+    unit: "{request/second}"
+    stability:
+      level: development
     sum:
       value_type: int
       input_type: string
@@ -215,55 +279,3 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [workers_state]
-  apache.conns_async_closing:
-    enabled: true
-    description: The number of asynchronous closing connections.
-    unit: "{connections}"
-    gauge:
-      value_type: int
-      input_type: string
-    attributes: []
-  apache.conns_async_keep_alive:
-    enabled: true
-    description: The number of asynchronous keep alive connections.
-    unit: "{connections}"
-    gauge:
-      value_type: int
-      input_type: string
-    attributes: []
-  apache.conns_async_writing:
-    enabled: true
-    description: The number of asynchronous writes connections.
-    unit: "{connections}"
-    gauge:
-      value_type: int
-      input_type: string
-    attributes: []
-  apache.max_workers:
-    enabled: true
-    description: The maximum number of workers apache web server can start.
-    unit: "{thread}"
-    gauge:
-      value_type: int
-      input_type: ""
-    attributes: []
-  apache.bytes_per_sec:
-    enabled: true
-    description: Served bytes per second
-    unit: "{bytes/second}"
-    sum:
-      value_type: int
-      input_type: ""
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: []
-  apache.requests_per_sec:
-    enabled: true
-    description: Incoming requests per second
-    unit: "{request/second}"
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: []

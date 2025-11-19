@@ -45,14 +45,14 @@ func Transform(job *batchv1.Job) *batchv1.Job {
 	return &batchv1.Job{
 		ObjectMeta: metadata.TransformObjectMeta(job.ObjectMeta),
 		Spec: batchv1.JobSpec{
-			Completions: job.Spec.Completions,
-			Parallelism: job.Spec.Parallelism,
+			Completions:  job.Spec.Completions,
+			Parallelism:  job.Spec.Parallelism,
 			BackoffLimit: job.Spec.BackoffLimit,
 		},
 		Status: batchv1.JobStatus{
-			Active:    job.Status.Active,
-			Succeeded: job.Status.Succeeded,
-			Failed:    job.Status.Failed,
+			Active:         job.Status.Active,
+			Succeeded:      job.Status.Succeeded,
+			Failed:         job.Status.Failed,
 			CompletionTime: job.Status.CompletionTime,
 		},
 	}

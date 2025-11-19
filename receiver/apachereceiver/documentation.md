@@ -12,6 +12,14 @@ metrics:
     enabled: false
 ```
 
+### apache.bytes_per_sec
+
+Served bytes per second
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {bytes/second} | Sum | Int | Cumulative | true | Development |
+
 ### apache.connections.async
 
 The number of connections in different asynchronous states reported by Apache's server-status.
@@ -26,37 +34,29 @@ The number of connections in different asynchronous states reported by Apache's 
 | ---- | ----------- | ------ | -------- |
 | connection_state | The asynchronous connection state reported by Apache's server-status. | Str: ``writing``, ``keepalive``, ``closing`` | Recommended |
 
-### apache.bytes_per_sec
-
-Served bytes per second
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {bytes/second} | Sum | Int | Cumulative | true |
-
 ### apache.conns_async_closing
 
 The number of asynchronous closing connections.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connections} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connections} | Gauge | Int | Development |
 
 ### apache.conns_async_keep_alive
 
 The number of asynchronous keep alive connections.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connections} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connections} | Gauge | Int | Development |
 
 ### apache.conns_async_writing
 
 The number of asynchronous writes connections.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {connections} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {connections} | Gauge | Int | Development |
 
 ### apache.cpu.load
 
@@ -117,9 +117,9 @@ The average server load during the last 5 minutes.
 
 The maximum number of workers apache web server can start.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {thread} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {thread} | Gauge | Int | Development |
 
 ### apache.request.time
 
@@ -141,9 +141,9 @@ The number of requests serviced by the HTTP server per second.
 
 Incoming requests per second
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {request/second} | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {request/second} | Sum | Int | Cumulative | true | Development |
 
 ### apache.scoreboard
 

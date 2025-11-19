@@ -183,7 +183,6 @@ func TestDiskSpeedCalculator_Calculate(t *testing.T) {
 }
 
 func Test_DiskSpeed(t *testing.T) {
-
 	timeStart := disk.IOCountersStat{
 		Name:       "device0",
 		ReadBytes:  1,
@@ -226,7 +225,8 @@ func Test_diskCounterForDeviceName(t *testing.T) {
 			times: map[string]disk.IOCountersStat{
 				"device0": {Name: "device0"},
 				"device1": {Name: "device1"},
-				"device2": {Name: "device2"}},
+				"device2": {Name: "device2"},
+			},
 			expectedErr: ErrIOCounterStatNotFound,
 		},
 		{
@@ -235,7 +235,8 @@ func Test_diskCounterForDeviceName(t *testing.T) {
 			times: map[string]disk.IOCountersStat{
 				"device0": {Name: "device0"},
 				"device1": {Name: "device1"},
-				"device2": {Name: "device2"}},
+				"device2": {Name: "device2"},
+			},
 			expectedTimeStat: disk.IOCountersStat{Name: "device1"},
 		},
 	}
