@@ -98,7 +98,7 @@ func (d *Detector) Detect(ctx context.Context) (resource pcommon.Resource, schem
 			attr := fmt.Sprintf("Interface: %s, IP: %s", result.InterfaceName, result.IP.String())
 			hostIPAttribute = append(hostIPAttribute, attr)
 		}
-	
+
 	}
 
 	var hostMACAttribute []any

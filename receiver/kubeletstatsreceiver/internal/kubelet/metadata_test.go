@@ -70,7 +70,7 @@ func TestSetExtraLabels(t *testing.T) {
 	}{
 		{
 			name:     "no_labels",
-			metadata: NewMetadata([]MetadataLabel{}, nil, nil, NodeCapacity{}, nil),
+			metadata: NewMetadata([]MetadataLabel{}, nil, nil, NodeInfo{}, nil),
 			args:     []string{"uid", "container.id", "container"},
 			want:     map[string]any{},
 		},
@@ -98,7 +98,7 @@ func TestSetExtraLabels(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			args: []string{"uid-1234", "container.id", "container1"},
 			want: map[string]any{
 				string(MetadataLabelContainerID): "test-container",
@@ -128,7 +128,7 @@ func TestSetExtraLabels(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			args: []string{"uid-1234", "container.id", "init-container1"},
 			want: map[string]any{
 				string(MetadataLabelContainerID): "test-init-container",
@@ -136,7 +136,7 @@ func TestSetExtraLabels(t *testing.T) {
 		},
 		{
 			name:      "set_container_id_no_metadata",
-			metadata:  NewMetadata([]MetadataLabel{MetadataLabelContainerID}, nil, nil, NodeCapacity{}, nil),
+			metadata:  NewMetadata([]MetadataLabel{MetadataLabelContainerID}, nil, nil, NodeInfo{}, nil),
 			args:      []string{"uid-1234", "container.id", "container1"},
 			wantError: "pods metadata were not fetched",
 		},
@@ -158,7 +158,7 @@ func TestSetExtraLabels(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			args:      []string{"uid-1234", "container.id", "container1"},
 			wantError: "pod \"uid-1234\" with container \"container1\" not found in the fetched metadata",
 		},
@@ -180,13 +180,13 @@ func TestSetExtraLabels(t *testing.T) {
 						},
 					},
 				},
-			},  &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			args:      []string{"uid-1234", "container.id", "container1"},
 			wantError: "pod \"uid-1234\" with container \"container1\" has an empty containerID",
 		},
 		{
 			name:      "set_volume_type_no_metadata",
-			metadata:  NewMetadata([]MetadataLabel{MetadataLabelVolumeType}, nil, nil, NodeCapacity{}, nil),
+			metadata:  NewMetadata([]MetadataLabel{MetadataLabelVolumeType}, nil, nil, NodeInfo{}, nil),
 			args:      []string{"uid-1234", "k8s.volume.type", "volume0"},
 			wantError: "pods metadata were not fetched",
 		},
@@ -208,7 +208,7 @@ func TestSetExtraLabels(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			args:      []string{"uid-1234", "k8s.volume.type", "volume1"},
 			wantError: "pod \"uid-1234\" with volume \"volume1\" not found in the fetched metadata",
 		},
@@ -376,8 +376,8 @@ func TestSetExtraLabelsForVolumeTypes(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, func(*metadata.ResourceBuilder, string, string, string) error {
-				return return []metadata.ResourceMetricsOption{}, nil
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, func(*metadata.ResourceBuilder, string, string, string) ([]metadata.ResourceMetricsOption, error) {
+				return []metadata.ResourceMetricsOption{}, nil
 			})
 			rac := metadata.DefaultResourceAttributesConfig()
 			rac.AwsVolumeID.Enabled = true
@@ -413,7 +413,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 	}{
 		{
 			name:     "no metadata",
-			metadata: NewMetadata([]MetadataLabel{}, nil, nil, NodeCapacity{}, nil),
+			metadata: NewMetadata([]MetadataLabel{}, nil, nil, NodeInfo{}, nil),
 		},
 		{
 			name: "pod happy path",
@@ -455,7 +455,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			podUID:                     "uid-1234",
 			containerName:              "container-2",
 			wantPodCPULimit:            2.1,
@@ -507,7 +507,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			podUID: "uid-12345",
 		},
 		{
@@ -550,7 +550,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			podUID:               "uid-1234",
 			containerName:        "container-3",
 			wantPodCPULimit:      0.7,
@@ -590,7 +590,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			podUID:                     "uid-1234",
 			containerName:              "container-2",
 			wantPodCPURequest:          2,
@@ -630,7 +630,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 						},
 					},
 				},
-			}, &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			podUID:                   "uid-1234",
 			containerName:            "container-2",
 			wantPodCPULimit:          2,
@@ -668,7 +668,7 @@ func TestCpuAndMemoryGetters(t *testing.T) {
 						},
 					},
 				},
-			},  &v1.NodeList{Items: []v1.Node{}}, NodeCapacity{}, nil),
+			}, &v1.NodeList{Items: []v1.Node{}}, NodeInfo{}, nil),
 			podUID:                     "uid-1234",
 			containerName:              "container-1",
 			wantContainerCPULimit:      1,
