@@ -379,7 +379,7 @@ func (c *mockClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	var flatError error
 	if totalErrs > 0 {
 		errorString := flattenErrorMap(parseErrs)
-		flatError = fmt.Errorf(errorString)
+		flatError = fmt.Errorf("%s", errorString)
 	}
 
 	return ret, flatError, totalErrs
