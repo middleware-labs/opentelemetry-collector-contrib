@@ -375,7 +375,7 @@ func (l *logsReceiver) processEvents(now pcommon.Timestamp, logGroupName string,
 			}
 			resourceAttributes.PutStr("cloudwatch.log.stream", logStreamName)
 
-			//middleware.io specific attributes
+			// middleware.io specific attributes
 			resourceAttributes.PutStr("channel", conventions.AttributeCloudProviderAWS)
 			resourceAttributes.PutStr("aws.scraping_approach", "api_polling")
 			resourceAttributes.PutStr("aws.polling_approach", l.pollingApproach)

@@ -9,9 +9,9 @@ import (
 )
 
 func TestResourceBuilder(t *testing.T) {
-	for _, test := range []string{"default", "all_set", "none_set"} {
-		t.Run(test, func(t *testing.T) {
-			cfg := loadResourceAttributesConfig(t, test)
+	for _, tt := range []string{"default", "all_set", "none_set"} {
+		t.Run(tt, func(t *testing.T) {
+			cfg := loadResourceAttributesConfig(t, tt)
 			rb := NewResourceBuilder(cfg)
 			rb.SetDatabase("database-val")
 			rb.SetMongodbDatabaseName("mongodb.database.name-val")
@@ -21,7 +21,7 @@ func TestResourceBuilder(t *testing.T) {
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
 
-			switch test {
+			switch tt {
 			case "default":
 				assert.Equal(t, 3, res.Attributes().Len())
 			case "all_set":
@@ -30,7 +30,7 @@ func TestResourceBuilder(t *testing.T) {
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
 			default:
-				assert.Failf(t, "unexpected test case: %s", test)
+				assert.Failf(t, "unexpected test case: %s", tt)
 			}
 
 			val, ok := res.Attributes().Get("database")
@@ -41,7 +41,7 @@ func TestResourceBuilder(t *testing.T) {
 			val, ok = res.Attributes().Get("mongodb.database.name")
 			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "mongodb.database.name-val", val.Str())
+				assert.Equal(t, "mongodb.database.name-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("server.address")
 			assert.True(t, ok)
@@ -49,7 +49,7 @@ func TestResourceBuilder(t *testing.T) {
 				assert.Equal(t, "server.address-val", val.Str())
 			}
 			val, ok = res.Attributes().Get("server.port")
-			assert.Equal(t, test == "all_set", ok)
+			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.EqualValues(t, 11, val.Int())
 			}

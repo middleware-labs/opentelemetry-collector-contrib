@@ -3,6 +3,7 @@
 package kubeletstatsreceiver
 
 import (
+	"os"
 	"testing"
 )
 

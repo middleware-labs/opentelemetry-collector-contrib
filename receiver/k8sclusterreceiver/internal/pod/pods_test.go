@@ -447,7 +447,6 @@ func TestTransform(t *testing.T) {
 					},
 				},
 			},
-			ServiceAccountName: "my-service-account",
 		},
 		Status: corev1.PodStatus{
 			Phase:     corev1.PodRunning,
@@ -513,7 +512,6 @@ func TestTransform(t *testing.T) {
 					},
 				},
 			},
-			ServiceAccountName: "my-service-account",
 		},
 		Status: corev1.PodStatus{
 			Phase:  corev1.PodRunning,
@@ -749,104 +747,4 @@ func TestGetObjectFromStore_ReturnsError(t *testing.T) {
 
 	require.Error(t, err)
 	require.Nil(t, obj)
-}
-
-func TestGetServiceNameForPod(t *testing.T) {
-	// Create a fake Kubernetes client
-	client := fake.NewSimpleClientset()
-
-	// Create a Pod with labels
-	pod := testutils.NewPodWithContainer(
-		"1",
-		testutils.NewPodSpecWithContainer("container-name"),
-		testutils.NewPodStatusWithContainer("container-name", containerIDWithPreifx("container-id")),
-	)
-
-	// Create a Service with the same labels as the Pod
-	service := &corev1.Service{
-		ObjectMeta: v1.ObjectMeta{
-			Name:      "test-service",
-			Namespace: "test-namespace",
-		},
-		Spec: corev1.ServiceSpec{
-			Selector: map[string]string{
-				"foo":  "bar",
-				"foo1": "",
-			},
-		},
-	}
-
-	// Create the Pod and Service in the fake client
-	_, err := client.CoreV1().Pods(pod.Namespace).Create(context.TODO(), pod, v1.CreateOptions{})
-	assert.NoError(t, err)
-
-	_, err = client.CoreV1().Services(service.Namespace).Create(context.TODO(), service, v1.CreateOptions{})
-	assert.NoError(t, err)
-
-	// Call the function
-	serviceName := getServiceNameForPod(client, pod)
-
-	// Verify the result
-	expectedServiceName := "test-service"
-
-	assert.Equal(t, expectedServiceName, serviceName)
-}
-
-func TestGetServiceAccountNameForPod(t *testing.T) {
-	// Create a fake Kubernetes client
-	client := fake.NewSimpleClientset()
-
-	// Create a Pod with labels
-	pod := testutils.NewPodWithContainer(
-		"1",
-		&corev1.PodSpec{
-			ServiceAccountName: "test-service-account",
-		},
-		testutils.NewPodStatusWithContainer("container-name", containerIDWithPreifx("container-id")),
-	)
-
-	// Create the Pod in the fake client
-	_, err := client.CoreV1().Pods(pod.Namespace).Create(context.TODO(), pod, v1.CreateOptions{})
-	assert.NoError(t, err)
-
-	// Call the function
-	serviceAccountName := getServiceAccountNameForPod(client, pod)
-
-	// Verify the result
-	expectedServiceAccountName := "test-service-account"
-
-	assert.Equal(t, expectedServiceAccountName, serviceAccountName)
-}
-
-func TestGetJobInfoForPod(t *testing.T) {
-	// Create a fake Kubernetes client
-	client := fake.NewSimpleClientset()
-
-	// Create a Pod with labels
-	pod := testutils.NewPodWithContainer(
-		"1",
-		testutils.NewPodSpecWithContainer("container-name"),
-		testutils.NewPodStatusWithContainer("container-name", containerIDWithPreifx("container-id")),
-	)
-
-	// Create a Job with the same labels as the Pod
-	job := testutils.NewJob("1")
-
-	// Create the Pod and Job in the fake client
-	_, err := client.CoreV1().Pods(pod.Namespace).Create(context.TODO(), pod, v1.CreateOptions{})
-	assert.NoError(t, err)
-
-	_, err = client.BatchV1().Jobs(job.Namespace).Create(context.TODO(), job, v1.CreateOptions{})
-	assert.NoError(t, err)
-
-	// Call the function
-	jobInfo := getJobInfoForPod(client, pod)
-
-	// Verify the result
-	expectedJobInfo := JobInfo{
-		Name: "test-job-1",
-		UID:  job.UID,
-	}
-
-	assert.Equal(t, expectedJobInfo, jobInfo)
 }

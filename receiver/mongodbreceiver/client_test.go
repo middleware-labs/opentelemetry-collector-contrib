@@ -120,10 +120,12 @@ func (fc *fakeClient) ConnPoolStats(ctx context.Context, dbName string) (bson.M,
 	args := fc.Called(ctx, dbName)
 	return args.Get(0).(bson.M), args.Error(1)
 }
+
 func (fc *fakeClient) ProfilingStats(ctx context.Context, dbName string) (bson.M, error) {
 	args := fc.Called(ctx, dbName)
 	return args.Get(0).(bson.M), args.Error(1)
 }
+
 func (fc *fakeClient) QueryStats(ctx context.Context, dbName string) ([]SlowOperationEvent, error) {
 	args := fc.Called(ctx, dbName)
 	return args.Get(0).([]SlowOperationEvent), args.Error(1)
@@ -324,6 +326,7 @@ func loadDBStatsAsMap() (bson.M, error) {
 func loadReplicationInfoAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/replicationInfo.json")
 }
+
 func loadFsyncLockInfoAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/fsynclockInfo.json")
 }
@@ -331,15 +334,19 @@ func loadFsyncLockInfoAsMap() (bson.M, error) {
 func loadReplSetStatusAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/replSetStatus.json")
 }
+
 func loadReplSetConfigAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/replSetConfig.json")
 }
+
 func loadJumboStatsAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/jumboStats.json")
 }
+
 func loadCollectionStatsAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/collectionStats.json")
 }
+
 func loadConnPoolStatsAsMap() (bson.M, error) {
 	return loadTestFileAsMap("./testdata/connPoolStats.json")
 }

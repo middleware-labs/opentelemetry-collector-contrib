@@ -326,7 +326,7 @@ func (s *mongodbScraper) collectJumboStats(ctx context.Context, now pcommon.Time
 }
 
 func (s *mongodbScraper) collectOplogStats(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	//Oplog stats are scraped using local database
+	// Oplog stats are scraped using local database
 	databaseName := "local"
 
 	oplogStats, err := s.client.GetReplicationInfo(ctx)
@@ -346,7 +346,7 @@ func (s *mongodbScraper) collectOplogStats(ctx context.Context, now pcommon.Time
 }
 
 func (s *mongodbScraper) collectFsyncLockStatus(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	//FsyncLock stats are scraped using admin database
+	// FsyncLock stats are scraped using admin database
 	databaseName := "admin"
 
 	fsyncLockStatus, err := s.client.GetFsyncLockInfo(ctx)
@@ -365,7 +365,7 @@ func (s *mongodbScraper) collectFsyncLockStatus(ctx context.Context, now pcommon
 	)
 }
 
-func (s *mongodbScraper) collectCollectionStats(ctx context.Context, now pcommon.Timestamp, databaseName string, collectionName string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) collectCollectionStats(ctx context.Context, now pcommon.Timestamp, databaseName, collectionName string, errs *scrapererror.ScrapeErrors) {
 	collStats, err := s.client.CollectionStats(ctx, databaseName, collectionName)
 	if err != nil {
 		errs.AddPartial(1, fmt.Errorf("failed to fetch collection stats metrics: %w", err))
@@ -383,7 +383,7 @@ func (s *mongodbScraper) collectCollectionStats(ctx context.Context, now pcommon
 }
 
 func (s *mongodbScraper) collectReplSetStatus(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	//ReplSetStatus are scraped using admin database
+	// ReplSetStatus are scraped using admin database
 	database := "admin"
 	status, err := s.client.ReplSetStatus(ctx)
 	if err != nil {
@@ -392,7 +392,6 @@ func (s *mongodbScraper) collectReplSetStatus(ctx context.Context, now pcommon.T
 	}
 	replset, ok := status["set"].(string)
 	if ok {
-
 		for _, mem := range status["members"].(bson.A) {
 			member := mem.(bson.M)
 			member_name := member["name"].(string)
@@ -416,8 +415,9 @@ func (s *mongodbScraper) collectReplSetStatus(ctx context.Context, now pcommon.T
 		metadata.WithResource(rb.Emit()),
 	)
 }
+
 func (s *mongodbScraper) collectReplSetConfig(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	//ReplSetConfig are scraped using admin database
+	// ReplSetConfig are scraped using admin database
 	database := "admin"
 	config, err := s.client.ReplSetConfig(ctx)
 	if err != nil {
@@ -462,10 +462,10 @@ func (s *mongodbScraper) recordDBStats(now pcommon.Timestamp, doc bson.M, dbName
 	s.recordMongodbStatsAvgobjsize(now, doc, dbName, errs)
 	s.recordMongodbStatsCollections(now, doc, dbName, errs)
 	s.recordMongodbStatsDatasize(now, doc, dbName, errs)
-	s.recordMongodbStatsFilesize(now, doc, dbName, errs) //mmapv1 only
+	s.recordMongodbStatsFilesize(now, doc, dbName, errs) // mmapv1 only
 	s.recordMongodbStatsIndexes(now, doc, dbName, errs)
 	s.recordMongodbStatsIndexsize(now, doc, dbName, errs)
-	s.recordMongodbStatsNumextents(now, doc, dbName, errs) //mmapv1 only
+	s.recordMongodbStatsNumextents(now, doc, dbName, errs) // mmapv1 only
 	s.recordMongodbStatsObjects(now, doc, dbName, errs)
 	s.recordMongodbStatsStoragesize(now, doc, dbName, errs)
 }
@@ -553,11 +553,11 @@ func (s *mongodbScraper) recordNormalServerStats(now pcommon.Timestamp, doc bson
 	// indexcounters
 	// Mongo version 4.4+ no longer returns indexcounters since it is part of the obsolete MMAPv1
 	if s.mongoVersion != nil && s.mongoVersion.LessThan(mongo44) {
-		s.recordMongodbIndexcountersAccessesps(now, doc, dbName, errs) //ps
-		s.recordMongodbIndexcountersHitsps(now, doc, dbName, errs)     //ps
-		s.recordMongodbIndexcountersMissesps(now, doc, dbName, errs)   //ps
+		s.recordMongodbIndexcountersAccessesps(now, doc, dbName, errs) // ps
+		s.recordMongodbIndexcountersHitsps(now, doc, dbName, errs)     // ps
+		s.recordMongodbIndexcountersMissesps(now, doc, dbName, errs)   // ps
 		s.recordMongodbIndexcountersMissratio(now, doc, dbName, errs)
-		s.recordMongodbIndexcountersResetsps(now, doc, dbName, errs) //ps
+		s.recordMongodbIndexcountersResetsps(now, doc, dbName, errs) // ps
 	}
 
 	// locks
@@ -703,9 +703,9 @@ func (s *mongodbScraper) recordNormalServerStats(now pcommon.Timestamp, doc bson
 	s.recordMongodbOpcountersreplQueryps(now, doc, dbName, errs)   // ps
 	s.recordMongodbOpcountersreplUpdateps(now, doc, dbName, errs)  // ps
 	// oplatencies
-	s.recordMongodbOplatenciesCommandsLatency(now, doc, dbName, errs) //with ps
-	s.recordMongodbOplatenciesReadsLatency(now, doc, dbName, errs)    //with ps
-	s.recordMongodbOplatenciesWritesLatency(now, doc, dbName, errs)   //with ps
+	s.recordMongodbOplatenciesCommandsLatency(now, doc, dbName, errs) // with ps
+	s.recordMongodbOplatenciesReadsLatency(now, doc, dbName, errs)    // with ps
+	s.recordMongodbOplatenciesWritesLatency(now, doc, dbName, errs)   // with ps
 
 	// tcmalloc
 	s.recordMongodbTcmallocGenericCurrentAllocatedBytes(now, doc, dbName, errs)
@@ -770,6 +770,7 @@ func (s *mongodbScraper) recordJumboStats(now pcommon.Timestamp, doc bson.M, dbN
 	s.recordMongodbChunksJumbo(now, doc, dbName, errs)
 	s.recordMongodbChunksTotal(now, doc, dbName, errs)
 }
+
 func (s *mongodbScraper) recordOplogStats(now pcommon.Timestamp, doc bson.M, dbName string, errs *scrapererror.ScrapeErrors) {
 	// oplog
 	s.recordMongodbOplogLogsizemb(now, doc, dbName, errs)
@@ -777,7 +778,7 @@ func (s *mongodbScraper) recordOplogStats(now pcommon.Timestamp, doc bson.M, dbN
 	s.recordMongodbOplogUsedsizemb(now, doc, dbName, errs)
 }
 
-func (s *mongodbScraper) recordCollectionStats(now pcommon.Timestamp, doc bson.M, database string, collection string, errs *scrapererror.ScrapeErrors) {
+func (s *mongodbScraper) recordCollectionStats(now pcommon.Timestamp, doc bson.M, database, collection string, errs *scrapererror.ScrapeErrors) {
 	// collectiondbName
 	s.recordMongodbCollectionAvgobjsize(now, doc, database, collection, errs)
 	s.recordMongodbCollectionCapped(now, doc, database, collection, errs)
