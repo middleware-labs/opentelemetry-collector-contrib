@@ -133,7 +133,9 @@ func TestValidate(t *testing.T) {
 						},
 						NamedConfigs: map[string]StreamConfig{
 							"some-log-group": {
-								Names: []string{"some-lg-name"},
+								Names: []*string{
+									func() *string { s := "some-lg-name"; return &s }(),
+								},
 							},
 						},
 					},
@@ -300,7 +302,9 @@ func TestLoadLogsConfig(t *testing.T) {
 					Groups: GroupConfig{
 						NamedConfigs: map[string]StreamConfig{
 							"/aws/eks/dev-0/cluster": {
-								Names: []string{"kube-apiserver-ea9c831555adca1815ae04b87661klasdj"},
+								Names: []*string{
+									func() *string { s := "kube-apiserver-ea9c831555adca1815ae04b87661klasdj"; return &s }(),
+								},
 							},
 						},
 					},

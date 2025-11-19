@@ -24,6 +24,7 @@ type CPUMetrics struct {
 	NodeUtilization    RecordDoubleDataPointFunc
 	LimitUtilization   RecordDoubleDataPointFunc
 	RequestUtilization RecordDoubleDataPointFunc
+	Utilization        RecordDoubleDataPointFunc
 }
 
 var NodeCPUMetrics = CPUMetrics{

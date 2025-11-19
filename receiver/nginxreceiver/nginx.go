@@ -38,7 +38,7 @@ type StubConnections struct {
 }
 
 // NewNginxClient creates an NginxClient.
-func NewNginxClient(httpClient *http.Client, apiEndpoint string, vtsEndpoint string) (*NginxClient, error) {
+func NewNginxClient(httpClient *http.Client, apiEndpoint, vtsEndpoint string) (*NginxClient, error) {
 	client := &NginxClient{
 		apiEndpoint: apiEndpoint,
 		vtsEndpoint: vtsEndpoint,
@@ -99,7 +99,6 @@ func (client *NginxClient) GetVtsStats() (*NginxVtsStatus, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-
 		return nil, fmt.Errorf("expected %v response, got %v", http.StatusOK, resp.StatusCode)
 	}
 

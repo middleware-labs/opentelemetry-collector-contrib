@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	Type = component.MustNewType("apache")
+	Type      = component.MustNewType("apache")
+	ScopeName = "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachereceiver"
 )
 
 const (

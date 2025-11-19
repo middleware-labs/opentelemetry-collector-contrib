@@ -164,9 +164,9 @@ Outgoing packets dropped.
 
 Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 ## Optional Metrics
 
