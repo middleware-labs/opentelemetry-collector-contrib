@@ -268,19 +268,6 @@ func TestUnstructuredListToLogData(t *testing.T) {
 			}},
 		}
 
-		pulledEvent := &unstructured.UnstructuredList{
-			Items: []unstructured.Unstructured{{
-				Object: map[string]any{
-					"kind":       "Event",
-					"apiVersion": "v1",
-					"metadata": map[string]any{
-						"name":      "generic-name",
-						"namespace": "my-namespace",
-					},
-				},
-			}},
-		}
-
 		logEntryFromWatchEvent, err := watchObjectsToLogData(watchedEvent, observedTimestamp, config, version)
 		assert.NoError(t, err)
 		assert.NotNil(t, logEntryFromWatchEvent)
