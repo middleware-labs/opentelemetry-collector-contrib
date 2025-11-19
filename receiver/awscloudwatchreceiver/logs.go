@@ -14,8 +14,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -34,8 +32,9 @@ const (
 )
 
 type logsReceiver struct {
-	settings                      receiver.Settingsregion  string
-	profile string
+	settings receiver.Settings
+	region   string
+	profile  string
 
 	pollingApproach string
 	// Credentials
@@ -50,7 +49,8 @@ type logsReceiver struct {
 	maxEventsPerRequest int
 	nextStartTime       time.Time
 	groupRequests       []groupRequest
-	autodiscover        *AutodiscoverConfig
+
+	autodiscover *AutodiscoverConfig
 
 	client                        client
 	consumer                      consumer.Logs
@@ -60,18 +60,14 @@ type logsReceiver struct {
 	cloudwatchCheckpointPersister *cloudwatchCheckpointPersister
 }
 
-const maxLogGroupsPerDiscovery = int32(50)
-
 type client interface {
 	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(options *cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
 	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(options *cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
-	DescribeLogGroups(ctx context.Context, input *cloudwatchlogs.DescribeLogGroupsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
-	FilterLogEvents(ctx context.Context, input *cloudwatchlogs.FilterLogEventsInput, opts ...func(*cloudwatchlogs.Options)) (*cloudwatchlogs.FilterLogEventsOutput, error)
 }
 
 type streamNames struct {
 	group string
-	names []string
+	names []*string
 }
 
 func (sn *streamNames) request(limit int, nextToken string, st, et *time.Time) *cloudwatchlogs.FilterLogEventsInput {
@@ -153,15 +149,15 @@ func newLogsReceiver(cfg *Config, settings receiver.Settings, consumer consumer.
 	}
 
 	return &logsReceiver{
-		settings:            settings,
-		region:  cfg.Region,
-		profile: cfg.Profile,
+		settings: settings,
+		region:   cfg.Region,
+		profile:  cfg.Profile,
 
-		awsAccountId: cfg.AwsAccountId,
-		awsRoleArn:   cfg.AwsRoleArn,
-		externalId:   cfg.ExternalId,
-		awsAccessKey: cfg.AwsAccessKey,
-		awsSecretKey: cfg.AwsSecretKey,
+		awsAccountId:        cfg.AwsAccountId,
+		awsRoleArn:          cfg.AwsRoleArn,
+		externalId:          cfg.ExternalId,
+		awsAccessKey:        cfg.AwsAccessKey,
+		awsSecretKey:        cfg.AwsSecretKey,
 		consumer:            consumer,
 		maxEventsPerRequest: cfg.Logs.MaxEventsPerRequest,
 		imdsEndpoint:        cfg.IMDSEndpoint,
@@ -447,7 +443,7 @@ func (l *logsReceiver) discoverGroups(ctx context.Context, auto *AutodiscoverCon
 			}
 
 			numGroups++
-			l.logger.Debug("discovered log group", zap.String("log group", *lg.LogGroupName))
+			l.settings.Logger.Debug("discovered log group", zap.String("log group", *lg.LogGroupName))
 
 			// default behavior is to collect all if not stream filtered
 			if len(auto.Streams.Names) == 0 && len(auto.Streams.Prefixes) == 0 {
