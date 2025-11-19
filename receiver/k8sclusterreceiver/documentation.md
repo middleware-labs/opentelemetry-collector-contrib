@@ -16,17 +16,17 @@ metrics:
 
 The count of cluster roles.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### k8s.clusterrolebinding.subject_count
 
 The subject count of cluster role bindings.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### k8s.container.cpu_limit
 
@@ -160,9 +160,9 @@ Total number of available pods (ready for at least minReadySeconds) targeted by 
 
 Total number of current non-terminated pods targeted by this deployment
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {pod} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {pod} | Gauge | Int | Development |
 
 ### k8s.deployment.desired
 
@@ -176,9 +176,9 @@ Number of desired pods in this deployment
 
 Total number of non-terminated pods targeted by this deployment that have the updated version specified in the deployment spec
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {pod} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {pod} | Gauge | Int | Development |
 
 ### k8s.hpa.current_replicas
 
@@ -216,9 +216,9 @@ Minimum number of replicas to which the autoscaler can scale up.
 
 The rule count of ingress.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### k8s.job.active_pods
 
@@ -232,9 +232,9 @@ The number of actively running pods for a job
 
 Specifies the number of retries before marking a job failed
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-|  | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 ### k8s.job.desired_successful_pods
 
@@ -280,25 +280,25 @@ The current phase of namespaces (1 for active and 0 for terminating)
 
 The capacity of persistent volume.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 ### k8s.persistentvolumeclaim.allocated
 
 The allocated capacity of persistent volume.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 ### k8s.persistentvolumeclaim.capacity
 
 The capacity of persistent volume claim.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| By | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 ### k8s.pod.phase
 
@@ -320,9 +320,9 @@ Total number of available pods (ready for at least minReadySeconds) targeted by 
 
 Total number of current pods targeted by this replicaset
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {pod} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {pod} | Gauge | Int | Development |
 
 ### k8s.replicaset.desired
 
@@ -336,9 +336,9 @@ Number of desired pods in this replicaset
 
 Total number of ready pods (pods that have passed readiness checks) targeted by this replicaset
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| {pod} | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {pod} | Gauge | Int | Development |
 
 ### k8s.replication_controller.available
 
@@ -388,33 +388,33 @@ The usage for a particular resource in a specific namespace. Will only be sent i
 
 The count of roles.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### k8s.rolebinding.subject_count
 
 The subject count of role bindings.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### k8s.service.port_count
 
 The number of ports in the service
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-|  | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
 
 ### k8s.serviceaccount.secret_count
 
 The count of secrets in Service Account.
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### k8s.statefulset.current_pods
 

@@ -227,6 +227,8 @@ filter_set_include:
       enabled: true
       metrics_include:
         - regexp: ".*"
+      events_include:
+        - regexp: ".*"
     postgresql.index.name:
       enabled: true
       metrics_include:
@@ -256,6 +258,8 @@ filter_set_exclude:
     postgresql.db.version:
       enabled: true
       metrics_exclude:
+        - strict: "postgresql.db.version-val"
+      events_exclude:
         - strict: "postgresql.db.version-val"
     postgresql.index.name:
       enabled: true

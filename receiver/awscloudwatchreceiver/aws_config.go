@@ -30,8 +30,8 @@ func (l *logsReceiver) configureAWSClient(ctx context.Context) error {
 	switch l.pollingApproach {
 	case awsCredentialModeProfile:
 		cfg, err = l.configureProfiling(ctx)
-		//creds, _ := cfg.Credentials.Retrieve(ctx)
-		//fmt.Println("AccessKeyID: ", creds.AccessKeyID)
+		// creds, _ := cfg.Credentials.Retrieve(ctx)
+		// fmt.Println("AccessKeyID: ", creds.AccessKeyID)
 	case awsCredentialModeRoleDelegation:
 		cfg, err = l.configureRoleDelegation(ctx)
 	case awsCredentialModeAccessKeys:

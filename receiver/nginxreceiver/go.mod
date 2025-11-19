@@ -4,7 +4,6 @@ go 1.24.0
 
 require (
 	github.com/google/go-cmp v0.7.0
-	github.com/nginx/nginx-prometheus-exporter v1.4.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.139.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.139.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.139.0
@@ -25,12 +24,6 @@ require (
 	go.opentelemetry.io/collector/scraper/scraperhelper v0.139.0
 	go.uber.org/goleak v1.3.0
 	go.uber.org/zap v1.27.0
-)
-
-require (
-	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.16 // indirect
 )
 
 require (

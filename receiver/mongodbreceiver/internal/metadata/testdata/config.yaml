@@ -35,8 +35,6 @@ all_set:
       enabled: true
     mongodb.collection.count:
       enabled: true
-    mongodb.commands.rate:
-      enabled: true
     mongodb.collection.indexsizes:
       enabled: true
     mongodb.collection.max:
@@ -50,6 +48,8 @@ all_set:
     mongodb.collection.size:
       enabled: true
     mongodb.collection.storagesize:
+      enabled: true
+    mongodb.commands.rate:
       enabled: true
     mongodb.connection.count:
       enabled: true
@@ -133,9 +133,9 @@ all_set:
       enabled: true
     mongodb.extra_info.page_faultsps:
       enabled: true
-    mongodb.fsynclocked:
-      enabled: true
     mongodb.flushes.rate:
+      enabled: true
+    mongodb.fsynclocked:
       enabled: true
     mongodb.getmores.rate:
       enabled: true
@@ -167,8 +167,6 @@ all_set:
       enabled: true
     mongodb.index.size:
       enabled: true
-    mongodb.inserts.rate:
-      enabled: true
     mongodb.indexcounters.accessesps:
       enabled: true
     mongodb.indexcounters.hitsps:
@@ -178,6 +176,8 @@ all_set:
     mongodb.indexcounters.missratio:
       enabled: true
     mongodb.indexcounters.resetsps:
+      enabled: true
+    mongodb.inserts.rate:
       enabled: true
     mongodb.lock.acquire.count:
       enabled: true
@@ -453,23 +453,11 @@ all_set:
       enabled: true
     mongodb.oplog.usedsizemb:
       enabled: true
+    mongodb.page_faults:
+      enabled: true
     mongodb.profiling.level:
       enabled: true
     mongodb.profiling.slowms:
-      enabled: true
-    mongodb.replset.health:
-      enabled: true
-    mongodb.replset.optime_lag:
-      enabled: true
-    mongodb.replset.replicationlag:
-      enabled: true
-    mongodb.replset.state:
-      enabled: true
-    mongodb.replset.votefraction:
-      enabled: true
-    mongodb.replset.votes:
-      enabled: true
-    mongodb.page_faults:
       enabled: true
     mongodb.queries.rate:
       enabled: true
@@ -484,6 +472,18 @@ all_set:
     mongodb.repl_queries_per_sec:
       enabled: true
     mongodb.repl_updates_per_sec:
+      enabled: true
+    mongodb.replset.health:
+      enabled: true
+    mongodb.replset.optime_lag:
+      enabled: true
+    mongodb.replset.replicationlag:
+      enabled: true
+    mongodb.replset.state:
+      enabled: true
+    mongodb.replset.votefraction:
+      enabled: true
+    mongodb.replset.votes:
       enabled: true
     mongodb.session.count:
       enabled: true
@@ -535,8 +535,6 @@ all_set:
       enabled: true
     mongodb.storage.size:
       enabled: true
-    mongodb.updates.rate:
-      enabled: true
     mongodb.tcmalloc.generic.current_allocated_bytes:
       enabled: true
     mongodb.tcmalloc.generic.heap_size:
@@ -559,9 +557,9 @@ all_set:
       enabled: true
     mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes:
       enabled: true
-    mongodb.uptime:
+    mongodb.updates.rate:
       enabled: true
-    mongodb.wtcache.bytes.read:
+    mongodb.uptime:
       enabled: true
     mongodb.usage.commands.count:
       enabled: true
@@ -654,6 +652,8 @@ all_set:
     mongodb.wiredtiger.concurrenttransactions.write.out:
       enabled: true
     mongodb.wiredtiger.concurrenttransactions.write.totaltickets:
+      enabled: true
+    mongodb.wtcache.bytes.read:
       enabled: true
   resource_attributes:
     database:
@@ -700,8 +700,6 @@ none_set:
       enabled: false
     mongodb.collection.count:
       enabled: false
-    mongodb.commands.rate:
-      enabled: false
     mongodb.collection.indexsizes:
       enabled: false
     mongodb.collection.max:
@@ -715,6 +713,8 @@ none_set:
     mongodb.collection.size:
       enabled: false
     mongodb.collection.storagesize:
+      enabled: false
+    mongodb.commands.rate:
       enabled: false
     mongodb.connection.count:
       enabled: false
@@ -798,9 +798,9 @@ none_set:
       enabled: false
     mongodb.extra_info.page_faultsps:
       enabled: false
-    mongodb.fsynclocked:
-      enabled: false
     mongodb.flushes.rate:
+      enabled: false
+    mongodb.fsynclocked:
       enabled: false
     mongodb.getmores.rate:
       enabled: false
@@ -832,8 +832,6 @@ none_set:
       enabled: false
     mongodb.index.size:
       enabled: false
-    mongodb.inserts.rate:
-      enabled: false
     mongodb.indexcounters.accessesps:
       enabled: false
     mongodb.indexcounters.hitsps:
@@ -843,6 +841,8 @@ none_set:
     mongodb.indexcounters.missratio:
       enabled: false
     mongodb.indexcounters.resetsps:
+      enabled: false
+    mongodb.inserts.rate:
       enabled: false
     mongodb.lock.acquire.count:
       enabled: false
@@ -1118,23 +1118,11 @@ none_set:
       enabled: false
     mongodb.oplog.usedsizemb:
       enabled: false
+    mongodb.page_faults:
+      enabled: false
     mongodb.profiling.level:
       enabled: false
     mongodb.profiling.slowms:
-      enabled: false
-    mongodb.replset.health:
-      enabled: false
-    mongodb.replset.optime_lag:
-      enabled: false
-    mongodb.replset.replicationlag:
-      enabled: false
-    mongodb.replset.state:
-      enabled: false
-    mongodb.replset.votefraction:
-      enabled: false
-    mongodb.replset.votes:
-      enabled: false
-    mongodb.page_faults:
       enabled: false
     mongodb.queries.rate:
       enabled: false
@@ -1149,6 +1137,18 @@ none_set:
     mongodb.repl_queries_per_sec:
       enabled: false
     mongodb.repl_updates_per_sec:
+      enabled: false
+    mongodb.replset.health:
+      enabled: false
+    mongodb.replset.optime_lag:
+      enabled: false
+    mongodb.replset.replicationlag:
+      enabled: false
+    mongodb.replset.state:
+      enabled: false
+    mongodb.replset.votefraction:
+      enabled: false
+    mongodb.replset.votes:
       enabled: false
     mongodb.session.count:
       enabled: false
@@ -1200,8 +1200,6 @@ none_set:
       enabled: false
     mongodb.storage.size:
       enabled: false
-    mongodb.updates.rate:
-      enabled: false
     mongodb.tcmalloc.generic.current_allocated_bytes:
       enabled: false
     mongodb.tcmalloc.generic.heap_size:
@@ -1224,9 +1222,9 @@ none_set:
       enabled: false
     mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes:
       enabled: false
-    mongodb.uptime:
+    mongodb.updates.rate:
       enabled: false
-    mongodb.wtcache.bytes.read:
+    mongodb.uptime:
       enabled: false
     mongodb.usage.commands.count:
       enabled: false
@@ -1319,6 +1317,8 @@ none_set:
     mongodb.wiredtiger.concurrenttransactions.write.out:
       enabled: false
     mongodb.wiredtiger.concurrenttransactions.write.totaltickets:
+      enabled: false
+    mongodb.wtcache.bytes.read:
       enabled: false
   resource_attributes:
     database:

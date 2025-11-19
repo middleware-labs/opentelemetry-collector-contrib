@@ -676,7 +676,6 @@ func (p *postgreSQLScraper) collectRowStats(
 	errs *errsMux,
 ) {
 	rs, err := client.getRowStats(ctx)
-
 	if err != nil {
 		errs.addPartial(err)
 		return
@@ -692,7 +691,6 @@ func (p *postgreSQLScraper) collectRowStats(
 		p.mb.RecordPostgresqlLiveRowsDataPoint(now, s.liveRows, s.relationName)
 		// p.mb.RecordPostgresqlDeadRowsDataPoint(now, s.deadRows, s.relationName)
 	}
-
 }
 
 func (p *postgreSQLScraper) collectQueryPerfStats(
@@ -720,7 +718,6 @@ func (p *postgreSQLScraper) collectBufferHits(
 	errs *errsMux,
 ) {
 	bhs, err := client.getBufferHit(ctx)
-
 	if err != nil {
 		errs.addPartial(err)
 		return

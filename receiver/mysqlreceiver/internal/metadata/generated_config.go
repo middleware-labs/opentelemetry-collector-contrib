@@ -50,13 +50,13 @@ type MetricsConfig struct {
 	MysqlJoins                    MetricConfig `mapstructure:"mysql.joins"`
 	MysqlLocks                    MetricConfig `mapstructure:"mysql.locks"`
 	MysqlLogOperations            MetricConfig `mapstructure:"mysql.log_operations"`
-	MysqlMaxUsedConnections      MetricConfig `mapstructure:"mysql.max_used_connections"`
+	MysqlMaxUsedConnections       MetricConfig `mapstructure:"mysql.max_used_connections"`
 	MysqlMysqlxConnections        MetricConfig `mapstructure:"mysql.mysqlx_connections"`
 	MysqlMysqlxWorkerThreads      MetricConfig `mapstructure:"mysql.mysqlx_worker_threads"`
 	MysqlOpenedResources          MetricConfig `mapstructure:"mysql.opened_resources"`
 	MysqlOperations               MetricConfig `mapstructure:"mysql.operations"`
 	MysqlPageOperations           MetricConfig `mapstructure:"mysql.page_operations"`
-	MysqlPageSize                MetricConfig `mapstructure:"mysql.page_size"`
+	MysqlPageSize                 MetricConfig `mapstructure:"mysql.page_size"`
 	MysqlPerformanceRowsDeleted   MetricConfig `mapstructure:"mysql.performance.rows_deleted"`
 	MysqlPerformanceRowsInserted  MetricConfig `mapstructure:"mysql.performance.rows_inserted"`
 	MysqlPerformanceRowsRead      MetricConfig `mapstructure:"mysql.performance.rows_read"`
@@ -177,6 +177,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		MysqlPageOperations: MetricConfig{
 			Enabled: true,
 		},
+		MysqlPageSize: MetricConfig{
+			Enabled: false,
+		},
 		MysqlPerformanceRowsDeleted: MetricConfig{
 			Enabled: true,
 		},
@@ -188,9 +191,6 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		MysqlPerformanceRowsUpdated: MetricConfig{
 			Enabled: true,
-		},
-		MysqlPageSize: MetricConfig{
-			Enabled: false,
 		},
 		MysqlPreparedStatements: MetricConfig{
 			Enabled: true,

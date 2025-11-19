@@ -30,13 +30,15 @@ var (
 	_ ctxresource.Context     = (*TransformContext)(nil)
 	_ ctxscope.Context        = (*TransformContext)(nil)
 	_ ctxmetric.Context       = (*TransformContext)(nil)
-	 _ zapcore.ObjectMarshaler = (*TransformContext)(nil)
+	_ zapcore.ObjectMarshaler = (*TransformContext)(nil)
 )
 
 // TransformContext represents a Datapoint and all its hierarchy.
-var _ internal.ResourceContext = (*TransformContext)(nil)
-var _ internal.InstrumentationScopeContext = (*TransformContext)(nil)
-var _ zapcore.ObjectMarshaler = (*TransformContext)(nil)
+var (
+	_ internal.ResourceContext             = (*TransformContext)(nil)
+	_ internal.InstrumentationScopeContext = (*TransformContext)(nil)
+	_ zapcore.ObjectMarshaler              = (*TransformContext)(nil)
+)
 
 const (
 	contextName = "DataPoint"

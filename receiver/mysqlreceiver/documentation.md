@@ -88,31 +88,31 @@ The number of bytes in the InnoDB buffer pool.
 
 The number of times each type of command has been executed.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| command | The command types. | Str: ``delete``, ``insert``, ``select``, ``update`` |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| command | The command types. | Str: ``delete``, ``delete_multi``, ``insert``, ``select``, ``update``, ``update_multi`` | Recommended |
 
 ### mysql.connection.active.count
 
 The numner of active connections to the MySQL server
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### mysql.connection.count
 
 The number of connection attempts (successful or not) to the MySQL server.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
 
 ### mysql.double_writes
 
@@ -180,33 +180,33 @@ The total time of I/O wait events for an index.
 
 Rate at which rows are being deleted in InnoDB.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row}/s | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false | Development |
 
 ### mysql.innodb.rows_inserted
 
 Rate at which rows are being inserted in InnoDB.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row}/s | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false | Development |
 
 ### mysql.innodb.rows_read
 
 Rate at which rows are being read in InnoDB.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row}/s | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false | Development |
 
 ### mysql.innodb.rows_updated
 
 Rate at which rows are being updated in InnoDB.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row}/s | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row}/s | Sum | Int | Cumulative | false | Development |
 
 ### mysql.locks
 
@@ -298,33 +298,33 @@ The number of InnoDB page operations.
 
 The number of rows deleted in the database as per the performance schema.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row} | Sum | Int | Cumulative | true | Development |
 
 ### mysql.performance.rows_inserted
 
 The number of rows inserted in the database as per the performance schema.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row} | Sum | Int | Cumulative | true | Development |
 
 ### mysql.performance.rows_read
 
 The number of rows read in the database as per the performance schema.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row} | Sum | Int | Cumulative | true | Development |
 
 ### mysql.performance.rows_updated
 
 The number of rows updated in the database as per the performance schema.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {row} | Sum | Int | Cumulative | true | Development |
 
 ### mysql.prepared_statements
 
@@ -344,25 +344,25 @@ The number of times each type of prepared statement command has been issued.
 
 The number of statements executed by the server.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
 
 ### mysql.query.slow.count
 
 The number of slow queries.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
 
 ### mysql.query.total_errors
 
 The total number of errors while performing queries in the database
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
 
 ### mysql.row_locks
 
@@ -410,66 +410,66 @@ The number of MySQL sorts.
 
 Summary of current and recent statement events.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | false | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
-| kind | Possible event states. | Str: ``errors``, ``warnings``, ``rows_affected``, ``rows_sent``, ``rows_examined``, ``created_tmp_disk_tables``, ``created_tmp_tables``, ``sort_merge_passes``, ``sort_rows``, ``no_index_used`` |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| schema | The schema of the object. | Any Str | Recommended |
+| digest | Digest. | Any Str | Recommended |
+| digest_text | Text before digestion. | Any Str | Recommended |
+| kind | Possible event states. | Str: ``errors``, ``warnings``, ``rows_affected``, ``rows_sent``, ``rows_examined``, ``created_tmp_disk_tables``, ``created_tmp_tables``, ``sort_merge_passes``, ``sort_rows``, ``no_index_used`` | Recommended |
 
 ### mysql.statement_event.count_stars
 
 The total count of executed queries per normalized query and schema.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | false | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| schema | The schema of the object. | Any Str | Recommended |
+| digest | Digest. | Any Str | Recommended |
+| digest_text | Text before digestion. | Any Str | Recommended |
 
 ### mysql.statement_event.errors
 
 the error count of the summarized events
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| schema | The schema of the object. | Any Str | Recommended |
+| digest | Digest. | Any Str | Recommended |
+| digest_text | Text before digestion. | Any Str | Recommended |
 
 ### mysql.statement_event.wait.time
 
 The total wait time of the summarized timed events.
 
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | false |
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| ns | Sum | Int | Cumulative | false | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| schema | The schema of the object. | Any Str | Recommended |
+| digest | Digest. | Any Str | Recommended |
+| digest_text | Text before digestion. | Any Str | Recommended |
 
 ### mysql.table.io.wait.count
 
@@ -535,15 +535,15 @@ The number of created temporary resources.
 
 Total rows in the mysql db
 
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 #### Attributes
 
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| dbname | The name of the database | Any Str |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| dbname | The name of the database | Any Str | Recommended |
 
 ### mysql.uptime
 
@@ -576,28 +576,6 @@ The number of transmitted bytes between server and clients.
 | Name | Description | Values | Requirement Level |
 | ---- | ----------- | ------ | -------- |
 | kind | The name of the transmission direction. | Str: ``received``, ``sent`` | Recommended |
-
-### mysql.commands
-
-The number of times each type of command has been executed.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| 1 | Sum | Int | Cumulative | true | Development |
-
-#### Attributes
-
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| command | The command types. | Str: ``delete``, ``delete_multi``, ``insert``, ``select``, ``update``, ``update_multi`` | Recommended |
-
-### mysql.connection.count
-
-The number of connection attempts (successful or not) to the MySQL server.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| 1 | Sum | Int | Cumulative | true | Development |
 
 ### mysql.connection.errors
 
@@ -667,22 +645,6 @@ The number of statements executed by the server. This includes only statements s
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | 1 | Sum | Int | Cumulative | true | Development |
 
-### mysql.query.count
-
-The number of statements executed by the server.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| 1 | Sum | Int | Cumulative | true | Development |
-
-### mysql.query.slow.count
-
-The number of slow queries.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| 1 | Sum | Int | Cumulative | true | Development |
-
 ### mysql.replica.sql_delay
 
 The number of seconds that the replica must lag the source.
@@ -698,39 +660,6 @@ This field is an indication of how “late” the replica is.
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | s | Sum | Int | Cumulative | false | Development |
-
-### mysql.statement_event.count
-
-Summary of current and recent statement events.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| 1 | Sum | Int | Cumulative | false | Development |
-
-#### Attributes
-
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| schema | The schema of the object. | Any Str | Recommended |
-| digest | Digest. | Any Str | Recommended |
-| digest_text | Text before digestion. | Any Str | Recommended |
-| kind | Possible event states. | Str: ``errors``, ``warnings``, ``rows_affected``, ``rows_sent``, ``rows_examined``, ``created_tmp_disk_tables``, ``created_tmp_tables``, ``sort_merge_passes``, ``sort_rows``, ``no_index_used`` | Recommended |
-
-### mysql.statement_event.wait.time
-
-The total wait time of the summarized timed events.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
-| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| ns | Sum | Int | Cumulative | false | Development |
-
-#### Attributes
-
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| schema | The schema of the object. | Any Str | Recommended |
-| digest | Digest. | Any Str | Recommended |
-| digest_text | Text before digestion. | Any Str | Recommended |
 
 ### mysql.table.average_row_length
 

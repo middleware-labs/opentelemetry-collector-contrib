@@ -46,7 +46,6 @@ func Test_deleteMatchingValues(t *testing.T) {
 			want: func(expectedMap pcommon.Map) {
 				expectedMap.PutStr("test", "hello world")
 				expectedMap.PutStr("test2", "")
-
 			},
 		},
 		{

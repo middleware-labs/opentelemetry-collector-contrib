@@ -1,5 +1,4 @@
 type: postgresql
-
 status:
   class: receiver
   stability:
@@ -10,10 +9,13 @@ status:
     active: [antonblock, ishleenk17]
     seeking_new: true
     emeritus: [djaglowski]
-
 resource_attributes:
   postgresql.database.name:
     description: The name of the database.
+    enabled: true
+    type: string
+  postgresql.db.version:
+    description: The version of postgresql databse
     enabled: true
     type: string
   postgresql.index.name:
@@ -28,11 +30,6 @@ resource_attributes:
     description: The table name.
     enabled: true
     type: string
-  postgresql.db.version:
-    description: The version of postgresql databse
-    enabled: true
-    type: string
-
 attributes:
   bg_buffer_source:
     description: The source of a buffer write.
@@ -67,6 +64,9 @@ attributes:
     description: The database management system (DBMS) product as identified by the client instrumentation.
     type: string
     enum: [postgresql]
+  dbname:
+    description: name of the database
+    type: string
   function:
     description: The name of the function.
     type: string
@@ -101,7 +101,6 @@ attributes:
   postgresql.query_id:
     description: Identifier of this backend's most recent query. If state is active this field shows the identifier of the currently executing query. In all other states, it shows the identifier of last query that was executed.
     type: string
-
   postgresql.query_plan:
     description: The execution plan used by PostgreSQL for the query.
     type: string
@@ -150,8 +149,17 @@ attributes:
   postgresql.wait_event_type:
     description: The type of event for which the backend is waiting, if any; otherwise NULL.
     type: string
+  query_id:
+    description: Hash code to identify identical normalized queries.
+    type: string
+  query_text:
+    description: Text of a representative statement
+    type: string
   relation:
     description: OID of the relation targeted by the lock, or null if the target is not a relation or part of a relation.
+    type: string
+  relation_name:
+    description: name of the relation
     type: string
   replication_client:
     description: The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket.
@@ -180,18 +188,6 @@ attributes:
     description: The operation which is responsible for the lag.
     type: string
     enum: [flush, replay, write]
-  relation_name:
-    description: name of the relation
-    type: string
-  dbname:
-    description: name of the database
-    type: string
-  query_text:
-    description: Text of a representative statement
-    type: string
-  query_id:
-    description: Hash code to identify identical normalized queries.
-    type: string
 events:
   db.server.query_sample:
     enabled: true
@@ -232,7 +228,6 @@ events:
       - postgresql.total_exec_time
       - postgresql.total_plan_time
       - postgresql.query_plan
-
 metrics:
   postgresql.backends:
     enabled: true
@@ -331,6 +326,16 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     attributes: [source]
+  postgresql.buffer_hit:
+    stability:
+      level: development
+    attributes:
+      - dbname
+    enabled: true
+    description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
+    unit: '{hit}/s'
+    gauge:
+      value_type: int
   postgresql.commits:
     enabled: true
     description: The number of commits.
@@ -341,12 +346,20 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
+  postgresql.connection.count:
+    enabled: true
+    description: The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+    unit: '{connection}'
+    stability:
+      level: development
+    gauge:
+      value_type: int
   postgresql.connection.max:
     enabled: true
     description: Configured maximum number of client connections allowed
+    unit: "{connection}"
     stability:
       level: development
-    unit: "{connections}"
     gauge:
       value_type: int
   postgresql.database.count:
@@ -417,6 +430,16 @@ metrics:
     gauge:
       value_type: int
     unit: "By"
+  postgresql.live_rows:
+    stability:
+      level: development
+    attributes:
+      - relation_name
+    enabled: true
+    description: The approximate number of live rows, tagged with relation name.
+    unit: '{row}'
+    gauge:
+      value_type: int
   postgresql.operations:
     enabled: true
     description: The number of db row operations.
@@ -428,6 +451,29 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     attributes: [operation]
+  postgresql.query.count:
+    enabled: true
+    description: Number of times the statement was executed.
+    unit: "1"
+    stability:
+      level: development
+    sum:
+      value_type: int
+      monotonic: false
+      aggregation_temporality: cumulative
+    attributes: [query_text, query_id]
+  #DBM METRICS:
+  postgresql.query.total_exec_time:
+    enabled: true
+    description: Total wait time of the normalised timed events in nanaoseconds.
+    unit: ns
+    stability:
+      level: development
+    sum:
+      value_type: int
+      monotonic: false
+      aggregation_temporality: cumulative
+    attributes: [query_text, query_id]
   postgresql.replication.data_delay:
     attributes: [replication_client]
     description: The amount of data delayed in replication.
@@ -458,6 +504,46 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [state]
+  postgresql.rows_deleted:
+    stability:
+      level: development
+    attributes:
+      - relation_name
+    enabled: true
+    description: Rows deleted by queries in this db, tagged with relation name.
+    unit: '{row}/s'
+    gauge:
+      value_type: int
+  postgresql.rows_fetched:
+    stability:
+      level: development
+    attributes:
+      - relation_name
+    enabled: true
+    description: Rows fetched by queries in this db, tagged with relation name.
+    unit: '{row}/s'
+    gauge:
+      value_type: int
+  postgresql.rows_inserted:
+    stability:
+      level: development
+    attributes:
+      - relation_name
+    enabled: true
+    description: Rows inserted by queries in the db, tagged with relation name.
+    unit: '{row}/s'
+    gauge:
+      value_type: int
+  postgresql.rows_updated:
+    stability:
+      level: development
+    attributes:
+      - relation_name
+    enabled: true
+    description: Rows updated by queries in the db, tagged with relation name.
+    unit: '{row}/s'
+    gauge:
+      value_type: int
   postgresql.sequential_scans:
     enabled: false
     description: The number of sequential scans.
@@ -511,7 +597,7 @@ metrics:
   postgresql.temp_files:
     enabled: false
     description: The number of temp files.
-  stability:
+    stability:
       level: development
     unit: "{temp_file}"
     sum:
@@ -612,88 +698,3 @@ tests:
         # Can be removed once the following issue is resolved:
         # https://github.com/snowflakedb/gosnowflake/issues/1369
         - "github.com/snowflakedb/gosnowflake.initOCSPCacheClearer.func1"
-
-  postgresql.connection.count:
-    enabled: true
-    description: The number of active connections to this database. If DBM is enabled,
-      this metric is tagged with state, app, db and user
-    unit: '{connection}'
-    gauge:
-      value_type: int
-
-  #DBM METRICS:
-  postgresql.query.total_exec_time:
-    enabled: true
-    description: Total wait time of the normalised timed events in nanaoseconds.
-    unit: ns
-    sum:
-      value_type: int
-      monotonic: false
-      aggregation_temporality: cumulative
-    attributes: [query_text, query_id]
-
-  postgresql.query.count:
-    enabled: true
-    description: Number of times the statement was executed.
-    unit: 1
-    sum:
-      value_type: int
-      monotonic: false
-      aggregation_temporality: cumulative
-    attributes: [query_text, query_id]
-
-  postgresql.rows_deleted:
-    attributes:
-      - relation_name
-    enabled: true
-    description: Rows deleted by queries in this db, tagged with relation name.
-    unit: '{row}/s'
-    gauge:
-      value_type: int
-
-  postgresql.rows_fetched:
-    attributes:
-      - relation_name
-    enabled: true
-    description: Rows fetched by queries in this db, tagged with relation name.
-    unit: '{row}/s'
-    gauge:
-      value_type: int
-
-  postgresql.rows_updated:
-    attributes:
-      - relation_name
-    enabled: true
-    description: Rows updated by queries in the db, tagged with relation name.
-    unit: '{row}/s'
-    gauge:
-      value_type: int
-
-  postgresql.rows_inserted:
-    attributes:
-      - relation_name
-    enabled: true
-    description: Rows inserted by queries in the db, tagged with relation name.
-    unit: '{row}/s'
-    gauge:
-      value_type: int
-
-  postgresql.live_rows:
-    attributes:
-      - relation_name
-    enabled: true
-    description: The approximate number of live rows, tagged with relation name.
-    unit: '{row}'
-    gauge:
-      value_type: int
-
-  postgresql.buffer_hit:
-    attributes:
-      - dbname
-    enabled: true
-    description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
-    unit: '{hit}/s'
-    gauge:
-      value_type: int
-tests:
-  config:
