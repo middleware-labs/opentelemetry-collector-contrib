@@ -403,7 +403,8 @@ func (c *mySQLClient) getInnodbStatusStats() (map[string]int64, error, int) {
 	if total_errs > 0 {
 
 		errorString := flattenErrorMap(errs)
-		parserErrs = fmt.Errorf(errorString)
+		parserErrs = fmt.Errorf("%s", errorString)
+
 	}
 
 	return metrics, parserErrs, total_errs
