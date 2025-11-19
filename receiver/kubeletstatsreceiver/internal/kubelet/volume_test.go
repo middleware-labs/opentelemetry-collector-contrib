@@ -178,8 +178,7 @@ func TestDetailedPVCLabels(t *testing.T) {
 					},
 				},
 			}, &v1.NodeList{
-                Items: []v1.Node{},
-            }, NodeCapacity{}, nil)
+				Items: []v1.Node{},
 			}, NodeInfo{}, nil)
 			metadata.DetailedPVCResourceSetter = tt.detailedPVCLabelsSetterOverride
 

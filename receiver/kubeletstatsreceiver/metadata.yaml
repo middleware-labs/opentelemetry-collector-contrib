@@ -13,8 +13,6 @@ resource_attributes:
     description: "The UID of the Node"
     enabled: true
     type: string
-  k8s.node.name:
-    description: "The name of the Node"
   aws.volume.id:
     description: "The id of the AWS Volume"
     enabled: true
@@ -23,8 +21,6 @@ resource_attributes:
     description: "The start time of the Node."
     enabled: true
     type: string
-  k8s.pod.uid:
-    description: "The UID of the Pod"
   container.id:
     description: "Container id used to identify container"
     enabled: true
@@ -57,8 +53,6 @@ resource_attributes:
     description: "The name of the Cluster"
     type: string
     enabled: true
-  k8s.namespace.name:
-    description: "The name of the namespace that the pod is running in"
   gce.pd.name:
     description: "The name of the persistent disk in GCE"
     enabled: true
@@ -226,24 +220,6 @@ metrics:
     gauge:
       value_type: double
     attributes: [ ]
-  k8s.node.network.io:
-    enabled: true
-    description: "Node network IO"
-    unit: By
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
-  k8s.node.network.errors:
-    enabled: true
-    description: "Node network errors"
-    unit: "1"
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
   container.uptime:
     enabled: false
     description: "The time since the container started"
@@ -255,17 +231,6 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     attributes: [ ]
-  k8s.node.uptime:
-    enabled: false
-    description: "The time since the container started"
-    unit: s
-    stability:
-      level: development
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: []
   k8s.container.cpu.node.utilization:
     enabled: false
     description: "Container cpu utilization as a ratio of the node's capacity"
@@ -605,7 +570,6 @@ metrics:
     gauge:
       value_type: double
     attributes: [ ]
-  container.uptime:
   k8s.pod.memory_limit_utilization:
     enabled: false
     description: "Pod memory utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted."
