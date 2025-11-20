@@ -8,11 +8,6 @@ import (
 	"fmt"
 	"sync"
 
-	"go.opentelemetry.io/collector/component"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	"go.opentelemetry.io/collector/pdata/pmetric"
-	"go.uber.org/zap/zapcore"
-
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/ctxcache"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/ctxcommon"
@@ -22,6 +17,10 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/ctxresource"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/ctxscope"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl/contexts/internal/logging"
+	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/pdata/pcommon"
+	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.uber.org/zap/zapcore"
 )
 
 var tcPool = sync.Pool{
@@ -39,13 +38,6 @@ var (
 	_ ctxscope.Context        = (*TransformContext)(nil)
 	_ ctxmetric.Context       = (*TransformContext)(nil)
 	_ zapcore.ObjectMarshaler = (*TransformContext)(nil)
-)
-
-// TransformContext represents a Datapoint and all its hierarchy.
-var (
-	_ internal.ResourceContext             = (*TransformContext)(nil)
-	_ internal.InstrumentationScopeContext = (*TransformContext)(nil)
-	_ zapcore.ObjectMarshaler              = (*TransformContext)(nil)
 )
 
 const (
