@@ -5,6 +5,8 @@ all_set:
       enabled: true
     container.cpu.usage:
       enabled: true
+    container.cpu.utilization:
+      enabled: true
     container.filesystem.available:
       enabled: true
     container.filesystem.capacity:
@@ -43,6 +45,8 @@ all_set:
       enabled: true
     k8s.node.cpu.usage:
       enabled: true
+    k8s.node.cpu.utilization:
+      enabled: true
     k8s.node.filesystem.available:
       enabled: true
     k8s.node.filesystem.capacity:
@@ -74,6 +78,8 @@ all_set:
     k8s.pod.cpu.time:
       enabled: true
     k8s.pod.cpu.usage:
+      enabled: true
+    k8s.pod.cpu.utilization:
       enabled: true
     k8s.pod.cpu_limit_utilization:
       enabled: true
@@ -176,6 +182,8 @@ none_set:
       enabled: false
     container.cpu.usage:
       enabled: false
+    container.cpu.utilization:
+      enabled: false
     container.filesystem.available:
       enabled: false
     container.filesystem.capacity:
@@ -214,6 +222,8 @@ none_set:
       enabled: false
     k8s.node.cpu.usage:
       enabled: false
+    k8s.node.cpu.utilization:
+      enabled: false
     k8s.node.filesystem.available:
       enabled: false
     k8s.node.filesystem.capacity:
@@ -245,6 +255,8 @@ none_set:
     k8s.pod.cpu.time:
       enabled: false
     k8s.pod.cpu.usage:
+      enabled: false
+    k8s.pod.cpu.utilization:
       enabled: false
     k8s.pod.cpu_limit_utilization:
       enabled: false
