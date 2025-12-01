@@ -39,6 +39,11 @@ type Config struct {
 }
 
 func (config Config) Validate() error {
+	// Autodetect mode → skip version validation entirely.
+	if config.AutodetectAPIVersion {
+		return nil
+	}
+
 	if err := docker.VersionIsValidAndGTE(config.DockerAPIVersion, minimumRequiredDockerAPIVersion); err != nil {
 		return err
 	}
