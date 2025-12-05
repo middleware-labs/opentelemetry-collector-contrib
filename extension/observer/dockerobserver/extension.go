@@ -59,7 +59,7 @@ func (d *dockerObserver) Start(ctx context.Context, _ component.Host) error {
 	d.cancel = cancel
 
 	// Create new Docker client
-	dConfig := docker.NewConfig(d.config.Endpoint, d.config.Timeout, d.config.ExcludedImages, d.config.DockerAPIVersion)
+	dConfig := docker.NewConfig(d.config.Endpoint, d.config.Timeout, d.config.ExcludedImages, d.config.DockerAPIVersion, false)
 
 	var err error
 	d.dClient, err = docker.NewDockerClient(dConfig, d.logger)
