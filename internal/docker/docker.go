@@ -47,23 +47,34 @@ type Client struct {
 }
 
 func NewDockerClient(config *Config, logger *zap.Logger, opts ...docker.Opt) (*Client, error) {
-	version := minimumRequiredDockerAPIVersion
-	if config.DockerAPIVersion != "" {
+	clientOpts := []docker.Opt{
+		docker.WithHost(config.Endpoint),
+		docker.WithHTTPHeaders(map[string]string{"User-Agent": userAgent}),
+	}
+
+	if config.AutodetectAPIVersion {
+		// Autodetect: negotiate API version with daemon
+		clientOpts = append(clientOpts, docker.WithAPIVersionNegotiation())
+	} else {
+		version := minimumRequiredDockerAPIVersion
 		var err error
 		if version, err = NewAPIVersion(config.DockerAPIVersion); err != nil {
 			return nil, err
 		}
+		clientOpts = append(clientOpts, docker.WithVersion(version))
 	}
-	client, err := docker.NewClientWithOpts(
-		append([]docker.Opt{
-			docker.WithHost(config.Endpoint),
-			docker.WithVersion(version),
-			docker.WithHTTPHeaders(map[string]string{"User-Agent": userAgent}),
-		}, opts...)...,
-	)
+
+	// Append any additional opts passed by caller
+	clientOpts = append(clientOpts, opts...)
+
+	client, err := docker.NewClientWithOpts(clientOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("could not create docker client: %w", err)
 	}
+
+	logger.Info("Docker API version detected",
+		zap.String("negotiated_api_version", client.ClientVersion()),
+	)
 
 	excludedImageMatcher, err := newStringMatcher(config.ExcludedImages)
 	if err != nil {

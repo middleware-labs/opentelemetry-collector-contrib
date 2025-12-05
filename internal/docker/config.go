@@ -28,6 +28,9 @@ type Config struct {
 
 	// Docker client API version.
 	DockerAPIVersion string `mapstructure:"api_version"`
+
+	// Whether to autodetect Docker API version by negotiating with the daemon.
+	AutodetectAPIVersion bool `mapstructure:"autodetect_api_version"`
 }
 
 func (config *Config) Unmarshal(conf *confmap.Conf) error {
@@ -55,12 +58,13 @@ func (config Config) Validate() error {
 
 // NewConfig creates a new config to be used when creating
 // a docker client
-func NewConfig(endpoint string, timeout time.Duration, excludedImages []string, apiVersion string) *Config {
+func NewConfig(endpoint string, timeout time.Duration, excludedImages []string, apiVersion string, autodetect bool) *Config {
 	cfg := &Config{
-		Endpoint:         endpoint,
-		Timeout:          timeout,
-		ExcludedImages:   excludedImages,
-		DockerAPIVersion: apiVersion,
+		Endpoint:             endpoint,
+		Timeout:              timeout,
+		ExcludedImages:       excludedImages,
+		DockerAPIVersion:     apiVersion,
+		AutodetectAPIVersion: autodetect,
 	}
 	return cfg
 }
@@ -69,9 +73,10 @@ func NewConfig(endpoint string, timeout time.Duration, excludedImages []string, 
 // to be used when creating a docker client
 func NewDefaultConfig() *Config {
 	cfg := &Config{
-		Endpoint:         client.DefaultDockerHost,
-		Timeout:          5 * time.Second,
-		DockerAPIVersion: minimumRequiredDockerAPIVersion,
+		Endpoint:             client.DefaultDockerHost,
+		Timeout:              5 * time.Second,
+		DockerAPIVersion:     minimumRequiredDockerAPIVersion,
+		AutodetectAPIVersion: false,
 	}
 
 	return cfg
