@@ -93,6 +93,10 @@ func NewDockerClient(config *Config, logger *zap.Logger, opts ...docker.Opt) (*C
 		return nil, fmt.Errorf("could not create docker client: %w", err)
 	}
 
+	logger.Info("Docker API version detected",
+		zap.String("negotiated_api_version", client.ClientVersion()),
+	)
+
 	excludedImageMatcher, err := newStringMatcher(config.ExcludedImages)
 	if err != nil {
 		return nil, fmt.Errorf("could not determine docker client excluded images: %w", err)
