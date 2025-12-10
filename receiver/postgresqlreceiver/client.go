@@ -20,13 +20,18 @@ import (
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configtls"
 	"go.opentelemetry.io/collector/featuregate"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/sqlquery"
 )
 
-const lagMetricsInSecondsFeatureGateID = "postgresqlreceiver.preciselagmetrics"
+const (
+	lagMetricsInSecondsFeatureGateID = "postgresqlreceiver.preciselagmetrics"
+	querySampleTraceContextKey       = "_otel_trace_context"
+)
 
 var preciseLagMetricsFg = featuregate.GlobalRegistry().MustRegister(
 	lagMetricsInSecondsFeatureGateID,
@@ -1071,6 +1076,7 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 	errs := make([]error, 0)
 	finalAttributes := make([]map[string]any, 0)
 	dbPrefix := "postgresql."
+	propagator := propagation.TraceContext{}
 	for _, row := range rows {
 		if row["query"] == "<insufficient privilege>" {
 			logger.Warn("skipping query sample due to insufficient privileges")
@@ -1078,6 +1084,7 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 			continue
 		}
 		currentAttributes := make(map[string]any)
+		var traceCtx context.Context
 		simpleColumns := []string{
 			"client_hostname",
 			"query_start",
@@ -1090,6 +1097,19 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 
 		for _, col := range simpleColumns {
 			currentAttributes[dbPrefix+col] = row[col]
+			if col == "application_name" && row[col] != "" {
+				ctxFromQuery := propagator.Extract(context.Background(), propagation.MapCarrier{
+					"traceparent": row[col],
+				})
+
+				if trace.SpanContextFromContext(ctxFromQuery).IsValid() {
+					traceCtx = ctxFromQuery
+				}
+			}
+		}
+
+		if traceCtx != nil {
+			currentAttributes[querySampleTraceContextKey] = traceCtx
 		}
 
 		clientPort := int64(0)
