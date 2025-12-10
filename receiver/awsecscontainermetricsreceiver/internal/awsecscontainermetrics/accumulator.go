@@ -10,6 +10,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap"
 
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/ecsutil"
 )
 
@@ -19,7 +20,7 @@ type metricDataAccumulator struct {
 }
 
 // getMetricsData generates OT Metrics data from task metadata and docker stats
-func (acc *metricDataAccumulator) getMetricsData(containerStatsMap map[string]*ContainerStats, metadata ecsutil.TaskMetadata, logger *zap.Logger) {
+func (acc *metricDataAccumulator) getMetricsData(containerStatsMap map[string]*ContainerStats, metadata ecsutil.TaskMetadata, logger *zap.Logger, awsEcsClient *ecs.Client) {
 	taskMetrics := ECSMetrics{}
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 	taskResource := taskResource(metadata)

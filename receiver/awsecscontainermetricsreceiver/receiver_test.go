@@ -30,6 +30,16 @@ func (f fakeRestClient) GetResponse(path string) ([]byte, error) {
 	return nil, nil
 }
 
+func (f fakeRestClient) GetResponseWithTaskIP(path, taskIP string) ([]byte, error) {
+	if body, err := ecsutiltest.GetTestdataResponseByPath(f.T, path); body != nil || err != nil {
+		return body, err
+	}
+	if path == awsecscontainermetrics.TaskStatsPath {
+		return os.ReadFile("testdata/task_stats.json")
+	}
+	return nil, nil
+}
+
 func TestReceiver(t *testing.T) {
 	cfg := createDefaultConfig().(*Config)
 	metricsReceiver, err := newAWSECSContainermetrics(
@@ -94,6 +104,10 @@ func TestCollectDataFromEndpointWithConsumerError(t *testing.T) {
 type invalidFakeClient struct{}
 
 func (f invalidFakeClient) GetResponse(_ string) ([]byte, error) {
+	return nil, errors.New("intentional error")
+}
+
+func (f invalidFakeClient) GetResponseWithTaskIP(_ string, _ string) ([]byte, error) {
 	return nil, errors.New("intentional error")
 }
 

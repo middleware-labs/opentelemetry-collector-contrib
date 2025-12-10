@@ -21,6 +21,10 @@ func (f *fakeClient) Get(path string) ([]byte, error) {
 	return []byte(path), nil
 }
 
+func (f *fakeClient) SetTaskURL(taskURL url.URL) {
+	// No-op for fake client
+}
+
 func TestRestClient(t *testing.T) {
 	u, _ := url.Parse("http://www.test.com")
 	rest, err := NewRestClient(*u, confighttp.NewDefaultClientConfig(), componenttest.NewNopTelemetrySettings())
@@ -42,6 +46,10 @@ func (f *fakeErrorClient) Get(_ string) ([]byte, error) {
 	return nil, fmt.Errorf("")
 }
 
+func (f *fakeErrorClient) SetTaskURL(_ url.URL) {
+	// No-op for fake error client
+}
+
 func TestRestClientError(t *testing.T) {
 	rest := NewRestClientFromClient(&fakeErrorClient{})
 	metadata, err := rest.GetResponse(endpoints.TaskMetadataPath)
@@ -54,6 +62,10 @@ type fakeMetadataErrorClient struct{}
 
 func (f *fakeMetadataErrorClient) Get(_ string) ([]byte, error) {
 	return nil, fmt.Errorf("")
+}
+
+func (f *fakeMetadataErrorClient) SetTaskURL(_ url.URL) {
+	// No-op for fake metadata error client
 }
 
 func TestRestClientMetadataError(t *testing.T) {

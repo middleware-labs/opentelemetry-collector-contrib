@@ -3,6 +3,10 @@
 
 package ecsutil // import "github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/ecsutil"
 
+// ClusterMetadata defines cluster metadata for a cluster
+type ClusterMetadata struct {
+}
+
 // TaskMetadata defines task metadata for a task
 type TaskMetadata struct {
 	AvailabilityZone string              `json:"AvailabilityZone,omitempty"`
@@ -17,6 +21,9 @@ type TaskMetadata struct {
 	Revision         string              `json:"Revision,omitempty"`
 	ServiceName      string              `json:"ServiceName,omitempty"`
 	TaskARN          string              `json:"TaskARN,omitempty"`
+	ActiveTasks      int64               `json:"ActiveTasks,omitempty"`
+	StoppedTasks     int64               `json:"StoppedTasks,omitempty"`
+	TotalTasks       int64               `json:"TotalTasks,omitempty"`
 }
 
 // ContainerMetadata defines container metadata for a container

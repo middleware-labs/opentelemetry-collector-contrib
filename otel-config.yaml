@@ -1,0 +1,12 @@
+receivers:
+  awsecscontainermetrics:
+    collection_inteval: 5s
+exporters:
+  logging:
+    loglevel: debug
+service:
+  pipelines:
+    metrics:
+      receivers: [awsecscontainermetrics]
+      exporters: [logging]
+

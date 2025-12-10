@@ -20,6 +20,7 @@ import (
 // Client defines the basic HTTP client interface with GET response validation and content parsing
 type Client interface {
 	Get(path string) ([]byte, error)
+	SetTaskURL(taskURL url.URL)
 }
 
 // NewClientProvider creates the default rest client provider
@@ -79,6 +80,7 @@ var _ Client = (*clientImpl)(nil)
 
 type clientImpl struct {
 	baseURL    url.URL
+	taskURL    url.URL
 	httpClient http.Client
 	settings   component.TelemetrySettings
 }
@@ -109,8 +111,12 @@ func (c *clientImpl) Get(path string) ([]byte, error) {
 	return body, nil
 }
 
+func (c *clientImpl) SetTaskURL(taskURL url.URL) {
+	c.taskURL = taskURL
+}
+
 func (c *clientImpl) buildReq(path string) (*http.Request, error) {
-	url := c.baseURL.String() + path
+	url := c.taskURL.String() + path
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

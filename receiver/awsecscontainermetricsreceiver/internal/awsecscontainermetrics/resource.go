@@ -68,6 +68,11 @@ func taskResource(tm ecsutil.TaskMetadata) pcommon.Resource {
 		resource.Attributes().PutStr(conventions.AttributeAWSECSLaunchtype, conventions.AttributeAWSECSLaunchtypeFargate)
 	}
 
+	// Custom attributes
+	resource.Attributes().PutInt(attributeECSTaskActiveCount, tm.ActiveTasks)
+	resource.Attributes().PutInt(attributeECSTaskStoppedCount, tm.StoppedTasks)
+	resource.Attributes().PutInt(attributeECSTaskTotalCount, tm.TotalTasks)
+
 	resource.Attributes().PutStr(conventions.AttributeCloudRegion, region)
 	resource.Attributes().PutStr(conventions.AttributeCloudAccountID, accountID)
 

@@ -18,6 +18,8 @@ import (
 type MetadataProvider interface {
 	FetchTaskMetadata() (*TaskMetadata, error)
 	FetchContainerMetadata() (*ContainerMetadata, error)
+	FetchTaskMetadataWithTaskIP(taskIP string) (*TaskMetadata, error)
+	FetchContainerMetadataWithTaskIP(taskIP string) (*ContainerMetadata, error)
 }
 
 type ecsMetadataProviderImpl struct {
@@ -84,6 +86,42 @@ func (md *ecsMetadataProviderImpl) FetchContainerMetadata() (*ContainerMetadata,
 	if err != nil {
 		return nil, fmt.Errorf("encountered unexpected error reading response from ECS Container Metadata Endpoint: %w", err)
 	}
+
+	return containerMetadata, nil
+}
+
+func (md *ecsMetadataProviderImpl) FetchTaskMetadataWithTaskIP(taskIP string) (*TaskMetadata, error) {
+	resp, err := md.client.GetResponseWithTaskIP(taskIP, endpoints.TaskMetadataPath)
+	if err != nil {
+		return nil, err
+	}
+
+	taskMetadata := &TaskMetadata{}
+
+	err = json.NewDecoder(bytes.NewReader(resp)).Decode(taskMetadata)
+	if err != nil {
+		return nil, fmt.Errorf("encountered unexpected error reading response from ECS Task Metadata Endpoint: %w", err)
+	}
+
+	fmt.Printf("\n\n[Task Metadata] for IP: %s: %+v\n\n", taskIP, taskMetadata)
+
+	return taskMetadata, nil
+}
+
+func (md *ecsMetadataProviderImpl) FetchContainerMetadataWithTaskIP(taskIP string) (*ContainerMetadata, error) {
+	resp, err := md.client.GetResponseWithTaskIP(taskIP, endpoints.ContainerMetadataPath)
+	if err != nil {
+		return nil, err
+	}
+
+	containerMetadata := &ContainerMetadata{}
+
+	err = json.NewDecoder(bytes.NewReader(resp)).Decode(containerMetadata)
+	if err != nil {
+		return nil, fmt.Errorf("encountered unexpected error reading response from ECS Container Metadata Endpoint: %w", err)
+	}
+
+	fmt.Printf("\n\n[Container Metadata] for IP: %s: %+v\n\n", taskIP, containerMetadata)
 
 	return containerMetadata, nil
 }

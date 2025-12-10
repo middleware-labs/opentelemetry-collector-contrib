@@ -32,6 +32,7 @@ func (nh *nopHost) GetExtensions() map[component.ID]component.Component {
 // RestClient is swappable for testing.
 type RestClient interface {
 	GetResponse(path string) ([]byte, error)
+	GetResponseWithTaskIP(taskIP string, path string) ([]byte, error)
 }
 
 // TaskMetadataRestClient is a thin wrapper around an ecs task metadata client, encapsulating endpoints
@@ -47,6 +48,21 @@ func NewRestClientFromClient(client Client) *TaskMetadataRestClient {
 
 // GetResponse gets the desired path from the configured metadata endpoint
 func (c *TaskMetadataRestClient) GetResponse(path string) ([]byte, error) {
+	response, err := c.client.Get(path)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+
+func (c *TaskMetadataRestClient) GetResponseWithTaskIP(taskIP string, path string) ([]byte, error) {
+	if c.client != nil {
+		c.client.SetTaskURL(url.URL{
+			Scheme: "http",
+			Host:   taskIP,
+		})
+	}
 	response, err := c.client.Get(path)
 	if err != nil {
 		return nil, err

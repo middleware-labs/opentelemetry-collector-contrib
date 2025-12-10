@@ -5,6 +5,7 @@ package ecsutil
 
 import (
 	"errors"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,6 +27,10 @@ func (mc *mockClient) Get(_ string) ([]byte, error) {
 	}
 
 	return []byte(mc.response), nil
+}
+
+func (mc *mockClient) SetTaskURL(_ url.URL) {
+	// No-op for mock client
 }
 
 func Test_ecsMetadata_fetchTask(t *testing.T) {

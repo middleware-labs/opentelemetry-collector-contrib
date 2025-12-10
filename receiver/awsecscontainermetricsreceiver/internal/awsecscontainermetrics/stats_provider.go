@@ -49,3 +49,30 @@ func (p *StatsProvider) GetStats() (map[string]*ContainerStats, ecsutil.TaskMeta
 
 	return stats, metadata, nil
 }
+
+
+func (p *StatsProvider) GetStatsWithTaskIP(taskIP string) (map[string]*ContainerStats, ecsutil.TaskMetadata, error) {
+	stats := make(map[string]*ContainerStats)
+	var metadata ecsutil.TaskMetadata
+
+	taskMetadata, err := p.metadataProvider.FetchTaskMetadataWithTaskIP(taskIP)
+	if err != nil {
+		return stats, metadata, fmt.Errorf("cannot read data from task metadata endpoint: %w", err)
+	}
+
+	if taskMetadata != nil {
+		metadata = *taskMetadata
+	}
+
+	taskStats, err := p.rc.GetResponseWithTaskIP(taskIP, TaskStatsPath)
+	if err != nil {
+		return stats, metadata, fmt.Errorf("cannot read data from task metadata endpoint: %w", err)
+	}
+
+	err = json.Unmarshal(taskStats, &stats)
+	if err != nil {
+		return stats, metadata, fmt.Errorf("cannot unmarshall task stats: %w", err)
+	}
+
+	return stats, metadata, nil
+}

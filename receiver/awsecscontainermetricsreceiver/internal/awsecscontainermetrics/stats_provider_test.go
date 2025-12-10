@@ -41,6 +41,25 @@ func (f testRestClient) GetResponse(path string) ([]byte, error) {
 	return nil, nil
 }
 
+func (f testRestClient) GetResponseWithTaskIP(path, taskIP string) ([]byte, error) {
+	if body, err := ecsutiltest.GetTestdataResponseByPath(f.T, path); body != nil || err != nil {
+		return body, err
+	}
+
+	if f.fail {
+		return []byte{}, errors.New("failed")
+	}
+	if f.invalidJSON {
+		return []byte("wrong-json-body"), nil
+	}
+
+	if path == TaskStatsPath {
+		return os.ReadFile("../../testdata/task_stats.json")
+	}
+
+	return nil, nil
+}
+
 func TestGetStats(t *testing.T) {
 	tests := []struct {
 		name      string

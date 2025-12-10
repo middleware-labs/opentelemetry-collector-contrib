@@ -14,6 +14,9 @@ const (
 	attributeECSTaskPullStoppedAt = "aws.ecs.task.pull_stopped_at"
 	attributeECSTaskKnownStatus   = "aws.ecs.task.known_status"
 	attributeECSTaskLaunchType    = "aws.ecs.task.launch_type"
+	attributeECSTaskActiveCount   = "aws.ecs.task.active.count"
+	attributeECSTaskStoppedCount  = "aws.ecs.task.stopped.count"
+	attributeECSTaskTotalCount    = "aws.ecs.task.total.count"
 	attributeContainerImageID     = "aws.ecs.container.image.id"
 	attributeContainerCreatedAt   = "aws.ecs.container.created_at"
 	attributeContainerStartedAt   = "aws.ecs.container.started_at"
@@ -26,6 +29,8 @@ const (
 
 	taskPrefix      = "ecs.task."
 	containerPrefix = "container."
+	servicePrefix   = "ecs.service."
+	clusterPrefix   = "ecs.cluster."
 
 	attributeMemoryUsage    = "memory.usage"
 	attributeMemoryMaxUsage = "memory.usage.max"

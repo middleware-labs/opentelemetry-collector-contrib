@@ -57,6 +57,24 @@ func GetTMEFromEnv() (endpoint *url.URL, err error) {
 	return
 }
 
+func GetTMEFromIP(endpointIP string) (endpoint *url.URL, err error) {
+	if endpointIP == "" {
+		return nil, fmt.Errorf("endpoint IP is empty")
+	}
+
+	endpointIP = strings.TrimSpace(endpointIP)
+	if !strings.HasPrefix(endpointIP, "http://") && !strings.HasPrefix(endpointIP, "https://") {
+		endpointIP = "http://" + endpointIP
+	}
+
+	endpoint, err = url.ParseRequestURI(endpointIP)
+	if err != nil {
+		return nil, fmt.Errorf("invalid endpoint IP: %w", err)
+	}
+
+	return endpoint, nil
+}
+
 func validateEndpoint(candidate string) (endpoint *url.URL, err error) {
 	candidate = strings.TrimSpace(candidate)
 	if candidate == "" {
