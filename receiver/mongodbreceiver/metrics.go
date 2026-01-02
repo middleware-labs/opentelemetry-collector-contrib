@@ -814,17 +814,55 @@ func parseInt(val any) (int64, error) {
 	}
 }
 
+func ensureBsonM(value any) (bson.M, error) {
+	switch v := value.(type) {
+	case bson.M:
+		return v, nil
+	case bson.D:
+		return bsonMFromD(v), nil
+	default:
+		return nil, fmt.Errorf("expected bson.M or bson.D, got %T", value)
+	}
+}
+
+func bsonMFromD(doc bson.D) bson.M {
+	result := make(bson.M, len(doc))
+	for _, elem := range doc {
+		result[elem.Key] = elem.Value
+	}
+	return result
+}
+
 func (s *mongodbScraper) recordTopStats(now pcommon.Timestamp, doc bson.M, errs *scrapererror.ScrapeErrors) {
 	collectionPathNames, err := digForCollectionPathNames(doc)
+	if err != nil {
+		fmt.Println("Error digging for collection path names:", err)
+		errs.AddPartial(len(collectionPathNames), fmt.Errorf("failed to collect top stats metrics: %w", err))
+		return
+	}
+	totalsRaw, ok := doc["totals"]
+	if !ok {
+		errs.AddPartial(len(collectionPathNames), fmt.Errorf("failed to collect top stats metrics: %w", errKeyNotFound))
+		return
+	}
+	docTotals, err := ensureBsonM(totalsRaw)
 	if err != nil {
 		errs.AddPartial(len(collectionPathNames), fmt.Errorf("failed to collect top stats metrics: %w", err))
 		return
 	}
-	doc = doc["totals"].(bson.M)
 	for _, cpname := range collectionPathNames {
 		database, collection, ok := strings.Cut(cpname, ".")
 		if ok {
-			docmap := doc[cpname].(bson.M)
+			docmapRaw, exists := docTotals[cpname]
+			if !exists {
+				errs.AddPartial(1, fmt.Errorf("failed to collect top stats metrics for %s: key not found", cpname))
+				continue
+			}
+			docmap, err := ensureBsonM(docmapRaw)
+			if err != nil {
+				errs.AddPartial(1, fmt.Errorf("failed to collect top stats metrics for %s: %w", cpname, err))
+				continue
+			}
 			// usage
 			s.recordMongodbUsageCommandsCount(now, docmap, database, collection, errs) // ps
 			s.recordMongodbUsageCommandsTime(now, docmap, database, collection, errs)
