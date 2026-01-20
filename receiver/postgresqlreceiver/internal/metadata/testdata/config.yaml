@@ -13,6 +13,10 @@ all_set:
       enabled: true
     postgresql.bgwriter.maxwritten:
       enabled: true
+    postgresql.blk_read_time:
+      enabled: true
+    postgresql.blk_write_time:
+      enabled: true
     postgresql.blks_hit:
       enabled: true
     postgresql.blks_read:
@@ -122,6 +126,10 @@ none_set:
     postgresql.bgwriter.duration:
       enabled: false
     postgresql.bgwriter.maxwritten:
+      enabled: false
+    postgresql.blk_read_time:
+      enabled: false
+    postgresql.blk_write_time:
       enabled: false
     postgresql.blks_hit:
       enabled: false

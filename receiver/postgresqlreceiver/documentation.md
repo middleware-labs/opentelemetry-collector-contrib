@@ -334,7 +334,7 @@ Number of times a table has manually been vacuumed.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| {vacuum} | Sum | Int | Cumulative | true | development |
+| {vacuum} | Sum | Int | Cumulative | true | Development |
 
 ### postgresql.wal.age
 
@@ -374,6 +374,22 @@ metrics:
   <metric_name>:
     enabled: true
 ```
+
+### postgresql.blk_read_time
+
+Time spent reading data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| ms | Sum | Double | Cumulative | true | Development |
+
+### postgresql.blk_write_time
+
+Time spent writing data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| ms | Sum | Double | Cumulative | true | Development |
 
 ### postgresql.blks_hit
 
@@ -569,6 +585,8 @@ top query
 | postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double |
 | postgresql.total_plan_time | Total time spent planning the statement, in delta milliseconds. | Any Double |
 | postgresql.query_plan | The execution plan used by PostgreSQL for the query. | Any Str |
+| postgresql.blk_read_time | Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double |
+| postgresql.blk_write_time | Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double |
 
 ## Resource Attributes
 

@@ -17,6 +17,8 @@ const (
 	tempBlksWrittenColumnName   = "temp_blks_written"
 	totalExecTimeColumnName     = "total_exec_time"
 	totalPlanTimeColumnName     = "total_plan_time"
+	blkReadTimeAttributeName    = "blk_read_time"
+	blkWriteTimeAttributeName   = "blk_write_time"
 )
 
 const (
@@ -44,4 +46,6 @@ const (
 
 const (
 	postgresqlTotalExecTimeAttributeName = dbAttributePrefix + totalExecTimeColumnName
+	postgresqlBlkReadTimeAttributeName   = dbAttributePrefix + blkReadTimeAttributeName
+	postgresqlBlkWriteTimeAttributeName  = dbAttributePrefix + blkWriteTimeAttributeName
 )

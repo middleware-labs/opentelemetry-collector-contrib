@@ -93,6 +93,12 @@ func TestMetricsBuilder(t *testing.T) {
 			mb.RecordPostgresqlBgwriterMaxwrittenDataPoint(ts, 1)
 
 			allMetricsCount++
+			mb.RecordPostgresqlBlkReadTimeDataPoint(ts, 1)
+
+			allMetricsCount++
+			mb.RecordPostgresqlBlkWriteTimeDataPoint(ts, 1)
+
+			allMetricsCount++
 			mb.RecordPostgresqlBlksHitDataPoint(ts, 1)
 
 			allMetricsCount++
@@ -356,6 +362,34 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.blk_read_time":
+					assert.False(t, validatedMetrics["postgresql.blk_read_time"], "Found a duplicate in the metrics slice: postgresql.blk_read_time")
+					validatedMetrics["postgresql.blk_read_time"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Time spent reading data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)", ms.At(i).Description())
+					assert.Equal(t, "ms", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+				case "postgresql.blk_write_time":
+					assert.False(t, validatedMetrics["postgresql.blk_write_time"], "Found a duplicate in the metrics slice: postgresql.blk_write_time")
+					validatedMetrics["postgresql.blk_write_time"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Time spent writing data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)", ms.At(i).Description())
+					assert.Equal(t, "ms", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
 				case "postgresql.blks_hit":
 					assert.False(t, validatedMetrics["postgresql.blks_hit"], "Found a duplicate in the metrics slice: postgresql.blks_hit")
 					validatedMetrics["postgresql.blks_hit"] = true

@@ -12,7 +12,9 @@ SELECT
   rolname,
   rows::TEXT,
   total_exec_time,
-  total_plan_time
+  total_plan_time,
+  blk_read_time,
+  blk_write_time
 FROM
   pg_stat_statements as pg_stat_statements
   LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid

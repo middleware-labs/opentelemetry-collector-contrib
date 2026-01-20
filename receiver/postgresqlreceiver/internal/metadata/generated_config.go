@@ -34,6 +34,8 @@ type MetricsConfig struct {
 	PostgresqlBgwriterCheckpointCount  MetricConfig `mapstructure:"postgresql.bgwriter.checkpoint.count"`
 	PostgresqlBgwriterDuration         MetricConfig `mapstructure:"postgresql.bgwriter.duration"`
 	PostgresqlBgwriterMaxwritten       MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten"`
+	PostgresqlBlkReadTime              MetricConfig `mapstructure:"postgresql.blk_read_time"`
+	PostgresqlBlkWriteTime             MetricConfig `mapstructure:"postgresql.blk_write_time"`
 	PostgresqlBlksHit                  MetricConfig `mapstructure:"postgresql.blks_hit"`
 	PostgresqlBlksRead                 MetricConfig `mapstructure:"postgresql.blks_read"`
 	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
@@ -94,6 +96,12 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		PostgresqlBgwriterMaxwritten: MetricConfig{
 			Enabled: true,
+		},
+		PostgresqlBlkReadTime: MetricConfig{
+			Enabled: false,
+		},
+		PostgresqlBlkWriteTime: MetricConfig{
+			Enabled: false,
 		},
 		PostgresqlBlksHit: MetricConfig{
 			Enabled: false,

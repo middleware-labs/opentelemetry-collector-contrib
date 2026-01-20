@@ -214,11 +214,13 @@ type databaseStats struct {
 	tupDeleted           int64
 	blksHit              int64
 	blksRead             int64
+	blkReadTime          float64
+	blkWriteTime         float64
 }
 
 func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []string) (map[databaseName]databaseStats, error) {
 	query := filterQueryByDatabases(
-		"SELECT datname, xact_commit, xact_rollback, deadlocks, temp_files, temp_bytes, tup_updated, tup_returned, tup_fetched, tup_inserted, tup_deleted, blks_hit, blks_read FROM pg_stat_database",
+		"SELECT datname, xact_commit, xact_rollback, deadlocks, temp_files, temp_bytes, tup_updated, tup_returned, tup_fetched, tup_inserted, tup_deleted, blks_hit, blks_read, blk_read_time, blk_write_time FROM pg_stat_database",
 		databases,
 		false,
 	)
@@ -234,7 +236,8 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 	for rows.Next() {
 		var datname string
 		var transactionCommitted, transactionRollback, deadlocks, tempIo, tempFiles, tupUpdated, tupReturned, tupFetched, tupInserted, tupDeleted, blksHit, blksRead int64
-		err = rows.Scan(&datname, &transactionCommitted, &transactionRollback, &deadlocks, &tempFiles, &tempIo, &tupUpdated, &tupReturned, &tupFetched, &tupInserted, &tupDeleted, &blksHit, &blksRead)
+		var blkReadTime, blkWriteTime float64
+		err = rows.Scan(&datname, &transactionCommitted, &transactionRollback, &deadlocks, &tempFiles, &tempIo, &tupUpdated, &tupReturned, &tupFetched, &tupInserted, &tupDeleted, &blksHit, &blksRead, &blkReadTime, &blkWriteTime)
 		if err != nil {
 			errs = multierr.Append(errs, err)
 			continue
@@ -253,6 +256,8 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 				tupDeleted:           tupDeleted,
 				blksHit:              blksHit,
 				blksRead:             blksRead,
+				blkReadTime:          blkReadTime,  // requires track_io_timing = on
+				blkWriteTime:         blkWriteTime, // requires track_io_timing = on
 			}
 		}
 	}
@@ -1246,6 +1251,8 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 			tempBlksWrittenColumnName:   convertToInt,
 			totalExecTimeColumnName:     convertMillisecondToSecond,
 			totalPlanTimeColumnName:     convertMillisecondToSecond,
+			blkReadTimeAttributeName:    convertMillisecondToSecond,
+			blkWriteTimeAttributeName:   convertMillisecondToSecond,
 		}
 		currentAttributes := make(map[string]any)
 

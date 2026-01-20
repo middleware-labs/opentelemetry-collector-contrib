@@ -94,6 +94,12 @@ attributes:
   postgresql.application_name:
     description: Name of the application that is connected to this backend.
     type: string
+  postgresql.blk_read_time:
+    description: Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on.
+    type: double
+  postgresql.blk_write_time:
+    description: Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on.
+    type: double   
   postgresql.calls:
     description: Number of times the statement was executed, reported in delta value.
     type: int
@@ -233,6 +239,8 @@ events:
       - postgresql.total_exec_time
       - postgresql.total_plan_time
       - postgresql.query_plan
+      - postgresql.blk_read_time
+      - postgresql.blk_write_time
 metrics:
   postgresql.backends:
     enabled: true
@@ -300,6 +308,26 @@ metrics:
       monotonic: true
       value_type: int
     unit: "1"
+  postgresql.blk_read_time:
+    enabled: false
+    description: Time spent reading data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)
+    stability:
+      level: development
+    unit: "ms"
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative    
+  postgresql.blk_write_time:
+    enabled: false
+    description: Time spent writing data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)
+    stability:
+      level: development
+    unit: "ms"
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative
   postgresql.blks_hit:
     enabled: false
     description: Number of times disk blocks were found already in the buffer cache.

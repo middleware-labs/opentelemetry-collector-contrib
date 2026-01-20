@@ -280,6 +280,8 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	updatedOnly := map[string]updatedOnlyInfo{
 		totalExecTimeColumnName:     {},
 		totalPlanTimeColumnName:     {},
+		blkReadTimeAttributeName:    {},
+		blkWriteTimeAttributeName:   {},
 		rowsColumnName:              {finalConverter: convertToInt},
 		callsColumnName:             {finalConverter: convertToInt},
 		sharedBlksDirtiedColumnName: {finalConverter: convertToInt},
@@ -385,6 +387,8 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			item.Value[dbAttributePrefix+totalExecTimeColumnName].(float64),
 			item.Value[dbAttributePrefix+totalPlanTimeColumnName].(float64),
 			plan,
+			item.Value[postgresqlBlkReadTimeAttributeName].(float64),
+			item.Value[postgresqlBlkWriteTimeAttributeName].(float64),
 		)
 		count++
 	}
@@ -436,6 +440,8 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 		p.mb.RecordPostgresqlTupDeletedDataPoint(now, stats.tupDeleted)
 		p.mb.RecordPostgresqlBlksHitDataPoint(now, stats.blksHit)
 		p.mb.RecordPostgresqlBlksReadDataPoint(now, stats.blksRead)
+		p.mb.RecordPostgresqlBlkReadTimeDataPoint(now, stats.blkReadTime)   // requires track_io_timing = on
+		p.mb.RecordPostgresqlBlkWriteTimeDataPoint(now, stats.blkWriteTime) // requires track_io_timing = on
 	}
 	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), db, "", "", "")
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
