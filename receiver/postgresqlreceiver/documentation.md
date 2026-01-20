@@ -12,6 +12,30 @@ metrics:
     enabled: false
 ```
 
+### postgresql.analyzed
+
+Number of times a table has been manually analyzed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {analyze} | Sum | Int | Cumulative | true | Development |
+
+### postgresql.autoanalyzed
+
+Number of times a table has been automatically analyzed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {autoanalyze} | Sum | Int | Cumulative | true | Development |
+
+### postgresql.autovacuumed
+
+Number of times a table has been automatically vacuumed.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {autovacuum} | Sum | Int | Cumulative | true | Development |
+
 ### postgresql.backends
 
 The number of backends.
@@ -146,6 +170,28 @@ The database disk usage.
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | By | Sum | Int | Cumulative | false | Development |
 
+### postgresql.index.blocks_read
+
+The number of disk blocks read by this index.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` | Recommended |
+
+### postgresql.index.rows_read
+
+The number of index entries returned by scans on this index.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {rows} | Sum | Int | Cumulative | true | Development |
+
 ### postgresql.index.scans
 
 The number of index scans on a table.
@@ -161,6 +207,18 @@ The size of the index on disk.
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | By | Gauge | Int | Development |
+
+### postgresql.index_bloat
+
+Estimated index bloat ratio (actual pages / expected pages).
+
+A value of 1.0 indicates no bloat, higher values indicate wasted space.
+Based on pg_stats and pg_class estimates.
+
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Double | Development |
 
 ### postgresql.live_rows
 
@@ -336,6 +394,58 @@ Number of times a table has manually been vacuumed.
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | {vacuum} | Sum | Int | Cumulative | true | Development |
 
+### postgresql.table_bloat
+
+Estimated table bloat ratio (actual pages / expected pages).
+
+A value of 1.0 indicates no bloat, higher values indicate wasted space.
+Based on pg_stats and pg_class estimates.
+
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Double | Development |
+
+### postgresql.toast.blocks_hit
+
+Number of TOAST block hits.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
+
+### postgresql.toast.index.blocks_read
+
+Number of TOAST index block reads.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| 1 | Sum | Int | Cumulative | true | Development |
+
+### postgresql.toast.size
+
+Size of TOAST table.
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
+
+### postgresql.transactions.duration.max
+
+Max duration of active transactions.
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Double | Development |
+
+### postgresql.transactions.duration.sum
+
+Sum of duration of active transactions.
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| ms | Gauge | Double | Development |
+
 ### postgresql.wal.age
 
 Age of the oldest WAL file.
@@ -346,6 +456,14 @@ This metric requires WAL to be enabled with at least one replica.
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | s | Gauge | Int | Development |
+
+### postgresql.wal.count
+
+Number of WAL files.
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| 1 | Gauge | Int | Development |
 
 ### postgresql.wal.lag
 
@@ -364,6 +482,14 @@ This metric requires WAL to be enabled with at least one replica.
 | ---- | ----------- | ------ | -------- |
 | operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` | Recommended |
 | replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended |
+
+### postgresql.wal.size
+
+Total size of WAL files.
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| By | Gauge | Int | Development |
 
 ## Optional Metrics
 

@@ -170,6 +170,8 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 		p.recordDatabase(now, database, r, numTables)
 		p.collectIndexes(ctx, now, dbClient, database, &errs)
 		p.collectFunctions(ctx, now, dbClient, database, &errs)
+		p.collectTableBloat(ctx, now, dbClient, database, &errs)
+		p.collectIndexBloat(ctx, now, dbClient, database, &errs)
 	}
 
 	p.mb.RecordPostgresqlDatabaseCountDataPoint(now, int64(len(databases)))
@@ -181,6 +183,8 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectRowStats(ctx, now, listClient, &errs)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
+	p.collectWALStats(ctx, now, listClient, &errs)
+	p.collectTransactionsStats(ctx, now, listClient, &errs)
 
 	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
@@ -467,6 +471,9 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 		p.mb.RecordPostgresqlOperationsDataPoint(now, tm.hotUpd, metadata.AttributeOperationHotUpd)
 		p.mb.RecordPostgresqlTableSizeDataPoint(now, tm.size)
 		p.mb.RecordPostgresqlTableVacuumCountDataPoint(now, tm.vacuumCount)
+		p.mb.RecordPostgresqlAutovacuumedDataPoint(now, tm.autovacuumCount)
+		p.mb.RecordPostgresqlAnalyzedDataPoint(now, tm.analyzeCount)
+		p.mb.RecordPostgresqlAutoanalyzedDataPoint(now, tm.autoanalyzeCount)
 		p.mb.RecordPostgresqlSequentialScansDataPoint(now, tm.seqScans)
 
 		br, ok := blockReads[tableKey]
@@ -480,6 +487,8 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 			p.mb.RecordPostgresqlBlocksReadDataPoint(now, br.tidxRead, metadata.AttributeSourceTidxRead)
 			p.mb.RecordPostgresqlBlocksReadDataPoint(now, br.tidxHit, metadata.AttributeSourceTidxHit)
 		}
+
+		p.mb.RecordPostgresqlToastSizeDataPoint(now, tm.toastSize)
 
 		var schemaName string
 		var tableName string
@@ -512,6 +521,9 @@ func (p *postgreSQLScraper) collectIndexes(
 	for _, stat := range idxStats {
 		p.mb.RecordPostgresqlIndexScansDataPoint(now, stat.scans)
 		p.mb.RecordPostgresqlIndexSizeDataPoint(now, stat.size)
+		p.mb.RecordPostgresqlIndexRowsReadDataPoint(now, stat.tuplesRead)
+		p.mb.RecordPostgresqlIndexBlocksReadDataPoint(now, stat.blocksRead, metadata.AttributeSourceIdxRead)
+		p.mb.RecordPostgresqlIndexBlocksReadDataPoint(now, stat.blocksHit, metadata.AttributeSourceIdxHit)
 
 		var schemaName string
 		if p.separateSchemaAttr {
@@ -549,7 +561,94 @@ func (p *postgreSQLScraper) collectFunctions(
 	}
 }
 
+func (p *postgreSQLScraper) collectTableBloat(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	database string,
+	errs *errsMux,
+) {
+	bloatStats, err := client.getTableBloatStats(ctx, database)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, stat := range bloatStats {
+		p.mb.RecordPostgresqlTableBloatDataPoint(now, stat.bloat)
+
+		var schemaName string
+		var tableName string
+		if p.separateSchemaAttr {
+			schemaName = stat.schema
+			tableName = stat.table
+		} else {
+			tableName = fmt.Sprintf("%s.%s", stat.schema, stat.table)
+		}
+
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), database, schemaName, tableName, "")
+		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
+	}
+}
+
+func (p *postgreSQLScraper) collectIndexBloat(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	database string,
+	errs *errsMux,
+) {
+	bloatStats, err := client.getIndexBloatStats(ctx, database)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+
+	for _, stat := range bloatStats {
+		p.mb.RecordPostgresqlIndexBloatDataPoint(now, stat.bloat)
+
+		var schemaName string
+		if p.separateSchemaAttr {
+			schemaName = stat.schema
+		}
+
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), database, schemaName, stat.table, stat.indexName)
+		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
+	}
+}
+
+func (p *postgreSQLScraper) collectWALStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	count, size, err := client.getWALStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	p.mb.RecordPostgresqlWalCountDataPoint(now, count)
+	p.mb.RecordPostgresqlWalSizeDataPoint(now, size)
+}
+
+func (p *postgreSQLScraper) collectTransactionsStats(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	maxDuration, sumDuration, err := client.getTransactionsStats(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	p.mb.RecordPostgresqlTransactionsDurationMaxDataPoint(now, maxDuration)
+	p.mb.RecordPostgresqlTransactionsDurationSumDataPoint(now, sumDuration)
+}
+
 func (p *postgreSQLScraper) collectBGWriterStats(
+
 	ctx context.Context,
 	now pcommon.Timestamp,
 	client client,

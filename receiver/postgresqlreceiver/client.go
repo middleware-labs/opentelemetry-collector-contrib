@@ -84,6 +84,10 @@ type client interface {
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
 	getVersionString(ctx context.Context) (string, error)
+	getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error)
+	getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error)
+	getWALStats(ctx context.Context) (int64, int64, error)
+	getTransactionsStats(ctx context.Context) (float64, float64, error)
 }
 
 type postgreSQLClient struct {
@@ -353,18 +357,22 @@ func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, databases []stri
 
 // tableStats contains a result for a row of the getDatabaseTableMetrics result
 type tableStats struct {
-	database    string
-	schema      string
-	table       string
-	live        int64
-	dead        int64
-	inserts     int64
-	upd         int64
-	del         int64
-	hotUpd      int64
-	seqScans    int64
-	size        int64
-	vacuumCount int64
+	database         string
+	schema           string
+	table            string
+	live             int64
+	dead             int64
+	inserts          int64
+	upd              int64
+	del              int64
+	hotUpd           int64
+	seqScans         int64
+	size             int64
+	vacuumCount      int64
+	autovacuumCount  int64
+	analyzeCount     int64
+	autoanalyzeCount int64
+	toastSize        int64
 }
 
 func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db string) (map[tableIdentifier]tableStats, error) {
@@ -377,7 +385,11 @@ func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db strin
 	n_tup_hot_upd AS hot_upd,
 	seq_scan AS seq_scans,
 	pg_relation_size(relid) AS table_size,
-	vacuum_count
+	vacuum_count,
+	autovacuum_count,
+	analyze_count,
+	autoanalyze_count,
+	coalesce(pg_relation_size(reltoastrelid), 0) AS toast_size
 	FROM pg_stat_user_tables;`
 
 	ts := map[tableIdentifier]tableStats{}
@@ -388,25 +400,29 @@ func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db strin
 	}
 	for rows.Next() {
 		var schema, table string
-		var live, dead, ins, upd, del, hotUpd, seqScans, tableSize, vacuumCount int64
-		err = rows.Scan(&schema, &table, &live, &dead, &ins, &upd, &del, &hotUpd, &seqScans, &tableSize, &vacuumCount)
+		var live, dead, ins, upd, del, hotUpd, seqScans, tableSize, vacuumCount, autovacuumCount, analyzeCount, autoanalyzeCount, toastSize int64
+		err = rows.Scan(&schema, &table, &live, &dead, &ins, &upd, &del, &hotUpd, &seqScans, &tableSize, &vacuumCount, &autovacuumCount, &analyzeCount, &autoanalyzeCount, &toastSize)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 			continue
 		}
 		ts[tableKey(db, schema, table)] = tableStats{
-			database:    db,
-			schema:      schema,
-			table:       table,
-			live:        live,
-			dead:        dead,
-			inserts:     ins,
-			upd:         upd,
-			del:         del,
-			hotUpd:      hotUpd,
-			seqScans:    seqScans,
-			size:        tableSize,
-			vacuumCount: vacuumCount,
+			database:         db,
+			schema:           schema,
+			table:            table,
+			live:             live,
+			dead:             dead,
+			inserts:          ins,
+			upd:              upd,
+			del:              del,
+			hotUpd:           hotUpd,
+			seqScans:         seqScans,
+			size:             tableSize,
+			vacuumCount:      vacuumCount,
+			autovacuumCount:  autovacuumCount,
+			analyzeCount:     analyzeCount,
+			autoanalyzeCount: autoanalyzeCount,
+			toastSize:        toastSize,
 		}
 	}
 	return ts, errors
@@ -469,20 +485,183 @@ func (c *postgreSQLClient) getBlocksReadByTable(ctx context.Context, db string) 
 	return tios, errors
 }
 
-type indexStat struct {
-	index    string
-	table    string
-	schema   string
+// tableBloatStats contains bloat estimation for a table
+type tableBloatStats struct {
 	database string
-	size     int64
-	scans    int64
+	schema   string
+	table    string
+	bloat    float64
+}
+
+// indexBloatStats contains bloat estimation for an index
+type indexBloatStats struct {
+	database  string
+	schema    string
+	table     string
+	indexName string
+	bloat     float64
+}
+
+// getTableBloatStats estimates table bloat using pg_stats and pg_class
+// Adapted from https://wiki.postgresql.org/wiki/Show_database_bloat
+func (c *postgreSQLClient) getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error) {
+	query := `SELECT
+		schemaname, relname,
+		ROUND((CASE WHEN otta=0 THEN 0.0 ELSE sml.relpages::float/otta END)::numeric,1) AS tbloat
+	FROM (
+		SELECT
+		schemaname, tablename, cc.relname as relname, cc.relpages,
+		CEIL((cc.reltuples*((datahdr+ma-
+			(CASE WHEN datahdr%ma=0 THEN ma ELSE datahdr%ma END))+nullhdr2+4))/(bs-20::float)) AS otta
+		FROM (
+		SELECT
+			ma,bs,schemaname,tablename,
+			(datawidth+(hdr+ma-(case when hdr%ma=0 THEN ma ELSE hdr%ma END)))::numeric AS datahdr,
+			(maxfracsum*(nullhdr+ma-(case when nullhdr%ma=0 THEN ma ELSE nullhdr%ma END))) AS nullhdr2
+		FROM (
+			SELECT
+		schemaname, tablename, hdr, ma, bs,
+		SUM((1-null_frac)*avg_width) AS datawidth,
+		MAX(null_frac) AS maxfracsum,
+		hdr+(
+			SELECT 1+count(*)/8
+			FROM pg_stats s2
+			WHERE null_frac<>0 AND s2.schemaname = s.schemaname AND s2.tablename = s.tablename
+		) AS nullhdr
+			FROM pg_stats s, (
+		SELECT
+			(SELECT current_setting('block_size')::numeric) AS bs,
+			CASE WHEN substring(v,12,3) IN ('8.0','8.1','8.2') THEN 27 ELSE 23 END AS hdr,
+			CASE WHEN v ~ 'mingw32' THEN 8 ELSE 4 END AS ma
+		FROM (SELECT version() AS v) AS foo
+			) AS constants
+			GROUP BY 1,2,3,4,5
+		) AS foo
+		) AS rs
+		JOIN pg_class cc ON cc.relname = rs.tablename
+		JOIN pg_namespace nn ON cc.relnamespace = nn.oid
+		AND nn.nspname = rs.schemaname
+		AND nn.nspname NOT IN ('pg_catalog', 'information_schema')
+	) AS sml;`
+
+	stats := map[tableIdentifier]tableBloatStats{}
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var errs error
+	for rows.Next() {
+		var schema, table string
+		var bloat float64
+		err = rows.Scan(&schema, &table, &bloat)
+		if err != nil {
+			errs = multierr.Append(errs, err)
+			continue
+		}
+		stats[tableKey(db, schema, table)] = tableBloatStats{
+			database: db,
+			schema:   schema,
+			table:    table,
+			bloat:    bloat,
+		}
+	}
+	return stats, errs
+}
+
+// getIndexBloatStats estimates index bloat using pg_stats and pg_class
+// Adapted from https://wiki.postgresql.org/wiki/Show_database_bloat
+func (c *postgreSQLClient) getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error) {
+	query := `SELECT
+		schemaname, relname, iname,
+		ROUND((CASE WHEN iotta=0 OR ipages=0 THEN 0.0 ELSE ipages::float/iotta END)::numeric,1) AS ibloat
+	FROM (
+		SELECT
+		schemaname, cc.relname as relname,
+		COALESCE(c2.relname,'?') AS iname, COALESCE(c2.relpages,0) AS ipages,
+		COALESCE(CEIL((c2.reltuples*(datahdr-12))/(bs-20::float)),0) AS iotta
+		FROM (
+		SELECT
+			ma,bs,schemaname,tablename,
+			(datawidth+(hdr+ma-(case when hdr%ma=0 THEN ma ELSE hdr%ma END)))::numeric AS datahdr,
+			(maxfracsum*(nullhdr+ma-(case when nullhdr%ma=0 THEN ma ELSE nullhdr%ma END))) AS nullhdr2
+		FROM (
+			SELECT
+		schemaname, tablename, hdr, ma, bs,
+		SUM((1-null_frac)*avg_width) AS datawidth,
+		MAX(null_frac) AS maxfracsum,
+		hdr+(
+			SELECT 1+count(*)/8
+			FROM pg_stats s2
+			WHERE null_frac<>0 AND s2.schemaname = s.schemaname AND s2.tablename = s.tablename
+		) AS nullhdr
+			FROM pg_stats s, (
+		SELECT
+			(SELECT current_setting('block_size')::numeric) AS bs,
+			CASE WHEN substring(v,12,3) IN ('8.0','8.1','8.2') THEN 27 ELSE 23 END AS hdr,
+			CASE WHEN v ~ 'mingw32' THEN 8 ELSE 4 END AS ma
+		FROM (SELECT version() AS v) AS foo
+			) AS constants
+			GROUP BY 1,2,3,4,5
+		) AS foo
+		) AS rs
+		JOIN pg_class cc ON cc.relname = rs.tablename
+		JOIN pg_namespace nn ON cc.relnamespace = nn.oid
+		AND nn.nspname = rs.schemaname
+		AND nn.nspname NOT IN ('pg_catalog', 'information_schema')
+		LEFT JOIN pg_index i ON indrelid = cc.oid
+		LEFT JOIN pg_class c2 ON c2.oid = i.indexrelid
+	) AS sml WHERE iname <> '?';`
+
+	stats := map[indexIdentifer]indexBloatStats{}
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var errs error
+	for rows.Next() {
+		var schema, table, indexName string
+		var bloat float64
+		err = rows.Scan(&schema, &table, &indexName, &bloat)
+		if err != nil {
+			errs = multierr.Append(errs, err)
+			continue
+		}
+		stats[indexKey(db, schema, table, indexName)] = indexBloatStats{
+			database:  db,
+			schema:    schema,
+			table:     table,
+			indexName: indexName,
+			bloat:     bloat,
+		}
+	}
+	return stats, errs
+}
+
+type indexStat struct {
+	index      string
+	table      string
+	schema     string
+	database   string
+	size       int64
+	scans      int64
+	tuplesRead int64
+	blocksRead int64
+	blocksHit  int64
 }
 
 func (c *postgreSQLClient) getIndexStats(ctx context.Context, database string) (map[indexIdentifer]indexStat, error) {
-	query := `SELECT schemaname, relname, indexrelname,
-	pg_relation_size(indexrelid) AS index_size,
-	idx_scan
-	FROM pg_stat_user_indexes;`
+	query := `SELECT i.schemaname, i.relname, i.indexrelname,
+	pg_relation_size(i.indexrelid) AS index_size,
+	i.idx_scan,
+	i.idx_tup_read,
+	io.idx_blks_read,
+	io.idx_blks_hit
+	FROM pg_stat_user_indexes i
+	JOIN pg_statio_user_indexes io ON i.indexrelid = io.indexrelid;`
 
 	stats := map[indexIdentifer]indexStat{}
 
@@ -495,24 +674,51 @@ func (c *postgreSQLClient) getIndexStats(ctx context.Context, database string) (
 	var errs []error
 	for rows.Next() {
 		var (
-			schema, table, index  string
-			indexSize, indexScans int64
+			schema, table, index                                     string
+			indexSize, indexScans, tuplesRead, blocksRead, blocksHit int64
 		)
-		err := rows.Scan(&schema, &table, &index, &indexSize, &indexScans)
+		err := rows.Scan(&schema, &table, &index, &indexSize, &indexScans, &tuplesRead, &blocksRead, &blocksHit)
 		if err != nil {
 			errs = append(errs, err)
 			continue
 		}
 		stats[indexKey(database, schema, table, index)] = indexStat{
-			index:    index,
-			table:    table,
-			schema:   schema,
-			database: database,
-			size:     indexSize,
-			scans:    indexScans,
+			index:      index,
+			table:      table,
+			schema:     schema,
+			database:   database,
+			size:       indexSize,
+			scans:      indexScans,
+			tuplesRead: tuplesRead,
+			blocksRead: blocksRead,
+			blocksHit:  blocksHit,
 		}
 	}
 	return stats, multierr.Combine(errs...)
+}
+
+func (c *postgreSQLClient) getWALStats(ctx context.Context) (int64, int64, error) {
+	query := `SELECT count(*), coalesce(sum(size), 0) FROM pg_ls_waldir();`
+	row := c.client.QueryRowContext(ctx, query)
+	var count, size int64
+	if err := row.Scan(&count, &size); err != nil {
+		return 0, 0, err
+	}
+	return count, size, nil
+}
+
+func (c *postgreSQLClient) getTransactionsStats(ctx context.Context) (float64, float64, error) {
+	query := `SELECT
+		coalesce(max(EXTRACT(EPOCH FROM (now() - xact_start))), 0) * 1000,
+		coalesce(sum(EXTRACT(EPOCH FROM (now() - xact_start))), 0) * 1000
+		FROM pg_stat_activity
+		WHERE state = 'active';`
+	row := c.client.QueryRowContext(ctx, query)
+	var maxDuration, sumDuration float64
+	if err := row.Scan(&maxDuration, &sumDuration); err != nil {
+		return 0, 0, err
+	}
+	return maxDuration, sumDuration, nil
 }
 
 type functionStat struct {

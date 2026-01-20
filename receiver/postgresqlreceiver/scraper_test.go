@@ -73,7 +73,7 @@ func TestScraper(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -126,7 +126,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -204,7 +204,7 @@ func TestScraperNoDatabaseMultipleWithoutPreciseLag(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -257,7 +257,7 @@ func TestScraperNoDatabaseMultiple(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 		fmt.Println(actualMetrics.ResourceMetrics())
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -311,7 +311,7 @@ func TestScraperWithResourceAttributeFeatureGate(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -364,7 +364,7 @@ func TestScraperWithResourceAttributeFeatureGateSingle(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -391,8 +391,7 @@ func TestScraperExcludeDatabase(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-
-		expectedMetrics, err := golden.ReadMetrics(expectedFile)
+			expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -585,6 +584,8 @@ func TestScrapeTopQueries(t *testing.T) {
 		"rows":                "30",
 		"total_exec_time":     "11000",
 		"total_plan_time":     "12000",
+		"blk_read_time":       "100",
+		"blk_write_time":      "200",
 	}
 
 	expectedRows := make([]string, 0, len(expectedReturnedValue))
@@ -713,6 +714,14 @@ func (*mockClient) getTopQuery(context.Context, int64, *zap.Logger) ([]map[strin
 	panic("unimplemented")
 }
 
+func (*mockClient) getWALStats(context.Context) (int64, int64, error) {
+	return 10, 1024, nil
+}
+
+func (*mockClient) getTransactionsStats(context.Context) (float64, float64, error) {
+	return 100.0, 500.0, nil
+}
+
 // close implements postgreSQLClientFactory.
 func (mockSimpleClientFactory) close() error {
 	return nil
@@ -796,6 +805,16 @@ func (m *mockClient) getRowStats(ctx context.Context) ([]RowStats, error) {
 func (m *mockClient) getVersionString(ctx context.Context) (string, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(string), args.Error(1)
+}
+
+func (m *mockClient) getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error) {
+	args := m.Called(ctx, db)
+	return args.Get(0).(map[tableIdentifier]tableBloatStats), args.Error(1)
+}
+
+func (m *mockClient) getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error) {
+	args := m.Called(ctx, db)
+	return args.Get(0).(map[indexIdentifer]indexBloatStats), args.Error(1)
 }
 
 func (m *mockClient) getBGWriterStats(ctx context.Context) (*bgStat, error) {
@@ -1021,32 +1040,38 @@ func (m *mockClient) initMocks(database, schema string, databases []string, inde
 		table2 := "table2"
 		tableMetrics := map[tableIdentifier]tableStats{
 			tableKey(database, schema, table1): {
-				database:    database,
-				schema:      schema,
-				table:       table1,
-				live:        int64(index + 7),
-				dead:        int64(index + 8),
-				inserts:     int64(index + 39),
-				upd:         int64(index + 40),
-				del:         int64(index + 41),
-				hotUpd:      int64(index + 42),
-				size:        int64(index + 43),
-				vacuumCount: int64(index + 44),
-				seqScans:    int64(index + 45),
+				database:         database,
+				schema:           schema,
+				table:            table1,
+				live:             int64(index + 7),
+				dead:             int64(index + 8),
+				inserts:          int64(index + 39),
+				upd:              int64(index + 40),
+				del:              int64(index + 41),
+				hotUpd:           int64(index + 42),
+				size:             int64(index + 43),
+				vacuumCount:      int64(index + 44),
+				autovacuumCount:  int64(index + 52),
+				analyzeCount:     int64(index + 53),
+				autoanalyzeCount: int64(index + 54),
+				seqScans:         int64(index + 45),
 			},
 			tableKey(database, schema, table2): {
-				database:    database,
-				schema:      schema,
-				table:       table2,
-				live:        int64(index + 9),
-				dead:        int64(index + 10),
-				inserts:     int64(index + 43),
-				upd:         int64(index + 44),
-				del:         int64(index + 45),
-				hotUpd:      int64(index + 46),
-				size:        int64(index + 47),
-				vacuumCount: int64(index + 48),
-				seqScans:    int64(index + 49),
+				database:         database,
+				schema:           schema,
+				table:            table2,
+				live:             int64(index + 9),
+				dead:             int64(index + 10),
+				inserts:          int64(index + 43),
+				upd:              int64(index + 44),
+				del:              int64(index + 45),
+				hotUpd:           int64(index + 46),
+				size:             int64(index + 47),
+				vacuumCount:      int64(index + 48),
+				autovacuumCount:  int64(index + 55),
+				analyzeCount:     int64(index + 56),
+				autoanalyzeCount: int64(index + 57),
+				seqScans:         int64(index + 49),
 			},
 		}
 
@@ -1082,27 +1107,67 @@ func (m *mockClient) initMocks(database, schema string, databases []string, inde
 		m.On("getDatabaseTableMetrics", mock.Anything, database).Return(tableMetrics, nil)
 		m.On("getBlocksReadByTable", mock.Anything, database).Return(blocksMetrics, nil)
 
+		tableBloatMetrics := map[tableIdentifier]tableBloatStats{
+			tableKey(database, schema, table1): {
+				database: database,
+				schema:   schema,
+				table:    table1,
+				bloat:    float64(index + 58),
+			},
+			tableKey(database, schema, table2): {
+				database: database,
+				schema:   schema,
+				table:    table2,
+				bloat:    float64(index + 59),
+			},
+		}
+		m.On("getTableBloatStats", mock.Anything, database).Return(tableBloatMetrics, nil)
+
 		index1 := database + "_test1_pkey"
 		index2 := database + "_test2_pkey"
 		indexStats := map[indexIdentifer]indexStat{
 			indexKey(database, schema, table1, index1): {
-				database: database,
-				schema:   schema,
-				table:    table1,
-				index:    index1,
-				scans:    int64(index + 35),
-				size:     int64(index + 36),
+				database:   database,
+				schema:     schema,
+				table:      table1,
+				index:      index1,
+				scans:      int64(index + 35),
+				size:       int64(index + 36),
+				tuplesRead: int64(index + 39),
+				blocksRead: int64(index + 40),
+				blocksHit:  int64(index + 41),
 			},
 			indexKey(index2, schema, table2, index2): {
-				database: database,
-				schema:   schema,
-				table:    table2,
-				index:    index2,
-				scans:    int64(index + 37),
-				size:     int64(index + 38),
+				database:   database,
+				schema:     schema,
+				table:      table2,
+				index:      index2,
+				scans:      int64(index + 37),
+				size:       int64(index + 38),
+				tuplesRead: int64(index + 42),
+				blocksRead: int64(index + 43),
+				blocksHit:  int64(index + 44),
 			},
 		}
 		m.On("getIndexStats", mock.Anything, database).Return(indexStats, nil)
+
+		indexBloatMetrics := map[indexIdentifer]indexBloatStats{
+			indexKey(database, schema, table1, index1): {
+				database:  database,
+				schema:    schema,
+				table:     table1,
+				indexName: index1,
+				bloat:     float64(index + 60),
+			},
+			indexKey(database, schema, table2, index2): {
+				database:  database,
+				schema:    schema,
+				table:     table2,
+				indexName: index2,
+				bloat:     float64(index + 61),
+			},
+		}
+		m.On("getIndexBloatStats", mock.Anything, database).Return(indexBloatMetrics, nil)
 
 		function1 := "test_function1"
 		function2 := "test_function2"

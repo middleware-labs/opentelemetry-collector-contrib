@@ -70,6 +70,18 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordPostgresqlAnalyzedDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlAutoanalyzedDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlAutovacuumedDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordPostgresqlBackendsDataPoint(ts, 1)
 
 			defaultMetricsCount++
@@ -143,11 +155,23 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordPostgresqlIndexBlocksReadDataPoint(ts, 1, AttributeSourceHeapRead)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlIndexRowsReadDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordPostgresqlIndexScansDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexSizeDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlIndexBloatDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -208,11 +232,35 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlTableVacuumCountDataPoint(ts, 1)
 
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlTableBloatDataPoint(ts, 1)
+
 			allMetricsCount++
 			mb.RecordPostgresqlTempIoDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlTempFilesDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlToastBlocksHitDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlToastIndexBlocksReadDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlToastSizeDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlTransactionsDurationMaxDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlTransactionsDurationSumDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlTupDeletedDataPoint(ts, 1)
@@ -233,12 +281,20 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlWalAgeDataPoint(ts, 1)
 
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlWalCountDataPoint(ts, 1)
+
 			allMetricsCount++
 			mb.RecordPostgresqlWalDelayDataPoint(ts, 1, AttributeWalOperationLagFlush, "replication_client-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalLagDataPoint(ts, 1, AttributeWalOperationLagFlush, "replication_client-val")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordPostgresqlWalSizeDataPoint(ts, 1)
 
 			rb := mb.NewResourceBuilder()
 			rb.SetPostgresqlDatabaseName("postgresql.database.name-val")
@@ -269,6 +325,48 @@ func TestMetricsBuilder(t *testing.T) {
 			validatedMetrics := make(map[string]bool)
 			for i := 0; i < ms.Len(); i++ {
 				switch ms.At(i).Name() {
+				case "postgresql.analyzed":
+					assert.False(t, validatedMetrics["postgresql.analyzed"], "Found a duplicate in the metrics slice: postgresql.analyzed")
+					validatedMetrics["postgresql.analyzed"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Number of times a table has been manually analyzed.", ms.At(i).Description())
+					assert.Equal(t, "{analyze}", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.autoanalyzed":
+					assert.False(t, validatedMetrics["postgresql.autoanalyzed"], "Found a duplicate in the metrics slice: postgresql.autoanalyzed")
+					validatedMetrics["postgresql.autoanalyzed"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Number of times a table has been automatically analyzed.", ms.At(i).Description())
+					assert.Equal(t, "{autoanalyze}", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.autovacuumed":
+					assert.False(t, validatedMetrics["postgresql.autovacuumed"], "Found a duplicate in the metrics slice: postgresql.autovacuumed")
+					validatedMetrics["postgresql.autovacuumed"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Number of times a table has been automatically vacuumed.", ms.At(i).Description())
+					assert.Equal(t, "{autovacuum}", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.backends":
 					assert.False(t, validatedMetrics["postgresql.backends"], "Found a duplicate in the metrics slice: postgresql.backends")
 					validatedMetrics["postgresql.backends"] = true
@@ -568,6 +666,37 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok := dp.Attributes().Get("function")
 					assert.True(t, ok)
 					assert.Equal(t, "function-val", attrVal.Str())
+				case "postgresql.index.blocks_read":
+					assert.False(t, validatedMetrics["postgresql.index.blocks_read"], "Found a duplicate in the metrics slice: postgresql.index.blocks_read")
+					validatedMetrics["postgresql.index.blocks_read"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "The number of disk blocks read by this index.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("source")
+					assert.True(t, ok)
+					assert.Equal(t, "heap_read", attrVal.Str())
+				case "postgresql.index.rows_read":
+					assert.False(t, validatedMetrics["postgresql.index.rows_read"], "Found a duplicate in the metrics slice: postgresql.index.rows_read")
+					validatedMetrics["postgresql.index.rows_read"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "The number of index entries returned by scans on this index.", ms.At(i).Description())
+					assert.Equal(t, "{rows}", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.index.scans":
 					assert.False(t, validatedMetrics["postgresql.index.scans"], "Found a duplicate in the metrics slice: postgresql.index.scans")
 					validatedMetrics["postgresql.index.scans"] = true
@@ -594,6 +723,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.index_bloat":
+					assert.False(t, validatedMetrics["postgresql.index_bloat"], "Found a duplicate in the metrics slice: postgresql.index_bloat")
+					validatedMetrics["postgresql.index_bloat"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Estimated index bloat ratio (actual pages / expected pages).", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
 				case "postgresql.live_rows":
 					assert.False(t, validatedMetrics["postgresql.live_rows"], "Found a duplicate in the metrics slice: postgresql.live_rows")
 					validatedMetrics["postgresql.live_rows"] = true
@@ -828,6 +969,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.table_bloat":
+					assert.False(t, validatedMetrics["postgresql.table_bloat"], "Found a duplicate in the metrics slice: postgresql.table_bloat")
+					validatedMetrics["postgresql.table_bloat"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Estimated table bloat ratio (actual pages / expected pages).", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
 				case "postgresql.temp.io":
 					assert.False(t, validatedMetrics["postgresql.temp.io"], "Found a duplicate in the metrics slice: postgresql.temp.io")
 					validatedMetrics["postgresql.temp.io"] = true
@@ -856,6 +1009,70 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.toast.blocks_hit":
+					assert.False(t, validatedMetrics["postgresql.toast.blocks_hit"], "Found a duplicate in the metrics slice: postgresql.toast.blocks_hit")
+					validatedMetrics["postgresql.toast.blocks_hit"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Number of TOAST block hits.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.toast.index.blocks_read":
+					assert.False(t, validatedMetrics["postgresql.toast.index.blocks_read"], "Found a duplicate in the metrics slice: postgresql.toast.index.blocks_read")
+					validatedMetrics["postgresql.toast.index.blocks_read"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Sum().DataPoints().Len())
+					assert.Equal(t, "Number of TOAST index block reads.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					assert.True(t, ms.At(i).Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, ms.At(i).Sum().AggregationTemporality())
+					dp := ms.At(i).Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.toast.size":
+					assert.False(t, validatedMetrics["postgresql.toast.size"], "Found a duplicate in the metrics slice: postgresql.toast.size")
+					validatedMetrics["postgresql.toast.size"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Size of TOAST table.", ms.At(i).Description())
+					assert.Equal(t, "By", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.transactions.duration.max":
+					assert.False(t, validatedMetrics["postgresql.transactions.duration.max"], "Found a duplicate in the metrics slice: postgresql.transactions.duration.max")
+					validatedMetrics["postgresql.transactions.duration.max"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Max duration of active transactions.", ms.At(i).Description())
+					assert.Equal(t, "ms", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+				case "postgresql.transactions.duration.sum":
+					assert.False(t, validatedMetrics["postgresql.transactions.duration.sum"], "Found a duplicate in the metrics slice: postgresql.transactions.duration.sum")
+					validatedMetrics["postgresql.transactions.duration.sum"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Sum of duration of active transactions.", ms.At(i).Description())
+					assert.Equal(t, "ms", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
 				case "postgresql.tup_deleted":
 					assert.False(t, validatedMetrics["postgresql.tup_deleted"], "Found a duplicate in the metrics slice: postgresql.tup_deleted")
 					validatedMetrics["postgresql.tup_deleted"] = true
@@ -938,6 +1155,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "postgresql.wal.count":
+					assert.False(t, validatedMetrics["postgresql.wal.count"], "Found a duplicate in the metrics slice: postgresql.wal.count")
+					validatedMetrics["postgresql.wal.count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Number of WAL files.", ms.At(i).Description())
+					assert.Equal(t, "1", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.wal.delay":
 					assert.False(t, validatedMetrics["postgresql.wal.delay"], "Found a duplicate in the metrics slice: postgresql.wal.delay")
 					validatedMetrics["postgresql.wal.delay"] = true
@@ -974,6 +1203,18 @@ func TestMetricsBuilder(t *testing.T) {
 					attrVal, ok = dp.Attributes().Get("replication_client")
 					assert.True(t, ok)
 					assert.Equal(t, "replication_client-val", attrVal.Str())
+				case "postgresql.wal.size":
+					assert.False(t, validatedMetrics["postgresql.wal.size"], "Found a duplicate in the metrics slice: postgresql.wal.size")
+					validatedMetrics["postgresql.wal.size"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, ms.At(i).Type())
+					assert.Equal(t, 1, ms.At(i).Gauge().DataPoints().Len())
+					assert.Equal(t, "Total size of WAL files.", ms.At(i).Description())
+					assert.Equal(t, "By", ms.At(i).Unit())
+					dp := ms.At(i).Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				}
 			}
 		})

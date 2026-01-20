@@ -1,6 +1,12 @@
 default:
 all_set:
   metrics:
+    postgresql.analyzed:
+      enabled: true
+    postgresql.autoanalyzed:
+      enabled: true
+    postgresql.autovacuumed:
+      enabled: true
     postgresql.backends:
       enabled: true
     postgresql.bgwriter.buffers.allocated:
@@ -41,9 +47,15 @@ all_set:
       enabled: true
     postgresql.function.calls:
       enabled: true
+    postgresql.index.blocks_read:
+      enabled: true
+    postgresql.index.rows_read:
+      enabled: true
     postgresql.index.scans:
       enabled: true
     postgresql.index.size:
+      enabled: true
+    postgresql.index_bloat:
       enabled: true
     postgresql.live_rows:
       enabled: true
@@ -75,9 +87,21 @@ all_set:
       enabled: true
     postgresql.table.vacuum.count:
       enabled: true
+    postgresql.table_bloat:
+      enabled: true
     postgresql.temp.io:
       enabled: true
     postgresql.temp_files:
+      enabled: true
+    postgresql.toast.blocks_hit:
+      enabled: true
+    postgresql.toast.index.blocks_read:
+      enabled: true
+    postgresql.toast.size:
+      enabled: true
+    postgresql.transactions.duration.max:
+      enabled: true
+    postgresql.transactions.duration.sum:
       enabled: true
     postgresql.tup_deleted:
       enabled: true
@@ -91,9 +115,13 @@ all_set:
       enabled: true
     postgresql.wal.age:
       enabled: true
+    postgresql.wal.count:
+      enabled: true
     postgresql.wal.delay:
       enabled: true
     postgresql.wal.lag:
+      enabled: true
+    postgresql.wal.size:
       enabled: true
   events:
     db.server.query_sample:
@@ -115,6 +143,12 @@ all_set:
       enabled: true
 none_set:
   metrics:
+    postgresql.analyzed:
+      enabled: false
+    postgresql.autoanalyzed:
+      enabled: false
+    postgresql.autovacuumed:
+      enabled: false
     postgresql.backends:
       enabled: false
     postgresql.bgwriter.buffers.allocated:
@@ -155,9 +189,15 @@ none_set:
       enabled: false
     postgresql.function.calls:
       enabled: false
+    postgresql.index.blocks_read:
+      enabled: false
+    postgresql.index.rows_read:
+      enabled: false
     postgresql.index.scans:
       enabled: false
     postgresql.index.size:
+      enabled: false
+    postgresql.index_bloat:
       enabled: false
     postgresql.live_rows:
       enabled: false
@@ -189,9 +229,21 @@ none_set:
       enabled: false
     postgresql.table.vacuum.count:
       enabled: false
+    postgresql.table_bloat:
+      enabled: false
     postgresql.temp.io:
       enabled: false
     postgresql.temp_files:
+      enabled: false
+    postgresql.toast.blocks_hit:
+      enabled: false
+    postgresql.toast.index.blocks_read:
+      enabled: false
+    postgresql.toast.size:
+      enabled: false
+    postgresql.transactions.duration.max:
+      enabled: false
+    postgresql.transactions.duration.sum:
       enabled: false
     postgresql.tup_deleted:
       enabled: false
@@ -205,9 +257,13 @@ none_set:
       enabled: false
     postgresql.wal.age:
       enabled: false
+    postgresql.wal.count:
+      enabled: false
     postgresql.wal.delay:
       enabled: false
     postgresql.wal.lag:
+      enabled: false
+    postgresql.wal.size:
       enabled: false
   events:
     db.server.query_sample:
