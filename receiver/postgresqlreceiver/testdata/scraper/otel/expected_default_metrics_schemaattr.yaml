@@ -1,9 +1,6 @@
 resourceMetrics:
   - resource:
       attributes:
-        - key: postgresql.database.name
-          value:
-            stringValue: "N/A"
         - key: postgresql.db.version
           value:
             stringValue: "16.3 (Ubuntu 16.3-1.pgdg22.04+1)"
