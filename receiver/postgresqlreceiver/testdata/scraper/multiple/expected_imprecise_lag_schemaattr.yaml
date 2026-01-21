@@ -6,103 +6,6 @@ resourceMetrics:
             stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
-          - description: Number of buffers allocated.
-            name: postgresql.bgwriter.buffers.allocated
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "10"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: '{buffers}'
-          - description: Number of buffers written.
-            name: postgresql.bgwriter.buffers.writes
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "7"
-                  attributes:
-                    - key: source
-                      value:
-                        stringValue: backend
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "8"
-                  attributes:
-                    - key: source
-                      value:
-                        stringValue: backend_fsync
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "5"
-                  attributes:
-                    - key: source
-                      value:
-                        stringValue: bgwriter
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "9"
-                  attributes:
-                    - key: source
-                      value:
-                        stringValue: checkpoints
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: '{buffers}'
-          - description: The number of checkpoints performed.
-            name: postgresql.bgwriter.checkpoint.count
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "1"
-                  attributes:
-                    - key: type
-                      value:
-                        stringValue: requested
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "2"
-                  attributes:
-                    - key: type
-                      value:
-                        stringValue: scheduled
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: '{checkpoints}'
-          - description: Total time spent writing and syncing files to disk by checkpoints.
-            name: postgresql.bgwriter.duration
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asDouble: 4.23
-                  attributes:
-                    - key: type
-                      value:
-                        stringValue: sync
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asDouble: 3.12
-                  attributes:
-                    - key: type
-                      value:
-                        stringValue: write
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: ms
-          - description: Number of times the background writer stopped a cleaning scan because it had written too many buffers.
-            name: postgresql.bgwriter.maxwritten
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "11"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-              isMonotonic: true
-            unit: "1"
           - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
             gauge:
               dataPoints:
@@ -136,23 +39,6 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.buffer_hit
             unit: '{hit}/s'
-          - description: Configured maximum number of client connections allowed
-            gauge:
-              dataPoints:
-                - asInt: "100"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.connection.max
-            unit: '{connection}'
-          - description: Number of user databases.
-            name: postgresql.database.count
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "3"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{databases}'
           - description: The number of database locks.
             gauge:
               dataPoints:
@@ -268,18 +154,6 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: ns
-          - description: The amount of data delayed in replication.
-            gauge:
-              dataPoints:
-                - asInt: "1024"
-                  attributes:
-                    - key: replication_client
-                      value:
-                        stringValue: unix
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.replication.data_delay
-            unit: By
           - description: Rows deleted by queries in this db, tagged with relation name.
             gauge:
               dataPoints:
@@ -344,14 +218,6 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.transactions.duration.sum
             unit: ms
-          - description: Age of the oldest WAL file.
-            gauge:
-              dataPoints:
-                - asInt: "3600"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.wal.age
-            unit: s
           - description: Number of WAL files.
             gauge:
               dataPoints:
@@ -360,41 +226,6 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.wal.count
             unit: "1"
-          - description: Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
-            gauge:
-              dataPoints:
-                - asInt: "600"
-                  attributes:
-                    - key: operation
-                      value:
-                        stringValue: flush
-                    - key: replication_client
-                      value:
-                        stringValue: unix
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "700"
-                  attributes:
-                    - key: operation
-                      value:
-                        stringValue: replay
-                    - key: replication_client
-                      value:
-                        stringValue: unix
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "800"
-                  attributes:
-                    - key: operation
-                      value:
-                        stringValue: write
-                    - key: replication_client
-                      value:
-                        stringValue: unix
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.wal.lag
-            unit: s
           - description: Total size of WAL files.
             gauge:
               dataPoints:
@@ -723,6 +554,206 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{tup_updated}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: otel
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Number of buffers allocated.
+            name: postgresql.bgwriter.buffers.allocated
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "10"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{buffers}'
+          - description: Number of buffers written.
+            name: postgresql.bgwriter.buffers.writes
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "7"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: backend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "8"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: backend_fsync
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "5"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: bgwriter
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "9"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: checkpoints
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{buffers}'
+          - description: The number of checkpoints performed.
+            name: postgresql.bgwriter.checkpoint.count
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: type
+                      value:
+                        stringValue: requested
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: type
+                      value:
+                        stringValue: scheduled
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{checkpoints}'
+          - description: Total time spent writing and syncing files to disk by checkpoints.
+            name: postgresql.bgwriter.duration
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asDouble: 4.23
+                  attributes:
+                    - key: type
+                      value:
+                        stringValue: sync
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asDouble: 3.12
+                  attributes:
+                    - key: type
+                      value:
+                        stringValue: write
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: ms
+          - description: Number of times the background writer stopped a cleaning scan because it had written too many buffers.
+            name: postgresql.bgwriter.maxwritten
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "11"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: postgresql.application_name
+                      value:
+                        stringValue: otel
+                    - key: postgresql.state
+                      value:
+                        stringValue: active
+                    - key: user.name
+                      value:
+                        stringValue: otel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.connection.count
+            unit: '{connection}'
+          - description: Configured maximum number of client connections allowed
+            gauge:
+              dataPoints:
+                - asInt: "100"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.connection.max
+            unit: '{connection}'
+          - description: Number of user databases.
+            name: postgresql.database.count
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "3"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: '{databases}'
+          - description: The amount of data delayed in replication.
+            gauge:
+              dataPoints:
+                - asInt: "1024"
+                  attributes:
+                    - key: replication_client
+                      value:
+                        stringValue: unix
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.replication.data_delay
+            unit: By
+          - description: Age of the oldest WAL file.
+            gauge:
+              dataPoints:
+                - asInt: "3600"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.wal.age
+            unit: s
+          - description: Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
+            gauge:
+              dataPoints:
+                - asInt: "600"
+                  attributes:
+                    - key: operation
+                      value:
+                        stringValue: flush
+                    - key: replication_client
+                      value:
+                        stringValue: unix
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "700"
+                  attributes:
+                    - key: operation
+                      value:
+                        stringValue: replay
+                    - key: replication_client
+                      value:
+                        stringValue: unix
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "800"
+                  attributes:
+                    - key: operation
+                      value:
+                        stringValue: write
+                    - key: replication_client
+                      value:
+                        stringValue: unix
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.wal.lag
+            unit: s
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest

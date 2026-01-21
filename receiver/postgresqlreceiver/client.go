@@ -88,6 +88,7 @@ type client interface {
 	getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error)
 	getWALStats(ctx context.Context) (int64, int64, error)
 	getTransactionsStats(ctx context.Context) (float64, float64, error)
+	getConnectionStats(ctx context.Context, databases []string) (map[databaseName][]connectionStat, error)
 }
 
 type postgreSQLClient struct {
@@ -203,6 +204,14 @@ func (c *postgreSQLClient) Close() error {
 		return c.closeFn()
 	}
 	return nil
+}
+
+type connectionStat struct {
+	database string
+	user     string
+	app      string
+	state    string
+	count    int64
 }
 
 type databaseStats struct {
@@ -329,6 +338,48 @@ func (c *postgreSQLClient) getBackends(ctx context.Context, databases []string) 
 		}
 	}
 	return ars, errors
+}
+
+func (c *postgreSQLClient) getConnectionStats(ctx context.Context, databases []string) (map[databaseName][]connectionStat, error) {
+	query := "SELECT datname, usename, application_name, state, count(*) FROM pg_stat_activity"
+	if len(databases) > 0 {
+		var queryDatabases []string
+		for _, db := range databases {
+			queryDatabases = append(queryDatabases, fmt.Sprintf("'%s'", db))
+		}
+		query += fmt.Sprintf(" WHERE datname IN (%s)", strings.Join(queryDatabases, ","))
+	}
+	query += " GROUP BY 1, 2, 3, 4;"
+
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	stats := map[databaseName][]connectionStat{}
+	var errs error
+	for rows.Next() {
+		var (
+			datname, user, app, state sql.NullString
+			count                     int64
+		)
+		err = rows.Scan(&datname, &user, &app, &state, &count)
+		if err != nil {
+			errs = multierr.Append(errs, err)
+			continue
+		}
+		if datname.String != "" {
+			stats[databaseName(datname.String)] = append(stats[databaseName(datname.String)], connectionStat{
+				database: datname.String,
+				user:     user.String,
+				app:      app.String,
+				state:    state.String,
+				count:    count,
+			})
+		}
+	}
+	return stats, multierr.Combine(errs)
 }
 
 func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, databases []string) (map[databaseName]int64, error) {

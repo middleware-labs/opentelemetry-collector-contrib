@@ -73,7 +73,7 @@ func TestScraper(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -126,7 +126,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -204,7 +204,7 @@ func TestScraperNoDatabaseMultipleWithoutPreciseLag(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -257,7 +257,7 @@ func TestScraperNoDatabaseMultiple(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 		fmt.Println(actualMetrics.ResourceMetrics())
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -311,7 +311,7 @@ func TestScraperWithResourceAttributeFeatureGate(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -364,7 +364,7 @@ func TestScraperWithResourceAttributeFeatureGateSingle(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -391,7 +391,7 @@ func TestScraperExcludeDatabase(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -720,6 +720,14 @@ func (*mockClient) getWALStats(context.Context) (int64, int64, error) {
 
 func (*mockClient) getTransactionsStats(context.Context) (float64, float64, error) {
 	return 100.0, 500.0, nil
+}
+
+func (*mockClient) getConnectionStats(context.Context, []string) (map[databaseName][]connectionStat, error) {
+	return map[databaseName][]connectionStat{
+		"otel": {
+			{database: "otel", user: "otel", app: "otel", state: "active", count: 1},
+		},
+	}, nil
 }
 
 // close implements postgreSQLClientFactory.
