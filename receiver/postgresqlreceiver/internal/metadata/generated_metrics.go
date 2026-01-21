@@ -1350,9 +1350,10 @@ func (m *metricPostgresqlConnectionCount) init() {
 	m.data.SetDescription("The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user")
 	m.data.SetUnit("{connection}")
 	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
 }
 
-func (m *metricPostgresqlConnectionCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+func (m *metricPostgresqlConnectionCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, postgresqlStateAttributeValue string, postgresqlApplicationNameAttributeValue string, userNameAttributeValue string) {
 	if !m.config.Enabled {
 		return
 	}
@@ -1360,6 +1361,9 @@ func (m *metricPostgresqlConnectionCount) recordDataPoint(start pcommon.Timestam
 	dp.SetStartTimestamp(start)
 	dp.SetTimestamp(ts)
 	dp.SetIntValue(val)
+	dp.Attributes().PutStr("postgresql.state", postgresqlStateAttributeValue)
+	dp.Attributes().PutStr("postgresql.application_name", postgresqlApplicationNameAttributeValue)
+	dp.Attributes().PutStr("user.name", userNameAttributeValue)
 }
 
 // updateCapacity saves max length of data point slices that will be used for the slice capacity.
@@ -4067,8 +4071,8 @@ func (mb *MetricsBuilder) RecordPostgresqlCommitsDataPoint(ts pcommon.Timestamp,
 }
 
 // RecordPostgresqlConnectionCountDataPoint adds a data point to postgresql.connection.count metric.
-func (mb *MetricsBuilder) RecordPostgresqlConnectionCountDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricPostgresqlConnectionCount.recordDataPoint(mb.startTime, ts, val)
+func (mb *MetricsBuilder) RecordPostgresqlConnectionCountDataPoint(ts pcommon.Timestamp, val int64, postgresqlStateAttributeValue string, postgresqlApplicationNameAttributeValue string, userNameAttributeValue string) {
+	mb.metricPostgresqlConnectionCount.recordDataPoint(mb.startTime, ts, val, postgresqlStateAttributeValue, postgresqlApplicationNameAttributeValue, userNameAttributeValue)
 }
 
 // RecordPostgresqlConnectionMaxDataPoint adds a data point to postgresql.connection.max metric.
