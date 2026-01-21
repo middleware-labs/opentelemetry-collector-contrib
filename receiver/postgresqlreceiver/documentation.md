@@ -146,6 +146,14 @@ The number of active connections to this database. If DBM is enabled, this metri
 | ---- | ----------- | ---------- | --------- |
 | {connection} | Gauge | Int | Development |
 
+#### Attributes
+
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| postgresql.state | Current overall state of this backend | Any Str | Recommended |
+| postgresql.application_name | Name of the application that is connected to this backend. | Any Str | Recommended |
+| user.name | Name of the user logged into this backend. | Any Str | Recommended |
+
 ### postgresql.connection.max
 
 Configured maximum number of client connections allowed
