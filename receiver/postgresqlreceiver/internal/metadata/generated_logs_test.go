@@ -4,9 +4,6 @@ package metadata
 
 import (
 	"context"
-	"testing"
-	"time"
-
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/plog"
@@ -14,6 +11,8 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
+	"testing"
+	"time"
 )
 
 type eventsTestDataSet int
@@ -31,17 +30,12 @@ func TestLogsBuilderAppendLogRecord(t *testing.T) {
 	lb := NewLogsBuilder(loadLogsBuilderConfig(t, "all_set"), settings)
 
 	rb := lb.NewResourceBuilder()
-	rb.SetDbSystemVersion("db.system.version-val")
 	rb.SetPostgresqlDatabaseName("postgresql.database.name-val")
 	rb.SetPostgresqlDbVersion("postgresql.db.version-val")
 	rb.SetPostgresqlIndexName("postgresql.index.name-val")
 	rb.SetPostgresqlSchemaName("postgresql.schema.name-val")
 	rb.SetPostgresqlTableName("postgresql.table.name-val")
-	rb.SetServerAddress("server.address-val")
-	rb.SetServerPort(11)
 	rb.SetServiceInstanceID("service.instance.id-val")
-	rb.SetServiceName("service.name-val")
-	rb.SetServiceNamespace("service.namespace-val")
 	res := rb.Emit()
 
 	// append the first log record
@@ -139,26 +133,18 @@ func TestLogsBuilder(t *testing.T) {
 			allEventsCount := 0
 
 			allEventsCount++
-			lb.RecordDbServerQueryPlanEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "postgresql.queryid-val", "db.namespace-val", "postgresql.userid-val", "postgresql.rolname-val", "postgresql.query_plan-val")
+			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "db.query.text-val", "user.name-val", "postgresql.state-val", 14, "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.query_start-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", "postgresql.query_id-val", 26.100000)
 
 			allEventsCount++
-			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "db.query.text-val", "user.name-val", "postgresql.state-val", 14, "postgresql.backend.connection.start-val", "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.query_start-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", "postgresql.query_id-val", 26.100000, "postgresql.blocking.pids-val", "postgresql.blocking.start_time-val", 33, "postgresql.blocking.lock.mode-val", "postgresql.blocking.lock.type-val", "postgresql.blocking.lock.relation-val", "postgresql.blocking.transaction.start_time-val")
-
-			allEventsCount++
-			lb.RecordDbServerTopQueryEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "db.query.text-val", 16, 15, 30, 26, 27, 30, 25, 28, "postgresql.queryid-val", "postgresql.userid-val", "postgresql.rolname-val", 26.100000, 26.100000, "postgresql.query_plan-val")
+			lb.RecordDbServerTopQueryEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "db.query.text-val", 16, 15, 30, 26, 27, 30, 25, 28, "postgresql.queryid-val", "postgresql.rolname-val", 26.100000, 26.100000, "postgresql.query_plan-val", 24.100000, 25.100000)
 
 			rb := lb.NewResourceBuilder()
-			rb.SetDbSystemVersion("db.system.version-val")
 			rb.SetPostgresqlDatabaseName("postgresql.database.name-val")
 			rb.SetPostgresqlDbVersion("postgresql.db.version-val")
 			rb.SetPostgresqlIndexName("postgresql.index.name-val")
 			rb.SetPostgresqlSchemaName("postgresql.schema.name-val")
 			rb.SetPostgresqlTableName("postgresql.table.name-val")
-			rb.SetServerAddress("server.address-val")
-			rb.SetServerPort(11)
 			rb.SetServiceInstanceID("service.instance.id-val")
-			rb.SetServiceName("service.name-val")
-			rb.SetServiceNamespace("service.namespace-val")
 			res := rb.Emit()
 			logs := lb.Emit(WithLogsResource(res))
 
@@ -181,31 +167,6 @@ func TestLogsBuilder(t *testing.T) {
 			validatedEvents := make(map[string]bool)
 			for i := 0; i < lrs.Len(); i++ {
 				switch lrs.At(i).EventName() {
-				case "db.server.query_plan":
-					assert.False(t, validatedEvents["db.server.query_plan"], "Found a duplicate in the events slice: db.server.query_plan")
-					validatedEvents["db.server.query_plan"] = true
-					lr := lrs.At(i)
-					assert.Equal(t, timestamp, lr.Timestamp())
-					assert.Equal(t, pcommon.TraceID(traceID), lr.TraceID())
-					assert.Equal(t, pcommon.SpanID(spanID), lr.SpanID())
-					attrVal, ok := lr.Attributes().Get("db.system.name")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.queryid")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.queryid-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("db.namespace")
-					assert.True(t, ok)
-					assert.Equal(t, "db.namespace-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.userid")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.userid-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.rolname")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.rolname-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.query_plan")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.query_plan-val", attrVal.Str())
 				case "db.server.query_sample":
 					assert.False(t, validatedEvents["db.server.query_sample"], "Found a duplicate in the events slice: db.server.query_sample")
 					validatedEvents["db.server.query_sample"] = true
@@ -231,9 +192,6 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("postgresql.pid")
 					assert.True(t, ok)
 					assert.EqualValues(t, 14, attrVal.Int())
-					attrVal, ok = lr.Attributes().Get("postgresql.backend.connection.start")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.backend.connection.start-val", attrVal.Str())
 					attrVal, ok = lr.Attributes().Get("postgresql.application_name")
 					assert.True(t, ok)
 					assert.Equal(t, "postgresql.application_name-val", attrVal.Str())
@@ -261,27 +219,6 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("postgresql.total_exec_time")
 					assert.True(t, ok)
 					assert.Equal(t, 26.100000, attrVal.Double())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.pids")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.blocking.pids-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.start_time")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.blocking.start_time-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.wait_duration")
-					assert.True(t, ok)
-					assert.EqualValues(t, 33, attrVal.Int())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.lock.mode")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.blocking.lock.mode-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.lock.type")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.blocking.lock.type-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.lock.relation")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.blocking.lock.relation-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.blocking.transaction.start_time")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.blocking.transaction.start_time-val", attrVal.Str())
 				case "db.server.top_query":
 					assert.False(t, validatedEvents["db.server.top_query"], "Found a duplicate in the events slice: db.server.top_query")
 					validatedEvents["db.server.top_query"] = true
@@ -325,9 +262,6 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("postgresql.queryid")
 					assert.True(t, ok)
 					assert.Equal(t, "postgresql.queryid-val", attrVal.Str())
-					attrVal, ok = lr.Attributes().Get("postgresql.userid")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.userid-val", attrVal.Str())
 					attrVal, ok = lr.Attributes().Get("postgresql.rolname")
 					assert.True(t, ok)
 					assert.Equal(t, "postgresql.rolname-val", attrVal.Str())
@@ -340,6 +274,12 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("postgresql.query_plan")
 					assert.True(t, ok)
 					assert.Equal(t, "postgresql.query_plan-val", attrVal.Str())
+					attrVal, ok = lr.Attributes().Get("postgresql.blk_read_time")
+					assert.True(t, ok)
+					assert.Equal(t, 24.100000, attrVal.Double())
+					attrVal, ok = lr.Attributes().Get("postgresql.blk_write_time")
+					assert.True(t, ok)
+					assert.Equal(t, 25.100000, attrVal.Double())
 				}
 			}
 		})

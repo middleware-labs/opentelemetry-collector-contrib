@@ -1,169 +1,11 @@
 resourceMetrics:
   - resource:
       attributes:
-        - key: postgresql.database.name
+        - key: service.instance.id
           value:
-            stringValue: "N/A"
-        - key: postgresql.db.version
-          value:
-            stringValue: "16.3 (Ubuntu 16.3-1.pgdg22.04+1)"
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
-          - description: The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user 
-            gauge:
-              dataPoints:
-                - asInt: "1"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.connection.count
-            unit: '{connection}'
-          - description: Total wait time of the normalised timed events in nanaoseconds.  
-            name: postgresql.query.total_exec_time
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "16401"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                  attributes:
-                    - key: query_id
-                      value:
-                        stringValue: "6366587321661213570"
-                    - key: query_text
-                      value:
-                        stringValue: "SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department" 
-                - asInt: "416529"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                  attributes:
-                    - key: query_id
-                      value:
-                        stringValue: "7034792503091443675"
-                    - key: query_text
-                      value:
-                        stringValue: "SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname"
-                - asInt: "25141"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                  attributes:
-                    - key: query_id
-                      value:
-                        stringValue: "-5872536860935463852"
-                    - key: query_text
-                      value:
-                        stringValue: "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)"
-            unit: ns
-          - description: Number of times the statement was executed. 
-            name: postgresql.query.count
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "1"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                  attributes:
-                    - key: query_id
-                      value:
-                        stringValue: "6366587321661213570"
-                    - key: query_text
-                      value:
-                        stringValue: "SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department" 
-                - asInt: "5"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                  attributes:
-                    - key: query_id
-                      value:
-                        stringValue: "7034792503091443675"
-                    - key: query_text
-                      value:
-                        stringValue: "SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname"
-                - asInt: "1"
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                  attributes:
-                    - key: query_id
-                      value:
-                        stringValue: "-5872536860935463852"
-                    - key: query_text
-                      value:
-                        stringValue: "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)"
-            unit: "1"
-          - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name. 
-            gauge: 
-              dataPoints:
-                - asInt: "2148"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: ""
-                - asInt: "9053"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: "postgres"
-                - asInt: "8527"
-                  attributes:
-                    - key: dbname
-                      value: 
-                        stringValue: "template1"
-                - asInt: "0"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: "template0"
-            name: postgresql.buffer_hit
-            unit: '{hit}/s'
-          - description: Rows deleted by queries in this db, tagged with relation name.  
-            gauge:
-              dataPoints:
-              - asInt: "88"
-                attributes:
-                  - key: relation_name
-                    value: 
-                      stringValue: public.table1
-            name: postgresql.rows_deleted
-            unit: '{row}/s'
-          - description: Rows fetched by queries in this db, tagged with relation name.  
-            gauge:
-              dataPoints:
-              - asInt: "0"
-                attributes:
-                  - key: relation_name
-                    value: 
-                      stringValue: public.table1
-            name: postgresql.rows_fetched
-            unit: '{row}/s'
-          - description: Rows inserted by queries in the db, tagged with relation name.  
-            gauge:
-              dataPoints:
-              - asInt: "165"
-                attributes:
-                  - key: relation_name
-                    value: 
-                      stringValue: public.table1
-            name: postgresql.rows_inserted
-            unit: '{row}/s'
-          - description: Rows updated by queries in the db, tagged with relation name.   
-            gauge:
-              dataPoints:
-              - asInt: "2"
-                attributes:
-                  - key: relation_name
-                    value: 
-                      stringValue: public.table1
-            name: postgresql.rows_updated
-            unit: '{row}/s'
-          - description: The approximate number of live rows, tagged with relation name.  
-            gauge:
-              dataPoints:
-              - asInt: "77"
-                attributes:
-                  - key: relation_name
-                    value: 
-                      stringValue: public.table1
-            name: postgresql.live_rows
-            unit: '{row}'  
           - description: Number of buffers allocated.
             name: postgresql.bgwriter.buffers.allocated
             sum:
@@ -261,6 +103,39 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: "1"
+          - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
+            gauge:
+              dataPoints:
+                - asInt: "2148"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: ""
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "9053"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: postgres
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: template0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "8527"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: template1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.buffer_hit
+            unit: '{hit}/s'
           - description: Configured maximum number of client connections allowed
             gauge:
               dataPoints:
@@ -278,6 +153,90 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: '{databases}'
+          - description: The approximate number of live rows, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "77"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: public.table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.live_rows
+            unit: '{row}'
+          - description: Number of times the statement was executed.
+            name: postgresql.query.count
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: query_id
+                      value:
+                        stringValue: "-5872536860935463852"
+                    - key: query_text
+                      value:
+                        stringValue: SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: query_id
+                      value:
+                        stringValue: "6366587321661213570"
+                    - key: query_text
+                      value:
+                        stringValue: SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "5"
+                  attributes:
+                    - key: query_id
+                      value:
+                        stringValue: "7034792503091443675"
+                    - key: query_text
+                      value:
+                        stringValue: SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: "1"
+          - description: Total wait time of the normalised timed events in nanaoseconds.
+            name: postgresql.query.total_exec_time
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "25141"
+                  attributes:
+                    - key: query_id
+                      value:
+                        stringValue: "-5872536860935463852"
+                    - key: query_text
+                      value:
+                        stringValue: SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "16401"
+                  attributes:
+                    - key: query_id
+                      value:
+                        stringValue: "6366587321661213570"
+                    - key: query_text
+                      value:
+                        stringValue: SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "416529"
+                  attributes:
+                    - key: query_id
+                      value:
+                        stringValue: "7034792503091443675"
+                    - key: query_text
+                      value:
+                        stringValue: SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: ns
           - description: The amount of data delayed in replication.
             gauge:
               dataPoints:
@@ -290,6 +249,70 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.replication.data_delay
             unit: By
+          - description: Rows deleted by queries in this db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "88"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: public.table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_deleted
+            unit: '{row}/s'
+          - description: Rows fetched by queries in this db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: public.table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_fetched
+            unit: '{row}/s'
+          - description: Rows inserted by queries in the db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "165"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: public.table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_inserted
+            unit: '{row}/s'
+          - description: Rows updated by queries in the db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "2"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: public.table1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_updated
+            unit: '{row}/s'
+          - description: Max duration of active transactions.
+            gauge:
+              dataPoints:
+                - asDouble: 100
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.transactions.duration.max
+            unit: ms
+          - description: Sum of duration of active transactions.
+            gauge:
+              dataPoints:
+                - asDouble: 500
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.transactions.duration.sum
+            unit: ms
           - description: Age of the oldest WAL file.
             gauge:
               dataPoints:
@@ -298,6 +321,22 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.wal.age
             unit: s
+          - description: Number of WAL files.
+            gauge:
+              dataPoints:
+                - asInt: "10"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.wal.count
+            unit: "1"
+          - description: Total size of WAL files.
+            gauge:
+              dataPoints:
+                - asInt: "1024"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.wal.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -306,6 +345,9 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: otel
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -363,6 +405,9 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: telemetry
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -423,8 +468,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "53"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "54"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "52"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -562,6 +640,38 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: otel
+        - key: postgresql.table.name
+          value:
+            stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated table bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 58
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.table_bloat
+            unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -573,8 +683,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "56"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "57"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "55"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -712,6 +855,38 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: otel
+        - key: postgresql.table.name
+          value:
+            stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated table bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 59
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.table_bloat
+            unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -723,8 +898,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "54"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "55"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "53"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -862,6 +1070,38 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: telemetry
+        - key: postgresql.table.name
+          value:
+            stringValue: public.table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated table bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 59
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.table_bloat
+            unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -873,8 +1113,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "57"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "58"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "56"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -1012,6 +1285,38 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: telemetry
+        - key: postgresql.table.name
+          value:
+            stringValue: public.table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated table bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 60
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.table_bloat
+            unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -1026,8 +1331,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "41"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "40"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "39"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1056,12 +1395,73 @@ resourceMetrics:
             stringValue: otel
         - key: postgresql.index.name
           value:
+            stringValue: otel_test1_pkey
+        - key: postgresql.table.name
+          value:
+            stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated index bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 60
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.index_bloat
+            unit: "1"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: otel
+        - key: postgresql.index.name
+          value:
             stringValue: otel_test2_pkey
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "44"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "43"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "42"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1087,6 +1487,33 @@ resourceMetrics:
       attributes:
         - key: postgresql.database.name
           value:
+            stringValue: otel
+        - key: postgresql.index.name
+          value:
+            stringValue: otel_test2_pkey
+        - key: postgresql.table.name
+          value:
+            stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated index bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 61
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.index_bloat
+            unit: "1"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
             stringValue: telemetry
         - key: postgresql.index.name
           value:
@@ -1094,8 +1521,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "42"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "41"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "40"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1124,12 +1585,73 @@ resourceMetrics:
             stringValue: telemetry
         - key: postgresql.index.name
           value:
+            stringValue: telemetry_test1_pkey
+        - key: postgresql.table.name
+          value:
+            stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated index bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 61
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.index_bloat
+            unit: "1"
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: telemetry
+        - key: postgresql.index.name
+          value:
             stringValue: telemetry_test2_pkey
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "45"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "44"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "43"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1148,6 +1670,33 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.index.size
             unit: By
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: telemetry
+        - key: postgresql.index.name
+          value:
+            stringValue: telemetry_test2_pkey
+        - key: postgresql.table.name
+          value:
+            stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
+    scopeMetrics:
+      - metrics:
+          - description: Estimated index bloat ratio (actual pages / expected pages).
+            gauge:
+              dataPoints:
+                - asDouble: 62
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.index_bloat
+            unit: "1"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
