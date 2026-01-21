@@ -179,6 +179,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectWalAge(ctx, now, listClient, &errs)
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
+	p.collectActiveConnections(ctx, now, listClient, &errs)
 	p.collectDatabaseLocks(ctx, now, listClient, &errs)
 	p.collectRowStats(ctx, now, listClient, &errs)
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
@@ -462,7 +463,8 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 		errs.addPartial(err)
 	}
 
-	for tableKey, tm := range tableMetrics {
+	for tableKey := range tableMetrics {
+		tm := tableMetrics[tableKey]
 		p.mb.RecordPostgresqlRowsDataPoint(now, tm.dead, metadata.AttributeStateDead)
 		p.mb.RecordPostgresqlRowsDataPoint(now, tm.live, metadata.AttributeStateLive)
 		p.mb.RecordPostgresqlOperationsDataPoint(now, tm.inserts, metadata.AttributeOperationIns)
@@ -647,8 +649,28 @@ func (p *postgreSQLScraper) collectTransactionsStats(
 	p.mb.RecordPostgresqlTransactionsDurationSumDataPoint(now, sumDuration)
 }
 
-func (p *postgreSQLScraper) collectBGWriterStats(
+func (p *postgreSQLScraper) collectActiveConnections(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	stats, err := client.getConnectionStats(ctx, nil)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
 
+	for dbName, connStats := range stats {
+		for _, s := range connStats {
+			p.mb.RecordPostgresqlConnectionCountDataPoint(now, s.count, s.state, s.app, s.user)
+		}
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), string(dbName), "", "", "")
+		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
+	}
+}
+
+func (p *postgreSQLScraper) collectBGWriterStats(
 	ctx context.Context,
 	now pcommon.Timestamp,
 	client client,
@@ -709,20 +731,6 @@ func (p *postgreSQLScraper) collectMaxConnections(
 		return
 	}
 	p.mb.RecordPostgresqlConnectionMaxDataPoint(now, mc)
-}
-
-func (p *postgreSQLScraper) collectActiveConnections(
-	ctx context.Context,
-	now pcommon.Timestamp,
-	client client,
-	errs *errsMux,
-) {
-	ac, err := client.getActiveConnections(ctx)
-	if err != nil {
-		errs.addPartial(err)
-		return
-	}
-	p.mb.RecordPostgresqlConnectionCountDataPoint(now, ac)
 }
 
 func (p *postgreSQLScraper) collectReplicationStats(
@@ -819,8 +827,8 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 	}
 
 	for _, s := range queryStats {
-		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
-		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, int64(s.queryExecTime), s.queryText, s.queryId)
+		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryID)
+		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryID)
 	}
 }
 

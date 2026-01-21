@@ -73,7 +73,7 @@ func TestScraper(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -126,7 +126,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -204,7 +204,7 @@ func TestScraperNoDatabaseMultipleWithoutPreciseLag(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -257,7 +257,7 @@ func TestScraperNoDatabaseMultiple(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 		fmt.Println(actualMetrics.ResourceMetrics())
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -311,7 +311,7 @@ func TestScraperWithResourceAttributeFeatureGate(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -364,7 +364,7 @@ func TestScraperWithResourceAttributeFeatureGateSingle(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "otel", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -391,7 +391,7 @@ func TestScraperExcludeDatabase(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedFile := filepath.Join("testdata", "scraper", "multiple", file)
-			expectedMetrics, err := golden.ReadMetrics(expectedFile)
+		expectedMetrics, err := golden.ReadMetrics(expectedFile)
 		require.NoError(t, err)
 
 		require.NoError(t, pmetrictest.CompareMetrics(expectedMetrics, actualMetrics, pmetrictest.IgnoreResourceAttributeValue("service.instance.id"), pmetrictest.IgnoreResourceMetricsOrder(),
@@ -722,6 +722,14 @@ func (*mockClient) getTransactionsStats(context.Context) (float64, float64, erro
 	return 100.0, 500.0, nil
 }
 
+func (*mockClient) getConnectionStats(context.Context, []string) (map[databaseName][]connectionStat, error) {
+	return map[databaseName][]connectionStat{
+		"otel": {
+			{database: "otel", user: "otel", app: "otel", state: "active", count: 1},
+		},
+	}, nil
+}
+
 // close implements postgreSQLClientFactory.
 func (mockSimpleClientFactory) close() error {
 	return nil
@@ -974,19 +982,19 @@ func (m *mockClient) initMocks(database, schema string, databases []string, inde
 		}, nil)
 		m.On("getQueryStats", mock.Anything).Return([]queryStats{
 			{
-				queryId:       "6366587321661213570",
+				queryID:       "6366587321661213570",
 				queryText:     "SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department",
 				queryCount:    1,
 				queryExecTime: 16401,
 			},
 			{
-				queryId:       "7034792503091443675",
+				queryID:       "7034792503091443675",
 				queryText:     "SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname",
 				queryCount:    5,
 				queryExecTime: 416529,
 			},
 			{
-				queryId:       "-5872536860935463852",
+				queryID:       "-5872536860935463852",
 				queryText:     "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)",
 				queryCount:    1,
 				queryExecTime: 25141,

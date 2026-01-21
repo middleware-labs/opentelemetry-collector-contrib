@@ -417,6 +417,7 @@ metrics:
       level: development
     gauge:
       value_type: int
+    attributes: [postgresql.state, postgresql.application_name, user.name]
   postgresql.connection.max:
     enabled: true
     description: Configured maximum number of client connections allowed

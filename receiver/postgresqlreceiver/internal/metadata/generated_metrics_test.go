@@ -130,7 +130,7 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
-			mb.RecordPostgresqlConnectionCountDataPoint(ts, 1)
+			mb.RecordPostgresqlConnectionCountDataPoint(ts, 1, "postgresql.state-val", "postgresql.application_name-val", "user.name-val")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -574,6 +574,15 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+					attrVal, ok := dp.Attributes().Get("postgresql.state")
+					assert.True(t, ok)
+					assert.Equal(t, "postgresql.state-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("postgresql.application_name")
+					assert.True(t, ok)
+					assert.Equal(t, "postgresql.application_name-val", attrVal.Str())
+					attrVal, ok = dp.Attributes().Get("user.name")
+					assert.True(t, ok)
+					assert.Equal(t, "user.name-val", attrVal.Str())
 				case "postgresql.connection.max":
 					assert.False(t, validatedMetrics["postgresql.connection.max"], "Found a duplicate in the metrics slice: postgresql.connection.max")
 					validatedMetrics["postgresql.connection.max"] = true
