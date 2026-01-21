@@ -1127,7 +1127,7 @@ func (c *postgreSQLClient) getRowStats(ctx context.Context) ([]RowStats, error) 
 }
 
 type queryStats struct {
-	queryId       string
+	queryID       string
 	queryText     string
 	queryCount    int64
 	queryExecTime int64
@@ -1160,16 +1160,16 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 	var qs []queryStats
 	var errors error
 	for rows.Next() {
-		var queryId, queryText string
+		var queryID, queryText string
 		var queryCount int64
 		var queryExecTime float64
-		err = rows.Scan(&queryId, &queryText, &queryCount, &queryExecTime)
+		err = rows.Scan(&queryID, &queryText, &queryCount, &queryExecTime)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 		}
 		queryExectimeNS := int64(queryExecTime * 1000000)
 		qs = append(qs, queryStats{
-			queryId:       queryId,
+			queryID:       queryID,
 			queryText:     queryText,
 			queryCount:    queryCount,
 			queryExecTime: queryExectimeNS,

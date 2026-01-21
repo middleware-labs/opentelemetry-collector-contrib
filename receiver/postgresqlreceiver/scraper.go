@@ -463,7 +463,8 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 		errs.addPartial(err)
 	}
 
-	for tableKey, tm := range tableMetrics {
+	for tableKey := range tableMetrics {
+		tm := tableMetrics[tableKey]
 		p.mb.RecordPostgresqlRowsDataPoint(now, tm.dead, metadata.AttributeStateDead)
 		p.mb.RecordPostgresqlRowsDataPoint(now, tm.live, metadata.AttributeStateLive)
 		p.mb.RecordPostgresqlOperationsDataPoint(now, tm.inserts, metadata.AttributeOperationIns)
@@ -826,8 +827,8 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 	}
 
 	for _, s := range queryStats {
-		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryId)
-		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, int64(s.queryExecTime), s.queryText, s.queryId)
+		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryID)
+		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryID)
 	}
 }
 

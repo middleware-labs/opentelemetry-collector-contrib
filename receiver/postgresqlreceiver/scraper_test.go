@@ -982,19 +982,19 @@ func (m *mockClient) initMocks(database, schema string, databases []string, inde
 		}, nil)
 		m.On("getQueryStats", mock.Anything).Return([]queryStats{
 			{
-				queryId:       "6366587321661213570",
+				queryID:       "6366587321661213570",
 				queryText:     "SELECT department, COUNT(*) AS num_employees FROM employees GROUP BY department",
 				queryCount:    1,
 				queryExecTime: 16401,
 			},
 			{
-				queryId:       "7034792503091443675",
+				queryID:       "7034792503091443675",
 				queryText:     "SELECT datname, count(*) as count from pg_stat_activity WHERE datname IN ($1) GROUP BY datname",
 				queryCount:    5,
 				queryExecTime: 416529,
 			},
 			{
-				queryId:       "-5872536860935463852",
+				queryID:       "-5872536860935463852",
 				queryText:     "SELECT MIN(salary) AS lowest_salary_in_highest_paying_dept FROM employees WHERE department = (SELECT department FROM employees GROUP BY department ORDER BY AVG(salary) DESC LIMIT $1)",
 				queryCount:    1,
 				queryExecTime: 25141,
