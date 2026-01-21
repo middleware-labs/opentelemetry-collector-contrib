@@ -30,6 +30,11 @@ resource_attributes:
     description: The table name.
     enabled: true
     type: string
+  service.instance.id:
+    description: A unique identifier of the PostgreSQL instance in the format host:port (defaults to 'unknown:5432' in case of error in generating this value).
+    enabled: true
+    type: string
+
 attributes:
   bg_buffer_source:
     description: The source of a buffer write.
@@ -89,6 +94,12 @@ attributes:
   postgresql.application_name:
     description: Name of the application that is connected to this backend.
     type: string
+  postgresql.blk_read_time:
+    description: Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on.
+    type: double
+  postgresql.blk_write_time:
+    description: Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on.
+    type: double   
   postgresql.calls:
     description: Number of times the statement was executed, reported in delta value.
     type: int
@@ -228,7 +239,39 @@ events:
       - postgresql.total_exec_time
       - postgresql.total_plan_time
       - postgresql.query_plan
+      - postgresql.blk_read_time
+      - postgresql.blk_write_time
 metrics:
+  postgresql.analyzed:
+    description: Number of times a table has been manually analyzed.
+    stability:
+      level: development
+    enabled: true
+    unit: "{analyze}"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
+  postgresql.autoanalyzed:
+    description: Number of times a table has been automatically analyzed.
+    stability:
+      level: development
+    enabled: true
+    unit: "{autoanalyze}"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
+  postgresql.autovacuumed:
+    description: Number of times a table has been automatically vacuumed.
+    stability:
+      level: development
+    enabled: true
+    unit: "{autovacuum}"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
   postgresql.backends:
     enabled: true
     description: The number of backends.
@@ -295,6 +338,26 @@ metrics:
       monotonic: true
       value_type: int
     unit: "1"
+  postgresql.blk_read_time:
+    enabled: false
+    description: Time spent reading data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)
+    stability:
+      level: development
+    unit: "ms"
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative    
+  postgresql.blk_write_time:
+    enabled: false
+    description: Time spent writing data file blocks by backends in this database, in milliseconds (if track_io_timing is enabled, otherwise zero)
+    stability:
+      level: development
+    unit: "ms"
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative
   postgresql.blks_hit:
     enabled: false
     description: Number of times disk blocks were found already in the buffer cache.
@@ -412,6 +475,27 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
     attributes: [function]
+  postgresql.index.blocks_read:
+    description: The number of disk blocks read by this index.
+    stability:
+      level: development
+    enabled: true
+    unit: "1"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
+    attributes: [source]
+  postgresql.index.rows_read:
+    description: The number of index entries returned by scans on this index.
+    stability:
+      level: development
+    enabled: true
+    unit: "{rows}"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
   postgresql.index.scans:
     description: The number of index scans on a table.
     stability:
@@ -430,6 +514,17 @@ metrics:
     gauge:
       value_type: int
     unit: "By"
+  postgresql.index_bloat:
+    description: Estimated index bloat ratio (actual pages / expected pages).
+    extended_documentation: |
+      A value of 1.0 indicates no bloat, higher values indicate wasted space.
+      Based on pg_stats and pg_class estimates.
+    stability:
+      level: development
+    enabled: true
+    unit: "1"
+    gauge:
+      value_type: double
   postgresql.live_rows:
     stability:
       level: development
@@ -584,6 +679,17 @@ metrics:
       aggregation_temporality: cumulative
       monotonic: true
       value_type: int
+  postgresql.table_bloat:
+    description: Estimated table bloat ratio (actual pages / expected pages).
+    extended_documentation: |
+      A value of 1.0 indicates no bloat, higher values indicate wasted space.
+      Based on pg_stats and pg_class estimates.
+    stability:
+      level: development
+    enabled: true
+    unit: "1"
+    gauge:
+      value_type: double
   postgresql.temp.io:
     enabled: false
     description: Total amount of data written to temporary files by queries.
@@ -604,6 +710,50 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
+  postgresql.toast.blocks_hit:
+    description: Number of TOAST block hits.
+    stability:
+      level: development
+    enabled: true
+    unit: "1"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
+  postgresql.toast.index.blocks_read:
+    description: Number of TOAST index block reads.
+    stability:
+      level: development
+    enabled: true
+    unit: "1"
+    sum:
+      aggregation_temporality: cumulative
+      monotonic: true
+      value_type: int
+  postgresql.toast.size:
+    description: Size of TOAST table.
+    stability:
+      level: development
+    enabled: true
+    unit: "By"
+    gauge:
+      value_type: int
+  postgresql.transactions.duration.max:
+    description: Max duration of active transactions.
+    stability:
+      level: development
+    enabled: true
+    unit: "ms"
+    gauge:
+      value_type: double
+  postgresql.transactions.duration.sum:
+    description: Sum of duration of active transactions.
+    stability:
+      level: development
+    enabled: true
+    unit: "ms"
+    gauge:
+      value_type: double
   postgresql.tup_deleted:
     enabled: false
     description: Number of rows deleted by queries in the database.
@@ -664,6 +814,14 @@ metrics:
     unit: s
     gauge:
       value_type: int
+  postgresql.wal.count:
+    description: Number of WAL files.
+    stability:
+      level: development
+    enabled: true
+    unit: "1"
+    gauge:
+      value_type: int
   postgresql.wal.delay:
     attributes: [wal_operation_lag, replication_client]
     description: Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
@@ -686,6 +844,15 @@ metrics:
       value_type: int
     extended_documentation: |
       This metric requires WAL to be enabled with at least one replica.
+  postgresql.wal.size:
+    description: Total size of WAL files.
+    stability:
+      level: development
+    enabled: true
+    unit: "By"
+    gauge:
+      value_type: int
+
 tests:
   config:
   goleak:

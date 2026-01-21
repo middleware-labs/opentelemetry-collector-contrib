@@ -4,7 +4,6 @@ package metadata
 
 import (
 	"context"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/filter"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -68,7 +67,7 @@ type eventDbServerTopQuery struct {
 	config EventConfig         // event config provided by user.
 }
 
-func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string) {
+func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string, postgresqlBlkReadTimeAttributeValue float64, postgresqlBlkWriteTimeAttributeValue float64) {
 	if !e.config.Enabled {
 		return
 	}
@@ -96,6 +95,8 @@ func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcomm
 	dp.Attributes().PutDouble("postgresql.total_exec_time", postgresqlTotalExecTimeAttributeValue)
 	dp.Attributes().PutDouble("postgresql.total_plan_time", postgresqlTotalPlanTimeAttributeValue)
 	dp.Attributes().PutStr("postgresql.query_plan", postgresqlQueryPlanAttributeValue)
+	dp.Attributes().PutDouble("postgresql.blk_read_time", postgresqlBlkReadTimeAttributeValue)
+	dp.Attributes().PutDouble("postgresql.blk_write_time", postgresqlBlkWriteTimeAttributeValue)
 
 }
 
@@ -172,6 +173,12 @@ func NewLogsBuilder(lbc LogsBuilderConfig, settings receiver.Settings) *LogsBuil
 	}
 	if lbc.ResourceAttributes.PostgresqlTableName.EventsExclude != nil {
 		lb.resourceAttributeExcludeFilter["postgresql.table.name"] = filter.CreateFilter(lbc.ResourceAttributes.PostgresqlTableName.EventsExclude)
+	}
+	if lbc.ResourceAttributes.ServiceInstanceID.EventsInclude != nil {
+		lb.resourceAttributeIncludeFilter["service.instance.id"] = filter.CreateFilter(lbc.ResourceAttributes.ServiceInstanceID.EventsInclude)
+	}
+	if lbc.ResourceAttributes.ServiceInstanceID.EventsExclude != nil {
+		lb.resourceAttributeExcludeFilter["service.instance.id"] = filter.CreateFilter(lbc.ResourceAttributes.ServiceInstanceID.EventsExclude)
 	}
 
 	return lb
@@ -260,6 +267,6 @@ func (lb *LogsBuilder) RecordDbServerQuerySampleEvent(ctx context.Context, times
 }
 
 // RecordDbServerTopQueryEvent adds a log record of db.server.top_query event.
-func (lb *LogsBuilder) RecordDbServerTopQueryEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string) {
-	lb.eventDbServerTopQuery.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbQueryTextAttributeValue, postgresqlCallsAttributeValue, postgresqlRowsAttributeValue, postgresqlSharedBlksDirtiedAttributeValue, postgresqlSharedBlksHitAttributeValue, postgresqlSharedBlksReadAttributeValue, postgresqlSharedBlksWrittenAttributeValue, postgresqlTempBlksReadAttributeValue, postgresqlTempBlksWrittenAttributeValue, postgresqlQueryidAttributeValue, postgresqlRolnameAttributeValue, postgresqlTotalExecTimeAttributeValue, postgresqlTotalPlanTimeAttributeValue, postgresqlQueryPlanAttributeValue)
+func (lb *LogsBuilder) RecordDbServerTopQueryEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string, postgresqlBlkReadTimeAttributeValue float64, postgresqlBlkWriteTimeAttributeValue float64) {
+	lb.eventDbServerTopQuery.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbQueryTextAttributeValue, postgresqlCallsAttributeValue, postgresqlRowsAttributeValue, postgresqlSharedBlksDirtiedAttributeValue, postgresqlSharedBlksHitAttributeValue, postgresqlSharedBlksReadAttributeValue, postgresqlSharedBlksWrittenAttributeValue, postgresqlTempBlksReadAttributeValue, postgresqlTempBlksWrittenAttributeValue, postgresqlQueryidAttributeValue, postgresqlRolnameAttributeValue, postgresqlTotalExecTimeAttributeValue, postgresqlTotalPlanTimeAttributeValue, postgresqlQueryPlanAttributeValue, postgresqlBlkReadTimeAttributeValue, postgresqlBlkWriteTimeAttributeValue)
 }

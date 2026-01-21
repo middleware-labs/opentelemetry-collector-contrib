@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"math"
 	"net"
+	"regexp"
 	"strconv"
 	"strings"
 	"text/template"
@@ -20,13 +21,19 @@ import (
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configtls"
 	"go.opentelemetry.io/collector/featuregate"
+	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.38.0"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/sqlquery"
 )
 
-const lagMetricsInSecondsFeatureGateID = "postgresqlreceiver.preciselagmetrics"
+const (
+	lagMetricsInSecondsFeatureGateID = "postgresqlreceiver.preciselagmetrics"
+	querySampleTraceContextKey       = "_otel_trace_context"
+)
 
 var preciseLagMetricsFg = featuregate.GlobalRegistry().MustRegister(
 	lagMetricsInSecondsFeatureGateID,
@@ -77,6 +84,10 @@ type client interface {
 	getQueryStats(ctx context.Context) ([]queryStats, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
 	getVersionString(ctx context.Context) (string, error)
+	getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error)
+	getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error)
+	getWALStats(ctx context.Context) (int64, int64, error)
+	getTransactionsStats(ctx context.Context) (float64, float64, error)
 }
 
 type postgreSQLClient struct {
@@ -87,32 +98,28 @@ type postgreSQLClient struct {
 // explainQuery implements client.
 func (c *postgreSQLClient) explainQuery(query, queryID string, logger *zap.Logger) (string, error) {
 	normalizedQueryID := strings.ReplaceAll(queryID, "-", "_")
-	var queryBuilder strings.Builder
-	var nulls []string
-	counter := 1
 
-	for _, ch := range query {
-		if ch == '?' {
-			queryBuilder.WriteString(fmt.Sprintf("$%d", counter))
-			counter++
-			nulls = append(nulls, "null")
-		} else {
-			queryBuilder.WriteRune(ch)
-		}
+	// PostgreSQL's pg_stat_statements returns queries with $1, $2 placeholders
+	paramRegex := regexp.MustCompile(`\$\d+`)
+	matches := paramRegex.FindAllString(query, -1)
+
+	// Build nulls array for placeholders
+	nulls := make([]string, len(matches))
+	for i := range nulls {
+		nulls[i] = "null"
 	}
-
-	preparedQuery := queryBuilder.String()
 
 	//nolint:errcheck
 	defer c.client.Exec(fmt.Sprintf("/* otel-collector-ignore */ DEALLOCATE PREPARE otel_%s", normalizedQueryID))
 
 	// if there is no parameter needed, we can not put an empty bracket
+
 	nullsString := ""
 	if len(nulls) > 0 {
 		nullsString = "(" + strings.Join(nulls, ", ") + ")"
 	}
 	setPlanCacheMode := "/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan;"
-	prepareStatement := fmt.Sprintf("PREPARE otel_%s AS %s;", normalizedQueryID, preparedQuery)
+	prepareStatement := fmt.Sprintf("PREPARE otel_%s AS %s;", normalizedQueryID, query)
 	explainStatement := fmt.Sprintf("EXPLAIN(FORMAT JSON) EXECUTE otel_%s%s;", normalizedQueryID, nullsString)
 
 	wrappedDb := sqlquery.NewDbClient(sqlquery.DbWrapper{Db: c.client}, setPlanCacheMode+prepareStatement+explainStatement, logger, sqlquery.TelemetryConfig{})
@@ -122,7 +129,14 @@ func (c *postgreSQLClient) explainQuery(query, queryID string, logger *zap.Logge
 		logger.Error("failed to explain statement", zap.Error(err))
 		return "", err
 	}
-	return obfuscateSQLExecPlan(result[0]["QUERY PLAN"])
+
+	plan, err := obfuscateSQLExecPlan(result[0]["QUERY PLAN"])
+	if err != nil {
+		logger.Error("failed to obfuscate explain plan", zap.Error(err), zap.String("queryID", queryID))
+		return "", err
+	}
+
+	return plan, nil
 }
 
 var _ client = (*postgreSQLClient)(nil)
@@ -204,11 +218,13 @@ type databaseStats struct {
 	tupDeleted           int64
 	blksHit              int64
 	blksRead             int64
+	blkReadTime          float64
+	blkWriteTime         float64
 }
 
 func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []string) (map[databaseName]databaseStats, error) {
 	query := filterQueryByDatabases(
-		"SELECT datname, xact_commit, xact_rollback, deadlocks, temp_files, temp_bytes, tup_updated, tup_returned, tup_fetched, tup_inserted, tup_deleted, blks_hit, blks_read FROM pg_stat_database",
+		"SELECT datname, xact_commit, xact_rollback, deadlocks, temp_files, temp_bytes, tup_updated, tup_returned, tup_fetched, tup_inserted, tup_deleted, blks_hit, blks_read, blk_read_time, blk_write_time FROM pg_stat_database",
 		databases,
 		false,
 	)
@@ -224,7 +240,8 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 	for rows.Next() {
 		var datname string
 		var transactionCommitted, transactionRollback, deadlocks, tempIo, tempFiles, tupUpdated, tupReturned, tupFetched, tupInserted, tupDeleted, blksHit, blksRead int64
-		err = rows.Scan(&datname, &transactionCommitted, &transactionRollback, &deadlocks, &tempFiles, &tempIo, &tupUpdated, &tupReturned, &tupFetched, &tupInserted, &tupDeleted, &blksHit, &blksRead)
+		var blkReadTime, blkWriteTime float64
+		err = rows.Scan(&datname, &transactionCommitted, &transactionRollback, &deadlocks, &tempFiles, &tempIo, &tupUpdated, &tupReturned, &tupFetched, &tupInserted, &tupDeleted, &blksHit, &blksRead, &blkReadTime, &blkWriteTime)
 		if err != nil {
 			errs = multierr.Append(errs, err)
 			continue
@@ -243,6 +260,8 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 				tupDeleted:           tupDeleted,
 				blksHit:              blksHit,
 				blksRead:             blksRead,
+				blkReadTime:          blkReadTime,  // requires track_io_timing = on
+				blkWriteTime:         blkWriteTime, // requires track_io_timing = on
 			}
 		}
 	}
@@ -338,18 +357,22 @@ func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, databases []stri
 
 // tableStats contains a result for a row of the getDatabaseTableMetrics result
 type tableStats struct {
-	database    string
-	schema      string
-	table       string
-	live        int64
-	dead        int64
-	inserts     int64
-	upd         int64
-	del         int64
-	hotUpd      int64
-	seqScans    int64
-	size        int64
-	vacuumCount int64
+	database         string
+	schema           string
+	table            string
+	live             int64
+	dead             int64
+	inserts          int64
+	upd              int64
+	del              int64
+	hotUpd           int64
+	seqScans         int64
+	size             int64
+	vacuumCount      int64
+	autovacuumCount  int64
+	analyzeCount     int64
+	autoanalyzeCount int64
+	toastSize        int64
 }
 
 func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db string) (map[tableIdentifier]tableStats, error) {
@@ -362,7 +385,11 @@ func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db strin
 	n_tup_hot_upd AS hot_upd,
 	seq_scan AS seq_scans,
 	pg_relation_size(relid) AS table_size,
-	vacuum_count
+	vacuum_count,
+	autovacuum_count,
+	analyze_count,
+	autoanalyze_count,
+	coalesce(pg_relation_size(reltoastrelid), 0) AS toast_size
 	FROM pg_stat_user_tables;`
 
 	ts := map[tableIdentifier]tableStats{}
@@ -373,25 +400,29 @@ func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db strin
 	}
 	for rows.Next() {
 		var schema, table string
-		var live, dead, ins, upd, del, hotUpd, seqScans, tableSize, vacuumCount int64
-		err = rows.Scan(&schema, &table, &live, &dead, &ins, &upd, &del, &hotUpd, &seqScans, &tableSize, &vacuumCount)
+		var live, dead, ins, upd, del, hotUpd, seqScans, tableSize, vacuumCount, autovacuumCount, analyzeCount, autoanalyzeCount, toastSize int64
+		err = rows.Scan(&schema, &table, &live, &dead, &ins, &upd, &del, &hotUpd, &seqScans, &tableSize, &vacuumCount, &autovacuumCount, &analyzeCount, &autoanalyzeCount, &toastSize)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 			continue
 		}
 		ts[tableKey(db, schema, table)] = tableStats{
-			database:    db,
-			schema:      schema,
-			table:       table,
-			live:        live,
-			dead:        dead,
-			inserts:     ins,
-			upd:         upd,
-			del:         del,
-			hotUpd:      hotUpd,
-			seqScans:    seqScans,
-			size:        tableSize,
-			vacuumCount: vacuumCount,
+			database:         db,
+			schema:           schema,
+			table:            table,
+			live:             live,
+			dead:             dead,
+			inserts:          ins,
+			upd:              upd,
+			del:              del,
+			hotUpd:           hotUpd,
+			seqScans:         seqScans,
+			size:             tableSize,
+			vacuumCount:      vacuumCount,
+			autovacuumCount:  autovacuumCount,
+			analyzeCount:     analyzeCount,
+			autoanalyzeCount: autoanalyzeCount,
+			toastSize:        toastSize,
 		}
 	}
 	return ts, errors
@@ -454,20 +485,183 @@ func (c *postgreSQLClient) getBlocksReadByTable(ctx context.Context, db string) 
 	return tios, errors
 }
 
-type indexStat struct {
-	index    string
-	table    string
-	schema   string
+// tableBloatStats contains bloat estimation for a table
+type tableBloatStats struct {
 	database string
-	size     int64
-	scans    int64
+	schema   string
+	table    string
+	bloat    float64
+}
+
+// indexBloatStats contains bloat estimation for an index
+type indexBloatStats struct {
+	database  string
+	schema    string
+	table     string
+	indexName string
+	bloat     float64
+}
+
+// getTableBloatStats estimates table bloat using pg_stats and pg_class
+// Adapted from https://wiki.postgresql.org/wiki/Show_database_bloat
+func (c *postgreSQLClient) getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error) {
+	query := `SELECT
+		schemaname, relname,
+		ROUND((CASE WHEN otta=0 THEN 0.0 ELSE sml.relpages::float/otta END)::numeric,1) AS tbloat
+	FROM (
+		SELECT
+		schemaname, tablename, cc.relname as relname, cc.relpages,
+		CEIL((cc.reltuples*((datahdr+ma-
+			(CASE WHEN datahdr%ma=0 THEN ma ELSE datahdr%ma END))+nullhdr2+4))/(bs-20::float)) AS otta
+		FROM (
+		SELECT
+			ma,bs,schemaname,tablename,
+			(datawidth+(hdr+ma-(case when hdr%ma=0 THEN ma ELSE hdr%ma END)))::numeric AS datahdr,
+			(maxfracsum*(nullhdr+ma-(case when nullhdr%ma=0 THEN ma ELSE nullhdr%ma END))) AS nullhdr2
+		FROM (
+			SELECT
+		schemaname, tablename, hdr, ma, bs,
+		SUM((1-null_frac)*avg_width) AS datawidth,
+		MAX(null_frac) AS maxfracsum,
+		hdr+(
+			SELECT 1+count(*)/8
+			FROM pg_stats s2
+			WHERE null_frac<>0 AND s2.schemaname = s.schemaname AND s2.tablename = s.tablename
+		) AS nullhdr
+			FROM pg_stats s, (
+		SELECT
+			(SELECT current_setting('block_size')::numeric) AS bs,
+			CASE WHEN substring(v,12,3) IN ('8.0','8.1','8.2') THEN 27 ELSE 23 END AS hdr,
+			CASE WHEN v ~ 'mingw32' THEN 8 ELSE 4 END AS ma
+		FROM (SELECT version() AS v) AS foo
+			) AS constants
+			GROUP BY 1,2,3,4,5
+		) AS foo
+		) AS rs
+		JOIN pg_class cc ON cc.relname = rs.tablename
+		JOIN pg_namespace nn ON cc.relnamespace = nn.oid
+		AND nn.nspname = rs.schemaname
+		AND nn.nspname NOT IN ('pg_catalog', 'information_schema')
+	) AS sml;`
+
+	stats := map[tableIdentifier]tableBloatStats{}
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var errs error
+	for rows.Next() {
+		var schema, table string
+		var bloat float64
+		err = rows.Scan(&schema, &table, &bloat)
+		if err != nil {
+			errs = multierr.Append(errs, err)
+			continue
+		}
+		stats[tableKey(db, schema, table)] = tableBloatStats{
+			database: db,
+			schema:   schema,
+			table:    table,
+			bloat:    bloat,
+		}
+	}
+	return stats, errs
+}
+
+// getIndexBloatStats estimates index bloat using pg_stats and pg_class
+// Adapted from https://wiki.postgresql.org/wiki/Show_database_bloat
+func (c *postgreSQLClient) getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error) {
+	query := `SELECT
+		schemaname, relname, iname,
+		ROUND((CASE WHEN iotta=0 OR ipages=0 THEN 0.0 ELSE ipages::float/iotta END)::numeric,1) AS ibloat
+	FROM (
+		SELECT
+		schemaname, cc.relname as relname,
+		COALESCE(c2.relname,'?') AS iname, COALESCE(c2.relpages,0) AS ipages,
+		COALESCE(CEIL((c2.reltuples*(datahdr-12))/(bs-20::float)),0) AS iotta
+		FROM (
+		SELECT
+			ma,bs,schemaname,tablename,
+			(datawidth+(hdr+ma-(case when hdr%ma=0 THEN ma ELSE hdr%ma END)))::numeric AS datahdr,
+			(maxfracsum*(nullhdr+ma-(case when nullhdr%ma=0 THEN ma ELSE nullhdr%ma END))) AS nullhdr2
+		FROM (
+			SELECT
+		schemaname, tablename, hdr, ma, bs,
+		SUM((1-null_frac)*avg_width) AS datawidth,
+		MAX(null_frac) AS maxfracsum,
+		hdr+(
+			SELECT 1+count(*)/8
+			FROM pg_stats s2
+			WHERE null_frac<>0 AND s2.schemaname = s.schemaname AND s2.tablename = s.tablename
+		) AS nullhdr
+			FROM pg_stats s, (
+		SELECT
+			(SELECT current_setting('block_size')::numeric) AS bs,
+			CASE WHEN substring(v,12,3) IN ('8.0','8.1','8.2') THEN 27 ELSE 23 END AS hdr,
+			CASE WHEN v ~ 'mingw32' THEN 8 ELSE 4 END AS ma
+		FROM (SELECT version() AS v) AS foo
+			) AS constants
+			GROUP BY 1,2,3,4,5
+		) AS foo
+		) AS rs
+		JOIN pg_class cc ON cc.relname = rs.tablename
+		JOIN pg_namespace nn ON cc.relnamespace = nn.oid
+		AND nn.nspname = rs.schemaname
+		AND nn.nspname NOT IN ('pg_catalog', 'information_schema')
+		LEFT JOIN pg_index i ON indrelid = cc.oid
+		LEFT JOIN pg_class c2 ON c2.oid = i.indexrelid
+	) AS sml WHERE iname <> '?';`
+
+	stats := map[indexIdentifer]indexBloatStats{}
+	rows, err := c.client.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var errs error
+	for rows.Next() {
+		var schema, table, indexName string
+		var bloat float64
+		err = rows.Scan(&schema, &table, &indexName, &bloat)
+		if err != nil {
+			errs = multierr.Append(errs, err)
+			continue
+		}
+		stats[indexKey(db, schema, table, indexName)] = indexBloatStats{
+			database:  db,
+			schema:    schema,
+			table:     table,
+			indexName: indexName,
+			bloat:     bloat,
+		}
+	}
+	return stats, errs
+}
+
+type indexStat struct {
+	index      string
+	table      string
+	schema     string
+	database   string
+	size       int64
+	scans      int64
+	tuplesRead int64
+	blocksRead int64
+	blocksHit  int64
 }
 
 func (c *postgreSQLClient) getIndexStats(ctx context.Context, database string) (map[indexIdentifer]indexStat, error) {
-	query := `SELECT schemaname, relname, indexrelname,
-	pg_relation_size(indexrelid) AS index_size,
-	idx_scan
-	FROM pg_stat_user_indexes;`
+	query := `SELECT i.schemaname, i.relname, i.indexrelname,
+	pg_relation_size(i.indexrelid) AS index_size,
+	i.idx_scan,
+	i.idx_tup_read,
+	io.idx_blks_read,
+	io.idx_blks_hit
+	FROM pg_stat_user_indexes i
+	JOIN pg_statio_user_indexes io ON i.indexrelid = io.indexrelid;`
 
 	stats := map[indexIdentifer]indexStat{}
 
@@ -480,24 +674,51 @@ func (c *postgreSQLClient) getIndexStats(ctx context.Context, database string) (
 	var errs []error
 	for rows.Next() {
 		var (
-			schema, table, index  string
-			indexSize, indexScans int64
+			schema, table, index                                     string
+			indexSize, indexScans, tuplesRead, blocksRead, blocksHit int64
 		)
-		err := rows.Scan(&schema, &table, &index, &indexSize, &indexScans)
+		err := rows.Scan(&schema, &table, &index, &indexSize, &indexScans, &tuplesRead, &blocksRead, &blocksHit)
 		if err != nil {
 			errs = append(errs, err)
 			continue
 		}
 		stats[indexKey(database, schema, table, index)] = indexStat{
-			index:    index,
-			table:    table,
-			schema:   schema,
-			database: database,
-			size:     indexSize,
-			scans:    indexScans,
+			index:      index,
+			table:      table,
+			schema:     schema,
+			database:   database,
+			size:       indexSize,
+			scans:      indexScans,
+			tuplesRead: tuplesRead,
+			blocksRead: blocksRead,
+			blocksHit:  blocksHit,
 		}
 	}
 	return stats, multierr.Combine(errs...)
+}
+
+func (c *postgreSQLClient) getWALStats(ctx context.Context) (int64, int64, error) {
+	query := `SELECT count(*), coalesce(sum(size), 0) FROM pg_ls_waldir();`
+	row := c.client.QueryRowContext(ctx, query)
+	var count, size int64
+	if err := row.Scan(&count, &size); err != nil {
+		return 0, 0, err
+	}
+	return count, size, nil
+}
+
+func (c *postgreSQLClient) getTransactionsStats(ctx context.Context) (float64, float64, error) {
+	query := `SELECT
+		coalesce(max(EXTRACT(EPOCH FROM (now() - xact_start))), 0) * 1000,
+		coalesce(sum(EXTRACT(EPOCH FROM (now() - xact_start))), 0) * 1000
+		FROM pg_stat_activity
+		WHERE state = 'active';`
+	row := c.client.QueryRowContext(ctx, query)
+	var maxDuration, sumDuration float64
+	if err := row.Scan(&maxDuration, &sumDuration); err != nil {
+		return 0, 0, err
+	}
+	return maxDuration, sumDuration, nil
 }
 
 type functionStat struct {
@@ -1070,47 +1291,63 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 
 	errs := make([]error, 0)
 	finalAttributes := make([]map[string]any, 0)
-	dbPrefix := "postgresql."
+	propagator := propagation.TraceContext{}
 	for _, row := range rows {
-		if row["query"] == "<insufficient privilege>" {
+		if row[querySampleColumnQuery] == insufficientPrivilegeQuerySampleText {
 			logger.Warn("skipping query sample due to insufficient privileges")
 			errs = append(errs, errors.New("skipping query sample due to insufficient privileges"))
 			continue
 		}
 		currentAttributes := make(map[string]any)
-		simpleColumns := []string{
-			"client_hostname",
-			"query_start",
-			"wait_event_type",
-			"wait_event",
-			"query_id",
-			"state",
-			"application_name",
+		var traceCtx context.Context
+		querySampleSimpleColumns := []string{
+			querySampleColumnClientHostname,
+			querySampleColumnQueryStart,
+			querySampleColumnWaitEventType,
+			querySampleColumnWaitEvent,
+			querySampleColumnQueryID,
+			querySampleColumnState,
+			querySampleColumnApplicationName,
 		}
 
-		for _, col := range simpleColumns {
-			currentAttributes[dbPrefix+col] = row[col]
+		for _, col := range querySampleSimpleColumns {
+			currentAttributes[dbAttributePrefix+col] = row[col]
+			if col == querySampleColumnApplicationName && row[col] != "" {
+				// Use a background context so we don't accidentally inherit cancellation or span context
+				// from the scrape context; the only trace linkage should come from the extracted traceparent.
+				ctxFromQuery := propagator.Extract(context.Background(), propagation.MapCarrier{
+					traceparentCarrierKey: row[col],
+				})
+
+				if trace.SpanContextFromContext(ctxFromQuery).IsValid() {
+					traceCtx = ctxFromQuery
+				}
+			}
+		}
+
+		if traceCtx != nil {
+			currentAttributes[querySampleTraceContextKey] = traceCtx
 		}
 
 		clientPort := int64(0)
-		if row["client_port"] != "" {
-			clientPort, err = strconv.ParseInt(row["client_port"], 10, 64)
+		if row[querySampleColumnClientPort] != "" {
+			clientPort, err = strconv.ParseInt(row[querySampleColumnClientPort], 10, 64)
 			if err != nil {
 				logger.Warn("failed to convert client_port to int", zap.Error(err))
 				errs = append(errs, err)
 			}
 		}
 		pid := int64(0)
-		if row["pid"] != "" {
-			pid, err = strconv.ParseInt(row["pid"], 10, 64)
+		if row[querySampleColumnPID] != "" {
+			pid, err = strconv.ParseInt(row[querySampleColumnPID], 10, 64)
 			if err != nil {
 				logger.Warn("failed to convert pid to int64", zap.Error(err))
 				errs = append(errs, err)
 			}
 		}
 		_queryStartTimestamp := float64(0)
-		if row["_query_start_timestamp"] != "" {
-			_queryStartTimestamp, err = strconv.ParseFloat(row["_query_start_timestamp"], 64)
+		if row[querySampleColumnQueryStartTimestamp] != "" {
+			_queryStartTimestamp, err = strconv.ParseFloat(row[querySampleColumnQueryStartTimestamp], 64)
 			if err != nil {
 				logger.Warn("failed to convert _query_start_timestamp", zap.Error(err))
 				errs = append(errs, err)
@@ -1119,8 +1356,8 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		newestQueryTimestamp = math.Max(newestQueryTimestamp, _queryStartTimestamp)
 
 		duration := float64(0)
-		if row["_query_start_timestamp"] != "" {
-			duration, err = strconv.ParseFloat(row["duration_ms"], 64)
+		if row[querySampleColumnDurationMilliseconds] != "" {
+			duration, err = strconv.ParseFloat(row[querySampleColumnDurationMilliseconds], 64)
 			if err != nil {
 				logger.Warn("failed to convert duration", zap.Error(err))
 				errs = append(errs, err)
@@ -1128,19 +1365,18 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		}
 
 		// TODO: check if the query is truncated.
-		obfuscated, err := obfuscateSQL(row["query"])
+		obfuscated, err := obfuscateSQL(row[querySampleColumnQuery])
 		if err != nil {
-			logger.Warn("failed to obfuscate query", zap.String("query", row["query"]))
+			logger.Warn("failed to obfuscate query", zap.String("query", row[querySampleColumnQuery]))
 			obfuscated = ""
 		}
-		currentAttributes[dbPrefix+"pid"] = pid
-		currentAttributes["network.peer.port"] = clientPort
-		currentAttributes["network.peer.address"] = row["client_addr"]
-		currentAttributes["db.query.text"] = obfuscated
-		currentAttributes["db.namespace"] = row["datname"]
-		currentAttributes["user.name"] = row["usename"]
-		currentAttributes["duration"] = duration
-		currentAttributes["db.system.name"] = "postgresql"
+		currentAttributes[dbAttributePrefix+querySampleColumnPID] = pid
+		currentAttributes[string(semconv.NetworkPeerPortKey)] = clientPort
+		currentAttributes[string(semconv.NetworkPeerAddressKey)] = row[querySampleColumnClientAddr]
+		currentAttributes[string(semconv.DBQueryTextKey)] = obfuscated
+		currentAttributes[string(semconv.DBNamespaceKey)] = row[querySampleColumnDatname]
+		currentAttributes[string(semconv.UserNameKey)] = row[querySampleColumnUsename]
+		currentAttributes[postgresqlTotalExecTimeAttributeName] = duration
 		finalAttributes = append(finalAttributes, currentAttributes)
 	}
 
@@ -1206,8 +1442,8 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 
 	for _, row := range rows {
 		hasConvention := map[string]string{
-			"datname": "db.namespace",
-			"query":   QueryTextAttributeName,
+			"datname": string(semconv.DBNamespaceKey),
+			"query":   string(semconv.DBQueryTextKey),
 		}
 
 		needConversion := map[string]func(string, string, *zap.Logger) (any, error){
@@ -1221,29 +1457,36 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 			tempBlksWrittenColumnName:   convertToInt,
 			totalExecTimeColumnName:     convertMillisecondToSecond,
 			totalPlanTimeColumnName:     convertMillisecondToSecond,
-			"query": func(_, val string, logger *zap.Logger) (any, error) {
-				// TODO: check if it is truncated.
-				result, err := obfuscateSQL(val)
-				if err != nil {
-					logger.Error("failed to obfuscate query", zap.String("query", val))
-					return "", err
-				}
-				return result, nil
-			},
+			blkReadTimeAttributeName:    convertMillisecondToSecond,
+			blkWriteTimeAttributeName:   convertMillisecondToSecond,
 		}
 		currentAttributes := make(map[string]any)
+
+		// Store raw query before obfuscation (needed for EXPLAIN with $N placeholders)
+		if rawQuery, ok := row["query"]; ok {
+			currentAttributes[dbAttributePrefix+"raw_query"] = rawQuery
+		}
 
 		for col := range row {
 			var val any
 			var err error
 			converter, ok := needConversion[col]
-			if ok {
+			switch {
+			case ok:
 				val, err = converter(col, row[col], logger)
 				if err != nil {
 					logger.Warn("failed to convert column to int", zap.String("column", col), zap.Error(err))
 					errs = append(errs, err)
 				}
-			} else {
+			case col == "query":
+				// Obfuscate query for display/logging (converts $1,$2 to ?)
+				// Raw query is already stored separately for EXPLAIN
+				val, err = obfuscateSQL(row[col])
+				if err != nil {
+					logger.Error("failed to obfuscate query", zap.String("query", row[col]))
+					val = ""
+				}
+			default:
 				val = row[col]
 			}
 			if hasConvention[col] != "" {

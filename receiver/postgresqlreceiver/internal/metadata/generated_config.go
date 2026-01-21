@@ -28,12 +28,17 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsConfig provides config for postgresql metrics.
 type MetricsConfig struct {
+	PostgresqlAnalyzed                 MetricConfig `mapstructure:"postgresql.analyzed"`
+	PostgresqlAutoanalyzed             MetricConfig `mapstructure:"postgresql.autoanalyzed"`
+	PostgresqlAutovacuumed             MetricConfig `mapstructure:"postgresql.autovacuumed"`
 	PostgresqlBackends                 MetricConfig `mapstructure:"postgresql.backends"`
 	PostgresqlBgwriterBuffersAllocated MetricConfig `mapstructure:"postgresql.bgwriter.buffers.allocated"`
 	PostgresqlBgwriterBuffersWrites    MetricConfig `mapstructure:"postgresql.bgwriter.buffers.writes"`
 	PostgresqlBgwriterCheckpointCount  MetricConfig `mapstructure:"postgresql.bgwriter.checkpoint.count"`
 	PostgresqlBgwriterDuration         MetricConfig `mapstructure:"postgresql.bgwriter.duration"`
 	PostgresqlBgwriterMaxwritten       MetricConfig `mapstructure:"postgresql.bgwriter.maxwritten"`
+	PostgresqlBlkReadTime              MetricConfig `mapstructure:"postgresql.blk_read_time"`
+	PostgresqlBlkWriteTime             MetricConfig `mapstructure:"postgresql.blk_write_time"`
 	PostgresqlBlksHit                  MetricConfig `mapstructure:"postgresql.blks_hit"`
 	PostgresqlBlksRead                 MetricConfig `mapstructure:"postgresql.blks_read"`
 	PostgresqlBlocksRead               MetricConfig `mapstructure:"postgresql.blocks_read"`
@@ -46,8 +51,11 @@ type MetricsConfig struct {
 	PostgresqlDbSize                   MetricConfig `mapstructure:"postgresql.db_size"`
 	PostgresqlDeadlocks                MetricConfig `mapstructure:"postgresql.deadlocks"`
 	PostgresqlFunctionCalls            MetricConfig `mapstructure:"postgresql.function.calls"`
+	PostgresqlIndexBlocksRead          MetricConfig `mapstructure:"postgresql.index.blocks_read"`
+	PostgresqlIndexRowsRead            MetricConfig `mapstructure:"postgresql.index.rows_read"`
 	PostgresqlIndexScans               MetricConfig `mapstructure:"postgresql.index.scans"`
 	PostgresqlIndexSize                MetricConfig `mapstructure:"postgresql.index.size"`
+	PostgresqlIndexBloat               MetricConfig `mapstructure:"postgresql.index_bloat"`
 	PostgresqlLiveRows                 MetricConfig `mapstructure:"postgresql.live_rows"`
 	PostgresqlOperations               MetricConfig `mapstructure:"postgresql.operations"`
 	PostgresqlQueryCount               MetricConfig `mapstructure:"postgresql.query.count"`
@@ -63,20 +71,37 @@ type MetricsConfig struct {
 	PostgresqlTableCount               MetricConfig `mapstructure:"postgresql.table.count"`
 	PostgresqlTableSize                MetricConfig `mapstructure:"postgresql.table.size"`
 	PostgresqlTableVacuumCount         MetricConfig `mapstructure:"postgresql.table.vacuum.count"`
+	PostgresqlTableBloat               MetricConfig `mapstructure:"postgresql.table_bloat"`
 	PostgresqlTempIo                   MetricConfig `mapstructure:"postgresql.temp.io"`
 	PostgresqlTempFiles                MetricConfig `mapstructure:"postgresql.temp_files"`
+	PostgresqlToastBlocksHit           MetricConfig `mapstructure:"postgresql.toast.blocks_hit"`
+	PostgresqlToastIndexBlocksRead     MetricConfig `mapstructure:"postgresql.toast.index.blocks_read"`
+	PostgresqlToastSize                MetricConfig `mapstructure:"postgresql.toast.size"`
+	PostgresqlTransactionsDurationMax  MetricConfig `mapstructure:"postgresql.transactions.duration.max"`
+	PostgresqlTransactionsDurationSum  MetricConfig `mapstructure:"postgresql.transactions.duration.sum"`
 	PostgresqlTupDeleted               MetricConfig `mapstructure:"postgresql.tup_deleted"`
 	PostgresqlTupFetched               MetricConfig `mapstructure:"postgresql.tup_fetched"`
 	PostgresqlTupInserted              MetricConfig `mapstructure:"postgresql.tup_inserted"`
 	PostgresqlTupReturned              MetricConfig `mapstructure:"postgresql.tup_returned"`
 	PostgresqlTupUpdated               MetricConfig `mapstructure:"postgresql.tup_updated"`
 	PostgresqlWalAge                   MetricConfig `mapstructure:"postgresql.wal.age"`
+	PostgresqlWalCount                 MetricConfig `mapstructure:"postgresql.wal.count"`
 	PostgresqlWalDelay                 MetricConfig `mapstructure:"postgresql.wal.delay"`
 	PostgresqlWalLag                   MetricConfig `mapstructure:"postgresql.wal.lag"`
+	PostgresqlWalSize                  MetricConfig `mapstructure:"postgresql.wal.size"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
+		PostgresqlAnalyzed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAutoanalyzed: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlAutovacuumed: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlBackends: MetricConfig{
 			Enabled: true,
 		},
@@ -94,6 +119,12 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		PostgresqlBgwriterMaxwritten: MetricConfig{
 			Enabled: true,
+		},
+		PostgresqlBlkReadTime: MetricConfig{
+			Enabled: false,
+		},
+		PostgresqlBlkWriteTime: MetricConfig{
+			Enabled: false,
 		},
 		PostgresqlBlksHit: MetricConfig{
 			Enabled: false,
@@ -131,10 +162,19 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlFunctionCalls: MetricConfig{
 			Enabled: false,
 		},
+		PostgresqlIndexBlocksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexRowsRead: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlIndexScans: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlIndexSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlIndexBloat: MetricConfig{
 			Enabled: true,
 		},
 		PostgresqlLiveRows: MetricConfig{
@@ -182,11 +222,29 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlTableVacuumCount: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlTableBloat: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlTempIo: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlTempFiles: MetricConfig{
 			Enabled: false,
+		},
+		PostgresqlToastBlocksHit: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlToastIndexBlocksRead: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlToastSize: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTransactionsDurationMax: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlTransactionsDurationSum: MetricConfig{
+			Enabled: true,
 		},
 		PostgresqlTupDeleted: MetricConfig{
 			Enabled: false,
@@ -206,10 +264,16 @@ func DefaultMetricsConfig() MetricsConfig {
 		PostgresqlWalAge: MetricConfig{
 			Enabled: true,
 		},
+		PostgresqlWalCount: MetricConfig{
+			Enabled: true,
+		},
 		PostgresqlWalDelay: MetricConfig{
 			Enabled: false,
 		},
 		PostgresqlWalLag: MetricConfig{
+			Enabled: true,
+		},
+		PostgresqlWalSize: MetricConfig{
 			Enabled: true,
 		},
 	}
@@ -291,6 +355,7 @@ type ResourceAttributesConfig struct {
 	PostgresqlIndexName    ResourceAttributeConfig `mapstructure:"postgresql.index.name"`
 	PostgresqlSchemaName   ResourceAttributeConfig `mapstructure:"postgresql.schema.name"`
 	PostgresqlTableName    ResourceAttributeConfig `mapstructure:"postgresql.table.name"`
+	ServiceInstanceID      ResourceAttributeConfig `mapstructure:"service.instance.id"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -308,6 +373,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		PostgresqlTableName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		ServiceInstanceID: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}
