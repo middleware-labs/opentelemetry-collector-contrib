@@ -427,21 +427,25 @@ type tableStats struct {
 }
 
 func (c *postgreSQLClient) getDatabaseTableMetrics(ctx context.Context, db string) (map[tableIdentifier]tableStats, error) {
-	query := `SELECT schemaname as schema, relname AS table,
-	n_live_tup AS live,
-	n_dead_tup AS dead,
-	n_tup_ins AS ins,
-	n_tup_upd AS upd,
-	n_tup_del AS del,
-	n_tup_hot_upd AS hot_upd,
-	seq_scan AS seq_scans,
-	pg_relation_size(relid) AS table_size,
-	vacuum_count,
-	autovacuum_count,
-	analyze_count,
-	autoanalyze_count,
-	coalesce(pg_relation_size(reltoastrelid), 0) AS toast_size
-	FROM pg_stat_user_tables;`
+	query :=
+		`SELECT
+			s.schemaname AS schema,
+			s.relname AS table,
+			s.n_live_tup AS live,
+			s.n_dead_tup AS dead,
+			s.n_tup_ins AS ins,
+			s.n_tup_upd AS upd,
+			s.n_tup_del AS del,
+			s.n_tup_hot_upd AS hot_upd,
+			s.seq_scan AS seq_scans,
+			pg_relation_size(s.relid) AS table_size,
+			s.vacuum_count,
+			s.autovacuum_count,
+			s.analyze_count,
+			s.autoanalyze_count,
+			COALESCE(pg_relation_size(c.reltoastrelid), 0) AS toast_size
+		FROM pg_stat_user_tables s
+		JOIN pg_class c ON c.oid = s.relid;`
 
 	ts := map[tableIdentifier]tableStats{}
 	var errors error
