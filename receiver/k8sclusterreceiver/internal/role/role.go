@@ -63,21 +63,35 @@ func convertRulesToString(rules []rbacv1.PolicyRule) string {
 			result.WriteString(";")
 		}
 
-		result.WriteString("verbs=")
-		result.WriteString(strings.Join(rule.Verbs, ","))
+		// verbs
+		if len(rule.Verbs) > 0 {
+			result.WriteString("verbs=")
+			result.WriteString(strings.Join(rule.Verbs, ","))
+		}
 
-		result.WriteString("&apiGroups=")
-		result.WriteString(strings.Join(rule.APIGroups, ","))
+		// apiGroups
+		if len(rule.APIGroups) > 0 {
+			result.WriteString("&apiGroups=")
+			result.WriteString(strings.Join(rule.APIGroups, ","))
+		}
 
-		result.WriteString("&resources=")
-		result.WriteString(strings.Join(rule.Resources, ","))
+		// resources
+		if len(rule.Resources) > 0 {
+			result.WriteString("&resources=")
+			result.WriteString(strings.Join(rule.Resources, ","))
+		}
 
-		result.WriteString("&resourceNames=")
-		result.WriteString(strings.Join(rule.ResourceNames, ","))
+		// resourceNames
+		if len(rule.ResourceNames) > 0 {
+			result.WriteString("&resourceNames=")
+			result.WriteString(strings.Join(rule.ResourceNames, ","))
+		}
 
-		result.WriteString("&nonResourceURLs=")
-		result.WriteString(strings.Join(rule.NonResourceURLs, ","))
-
+		// nonResourceURLs
+		if len(rule.NonResourceURLs) > 0 {
+			result.WriteString("&nonResourceURLs=")
+			result.WriteString(strings.Join(rule.NonResourceURLs, ","))
+		}
 	}
 
 	return result.String()
