@@ -66,14 +66,20 @@ func convertSubjectsToString(subjects []rbacv1.Subject) string {
 			result.WriteString(";")
 		}
 
-		result.WriteString("kind=")
-		result.WriteString(subject.Kind)
+		if subject.Kind != "" {
+			result.WriteString("kind=")
+			result.WriteString(subject.Kind)
+		}
 
-		result.WriteString("&name=")
-		result.WriteString(subject.Name)
+		if subject.Name != "" {
+			result.WriteString("&name=")
+			result.WriteString(subject.Name)
+		}
 
-		result.WriteString("&namespace=")
-		result.WriteString(subject.Namespace)
+		if subject.Namespace != "" {
+			result.WriteString("&namespace=")
+			result.WriteString(subject.Namespace)
+		}
 	}
 
 	return result.String()
