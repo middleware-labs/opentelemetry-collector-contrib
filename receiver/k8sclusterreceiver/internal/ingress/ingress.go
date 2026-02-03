@@ -66,23 +66,32 @@ func convertIngressRulesToString(rules []netv1.IngressRule) string {
 		result.WriteString("host=")
 		result.WriteString(rule.Host)
 
-		result.WriteString("&http=(paths=")
-		for j, path := range rule.HTTP.Paths {
-			if j > 0 {
-				result.WriteString("&")
-			}
+		if rule.HTTP != nil {
+			result.WriteString("&http=(paths=")
+			for j, path := range rule.HTTP.Paths {
+				if j > 0 {
+					result.WriteString("&")
+				}
 
-			result.WriteString("(path=")
-			result.WriteString(path.Path)
-			result.WriteString("&pathType=")
-			result.WriteString(string(*path.PathType))
-			result.WriteString("&backend=(service=(name=")
-			result.WriteString(path.Backend.Service.Name)
-			result.WriteString("&port=(number=")
-			result.WriteString(fmt.Sprintf("%d", path.Backend.Service.Port.Number))
-			result.WriteString(")))")
+				result.WriteString("(path=")
+				result.WriteString(path.Path)
+				result.WriteString("&pathType=")
+				if path.PathType != nil {
+					result.WriteString(string(*path.PathType))
+				}
+				result.WriteString("&backend=(service=(")
+				if path.Backend.Service != nil {
+					result.WriteString("name=")
+					result.WriteString(path.Backend.Service.Name)
+					result.WriteString("&port=(number=")
+					result.WriteString(fmt.Sprintf("%d", path.Backend.Service.Port.Number))
+					result.WriteString(")")
+				}
+				result.WriteString("))")
+				result.WriteString(")")
+			}
+			result.WriteString(")")
 		}
-		result.WriteString(")")
 	}
 
 	return result.String()
