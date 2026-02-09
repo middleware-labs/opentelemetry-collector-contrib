@@ -391,20 +391,59 @@ func (s *mongodbScraper) collectReplSetStatus(ctx context.Context, now pcommon.T
 		return
 	}
 	replset, ok := status["set"].(string)
-	if ok {
-		for _, mem := range status["members"].(bson.A) {
-			member := mem.(bson.M)
-			member_name := member["name"].(string)
-			member_id := fmt.Sprint(member["_id"])
-			member_state := member["stateStr"].(string)
-			if member["state"].(int32) == 1 {
-				s.recordMongodbReplsetOptimeLag(now, member, database, replset, member_name, member_id, errs)
-			} else if member["state"].(int32) == 2 {
-				s.recordMongodbReplsetReplicationlag(now, member, database, replset, member_name, member_id, errs)
-			}
-			s.recordMongodbReplsetHealth(now, member, database, replset, member_name, member_id, member_state, errs)
-			s.recordMongodbReplsetState(now, member, database, replset, member_name, member_id, member_state, errs)
+	if !ok {
+		errs.AddPartial(1, fmt.Errorf("replSetStatus missing or invalid 'set' field: %v", status["set"]))
+		return
+	}
+	membersRaw, ok := status["members"].(bson.A)
+	if !ok {
+		errs.AddPartial(1, fmt.Errorf("replSetStatus missing or invalid 'members' field: %v", status["members"]))
+		return
+	}
+	for _, mem := range membersRaw {
+		member, ok := mem.(bson.M)
+		if !ok {
+			errs.AddPartial(1, fmt.Errorf("member entry not bson.M: %v", mem))
+			continue
 		}
+		member_name, ok := member["name"].(string)
+		if !ok {
+			errs.AddPartial(1, fmt.Errorf("member missing or invalid 'name': %v", member["name"]))
+			continue
+		}
+		member_id := fmt.Sprint(member["_id"])
+		member_state, ok := member["stateStr"].(string)
+		if !ok {
+			errs.AddPartial(1, fmt.Errorf("member missing or invalid 'stateStr': %v", member["stateStr"]))
+			continue
+		}
+		stateVal, ok := member["state"]
+		if !ok {
+			errs.AddPartial(1, fmt.Errorf("member missing 'state': %v", member))
+			continue
+		}
+		var stateInt int32
+		switch v := stateVal.(type) {
+		case int32:
+			stateInt = v
+		case int:
+			stateInt = int32(v)
+		case int64:
+			stateInt = int32(v)
+		case float64:
+			stateInt = int32(v)
+		default:
+			errs.AddPartial(1, fmt.Errorf("member 'state' not int32/int/int64/float64: %v", v))
+			continue
+		}
+		switch stateInt {
+		case 1:
+			s.recordMongodbReplsetOptimeLag(now, member, database, replset, member_name, member_id, errs)
+		case 2:
+			s.recordMongodbReplsetReplicationlag(now, member, database, replset, member_name, member_id, errs)
+		}
+		s.recordMongodbReplsetHealth(now, member, database, replset, member_name, member_id, member_state, errs)
+		s.recordMongodbReplsetState(now, member, database, replset, member_name, member_id, member_state, errs)
 	}
 
 	rb := s.mb.NewResourceBuilder()
@@ -419,25 +458,42 @@ func (s *mongodbScraper) collectReplSetStatus(ctx context.Context, now pcommon.T
 func (s *mongodbScraper) collectReplSetConfig(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	// ReplSetConfig are scraped using admin database
 	database := "admin"
-	config, err := s.client.ReplSetConfig(ctx)
+	configRaw, err := s.client.ReplSetConfig(ctx)
 	if err != nil {
 		errs.AddPartial(1, fmt.Errorf("failed to fetch repl set get config metrics: %w", err))
 		return
 	}
-	config, ok := config["config"].(bson.M)
-	if ok {
-
-		replset := config["_id"].(string)
-
-		for _, mem := range config["members"].(bson.A) {
-			member := mem.(bson.M)
-			member_name := member["host"].(string)
-			member_id := fmt.Sprint(member["_id"])
-
-			// replSetGetConfig
-			s.recordMongodbReplsetVotefraction(now, member, database, replset, member_name, member_id, errs)
-			s.recordMongodbReplsetVotes(now, member, database, replset, member_name, member_id, errs)
+	config, ok := configRaw["config"].(bson.M)
+	if !ok {
+		errs.AddPartial(1, fmt.Errorf("replSetConfig missing or invalid 'config' field: %v", configRaw["config"]))
+		return
+	}
+	replset, ok := config["_id"].(string)
+	if !ok {
+		errs.AddPartial(1, fmt.Errorf("replSetConfig missing or invalid '_id' field: %v", config["_id"]))
+		return
+	}
+	membersRaw, ok := config["members"].(bson.A)
+	if !ok {
+		errs.AddPartial(1, fmt.Errorf("replSetConfig missing or invalid 'members' field: %v", config["members"]))
+		return
+	}
+	for _, mem := range membersRaw {
+		member, ok := mem.(bson.M)
+		if !ok {
+			errs.AddPartial(1, fmt.Errorf("replSetConfig member entry not bson.M: %v", mem))
+			continue
 		}
+		member_name, ok := member["host"].(string)
+		if !ok {
+			errs.AddPartial(1, fmt.Errorf("replSetConfig member missing or invalid 'host': %v", member["host"]))
+			continue
+		}
+		member_id := fmt.Sprint(member["_id"])
+
+		// replSetGetConfig
+		s.recordMongodbReplsetVotefraction(now, member, database, replset, member_name, member_id, errs)
+		s.recordMongodbReplsetVotes(now, member, database, replset, member_name, member_id, errs)
 	}
 
 	rb := s.mb.NewResourceBuilder()
