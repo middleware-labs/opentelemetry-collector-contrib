@@ -35,6 +35,47 @@ func TestLoadConfig(t *testing.T) {
 			id: component.NewIDWithName(metadata.Type, "collection_interval_settings"),
 			expected: &Config{
 				CollectionInterval: 10 * time.Second,
+				RunAs:              RunAsSidecar,
+			},
+		},
+		{
+			id: component.NewIDWithName(metadata.Type, "daemonset"),
+			expected: &Config{
+				CollectionInterval: 30 * time.Second,
+				RunAs:              RunAsDaemonSet,
+				Cluster:            "my-ecs-cluster",
+				Region:             "us-east-1",
+			},
+		},
+		{
+			id: component.NewIDWithName(metadata.Type, "daemonset_with_cgroups"),
+			expected: &Config{
+				CollectionInterval: 30 * time.Second,
+				RunAs:              RunAsDaemonSet,
+				Cluster:            "my-ecs-cluster",
+				Region:             "us-east-1",
+				CGroupsMountPath:   "/host/sys/fs/cgroup",
+			},
+		},
+		{
+			id: component.NewIDWithName(metadata.Type, "daemonset_with_docker"),
+			expected: &Config{
+				CollectionInterval: 30 * time.Second,
+				RunAs:              RunAsDaemonSet,
+				Cluster:            "my-ecs-cluster",
+				Region:             "us-east-1",
+				DockerSocketPath:   "/var/run/docker.sock",
+			},
+		},
+		{
+			id: component.NewIDWithName(metadata.Type, "daemonset_docker_and_cgroups"),
+			expected: &Config{
+				CollectionInterval: 30 * time.Second,
+				RunAs:              RunAsDaemonSet,
+				Cluster:            "my-ecs-cluster",
+				Region:             "us-east-1",
+				CGroupsMountPath:   "/host/sys/fs/cgroup",
+				DockerSocketPath:   "/var/run/docker.sock",
 			},
 		},
 	}

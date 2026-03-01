@@ -1,0 +1,19 @@
+{
+  "cluster": "YOUR_ECS_CLUSTER_NAME",
+  "serviceName": "otel-ecs-metrics-agent",
+  "taskDefinition": "otel-ecs-metrics-agent",
+  "schedulingStrategy": "DAEMON",
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 0
+  },
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ["subnet-xxxxxxxx", "subnet-yyyyyyyy"],
+      "securityGroups": ["sg-xxxxxxxx"],
+      "assignPublicIp": "DISABLED"
+    }
+  },
+  "enableECSManagedTags": true,
+  "propagateTags": "SERVICE"
+}

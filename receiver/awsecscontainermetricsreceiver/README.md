@@ -36,6 +36,31 @@ This receiver collects task metadata and container stats at a fixed interval and
 
 default: `20s`
 
+#### run_as:
+
+Determines the collection mode. Must be `sidecar` (default) or `daemonset`.
+
+- **sidecar**: Collects metrics from the current task only via the ECS Task Metadata API. Requires running as a sidecar within an ECS task with `ECS_CONTAINER_METADATA_URI_V4` set.
+- **daemonset**: Collects task and service metadata for the entire cluster via ECS APIs (ListTasks, DescribeTasks, ListServices, DescribeServices). Use when deployed as one task per EC2 instance (DaemonSet-style) to observe all sibling tasks and services. Requires `cluster` and AWS credentials (task role or IAM). Region can be set via `region` config or `AWS_REGION` env.
+
+**Note**: In daemonset mode without `cgroups_mount_path` or `docker_socket_path`, task-level resource limits (CPU, memory) are emitted, but usage metrics (ecs.task.cpu.utilized, ecs.task.memory.utilized, etc.) will be 0. Set `docker_socket_path` for full metrics (including network and disk), or `cgroups_mount_path` for CPU and memory only.
+
+#### cgroups_mount_path:
+
+Path to the cgroup mount (e.g. `/sys/fs/cgroup` or `/host/sys/fs/cgroup` when the host filesystem is mounted). When set in daemonset mode on EC2, the receiver reads CPU and memory usage from cgroups for tasks on this instance, populating `ecs.task.cpu.utilized`, `ecs.task.memory.utilized`, and related usage metrics. Requires the collector task to have the host cgroup filesystem mounted. Only supported on Linux. Cgroups do not expose network or disk I/O; use `docker_socket_path` for those metrics. When configured (and `docker_socket_path` is not set), the receiver uses the ECS agent introspection API and cgroups for task discovery on the instance.
+
+#### docker_socket_path:
+
+Path to the Docker daemon socket (e.g. `/var/run/docker.sock` or `/host/var/run/docker.sock` when the host is mounted). When set in daemonset mode, the receiver fetches full container stats via the Docker API for tasks on this instance, covering **network** (rx/tx bytes, packets, rates) and **disk** (read_bytes, write_bytes) metrics that cgroups do not provide. Also provides full CPU (including kernel/user split) and memory metrics. Requires the collector task to have the Docker socket mounted. When both `cgroups_mount_path` and `docker_socket_path` are set, Docker is used (full metrics); otherwise cgroups is used as fallback.
+
+#### cluster:
+
+ECS cluster name or ARN. Required when `run_as` is `daemonset`.
+
+#### region:
+
+AWS region for ECS API calls. Optional when `run_as` is `daemonset`; defaults to `AWS_REGION` or `AWS_DEFAULT_REGION` environment variable.
+
 
 ## Enabling the AWS ECS Container Metrics Receiver
 

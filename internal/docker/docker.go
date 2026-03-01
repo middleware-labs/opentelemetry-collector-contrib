@@ -161,6 +161,22 @@ func (dc *Client) FetchContainerStatsAsJSON(
 	return statsJSON, nil
 }
 
+// FetchContainerStatsByID fetches container stats for the given container ID.
+// Useful when container IDs are known from another source (e.g. ECS agent) and
+// full container discovery is not needed.
+func (dc *Client) FetchContainerStatsByID(ctx context.Context, containerID string) (*ctypes.StatsResponse, error) {
+	container := Container{
+		ContainerJSON: &ctypes.InspectResponse{
+			ContainerJSONBase: &ctypes.ContainerJSONBase{ID: containerID},
+		},
+	}
+	statsReader, err := dc.FetchContainerStats(ctx, container)
+	if err != nil {
+		return nil, err
+	}
+	return dc.toStatsJSON(statsReader, &container)
+}
+
 // FetchContainerStats will query the desired container stats
 // and return them as ContainerStats
 func (dc *Client) FetchContainerStats(

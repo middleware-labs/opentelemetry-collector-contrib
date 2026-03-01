@@ -1,0 +1,91 @@
+{
+  "family": "otel-ecs-metrics-agent",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["EC2"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/otel-ecs-metrics-agent-task-role",
+  "containerDefinitions": [
+    {
+      "name": "otel-collector",
+      "image": "public.ecr.aws/otel/opentelemetry-collector-contrib:latest",
+      "essential": true,
+      "command": [
+        "--config=/etc/otel/config.yaml"
+      ],
+      "portMappings": [
+        {
+          "containerPort": 8888,
+          "hostPort": 8888,
+          "protocol": "tcp",
+          "name": "metrics"
+        },
+        {
+          "containerPort": 4317,
+          "hostPort": 4317,
+          "protocol": "tcp",
+          "name": "otlp-grpc"
+        }
+      ],
+      "environment": [
+        {
+          "name": "AWS_REGION",
+          "value": "us-east-1"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/otel-ecs-metrics-agent",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "otel"
+        }
+      },
+      "mountPoints": [
+        {
+          "sourceVolume": "docker-socket",
+          "containerPath": "/var/run/docker.sock",
+          "readOnly": false
+        },
+        {
+          "sourceVolume": "cgroup",
+          "containerPath": "/host/sys/fs/cgroup",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "otel-config",
+          "containerPath": "/etc/otel",
+          "readOnly": true
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget -q -O - http://localhost:13133/ || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "docker-socket",
+      "host": {
+        "sourcePath": "/var/run/docker.sock"
+      }
+    },
+    {
+      "name": "cgroup",
+      "host": {
+        "sourcePath": "/sys/fs/cgroup"
+      }
+    },
+    {
+      "name": "otel-config",
+      "host": {
+        "sourcePath": "/opt/otel-config"
+      }
+    }
+  ]
+}

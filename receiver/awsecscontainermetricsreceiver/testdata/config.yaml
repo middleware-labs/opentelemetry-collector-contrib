@@ -1,3 +1,27 @@
 awsecscontainermetrics:
 awsecscontainermetrics/collection_interval_settings:
   collection_interval: 10s
+awsecscontainermetrics/daemonset:
+  collection_interval: 30s
+  run_as: daemonset
+  cluster: my-ecs-cluster
+  region: us-east-1
+awsecscontainermetrics/daemonset_with_cgroups:
+  collection_interval: 30s
+  run_as: daemonset
+  cluster: my-ecs-cluster
+  region: us-east-1
+  cgroups_mount_path: /host/sys/fs/cgroup
+awsecscontainermetrics/daemonset_with_docker:
+  collection_interval: 30s
+  run_as: daemonset
+  cluster: my-ecs-cluster
+  region: us-east-1
+  docker_socket_path: /var/run/docker.sock
+awsecscontainermetrics/daemonset_docker_and_cgroups:
+  collection_interval: 30s
+  run_as: daemonset
+  cluster: my-ecs-cluster
+  region: us-east-1
+  cgroups_mount_path: /host/sys/fs/cgroup
+  docker_socket_path: /var/run/docker.sock

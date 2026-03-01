@@ -36,6 +36,7 @@ func TestReceiver(t *testing.T) {
 		cfg,
 		consumertest.NewNop(),
 		&fakeRestClient{t},
+		nil, // ecsClient not used in sidecar mode
 	)
 
 	require.NoError(t, err)
@@ -58,6 +59,7 @@ func TestCollectDataFromEndpoint(t *testing.T) {
 		cfg,
 		new(consumertest.MetricsSink),
 		&fakeRestClient{},
+		nil, // ecsClient not used in sidecar mode
 	)
 
 	require.NoError(t, err)
@@ -78,6 +80,7 @@ func TestCollectDataFromEndpointWithConsumerError(t *testing.T) {
 		cfg,
 		consumertest.NewErr(errors.New("Test Error for Metrics Consumer")),
 		&fakeRestClient{},
+		nil, // ecsClient not used in sidecar mode
 	)
 
 	require.NoError(t, err)
@@ -103,6 +106,7 @@ func TestCollectDataFromEndpointWithEndpointError(t *testing.T) {
 		cfg,
 		new(consumertest.MetricsSink),
 		&invalidFakeClient{},
+		nil, // ecsClient not used in sidecar mode
 	)
 
 	require.NoError(t, err)
