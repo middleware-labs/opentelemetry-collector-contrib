@@ -102,16 +102,15 @@ func dockerStatsToContainerStats(resp *ctypes.StatsResponse, dockerID, container
 		PreviousRead: resp.PreRead,
 	}
 
-	if resp.MemoryStats.Limit != 0 || resp.MemoryStats.Usage != 0 {
-		usage := resp.MemoryStats.Usage
-		maxUsage := resp.MemoryStats.MaxUsage
-		limit := resp.MemoryStats.Limit
-		stats.Memory = &awsecscontainermetrics.MemoryStats{
-			Usage:    &usage,
-			MaxUsage: &maxUsage,
-			Limit:    &limit,
-			Stats:    resp.MemoryStats.Stats,
-		}
+	// Always set memory from Docker response (Usage can be 0 for idle containers)
+	usage := resp.MemoryStats.Usage
+	maxUsage := resp.MemoryStats.MaxUsage
+	limit := resp.MemoryStats.Limit
+	stats.Memory = &awsecscontainermetrics.MemoryStats{
+		Usage:    &usage,
+		MaxUsage: &maxUsage,
+		Limit:    &limit,
+		Stats:    resp.MemoryStats.Stats,
 	}
 
 	if resp.CPUStats.CPUUsage.TotalUsage != 0 || resp.PreCPUStats.CPUUsage.TotalUsage != 0 {

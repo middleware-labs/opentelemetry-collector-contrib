@@ -29,33 +29,17 @@ Without a service, you would have to manually run a task on each instance.
 
 ## IAM Permissions (Task Role)
 
-The task role needs ECS and EC2 permissions for daemonset mode:
+The task role needs the following ECS permissions for daemonset mode. A ready-to-use policy is in `iam-policy-ecs-daemon.json`.
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ecs:ListTasks",
-        "ecs:DescribeTasks",
-        "ecs:ListServices",
-        "ecs:DescribeServices",
-        "ecs:DescribeTaskDefinition"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:DescribeInstances"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
+| Action | Purpose |
+|--------|---------|
+| `ecs:ListTasks` | List running tasks in the cluster |
+| `ecs:DescribeTasks` | Get task details (including instance-local tasks) |
+| `ecs:ListServices` | List services in the cluster |
+| `ecs:DescribeServices` | Get service and deployment details |
+| `ecs:DescribeTaskDefinition` | Resolve task definition (family, limits) |
+
+Instance IP for ECS agent/cgroups/Docker is read from the EC2 instance metadata service (no IAM required). No `ec2:*` permissions are needed for this receiver.
 
 ---
 

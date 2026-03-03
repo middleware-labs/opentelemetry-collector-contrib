@@ -91,9 +91,15 @@ func (c *ecsClientImpl) ListAndDescribeTasks(ctx context.Context, cluster string
 			}
 
 			for _, f := range descOut.Failures {
-				c.logger.Warn("DescribeTasks partial failure",
-					zap.String("arn", aws.ToString(f.Arn)),
-					zap.String("reason", aws.ToString(f.Reason)))
+				reason := aws.ToString(f.Reason)
+				if reason == "MISSING" {
+					c.logger.Debug("DescribeTasks skipped task (no longer exists)",
+						zap.String("arn", aws.ToString(f.Arn)))
+				} else {
+					c.logger.Warn("DescribeTasks partial failure",
+						zap.String("arn", aws.ToString(f.Arn)),
+						zap.String("reason", reason))
+				}
 			}
 			allTasks = append(allTasks, descOut.Tasks...)
 		}
@@ -128,9 +134,15 @@ func (c *ecsClientImpl) DescribeTasks(ctx context.Context, cluster string, taskA
 			return nil, fmt.Errorf("ecs.DescribeTasks failed: %w", err)
 		}
 		for _, f := range descOut.Failures {
-			c.logger.Warn("DescribeTasks partial failure",
-				zap.String("arn", aws.ToString(f.Arn)),
-				zap.String("reason", aws.ToString(f.Reason)))
+			reason := aws.ToString(f.Reason)
+			if reason == "MISSING" {
+				c.logger.Debug("DescribeTasks skipped task (no longer exists)",
+					zap.String("arn", aws.ToString(f.Arn)))
+			} else {
+				c.logger.Warn("DescribeTasks partial failure",
+					zap.String("arn", aws.ToString(f.Arn)),
+					zap.String("reason", reason))
+			}
 		}
 		allTasks = append(allTasks, descOut.Tasks...)
 	}

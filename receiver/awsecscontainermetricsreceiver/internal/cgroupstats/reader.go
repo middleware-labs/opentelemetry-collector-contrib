@@ -85,6 +85,19 @@ func getTaskCgroupPath(basePath, controller, taskID, clusterName string) string 
 	return path1
 }
 
+// getTaskCgroupPathV2 returns the cgroup path for a task in cgroup v2 unified hierarchy (no controller subdir).
+func getTaskCgroupPathV2(basePath, taskID, clusterName string) string {
+	path1 := filepath.Join(basePath, "ecs", taskID)
+	if _, err := os.Stat(path1); err == nil {
+		return path1
+	}
+	path2 := filepath.Join(basePath, "ecs", clusterName, taskID)
+	if _, err := os.Stat(path2); err == nil {
+		return path2
+	}
+	return path1
+}
+
 func getTaskIDFromARN(arn string) (string, error) {
 	parts := strings.Split(arn, ":")
 	if len(parts) < 6 {
@@ -175,7 +188,7 @@ func (r *cgroupReader) GetContainerStats(taskARN, clusterName, dockerID, contain
 		}
 	}
 
-	// Memory
+	// Memory: try cgroup v1 path first, then cgroup v2 unified path
 	{
 		memPath := getTaskCgroupPath(r.mountPath, "memory", taskID, clusterName)
 		memPath = filepath.Join(memPath, dockerID)
@@ -184,22 +197,37 @@ func (r *cgroupReader) GetContainerStats(taskARN, clusterName, dockerID, contain
 			usagePath = filepath.Join(memPath, "memory.current")
 		}
 		usage, err := readUint64(usagePath)
+		effectiveMemPath := memPath
+		if err != nil {
+			// Cgroup v2: unified hierarchy has memory under basePath/ecs/.../containerID/
+			memPathV2 := getTaskCgroupPathV2(r.mountPath, taskID, clusterName)
+			effectiveMemPath = filepath.Join(memPathV2, dockerID)
+			usagePath = filepath.Join(effectiveMemPath, "memory.current")
+			usage, err = readUint64(usagePath)
+		}
 		if err != nil {
 			r.logger.Debug("Could not read memory usage", zap.String("path", usagePath), zap.Error(err))
 		} else {
 			memStats := &awsecscontainermetrics.MemoryStats{
 				Usage: &usage,
 			}
-			maxPath := filepath.Join(memPath, "memory.max_usage_in_bytes")
-			if maxUsage, err := readUint64(maxPath); err == nil {
+			maxPath := filepath.Join(effectiveMemPath, "memory.max_usage_in_bytes")
+			maxUsage, maxErr := readUint64(maxPath)
+			if maxErr != nil {
+				maxUsage, _ = readUint64(filepath.Join(effectiveMemPath, "memory.peak"))
+			}
+			if maxUsage > 0 {
 				memStats.MaxUsage = &maxUsage
 			}
-			limitPath := filepath.Join(memPath, "memory.limit_in_bytes")
-			if limit, err := readUint64(limitPath); err == nil && limit < 9223372036854771712 {
+			limitPath := filepath.Join(effectiveMemPath, "memory.limit_in_bytes")
+			limit, limitErr := readUint64(limitPath)
+			if limitErr != nil {
+				limit, _ = readUint64(filepath.Join(effectiveMemPath, "memory.max"))
+			}
+			if limit > 0 && limit < 9223372036854771712 {
 				memStats.Limit = &limit
 			}
-			statPath := filepath.Join(memPath, "memory.stat")
-			if stat, err := readMemoryStat(statPath); err == nil {
+			if stat, statErr := readMemoryStat(filepath.Join(effectiveMemPath, "memory.stat")); statErr == nil {
 				memStats.Stats = stat
 			}
 			stats.Memory = memStats

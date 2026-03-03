@@ -24,26 +24,23 @@ func getContainerMetrics(stats *ContainerStats, logger *zap.Logger) ECSMetrics {
 		logger.Debug("Nil memory stats found for docker container:" + stats.Name)
 	}
 
-	if stats.CPU != nil && stats.CPU.CPUUsage != nil &&
-		stats.PreviousCPU != nil && stats.PreviousCPU.CPUUsage != nil {
-		numOfCores := uint64(len(stats.CPU.CPUUsage.PerCPUUsage))
-		timeDiffSinceLastRead := float64(stats.Read.Sub(stats.PreviousRead).Nanoseconds())
-
-		cpuUsageInVCpu := float64(0)
-		if timeDiffSinceLastRead > 0 {
-			cpuDelta := float64(aws.ToUint64(stats.CPU.CPUUsage.TotalUsage) - aws.ToUint64(stats.PreviousCPU.CPUUsage.TotalUsage))
-			cpuUsageInVCpu = cpuDelta / timeDiffSinceLastRead
-		}
-		cpuUtilized := cpuUsageInVCpu * 100
-
+	if stats.CPU != nil && stats.CPU.CPUUsage != nil {
 		m.CPUTotalUsage = aws.ToUint64(stats.CPU.CPUUsage.TotalUsage)
 		m.CPUUsageInKernelmode = aws.ToUint64(stats.CPU.CPUUsage.UsageInKernelmode)
 		m.CPUUsageInUserMode = aws.ToUint64(stats.CPU.CPUUsage.UsageInUserMode)
-		m.NumOfCPUCores = numOfCores
+		m.NumOfCPUCores = uint64(len(stats.CPU.CPUUsage.PerCPUUsage))
 		m.CPUOnlineCpus = aws.ToUint64(stats.CPU.OnlineCpus)
 		m.SystemCPUUsage = aws.ToUint64(stats.CPU.SystemCPUUsage)
-		m.CPUUsageInVCPU = cpuUsageInVCpu
-		m.CPUUtilized = cpuUtilized
+
+		// Utilization (vcpu and %) requires previous sample for delta
+		if stats.PreviousCPU != nil && stats.PreviousCPU.CPUUsage != nil && !stats.PreviousRead.IsZero() {
+			timeDiffSinceLastRead := float64(stats.Read.Sub(stats.PreviousRead).Nanoseconds())
+			if timeDiffSinceLastRead > 0 {
+				cpuDelta := float64(aws.ToUint64(stats.CPU.CPUUsage.TotalUsage) - aws.ToUint64(stats.PreviousCPU.CPUUsage.TotalUsage))
+				m.CPUUsageInVCPU = cpuDelta / timeDiffSinceLastRead
+				m.CPUUtilized = m.CPUUsageInVCPU * 100
+			}
+		}
 	} else {
 		logger.Debug("Nil CPUUsage stats found for docker container:" + stats.Name)
 	}
