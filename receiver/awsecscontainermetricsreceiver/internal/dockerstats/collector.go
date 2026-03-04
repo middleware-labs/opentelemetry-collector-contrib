@@ -30,17 +30,21 @@ func CollectTaskStats(
 	logger *zap.Logger,
 ) awsecscontainermetrics.TaskStatsMap {
 	if dockerSocketPath == "" || len(ecsTasks) == 0 {
+		logger.Debug("Docker stats skipped", zap.Bool("socket_set", dockerSocketPath != ""), zap.Int("ecs_tasks", len(ecsTasks)))
 		return nil
 	}
 	dockerClient, err := client.NewClientWithOpts(client.WithHost("unix://"+dockerSocketPath), client.WithVersion("1.22"))
 	if err != nil {
-		logger.Warn("Failed to create Docker client for stats, skipping Docker stats", zap.Error(err))
+		logger.Warn("Failed to create Docker client for stats, skipping Docker stats", zap.String("socket", dockerSocketPath), zap.Error(err))
 		return nil
 	}
 	defer dockerClient.Close()
+	logger.Debug("Docker client created, fetching stats for containers")
 	result := make(awsecscontainermetrics.TaskStatsMap)
 	var mu sync.Mutex
 	var wg sync.WaitGroup
+	var failedCount int
+	var failedMu sync.Mutex
 	for _, task := range ecsTasks {
 		if task.KnownStatus != "RUNNING" {
 			continue
@@ -51,9 +55,13 @@ func CollectTaskStats(
 				defer wg.Done()
 				statsResp, err := fetchContainerStats(ctx, dockerClient, dockerID)
 				if err != nil {
+					failedMu.Lock()
+					failedCount++
+					failedMu.Unlock()
 					logger.Debug("Could not get Docker stats for container",
 						zap.String("task", taskARN),
 						zap.String("container", containerName),
+						zap.String("docker_id", dockerID),
 						zap.Error(err))
 					return
 				}
@@ -61,6 +69,18 @@ func CollectTaskStats(
 				if stats == nil {
 					return
 				}
+				var cpuVal, memVal uint64
+				if stats.CPU != nil && stats.CPU.CPUUsage != nil && stats.CPU.CPUUsage.TotalUsage != nil {
+					cpuVal = *stats.CPU.CPUUsage.TotalUsage
+				}
+				if stats.Memory != nil && stats.Memory.Usage != nil {
+					memVal = *stats.Memory.Usage
+				}
+				logger.Debug("Docker stats for container",
+					zap.String("container", containerName),
+					zap.String("docker_id", dockerID),
+					zap.Uint64("cpu_total_usage_ns", cpuVal),
+					zap.Uint64("memory_usage_bytes", memVal))
 				mu.Lock()
 				if result[taskARN] == nil {
 					result[taskARN] = make(map[string]*awsecscontainermetrics.ContainerStats)
@@ -71,7 +91,18 @@ func CollectTaskStats(
 		}
 	}
 	wg.Wait()
+	if failedCount > 0 {
+		logger.Debug("Docker stats summary", zap.Int("containers_failed", failedCount), zap.Int("containers_ok", totalContainerStats(result)))
+	}
 	return result
+}
+
+func totalContainerStats(m awsecscontainermetrics.TaskStatsMap) int {
+	n := 0
+	for _, cm := range m {
+		n += len(cm)
+	}
+	return n
 }
 
 // fetchContainerStats fetches stats for a container from the Docker API.

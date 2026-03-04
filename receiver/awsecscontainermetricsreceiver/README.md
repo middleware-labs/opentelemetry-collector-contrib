@@ -61,6 +61,37 @@ ECS cluster name or ARN. Required when `run_as` is `daemonset`.
 
 AWS region for ECS API calls. Optional when `run_as` is `daemonset`; defaults to `AWS_REGION` or `AWS_DEFAULT_REGION` environment variable.
 
+### Debugging CPU/memory usage (daemonset)
+
+If `ecs.task.cpu.utilized`, `ecs.task.memory.usage`, or other usage metrics are 0, set the collector log level to **debug** to trace the flow:
+
+```yaml
+service:
+  telemetry:
+    logs:
+      level: debug
+```
+
+Or for this receiver only (if your collector supports component-level log level):
+
+```yaml
+service:
+  telemetry:
+    logs:
+      level: debug
+      development: false
+```
+
+Debug logs will show:
+
+- **Instance IP** – Whether the daemon got the EC2 instance IP from metadata.
+- **ECS agent** – Whether metadata and task list from the ECS agent (e.g. `:51678/v1/tasks`) succeeded and how many running containers were found.
+- **Stats source** – Whether Docker or cgroups is used and the paths.
+- **Container stats** – How many tasks/containers got stats; per-container Docker stats (CPU/memory) or failures with error.
+- **No stats for container** – When a task’s container has no stats (e.g. DockerID mismatch or stats not collected).
+
+Use these messages to see whether the failure is: no instance IP, ECS agent unreachable, no tasks on instance, Docker socket/cgroups path wrong, Docker API errors, or stats not matching task containers (e.g. ID format).
+
 
 ## Enabling the AWS ECS Container Metrics Receiver
 

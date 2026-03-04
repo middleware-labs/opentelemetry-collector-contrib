@@ -160,27 +160,48 @@ func (aecmr *awsEcsContainerMetricsReceiver) collectFromInstanceWithCgroups(ctx 
 		aecmr.logger.Debug("Could not get instance IP for cgroup collection, using ECS API only", zap.Error(err))
 		return nil, nil
 	}
+	aecmr.logger.Debug("Got instance IP for ECS agent", zap.String("instance_ip", instanceIP))
 	agentClient := ecsagent.NewClient(aecmr.logger)
 	metadata, err := agentClient.GetMetadata(ctx, instanceIP)
 	if err != nil {
 		aecmr.logger.Debug("Could not get ECS agent metadata, using ECS API only", zap.Error(err))
 		return nil, nil
 	}
+	aecmr.logger.Debug("Got ECS agent metadata", zap.String("cluster", metadata.Cluster))
 	ecsTasks, err := agentClient.GetTasks(ctx, instanceIP)
 	if err != nil || len(ecsTasks) == 0 {
-		aecmr.logger.Debug("Could not get ECS agent tasks or no tasks on instance", zap.Error(err))
+		aecmr.logger.Debug("Could not get ECS agent tasks or no tasks on instance", zap.Error(err), zap.Int("task_count", len(ecsTasks)))
 		return nil, nil
 	}
+	totalContainers := 0
+	for _, t := range ecsTasks {
+		if t.KnownStatus == "RUNNING" {
+			totalContainers += len(t.Containers)
+		}
+	}
+	aecmr.logger.Debug("ECS agent tasks on instance", zap.Int("tasks", len(ecsTasks)), zap.Int("running_containers", totalContainers))
 	clusterName := metadata.Cluster
 	if clusterName == "" {
 		clusterName = aecmr.config.Cluster
 	}
 	var taskStats awsecscontainermetrics.TaskStatsMap
 	if aecmr.config.DockerSocketPath != "" {
+		aecmr.logger.Debug("Fetching container stats from Docker", zap.String("docker_socket", aecmr.config.DockerSocketPath))
 		taskStats = dockerstats.CollectTaskStats(ctx, aecmr.config.DockerSocketPath, ecsTasks, clusterName, aecmr.logger)
 	}
 	if taskStats == nil && aecmr.config.CGroupsMountPath != "" {
+		aecmr.logger.Debug("Fetching container stats from cgroups", zap.String("cgroups_mount", aecmr.config.CGroupsMountPath))
 		taskStats = cgroupstats.CollectTaskStats(ctx, aecmr.config.CGroupsMountPath, ecsTasks, clusterName, aecmr.logger)
+	}
+	if taskStats != nil {
+		statsTasks := len(taskStats)
+		statsContainers := 0
+		for _, cm := range taskStats {
+			statsContainers += len(cm)
+		}
+		aecmr.logger.Debug("Container stats collected", zap.Int("tasks_with_stats", statsTasks), zap.Int("containers_with_stats", statsContainers))
+	} else {
+		aecmr.logger.Debug("No container stats collected (usage metrics will be 0)", zap.String("docker_socket_path", aecmr.config.DockerSocketPath), zap.String("cgroups_mount_path", aecmr.config.CGroupsMountPath))
 	}
 	taskARNs := make([]string, len(ecsTasks))
 	for i, t := range ecsTasks {

@@ -37,13 +37,21 @@ func (acc *metricDataAccumulator) getMetricsData(containerStatsMap map[string]*C
 			containerMetrics := convertContainerMetrics(stats, logger, containerMetadata)
 			acc.accumulate(convertToOTLPMetrics(containerPrefix, containerMetrics, containerResource, timestamp))
 			aggregateTaskMetrics(&taskMetrics, containerMetrics)
-		} else if containerMetadata.FinishedAt != "" && containerMetadata.StartedAt != "" {
-			duration, err := calculateDuration(containerMetadata.StartedAt, containerMetadata.FinishedAt)
-			if err != nil {
-				logger.Warn("Error time format error found for this container:" + containerMetadata.ContainerName)
+		} else if !ok {
+			logger.Debug("No container stats for task container (usage metrics will be 0)",
+				zap.String("task_id", metadata.TaskARN),
+				zap.String("container_name", containerMetadata.ContainerName),
+				zap.String("docker_id", containerMetadata.DockerID),
+				zap.Int("stats_map_size", len(containerStatsMap)))
+		}
+		if !ok || isEmptyStats(stats) {
+			if containerMetadata.FinishedAt != "" && containerMetadata.StartedAt != "" {
+				duration, err := calculateDuration(containerMetadata.StartedAt, containerMetadata.FinishedAt)
+				if err != nil {
+					logger.Warn("Error time format error found for this container:" + containerMetadata.ContainerName)
+				}
+				acc.accumulate(convertStoppedContainerDataToOTMetrics(containerPrefix, containerResource, timestamp, duration))
 			}
-
-			acc.accumulate(convertStoppedContainerDataToOTMetrics(containerPrefix, containerResource, timestamp, duration))
 		}
 	}
 	overrideWithTaskLevelLimit(&taskMetrics, metadata)
