@@ -1,5 +1,9 @@
 resourceLogs:
-  - resource: {}
+  - resource:
+      attributes:
+        - key: service.instance.id
+          value:
+            stringValue: arjun-Latitude-3540:5432
     scopeLogs:
       - logRecords:
           - attributes:
@@ -9,9 +13,17 @@ resourceLogs:
               - key: db.namespace
                 value:
                   stringValue: postgres
+              - key: event.type
+                value:
+                  stringValue: query_sample
               - key: db.query.text
                 value:
                   stringValue: select * from pg_stat_activity where id = ?
+              - key: db.query.tables
+                value:
+                  arrayValue:
+                    values:
+                      - stringValue: pg_stat_activity
               - key: user.name
                 value:
                   stringValue: otelu
@@ -33,15 +45,27 @@ resourceLogs:
               - key: postgresql.client_hostname
                 value:
                   stringValue: otel
+              - key: postgresql.backend_type
+                value:
+                  stringValue: ""
+              - key: postgresql.xact_start
+                value:
+                  stringValue: ""
               - key: postgresql.query_start
                 value:
                   stringValue: "2025-02-12T16:37:54.843+08:00"
+              - key: postgresql.state_change
+                value:
+                  stringValue: ""
               - key: postgresql.wait_event
                 value:
                   stringValue: ""
               - key: postgresql.wait_event_type
                 value:
                   stringValue: ""
+              - key: postgresql.backend_xid
+                value:
+                  intValue: "0"
               - key: postgresql.query_id
                 value:
                   stringValue: "123131231231"
@@ -50,7 +74,7 @@ resourceLogs:
                   doubleValue: 1.2
             body: {}
             eventName: db.server.query_sample
-            timeUnixNano: "1758612388939691000"
+            timeUnixNano: "1772875050491154182"
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest

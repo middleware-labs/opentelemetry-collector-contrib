@@ -187,6 +187,39 @@ func TestLoadConfig(t *testing.T) {
 
 		require.Equal(t, expected, cfg)
 	})
+
+	cfg = factory.CreateDefaultConfig()
+
+	t.Run("postgresql/schema_collection", func(t *testing.T) {
+		sub, err := cm.Sub(component.NewIDWithName(metadata.Type, "schema_collection").String())
+		require.NoError(t, err)
+		require.NoError(t, sub.Unmarshal(cfg))
+
+		expected := factory.CreateDefaultConfig().(*Config)
+		expected.Endpoint = "localhost:5432"
+		expected.Username = "otel"
+		expected.Password = "${env:POSTGRESQL_PASSWORD}"
+		expected.SchemaCollection = SchemaCollectionConfig{
+			Enabled:              true,
+			CollectionInterval:   time.Hour,
+			ChangeDetectInterval: 5 * time.Minute,
+			RefreshInterval:      24 * time.Hour,
+			SettingsInterval:     6 * time.Hour,
+			CollectExtensions:    true,
+			CollectSettings:      true,
+			CollectMetadata:      true,
+			ContinueOnError:      true,
+			MaxTableConcurrency:  5,
+			QueryTimeoutMs:       5000,
+			ExcludeSchemas:       []string{"information_schema"},
+			IncludeSchemas:       []string{"public"},
+			ExcludeSystemSchemas: true,
+			DetectCloudPlatform:  true,
+		}
+
+		require.Equal(t, expected, cfg)
+	})
+
 }
 
 func ptr[T any](value T) *T {

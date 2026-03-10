@@ -98,6 +98,32 @@ var MapAttributeBgDurationType = map[string]AttributeBgDurationType{
 	"write": AttributeBgDurationTypeWrite,
 }
 
+// AttributeCollectionType specifies the value collection.type attribute.
+type AttributeCollectionType int
+
+const (
+	_ AttributeCollectionType = iota
+	AttributeCollectionTypeFullSnapshot
+	AttributeCollectionTypeSelectiveRefresh
+)
+
+// String returns the string representation of the AttributeCollectionType.
+func (av AttributeCollectionType) String() string {
+	switch av {
+	case AttributeCollectionTypeFullSnapshot:
+		return "full_snapshot"
+	case AttributeCollectionTypeSelectiveRefresh:
+		return "selective_refresh"
+	}
+	return ""
+}
+
+// MapAttributeCollectionType is a helper map of string to AttributeCollectionType attribute value.
+var MapAttributeCollectionType = map[string]AttributeCollectionType{
+	"full_snapshot":     AttributeCollectionTypeFullSnapshot,
+	"selective_refresh": AttributeCollectionTypeSelectiveRefresh,
+}
+
 // AttributeDbSystemName specifies the value db.system.name attribute.
 type AttributeDbSystemName int
 

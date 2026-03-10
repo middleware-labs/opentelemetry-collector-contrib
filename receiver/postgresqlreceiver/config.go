@@ -43,6 +43,28 @@ type QuerySampleCollection struct {
 	_ struct{}
 }
 
+type SchemaCollectionConfig struct {
+	Enabled              bool          `mapstructure:"enabled"`
+	CollectionInterval   time.Duration `mapstructure:"collection_interval"`
+	ChangeDetectInterval time.Duration `mapstructure:"change_detect_interval"`
+	RefreshInterval      time.Duration `mapstructure:"refresh_interval"`
+	SettingsInterval     time.Duration `mapstructure:"settings_interval"`
+	CollectExtensions    bool          `mapstructure:"collect_extensions"`
+	CollectSettings      bool          `mapstructure:"collect_settings"`
+	CollectMetadata      bool          `mapstructure:"collect_metadata"`
+	ContinueOnError      bool          `mapstructure:"continue_on_error"`
+	MaxTableConcurrency  int           `mapstructure:"max_table_concurrency"`
+	QueryTimeoutMs       int64         `mapstructure:"query_timeout_ms"`
+	ExcludeSchemas       []string      `mapstructure:"exclude_schemas"`
+	IncludeSchemas       []string      `mapstructure:"include_schemas"`
+	ExcludeTables        []string      `mapstructure:"exclude_tables"`
+	IncludeTables        []string      `mapstructure:"include_tables"`
+	ExcludeSystemSchemas bool          `mapstructure:"exclude_system_schemas"`
+	DetectCloudPlatform  bool          `mapstructure:"detect_cloud_platform"`
+	// prevent unkeyed literal initialization
+	_ struct{}
+}
+
 type Config struct {
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	Username                       string                         `mapstructure:"username"`
@@ -56,6 +78,7 @@ type Config struct {
 	metadata.LogsBuilderConfig     `mapstructure:",squash"`
 	QuerySampleCollection          `mapstructure:"query_sample_collection,omitempty"`
 	TopQueryCollection             `mapstructure:"top_query_collection,omitempty"`
+	SchemaCollection               SchemaCollectionConfig `mapstructure:"schema_collection,omitempty"`
 }
 
 type ConnectionPool struct {

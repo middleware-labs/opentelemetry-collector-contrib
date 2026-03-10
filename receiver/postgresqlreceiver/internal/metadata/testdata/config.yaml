@@ -124,7 +124,13 @@ all_set:
     postgresql.wal.size:
       enabled: true
   events:
+    db.server.extensions_collection:
+      enabled: true
     db.server.query_sample:
+      enabled: true
+    db.server.schema_collection:
+      enabled: true
+    db.server.settings_collection:
       enabled: true
     db.server.top_query:
       enabled: true
@@ -266,7 +272,13 @@ none_set:
     postgresql.wal.size:
       enabled: false
   events:
+    db.server.extensions_collection:
+      enabled: false
     db.server.query_sample:
+      enabled: false
+    db.server.schema_collection:
+      enabled: false
+    db.server.settings_collection:
       enabled: false
     db.server.top_query:
       enabled: false

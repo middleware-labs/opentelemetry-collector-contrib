@@ -51,11 +51,13 @@ type postgreSQLScraper struct {
 	lb            *metadata.LogsBuilder
 	excludes      map[string]struct{}
 	cache         *lru.Cache[string, float64]
+	changeTracker *XminChangeTracker
 	// if enabled, uses a separated attribute for the schema
 	separateSchemaAttr   bool
 	queryPlanCache       *expirable.LRU[string, string]
 	newestQueryTimestamp float64
 	serviceInstanceID    string
+	lastSchemaCheck      time.Time
 }
 
 type errsMux struct {
@@ -108,6 +110,7 @@ func newPostgreSQLScraper(
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
 		excludes:           excludes,
 		cache:              cache,
+		changeTracker:      NewXminChangeTracker(1000), // Maintain state across scrapes
 		queryPlanCache:     queryPlanCache,
 		separateSchemaAttr: separateSchemaAttr,
 		serviceInstanceID:  getInstanceID(config.Endpoint, settings.Logger),
@@ -238,7 +241,9 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
 			atts[string(semconv.DBNamespaceKey)].(string),
+			atts["event.type"].(string),
 			atts[string(semconv.DBQueryTextKey)].(string),
+			atts["db.query.tables"].([]any),
 			atts[string(semconv.UserNameKey)].(string),
 			atts[dbAttributePrefix+querySampleColumnState].(string),
 			atts[dbAttributePrefix+querySampleColumnPID].(int64),
@@ -246,9 +251,13 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 			atts[string(semconv.NetworkPeerAddressKey)].(string),
 			atts[string(semconv.NetworkPeerPortKey)].(int64),
 			atts[dbAttributePrefix+querySampleColumnClientHostname].(string),
+			atts[dbAttributePrefix+querySampleColumnBackendType].(string),
+			atts[dbAttributePrefix+querySampleColumnXactStart].(string),
 			atts[dbAttributePrefix+querySampleColumnQueryStart].(string),
+			atts[dbAttributePrefix+querySampleColumnStateChange].(string),
 			atts[dbAttributePrefix+querySampleColumnWaitEvent].(string),
 			atts[dbAttributePrefix+querySampleColumnWaitEventType].(string),
+			atts[dbAttributePrefix+querySampleColumnBackendXid].(int64),
 			atts[dbAttributePrefix+querySampleColumnQueryID].(string),
 			atts[postgresqlTotalExecTimeAttributeName].(float64),
 		)
@@ -360,7 +369,9 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			if err == nil {
 				plan, err = dbClient.explainQuery(rawQuery, queryID, logger)
 				if err != nil {
-					logger.Error("failed to explain query", zap.String("query", rawQuery), zap.Error(err))
+					logger.Warn("explain failed for query, caching empty plan",
+						zap.String("queryID", queryID),
+						zap.Error(err))
 				}
 				// to avoid flood the error message. there are some internal queries meant to not be
 				// explained. we wait for the cache to expire and report the error again.
@@ -373,12 +384,24 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			explained++
 		}
 
+		// Extract table names from raw query for db.query.tables enrichment
+		tables := extractTablesFromQuery(rawQuery)
+		tableAnys := make([]any, 0, len(tables))
+		for _, t := range tables {
+			tableAnys = append(tableAnys, t)
+		}
+		// user.name is aliased from rolname
+		rolname, _ := item.Value[dbAttributePrefix+"rolname"].(string)
+
 		p.lb.RecordDbServerTopQueryEvent(
 			context.Background(),
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
 			item.Value[string(semconv.DBNamespaceKey)].(string),
+			"top_query",
 			query,
+			tableAnys,
+			rolname,
 			item.Value[dbAttributePrefix+callsColumnName].(int64),
 			item.Value[dbAttributePrefix+rowsColumnName].(int64),
 			item.Value[dbAttributePrefix+sharedBlksDirtiedColumnName].(int64),
@@ -388,7 +411,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			item.Value[dbAttributePrefix+tempBlksReadColumnName].(int64),
 			item.Value[dbAttributePrefix+tempBlksWrittenColumnName].(int64),
 			queryID,
-			item.Value[dbAttributePrefix+"rolname"].(string),
+			rolname,
 			item.Value[dbAttributePrefix+totalExecTimeColumnName].(float64),
 			item.Value[dbAttributePrefix+totalPlanTimeColumnName].(float64),
 			plan,

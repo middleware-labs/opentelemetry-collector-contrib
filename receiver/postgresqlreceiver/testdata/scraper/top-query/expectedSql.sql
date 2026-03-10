@@ -1,4 +1,4 @@
-SELECT
+/* otel-collector-ignore */ SELECT
   calls,
   datname,
   shared_blks_dirtied, 

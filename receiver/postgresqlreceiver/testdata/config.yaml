@@ -34,3 +34,25 @@ postgresql/all:
     max_lifetime: 1m
     max_idle: 5
     max_open: 10
+postgresql/schema_collection:
+  endpoint: localhost:5432
+  username: otel
+  password: ${env:POSTGRESQL_PASSWORD}
+  schema_collection:
+    enabled: true
+    collection_interval: 1h
+    change_detect_interval: 5m
+    refresh_interval: 24h
+    settings_interval: 6h
+    collect_extensions: true
+    collect_settings: true
+    collect_metadata: true
+    continue_on_error: true
+    max_table_concurrency: 5
+    query_timeout_ms: 5000
+    exclude_schemas:
+      - information_schema
+    include_schemas:
+      - public
+    exclude_system_schemas: true
+    detect_cloud_platform: true

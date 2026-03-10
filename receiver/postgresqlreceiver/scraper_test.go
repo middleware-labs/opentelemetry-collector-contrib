@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -459,7 +460,10 @@ func TestScrapeQuerySample(t *testing.T) {
 	}
 	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
 	scraper.newestQueryTimestamp = 123440.111
-	mock.ExpectQuery(expectedScrapeSampleQuery).WillReturnRows(newQuerySampleRows(t, map[string]any{
+	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
+		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
+	)
+	mock.ExpectQuery("/* otel-collector-ignore */ " + expectedScrapeSampleQuery).WillReturnRows(newQuerySampleRows(t, map[string]any{
 		querySampleColumnDatname:              "postgres",
 		querySampleColumnUsename:              "otelu",
 		querySampleColumnClientAddr:           "11.4.5.14",
@@ -509,7 +513,10 @@ func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
 	scraper.newestQueryTimestamp = 123440.111
 
 	traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
-	mock.ExpectQuery(expectedScrapeSampleQuery).WillReturnRows(newQuerySampleRows(t, map[string]any{
+	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
+		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
+	)
+	mock.ExpectQuery("/* otel-collector-ignore */ " + expectedScrapeSampleQuery).WillReturnRows(newQuerySampleRows(t, map[string]any{
 		querySampleColumnDatname:              "postgres",
 		querySampleColumnUsename:              "otelu",
 		querySampleColumnClientAddr:           "11.4.5.14",
@@ -608,7 +615,11 @@ func TestScrapeTopQueries(t *testing.T) {
 	scraper.cache.Add(queryid+tempBlksReadColumnName, 1110)
 	scraper.cache.Add(queryid+tempBlksWrittenColumnName, 1110)
 
+	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
+		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
+	)
 	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).FromCSVString(expectedValues[:len(expectedValues)-1]))
+	// Non-parameterized query: explainQuery runs direct EXPLAIN (no version check)
 	mock.ExpectQuery(expectedExplain).WillReturnRows(sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow("[{\"Plan\":{\"Node Type\":\"Merge Join\",\"Parallel Aware\":false,\"Async Capable\":false,\"Join Type\":\"Inner\",\"Startup Cost\":0.43,\"Total Cost\":55.27,\"Plan Rows\":290,\"Plan Width\":1675,\"Inner Unique\":\"?\",\"Merge Cond\":\"( e.businessentityid = p.businessentityid )\",\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Employee_BusinessEntityID\",\"Relation Name\":\"employee\",\"Alias\":\"e\",\"Startup Cost\":0.15,\"Total Cost\":21.5,\"Plan Rows\":290,\"Plan Width\":112},{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Inner\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Person_BusinessEntityID\",\"Relation Name\":\"person\",\"Alias\":\"p\",\"Startup Cost\":0.29,\"Total Cost\":2261.87,\"Plan Rows\":19972,\"Plan Width\":1563}]}}]"))
 	actualLogs, err := scraper.scrapeTopQuery(t.Context(), 31, 32, 33)
 	assert.NoError(t, err)
@@ -632,43 +643,155 @@ func TestScrapeTopQueries(t *testing.T) {
 	assert.Equal(t, float64(12), planTime)
 }
 
+func TestCanExplainQuery(t *testing.T) {
+	tests := []struct {
+		name     string
+		query    string
+		expected bool
+	}{
+		// Explainable DML
+		{"simple SELECT", "SELECT * FROM users", true},
+		{"simple INSERT", "INSERT INTO users (name) VALUES ($1)", true},
+		{"simple UPDATE", "UPDATE users SET name = $1 WHERE id = $2", true},
+		{"simple DELETE", "DELETE FROM users WHERE id = $1", true},
+		{"CTE with WITH", "WITH cte AS (SELECT 1) SELECT * FROM cte", true},
+		{"TABLE command", "TABLE users", true},
+		{"uppercase SELECT", "SELECT 1", true},
+		{"mixed case", "SeLeCt * FROM t", true},
+
+		// Leading SET followed by DML (Datadog trim_leading_set_stmts)
+		{"SET then SELECT", "SET search_path = public; SELECT * FROM t", true},
+		{"multiple SETs then SELECT", "SET a = 1; SET b = 2; SELECT 1", true},
+		{"SET with comment then SELECT", "/* comment */ SET x = 1; SELECT 1", true},
+
+		// Non-explainable utility commands
+		{"SHOW command", "SHOW server_version", false},
+		{"SET without DML", "SET search_path = public", false},
+		{"VACUUM", "VACUUM ANALYZE users", false},
+		{"ANALYZE", "ANALYZE users", false},
+		{"CREATE TABLE", "CREATE TABLE t (id int)", false},
+		{"ALTER TABLE", "ALTER TABLE t ADD COLUMN name text", false},
+		{"DROP TABLE", "DROP TABLE t", false},
+		{"GRANT", "GRANT SELECT ON t TO user1", false},
+		{"REVOKE", "REVOKE SELECT ON t FROM user1", false},
+		{"COPY", "COPY t FROM stdin", false},
+		{"RESET", "RESET ALL", false},
+		{"BEGIN", "BEGIN", false},
+		{"COMMIT", "COMMIT", false},
+		{"ROLLBACK", "ROLLBACK", false},
+		{"DEALLOCATE", "DEALLOCATE ALL", false},
+
+		// Collector's own queries (recursive EXPLAIN prevention)
+		{"EXPLAIN command", "EXPLAIN (FORMAT JSON) SELECT 1", false},
+		{"our own collector query", "/* otel-collector-ignore */ SELECT 1", false},
+		{"EXPLAIN EXECUTE", "EXPLAIN(FORMAT JSON) EXECUTE otel_12345(null)", false},
+
+		// Edge cases
+		{"empty string", "", false},
+		{"whitespace only", "   ", false},
+		{"parenthesized WITH", "(WITH cte AS (SELECT 1) SELECT * FROM cte)", true},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			result := canExplainQuery(tc.query)
+			assert.Equal(t, tc.expected, result, "canExplainQuery(%q) = %v, want %v", tc.query, result, tc.expected)
+		})
+	}
+}
+
 func TestExplainQuery(t *testing.T) {
 	testCases := []struct {
 		name           string
 		query          string
 		queryID        string
-		expectedSQL    string
+		paramCount     int  // for parameterized: number of params (from pg_prepared_statements)
+		nonParam       bool // true = no $N, use direct EXPLAIN
 		mockPlanResult string
 	}{
 		{
 			name:           "query with no parameters",
 			query:          "SELECT * FROM users",
 			queryID:        "12345",
-			expectedSQL:    "/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan;PREPARE otel_12345 AS SELECT * FROM users;EXPLAIN(FORMAT JSON) EXECUTE otel_12345;",
+			nonParam:       true,
 			mockPlanResult: `[{"Plan":{"Node Type":"Seq Scan","Relation Name":"users"}}]`,
 		},
 		{
 			name:           "query with single parameter",
 			query:          "SELECT * FROM users WHERE id = $1",
 			queryID:        "12346",
-			expectedSQL:    "/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan;PREPARE otel_12346 AS SELECT * FROM users WHERE id = $1;EXPLAIN(FORMAT JSON) EXECUTE otel_12346(null);",
+			paramCount:     1,
 			mockPlanResult: `[{"Plan":{"Node Type":"Index Scan","Relation Name":"users"}}]`,
 		},
 		{
 			name:           "query with multiple parameters",
 			query:          "SELECT * FROM orders WHERE user_id = $1 AND status = $2 AND created_at > $3",
 			queryID:        "12347",
-			expectedSQL:    "/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan;PREPARE otel_12347 AS SELECT * FROM orders WHERE user_id = $1 AND status = $2 AND created_at > $3;EXPLAIN(FORMAT JSON) EXECUTE otel_12347(null, null, null);",
+			paramCount:     3,
 			mockPlanResult: `[{"Plan":{"Node Type":"Index Scan","Relation Name":"orders"}}]`,
 		},
 		{
 			name:           "query with hyphenated queryID",
 			query:          "SELECT * FROM products WHERE id = $1",
 			queryID:        "abc-def-123",
-			expectedSQL:    "/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan;PREPARE otel_abc_def_123 AS SELECT * FROM products WHERE id = $1;EXPLAIN(FORMAT JSON) EXECUTE otel_abc_def_123(null);",
+			paramCount:     1,
 			mockPlanResult: `[{"Plan":{"Node Type":"Index Scan","Relation Name":"products"}}]`,
 		},
 	}
+
+	// Non-explainable queries should return empty plan without error
+	t.Run("SHOW command returns empty plan without error", func(t *testing.T) {
+		db, _, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+		defer db.Close()
+		logger, err := zap.NewProduction()
+		require.NoError(t, err)
+		client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+		plan, err := client.explainQuery("SHOW server_version", "show-1", logger)
+		require.NoError(t, err)
+		assert.Empty(t, plan)
+	})
+
+	t.Run("EXPLAIN query returns empty plan without error", func(t *testing.T) {
+		db, _, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+		defer db.Close()
+		logger, err := zap.NewProduction()
+		require.NoError(t, err)
+		client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+		plan, err := client.explainQuery("EXPLAIN (FORMAT JSON) SELECT 1", "explain-1", logger)
+		require.NoError(t, err)
+		assert.Empty(t, plan)
+	})
+
+	t.Run("VACUUM returns empty plan without error", func(t *testing.T) {
+		db, _, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+		defer db.Close()
+		logger, err := zap.NewProduction()
+		require.NoError(t, err)
+		client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+		plan, err := client.explainQuery("VACUUM ANALYZE users", "vacuum-1", logger)
+		require.NoError(t, err)
+		assert.Empty(t, plan)
+	})
+
+	// Test parameterized query on PG < 12 separately (expects error)
+	t.Run("parameterized query on PG11 returns error", func(t *testing.T) {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		require.NoError(t, err)
+		defer db.Close()
+		logger, err := zap.NewProduction()
+		require.NoError(t, err)
+		client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+		mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
+			sqlmock.NewRows([]string{"server_version"}).AddRow("11.0"),
+		)
+		plan, err := client.explainQuery("SELECT * FROM t WHERE id = $1", "999", logger)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "parameterized query explain not supported")
+		assert.Empty(t, plan)
+	})
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -680,14 +803,36 @@ func TestExplainQuery(t *testing.T) {
 			require.NoError(t, err)
 
 			client := &postgreSQLClient{
-				client:  db,
+				client:  WrapDBWithIgnore(db),
 				closeFn: func() error { return nil },
 			}
 
-			// Expect the EXPLAIN query
-			mock.ExpectQuery(tc.expectedSQL).WillReturnRows(
-				sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow(tc.mockPlanResult),
-			)
+			if tc.nonParam {
+				// Non-parameterized: single EXPLAIN (FORMAT JSON) <query>
+				mock.ExpectQuery("/* otel-collector-ignore */ EXPLAIN (FORMAT JSON) " + tc.query).WillReturnRows(
+					sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow(tc.mockPlanResult),
+				)
+			} else {
+				// Parameterized (Datadog way): version, SET, PREPARE, pg_prepared_statements, EXPLAIN EXECUTE, DEALLOCATE
+				prepName := "otel_" + strings.ReplaceAll(tc.queryID, "-", "_")
+				mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
+					sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
+				)
+				mock.ExpectExec("/* otel-collector-ignore */ SET plan_cache_mode = force_generic_plan").WillReturnResult(sqlmock.NewResult(0, 0))
+				mock.ExpectExec("/* otel-collector-ignore */ PREPARE " + prepName + " AS " + tc.query).WillReturnResult(sqlmock.NewResult(0, 0))
+				mock.ExpectQuery("SELECT COALESCE(array_length(parameter_types, 1), 0) FROM pg_prepared_statements WHERE name = $1").
+					WithArgs(prepName).
+					WillReturnRows(sqlmock.NewRows([]string{"coalesce"}).AddRow(tc.paramCount))
+				nulls := make([]string, tc.paramCount)
+				for i := range nulls {
+					nulls[i] = "null"
+				}
+				explainSQL := "/* otel-collector-ignore */ EXPLAIN (FORMAT JSON) EXECUTE " + prepName + "(" + strings.Join(nulls, ", ") + ")"
+				mock.ExpectQuery(explainSQL).WillReturnRows(
+					sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow(tc.mockPlanResult),
+				)
+				mock.ExpectExec("/* otel-collector-ignore */ DEALLOCATE PREPARE " + prepName).WillReturnResult(sqlmock.NewResult(0, 0))
+			}
 
 			plan, err := client.explainQuery(tc.query, tc.queryID, logger)
 			require.NoError(t, err)
@@ -738,7 +883,7 @@ func (mockSimpleClientFactory) close() error {
 // getClient implements postgreSQLClientFactory.
 func (m mockSimpleClientFactory) getClient(string) (client, error) {
 	return &postgreSQLClient{
-		client:  m.db,
+		client:  WrapDBWithIgnore(m.db),
 		closeFn: m.close,
 	}, nil
 }
