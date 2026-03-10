@@ -38,7 +38,7 @@ func (z *zapAdapter) Error(msg string, fields ...interface{}) {
 //
 // This function is called at the global collection_interval (e.g. 1s) but
 // internally throttles to schema_collection.collection_interval (e.g. 1h).
-// Between throttled runs, xmin change detection runs at change_detect_interval
+// On each run at collection_interval, xmin change detection is used to decide if a full snapshot is needed
 // (e.g. 30s) and triggers a full snapshot when changes are found.
 func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (plog.Logs, error) {
 	// Throttle: the OTel scraper framework calls us at the global
@@ -169,11 +169,10 @@ func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (plog.Lo
 		_ = sqlBuilder // xmin detection needs a collector; we'll try with the first database
 		// Create a temporary collector on the default connection for change detection
 		tmpConfig := &CollectorConfig{
-			DatabaseName:         defaultPostgreSQLDatabase,
-			ContinueOnError:      true,
-			ExcludeSchemas:       excludeSchemas,
-			IncludeSchemas:       includeSchemas,
-			ExcludeSystemSchemas: p.config.SchemaCollection.ExcludeSystemSchemas,
+			DatabaseName:    defaultPostgreSQLDatabase,
+			ContinueOnError: true,
+			ExcludeSchemas:  excludeSchemas,
+			IncludeSchemas:  includeSchemas,
 		}
 		tmpCollector, tmpErr := NewSchemaCollector(
 			wrappedDB, versionInfo, cloudProvider, cloudMetadata,
@@ -258,17 +257,13 @@ func (p *postgreSQLScraper) collectSchemaForDatabase(
 	}
 
 	collectorConfig := &CollectorConfig{
-		DatabaseName:         dbName,
-		DatabaseOID:          dbOID,
-		ContinueOnError:      p.config.SchemaCollection.ContinueOnError,
-		CollectExtensions:    p.config.SchemaCollection.CollectExtensions,
-		CollectSettings:      p.config.SchemaCollection.CollectSettings,
-		CollectMetadata:      p.config.SchemaCollection.CollectMetadata,
-		MaxTableConcurrency:  p.config.SchemaCollection.MaxTableConcurrency,
-		QueryTimeoutMs:       p.config.SchemaCollection.QueryTimeoutMs,
-		ExcludeSchemas:       excludeSchemas,
-		IncludeSchemas:       includeSchemas,
-		ExcludeSystemSchemas: p.config.SchemaCollection.ExcludeSystemSchemas,
+		DatabaseName:      dbName,
+		DatabaseOID:      dbOID,
+		ContinueOnError:  p.config.SchemaCollection.ContinueOnError,
+		CollectExtensions: p.config.SchemaCollection.CollectExtensions,
+		CollectSettings:   p.config.SchemaCollection.CollectSettings,
+		ExcludeSchemas:    excludeSchemas,
+		IncludeSchemas:    includeSchemas,
 	}
 
 	collector, err := NewSchemaCollector(

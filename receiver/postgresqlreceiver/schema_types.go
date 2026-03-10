@@ -266,18 +266,14 @@ type CloudMetadata struct {
 
 // CollectorConfig represents the schema collector configuration
 type CollectorConfig struct {
-	DatabaseName         string
-	DatabaseOID          uint32
-	ContinueOnError      bool
-	CollectExtensions    bool
-	CollectSettings      bool
-	CollectMetadata      bool
-	CollectColumnStats   bool
-	MaxTableConcurrency  int
-	QueryTimeoutMs       int64
-	ExcludeSchemas       map[string]bool
-	IncludeSchemas       map[string]bool
-	ExcludeSystemSchemas bool
+	DatabaseName      string
+	DatabaseOID       uint32
+	ContinueOnError   bool
+	CollectExtensions bool
+	CollectSettings   bool
+	CollectColumnStats bool
+	ExcludeSchemas    map[string]bool
+	IncludeSchemas    map[string]bool
 }
 
 // FilterConfig represents table/schema filtering

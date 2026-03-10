@@ -200,21 +200,14 @@ func TestLoadConfig(t *testing.T) {
 		expected.Username = "otel"
 		expected.Password = "${env:POSTGRESQL_PASSWORD}"
 		expected.SchemaCollection = SchemaCollectionConfig{
-			Enabled:              true,
-			CollectionInterval:   time.Hour,
-			ChangeDetectInterval: 5 * time.Minute,
-			RefreshInterval:      24 * time.Hour,
-			SettingsInterval:     6 * time.Hour,
-			CollectExtensions:    true,
-			CollectSettings:      true,
-			CollectMetadata:      true,
-			ContinueOnError:      true,
-			MaxTableConcurrency:  5,
-			QueryTimeoutMs:       5000,
-			ExcludeSchemas:       []string{"information_schema"},
-			IncludeSchemas:       []string{"public"},
-			ExcludeSystemSchemas: true,
-			DetectCloudPlatform:  true,
+			Enabled:            true,
+			CollectionInterval: time.Hour,
+			RefreshInterval:    24 * time.Hour,
+			CollectExtensions:  true,
+			CollectSettings:    true,
+			ContinueOnError:    true,
+			ExcludeSchemas:     []string{"information_schema"},
+			IncludeSchemas:     []string{"public"},
 		}
 
 		require.Equal(t, expected, cfg)
