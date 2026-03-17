@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	ctypes "github.com/docker/docker/api/types/container"
@@ -33,7 +34,7 @@ func CollectTaskStats(
 		logger.Debug("Docker stats skipped", zap.Bool("socket_set", dockerSocketPath != ""), zap.Int("ecs_tasks", len(ecsTasks)))
 		return nil
 	}
-	dockerClient, err := client.NewClientWithOpts(client.WithHost("unix://"+dockerSocketPath), client.WithVersion("1.22"))
+	dockerClient, err := client.NewClientWithOpts(client.WithHost("unix://"+dockerSocketPath), client.WithAPIVersionNegotiation())
 	if err != nil {
 		logger.Warn("Failed to create Docker client for stats, skipping Docker stats", zap.String("socket", dockerSocketPath), zap.Error(err))
 		return nil
@@ -43,8 +44,7 @@ func CollectTaskStats(
 	result := make(awsecscontainermetrics.TaskStatsMap)
 	var mu sync.Mutex
 	var wg sync.WaitGroup
-	var failedCount int
-	var failedMu sync.Mutex
+	var failedCount atomic.Int32
 	for _, task := range ecsTasks {
 		if task.KnownStatus != "RUNNING" {
 			continue
@@ -55,9 +55,7 @@ func CollectTaskStats(
 				defer wg.Done()
 				statsResp, err := fetchContainerStats(ctx, dockerClient, dockerID)
 				if err != nil {
-					failedMu.Lock()
-					failedCount++
-					failedMu.Unlock()
+					failedCount.Add(1)
 					logger.Debug("Could not get Docker stats for container",
 						zap.String("task", taskARN),
 						zap.String("container", containerName),
@@ -91,8 +89,8 @@ func CollectTaskStats(
 		}
 	}
 	wg.Wait()
-	if failedCount > 0 {
-		logger.Debug("Docker stats summary", zap.Int("containers_failed", failedCount), zap.Int("containers_ok", totalContainerStats(result)))
+	if failedCount.Load() > 0 {
+		logger.Debug("Docker stats summary", zap.Int("containers_failed", int(failedCount.Load())), zap.Int("containers_ok", totalContainerStats(result)))
 	}
 	return result
 }

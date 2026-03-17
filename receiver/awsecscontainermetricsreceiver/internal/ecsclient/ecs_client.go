@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	describeTasksLimit     = 100
-	describeServicesLimit  = 10
-	deploymentStatusActive = "ACTIVE"
+	describeTasksLimit      = 100
+	describeServicesLimit   = 10
+	deploymentStatusActive  = "ACTIVE"
 	deploymentStatusPrimary = "PRIMARY"
 )
 
@@ -205,13 +205,9 @@ func (c *ecsClientImpl) DescribeTaskDefinitions(ctx context.Context, taskDefARNs
 	seen := make(map[string]struct{})
 
 	for _, arn := range taskDefARNs {
-		if arn == "" {
-			continue
+		if arn != "" {
+			seen[arn] = struct{}{}
 		}
-		if _, ok := seen[arn]; ok {
-			continue
-		}
-		seen[arn] = struct{}{}
 	}
 
 	for arn := range seen {

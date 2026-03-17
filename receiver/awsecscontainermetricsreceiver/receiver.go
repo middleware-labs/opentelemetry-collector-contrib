@@ -115,12 +115,20 @@ func (aecmr *awsEcsContainerMetricsReceiver) collectDataFromECSAPI(ctx context.C
 		tasks, taskStats = aecmr.collectFromInstanceWithCgroups(ctx)
 	}
 	if tasks == nil {
-		var err error
-		tasks, err = aecmr.ecsClient.ListAndDescribeTasks(ctx, aecmr.config.Cluster)
-		if err != nil {
-			aecmr.logger.Error("Failed to list/describe ECS tasks", zap.Error(err))
-			return err
-		}
+		aecmr.logger.Debug("Failed to collect data from instance with cgroups or docker socket")
+		// return err
+	}
+	tasksFromECSAPI, err := aecmr.ecsClient.ListAndDescribeTasks(ctx, aecmr.config.Cluster)
+	if err != nil {
+		aecmr.logger.Error("Failed to list/describe ECS tasks", zap.Error(err))
+		return err
+	}
+	if tasksFromECSAPI == nil {
+		aecmr.logger.Error("No list/describe ECS tasks")
+	} else if tasks == nil {
+		tasks = tasksFromECSAPI
+	} else {
+		tasks = append(tasks, tasksFromECSAPI...)
 	}
 
 	services, err := aecmr.ecsClient.ListAndDescribeServices(ctx, aecmr.config.Cluster)
@@ -207,11 +215,7 @@ func (aecmr *awsEcsContainerMetricsReceiver) collectFromInstanceWithCgroups(ctx 
 	for i, t := range ecsTasks {
 		taskARNs[i] = t.ARN
 	}
-	clusterForAPI := metadata.Cluster
-	if clusterForAPI == "" {
-		clusterForAPI = aecmr.config.Cluster
-	}
-	tasks, err := aecmr.ecsClient.DescribeTasks(ctx, clusterForAPI, taskARNs)
+	tasks, err := aecmr.ecsClient.DescribeTasks(ctx, clusterName, taskARNs)
 	if err != nil {
 		aecmr.logger.Warn("DescribeTasks for instance-local tasks failed, falling back to full cluster", zap.Error(err))
 		return nil, nil
