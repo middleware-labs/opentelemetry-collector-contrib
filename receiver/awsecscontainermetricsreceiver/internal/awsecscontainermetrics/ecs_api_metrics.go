@@ -217,6 +217,10 @@ func serviceMetricsToOTLP(svc *ecstypes.Service, cluster string, timestamp pcomm
 	if accountID != "" {
 		res.Attributes().PutStr(string(conventions.CloudAccountIDKey), accountID)
 	}
+	// Use service ARN as host.id so backends can uniquely identify this logical resource.
+	if serviceARN := aws.ToString(svc.ServiceArn); serviceARN != "" {
+		res.Attributes().PutStr(string(conventions.HostIDKey), serviceARN)
+	}
 
 	ilms := rm.ScopeMetrics().AppendEmpty()
 	desired := int64(svc.DesiredCount)

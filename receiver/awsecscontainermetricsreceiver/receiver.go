@@ -7,7 +7,6 @@ import (
 	"context"
 	"time"
 
-	ecstypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
@@ -108,27 +107,19 @@ func (aecmr *awsEcsContainerMetricsReceiver) collectDataFromTaskMetadata(ctx con
 
 // collectDataFromECSAPI collects from ECS APIs (daemonset mode).
 func (aecmr *awsEcsContainerMetricsReceiver) collectDataFromECSAPI(ctx context.Context) error {
-	var tasks []ecstypes.Task
 	var taskStats awsecscontainermetrics.TaskStatsMap
 
 	if aecmr.config.CGroupsMountPath != "" || aecmr.config.DockerSocketPath != "" {
-		tasks, taskStats = aecmr.collectFromInstanceWithCgroups(ctx)
+		taskStats = aecmr.collectStatsFromInstance(ctx)
 	}
-	if tasks == nil {
-		aecmr.logger.Debug("Failed to collect data from instance with cgroups or docker socket")
-		// return err
-	}
-	tasksFromECSAPI, err := aecmr.ecsClient.ListAndDescribeTasks(ctx, aecmr.config.Cluster)
+
+	tasks, err := aecmr.ecsClient.ListAndDescribeTasks(ctx, aecmr.config.Cluster)
 	if err != nil {
 		aecmr.logger.Error("Failed to list/describe ECS tasks", zap.Error(err))
 		return err
 	}
-	if tasksFromECSAPI == nil {
-		aecmr.logger.Error("No list/describe ECS tasks")
-	} else if tasks == nil {
-		tasks = tasksFromECSAPI
-	} else {
-		tasks = append(tasks, tasksFromECSAPI...)
+	if len(tasks) == 0 {
+		aecmr.logger.Debug("No tasks returned from ECS API")
 	}
 
 	services, err := aecmr.ecsClient.ListAndDescribeServices(ctx, aecmr.config.Cluster)
@@ -158,28 +149,29 @@ func (aecmr *awsEcsContainerMetricsReceiver) collectDataFromECSAPI(ctx context.C
 	return nil
 }
 
-// collectFromInstanceWithCgroups uses ECS agent + Docker socket and/or cgroups for instance-local tasks with usage stats.
-// When docker_socket_path is set, Docker API provides full stats (CPU, memory, network, disk).
-// Otherwise cgroups provides CPU and memory only. Returns (tasks, taskStats) or (nil, nil) on failure/fallback.
-func (aecmr *awsEcsContainerMetricsReceiver) collectFromInstanceWithCgroups(ctx context.Context) ([]ecstypes.Task, awsecscontainermetrics.TaskStatsMap) {
+// collectStatsFromInstance uses ECS agent + Docker socket and/or cgroups to collect per-container
+// usage stats for tasks running on this EC2 instance. When docker_socket_path is set, Docker API
+// provides full stats (CPU, memory, network, disk); otherwise cgroups provides CPU and memory only.
+// Returns nil on failure/fallback (caller continues with zero-valued usage metrics).
+func (aecmr *awsEcsContainerMetricsReceiver) collectStatsFromInstance(ctx context.Context) awsecscontainermetrics.TaskStatsMap {
 	ipProvider := ecsagent.NewEC2MetadataInstanceIPProvider()
 	instanceIP, err := ipProvider.GetInstanceIP(ctx)
 	if err != nil {
 		aecmr.logger.Debug("Could not get instance IP for cgroup collection, using ECS API only", zap.Error(err))
-		return nil, nil
+		return nil
 	}
 	aecmr.logger.Debug("Got instance IP for ECS agent", zap.String("instance_ip", instanceIP))
 	agentClient := ecsagent.NewClient(aecmr.logger)
 	metadata, err := agentClient.GetMetadata(ctx, instanceIP)
 	if err != nil {
 		aecmr.logger.Debug("Could not get ECS agent metadata, using ECS API only", zap.Error(err))
-		return nil, nil
+		return nil
 	}
 	aecmr.logger.Debug("Got ECS agent metadata", zap.String("cluster", metadata.Cluster))
 	ecsTasks, err := agentClient.GetTasks(ctx, instanceIP)
 	if err != nil || len(ecsTasks) == 0 {
 		aecmr.logger.Debug("Could not get ECS agent tasks or no tasks on instance", zap.Error(err), zap.Int("task_count", len(ecsTasks)))
-		return nil, nil
+		return nil
 	}
 	totalContainers := 0
 	for _, t := range ecsTasks {
@@ -202,23 +194,13 @@ func (aecmr *awsEcsContainerMetricsReceiver) collectFromInstanceWithCgroups(ctx 
 		taskStats = cgroupstats.CollectTaskStats(ctx, aecmr.config.CGroupsMountPath, ecsTasks, clusterName, aecmr.logger)
 	}
 	if taskStats != nil {
-		statsTasks := len(taskStats)
 		statsContainers := 0
 		for _, cm := range taskStats {
 			statsContainers += len(cm)
 		}
-		aecmr.logger.Debug("Container stats collected", zap.Int("tasks_with_stats", statsTasks), zap.Int("containers_with_stats", statsContainers))
+		aecmr.logger.Debug("Container stats collected", zap.Int("tasks_with_stats", len(taskStats)), zap.Int("containers_with_stats", statsContainers))
 	} else {
 		aecmr.logger.Debug("No container stats collected (usage metrics will be 0)", zap.String("docker_socket_path", aecmr.config.DockerSocketPath), zap.String("cgroups_mount_path", aecmr.config.CGroupsMountPath))
 	}
-	taskARNs := make([]string, len(ecsTasks))
-	for i, t := range ecsTasks {
-		taskARNs[i] = t.ARN
-	}
-	tasks, err := aecmr.ecsClient.DescribeTasks(ctx, clusterName, taskARNs)
-	if err != nil {
-		aecmr.logger.Warn("DescribeTasks for instance-local tasks failed, falling back to full cluster", zap.Error(err))
-		return nil, nil
-	}
-	return tasks, taskStats
+	return taskStats
 }
