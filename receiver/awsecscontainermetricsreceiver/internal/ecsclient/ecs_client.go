@@ -90,6 +90,20 @@ func (c *ecsClientImpl) ListAndDescribeTasks(ctx context.Context, cluster string
 				return nil, fmt.Errorf("ecs.DescribeTasks failed: %w", err)
 			}
 
+			// Log the response for debugging
+			c.logger.Info("DescribeTasks response", zap.Any("response", descOut.Tasks))
+
+			for _, t := range descOut.Tasks {
+				for _, container := range t.Containers {
+					c.logger.Info("container identity",
+						zap.String("taskArn", aws.ToString(t.TaskArn)),
+						zap.String("name", aws.ToString(container.Name)),
+						zap.String("runtimeId", aws.ToString(container.RuntimeId)),
+						zap.String("status", aws.ToString(container.LastStatus)),
+					)
+				}
+			}
+
 			for _, f := range descOut.Failures {
 				reason := aws.ToString(f.Reason)
 				if reason == "MISSING" {
