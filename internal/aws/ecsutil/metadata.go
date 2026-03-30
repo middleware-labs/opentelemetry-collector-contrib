@@ -16,7 +16,30 @@ type TaskMetadata struct {
 	PullStoppedAt    string              `json:"PullStoppedAt,omitempty"`
 	Revision         string              `json:"Revision,omitempty"`
 	ServiceName      string              `json:"ServiceName,omitempty"`
+	ServiceArn       string              `json:"ServiceArn,omitempty"`
 	TaskARN          string              `json:"TaskARN,omitempty"`
+}
+
+// ServiceMetadata holds ECS service fields from DescribeServices for service-level metrics (daemonset mode).
+// Populated from AWS API; optional fields are omitted when empty.
+type ServiceMetadata struct {
+	ClusterName   string `json:"ClusterName,omitempty"`
+	ClusterARN    string `json:"ClusterArn,omitempty"`
+	ServiceName   string `json:"ServiceName,omitempty"`
+	ServiceArn    string `json:"ServiceArn,omitempty"`
+	Status        string `json:"Status,omitempty"`
+	TaskDefinition string `json:"TaskDefinition,omitempty"` // task definition ARN
+	LaunchType    string `json:"LaunchType,omitempty"`
+	SchedulingStrategy string `json:"SchedulingStrategy,omitempty"`
+	PlatformFamily string `json:"PlatformFamily,omitempty"`
+	PlatformVersion string `json:"PlatformVersion,omitempty"`
+	CreatedAt     string `json:"CreatedAt,omitempty"` // RFC3339 from DescribeServices CreatedAt
+	// HealthCheckGracePeriodSeconds is set when the API returns a value (seconds).
+	HealthCheckGracePeriodSeconds *int32 `json:"HealthCheckGracePeriodSeconds,omitempty"`
+	EnableExecuteCommand          bool   `json:"EnableExecuteCommand,omitempty"`
+	EnableECSManagedTags          bool   `json:"EnableECSManagedTags,omitempty"`
+	PropagateTags                 string `json:"PropagateTags,omitempty"`
+	RoleArn                       string `json:"RoleArn,omitempty"`
 }
 
 // ContainerMetadata defines container metadata for a container

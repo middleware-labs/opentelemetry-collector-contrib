@@ -5,7 +5,6 @@ package awsecscontainermetrics // import "github.com/open-telemetry/opentelemetr
 
 import (
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -17,12 +16,6 @@ import (
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/ecsutil"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awsecscontainermetricsreceiver/internal/ecsclient"
-)
-
-const (
-	attributeECSServiceDesiredCount = "ecs.service.desired_count"
-	attributeECSServiceRunningCount = "ecs.service.running_count"
-	attributeECSServicePendingCount = "ecs.service.pending_count"
 )
 
 // TaskStatsMap maps task ARN -> container DockerID -> ContainerStats.
@@ -44,15 +37,17 @@ func MetricsDataFromECSAPI(
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 	clusterName := ecsclient.GetClusterName(cluster)
 
-	// Build deployment ID -> service name map
-	svcByDeployment := make(map[string]string)
+	// Build deployment ID -> service name and service ARN maps
+	svcNameByDeployment := make(map[string]string)
+	svcArnByDeployment := make(map[string]string)
 	for i := range services {
 		s := &services[i]
 		for j := range s.Deployments {
 			d := &s.Deployments[j]
 			status := aws.ToString(d.Status)
 			if status == "ACTIVE" || status == "PRIMARY" {
-				svcByDeployment[aws.ToString(d.Id)] = aws.ToString(s.ServiceName)
+				svcNameByDeployment[aws.ToString(d.Id)] = aws.ToString(s.ServiceName)
+				svcArnByDeployment[aws.ToString(d.Id)] = aws.ToString(s.ServiceArn)
 				break
 			}
 		}
@@ -61,7 +56,7 @@ func MetricsDataFromECSAPI(
 	// Emit task-level metrics for each task
 	for i := range tasks {
 		task := &tasks[i]
-		metadata := convertECSTaskToTaskMetadata(task, taskDefs, svcByDeployment, clusterName)
+		metadata := convertECSTaskToTaskMetadata(task, taskDefs, svcNameByDeployment, svcArnByDeployment, clusterName)
 		stats := taskStats[aws.ToString(task.TaskArn)]
 		if stats == nil {
 			stats = make(map[string]*ContainerStats)
@@ -85,9 +80,11 @@ func MetricsDataFromECSAPI(
 func convertECSTaskToTaskMetadata(
 	task *ecstypes.Task,
 	taskDefs map[string]*ecstypes.TaskDefinition,
-	svcByDeployment map[string]string,
+	svcNameByDeployment map[string]string,
+	svcArnByDeployment map[string]string,
 	clusterName string,
 ) ecsutil.TaskMetadata {
+	startedBy := aws.ToString(task.StartedBy)
 	metadata := ecsutil.TaskMetadata{
 		TaskARN:     aws.ToString(task.TaskArn),
 		Cluster:     aws.ToString(task.ClusterArn),
@@ -95,7 +92,8 @@ func convertECSTaskToTaskMetadata(
 		Revision:    "",
 		KnownStatus: aws.ToString(task.LastStatus),
 		LaunchType:  string(task.LaunchType),
-		ServiceName: svcByDeployment[aws.ToString(task.StartedBy)],
+		ServiceName: svcNameByDeployment[startedBy],
+		ServiceArn:  svcArnByDeployment[startedBy],
 	}
 
 	if task.AvailabilityZone != nil {
@@ -199,37 +197,55 @@ func convertECSTaskToTaskMetadata(
 	return metadata
 }
 
+func convertECSServiceToServiceMetadata(svc *ecstypes.Service, cluster string) ecsutil.ServiceMetadata {
+	sm := ecsutil.ServiceMetadata{
+		ClusterName:          ecsclient.GetClusterName(cluster),
+		ClusterARN:           aws.ToString(svc.ClusterArn),
+		ServiceName:          aws.ToString(svc.ServiceName),
+		ServiceArn:           aws.ToString(svc.ServiceArn),
+		Status:               aws.ToString(svc.Status),
+		TaskDefinition:       aws.ToString(svc.TaskDefinition),
+		LaunchType:           string(svc.LaunchType),
+		SchedulingStrategy:   string(svc.SchedulingStrategy),
+		PlatformFamily:       aws.ToString(svc.PlatformFamily),
+		PlatformVersion:      aws.ToString(svc.PlatformVersion),
+		PropagateTags:        string(svc.PropagateTags),
+		RoleArn:              aws.ToString(svc.RoleArn),
+		EnableExecuteCommand: svc.EnableExecuteCommand,
+		EnableECSManagedTags: svc.EnableECSManagedTags,
+	}
+	if svc.CreatedAt != nil {
+		sm.CreatedAt = svc.CreatedAt.Format(time.RFC3339Nano)
+	}
+	if svc.HealthCheckGracePeriodSeconds != nil {
+		v := *svc.HealthCheckGracePeriodSeconds
+		sm.HealthCheckGracePeriodSeconds = &v
+	}
+	return sm
+}
+
+// serviceMetricsToOTLP emits one ResourceMetrics batch per ECS service: desired/running/pending
+// plus deployment configuration and deployment count (service-specific metrics).
 func serviceMetricsToOTLP(svc *ecstypes.Service, cluster string, timestamp pcommon.Timestamp) pmetric.Metrics {
 	md := pmetric.NewMetrics()
 	rm := md.ResourceMetrics().AppendEmpty()
 	rm.SetSchemaUrl(conventions.SchemaURL)
-	res := rm.Resource()
-
-	clusterName := ecsclient.GetClusterName(cluster)
-	res.Attributes().PutStr("aws.ecs.cluster.name", clusterName)
-	res.Attributes().PutStr("aws.ecs.service.name", aws.ToString(svc.ServiceName))
-	res.Attributes().PutStr("aws.ecs.service.arn", aws.ToString(svc.ServiceArn))
-
-	region, accountID := getRegionAndAccountFromARN(aws.ToString(svc.ServiceArn))
-	if region != "" {
-		res.Attributes().PutStr(string(conventions.CloudRegionKey), region)
-	}
-	if accountID != "" {
-		res.Attributes().PutStr(string(conventions.CloudAccountIDKey), accountID)
-	}
-	// Use service ARN as host.id so backends can uniquely identify this logical resource.
-	if serviceARN := aws.ToString(svc.ServiceArn); serviceARN != "" {
-		res.Attributes().PutStr(string(conventions.HostIDKey), serviceARN)
-	}
+	serviceResource(convertECSServiceToServiceMetadata(svc, cluster)).CopyTo(rm.Resource())
 
 	ilms := rm.ScopeMetrics().AppendEmpty()
-	desired := int64(svc.DesiredCount)
-	running := int64(svc.RunningCount)
-	pending := int64(svc.PendingCount)
+	appendServiceIntGauge(ilms, attributeECSServiceDesiredCount, int64(svc.DesiredCount), timestamp)
+	appendServiceIntGauge(ilms, attributeECSServiceRunningCount, int64(svc.RunningCount), timestamp)
+	appendServiceIntGauge(ilms, attributeECSServicePendingCount, int64(svc.PendingCount), timestamp)
+	appendServiceIntGauge(ilms, attributeECSServiceDeployments, int64(len(svc.Deployments)), timestamp)
 
-	appendServiceIntGauge(ilms, attributeECSServiceDesiredCount, desired, timestamp)
-	appendServiceIntGauge(ilms, attributeECSServiceRunningCount, running, timestamp)
-	appendServiceIntGauge(ilms, attributeECSServicePendingCount, pending, timestamp)
+	if dc := svc.DeploymentConfiguration; dc != nil {
+		if dc.MinimumHealthyPercent != nil {
+			appendServiceIntGauge(ilms, attributeECSServiceDeploymentMinHealthyPct, int64(*dc.MinimumHealthyPercent), timestamp)
+		}
+		if dc.MaximumPercent != nil {
+			appendServiceIntGauge(ilms, attributeECSServiceDeploymentMaxPct, int64(*dc.MaximumPercent), timestamp)
+		}
+	}
 
 	return md
 }
@@ -241,15 +257,4 @@ func appendServiceIntGauge(ilm pmetric.ScopeMetrics, name string, value int64, t
 	dp := metric.SetEmptyGauge().DataPoints().AppendEmpty()
 	dp.SetIntValue(value)
 	dp.SetTimestamp(ts)
-}
-
-func getRegionAndAccountFromARN(arn string) (region, accountID string) {
-	if arn == "" || !strings.HasPrefix(arn, "arn:aws:") {
-		return "", ""
-	}
-	parts := strings.Split(arn, ":")
-	if len(parts) >= 5 {
-		return parts[3], parts[4]
-	}
-	return "", ""
 }

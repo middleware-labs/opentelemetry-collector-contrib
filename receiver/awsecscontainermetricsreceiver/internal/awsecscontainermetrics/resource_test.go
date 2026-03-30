@@ -95,12 +95,13 @@ func TestTaskResource(t *testing.T) {
 		KnownStatus:      "RUNNING",
 		LaunchType:       "EC2",
 		ServiceName:      "MyService",
+		ServiceArn:       "arn:aws:ecs:us-west-2:111122223333:service/cluster-1/MyService",
 	}
 	r := taskResource(tm)
 	require.NotNil(t, r)
 
 	attrMap := r.Attributes()
-	require.Equal(t, 15, attrMap.Len())
+	require.Equal(t, 16, attrMap.Len())
 	expected := map[string]string{
 		attributeECSCluster:                          "cluster-1",
 		string(conventions.AWSECSTaskARNKey):         "arn:aws:ecs:us-west-2:111122223333:task/default/158d1c8083dd49d6b527399fd6414f5c",
@@ -117,6 +118,7 @@ func TestTaskResource(t *testing.T) {
 		string(conventions.CloudRegionKey):           "us-west-2",
 		string(conventions.CloudAccountIDKey):        "111122223333",
 		attributeECSServiceName:                      "MyService",
+		attributeECSServiceARN:                       "arn:aws:ecs:us-west-2:111122223333:service/cluster-1/MyService",
 	}
 
 	verifyAttributeMap(t, expected, attrMap)
@@ -134,12 +136,13 @@ func TestTaskResourceWithClusterARN(t *testing.T) {
 		KnownStatus:      "RUNNING",
 		LaunchType:       "EC2",
 		ServiceName:      "MyService",
+		ServiceArn:       "arn:aws:ecs:us-west-2:803860917211:service/main-cluster/MyService",
 	}
 	r := taskResource(tm)
 	require.NotNil(t, r)
 
 	attrMap := r.Attributes()
-	require.Equal(t, 15, attrMap.Len())
+	require.Equal(t, 16, attrMap.Len())
 
 	expected := map[string]string{
 		attributeECSCluster:                          "main-cluster",
@@ -157,9 +160,68 @@ func TestTaskResourceWithClusterARN(t *testing.T) {
 		string(conventions.CloudRegionKey):           "us-west-2",
 		string(conventions.CloudAccountIDKey):        "803860917211",
 		attributeECSServiceName:                      "MyService",
+		attributeECSServiceARN:                       "arn:aws:ecs:us-west-2:803860917211:service/main-cluster/MyService",
 	}
 
 	verifyAttributeMap(t, expected, attrMap)
+}
+
+func TestServiceResource(t *testing.T) {
+	grace := int32(60)
+	sm := ecsutil.ServiceMetadata{
+		ClusterName:                   "my-cluster",
+		ClusterARN:                    "arn:aws:ecs:us-west-2:111122223333:cluster/my-cluster",
+		ServiceName:                   "mysvc",
+		ServiceArn:                    "arn:aws:ecs:us-west-2:111122223333:service/my-cluster/mysvc",
+		Status:                        "ACTIVE",
+		TaskDefinition:                "arn:aws:ecs:us-west-2:111122223333:task-definition/fam:1",
+		LaunchType:                    "FARGATE",
+		SchedulingStrategy:            "REPLICA",
+		PlatformFamily:                "Linux",
+		PlatformVersion:               "1.4.0",
+		CreatedAt:                     "2020-01-02T03:04:05Z",
+		HealthCheckGracePeriodSeconds: &grace,
+		EnableExecuteCommand:          true,
+		EnableECSManagedTags:          false,
+		PropagateTags:                 "SERVICE",
+		RoleArn:                       "arn:aws:iam::111122223333:role/ecsServiceRole",
+	}
+	r := serviceResource(sm)
+	require.NotNil(t, r)
+	attrMap := r.Attributes()
+
+	expected := map[string]string{
+		attributeECSCluster:                     "my-cluster",
+		attributeECSClusterARN:                    "arn:aws:ecs:us-west-2:111122223333:cluster/my-cluster",
+		attributeECSServiceName:                   "mysvc",
+		attributeECSServiceARN:                    "arn:aws:ecs:us-west-2:111122223333:service/my-cluster/mysvc",
+		string(conventions.HostIDKey):             "arn:aws:ecs:us-west-2:111122223333:service/my-cluster/mysvc",
+		string(conventions.CloudRegionKey):        "us-west-2",
+		string(conventions.CloudAccountIDKey):     "111122223333",
+		attributeECSServiceStatus:                 "ACTIVE",
+		attributeECSTaskDefinitionARN:             "arn:aws:ecs:us-west-2:111122223333:task-definition/fam:1",
+		attributeECSServiceLaunchType:             "FARGATE",
+		string(conventions.AWSECSLaunchtypeKey): conventions.AWSECSLaunchtypeFargate.Value.AsString(),
+		attributeECSServiceSchedulingStrategy:       "REPLICA",
+		attributeECSServicePlatformFamily:       "Linux",
+		attributeECSServicePlatformVersion:        "1.4.0",
+		attributeECSServiceCreatedAt:              "2020-01-02T03:04:05Z",
+		attributeECSServicePropagateTags:          "SERVICE",
+		attributeECSServiceRoleArn:                "arn:aws:iam::111122223333:role/ecsServiceRole",
+	}
+	verifyAttributeMap(t, expected, attrMap)
+
+	h, ok := attrMap.Get(attributeECSServiceHealthCheckGracePeriodSecs)
+	require.True(t, ok)
+	require.EqualValues(t, 60, h.Int())
+
+	ex, ok := attrMap.Get(attributeECSServiceEnableExecuteCommand)
+	require.True(t, ok)
+	require.True(t, ex.Bool())
+
+	em, ok := attrMap.Get(attributeECSServiceEnableECSManagedTags)
+	require.True(t, ok)
+	require.False(t, em.Bool())
 }
 
 func verifyAttributeMap(t *testing.T, expected map[string]string, found pcommon.Map) {

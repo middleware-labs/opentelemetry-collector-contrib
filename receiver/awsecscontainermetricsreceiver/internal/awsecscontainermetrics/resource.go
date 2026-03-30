@@ -53,6 +53,9 @@ func taskResource(tm ecsutil.TaskMetadata) pcommon.Resource {
 	resource.Attributes().PutStr(string(conventions.AWSECSTaskRevisionKey), tm.Revision)
 
 	resource.Attributes().PutStr(attributeECSServiceName, tm.ServiceName)
+	if tm.ServiceArn != "" {
+		resource.Attributes().PutStr(attributeECSServiceARN, tm.ServiceArn)
+	}
 
 	resource.Attributes().PutStr(string(conventions.CloudAvailabilityZoneKey), tm.AvailabilityZone)
 	resource.Attributes().PutStr(attributeECSTaskPullStartedAt, tm.PullStartedAt)
@@ -72,6 +75,79 @@ func taskResource(tm ecsutil.TaskMetadata) pcommon.Resource {
 	resource.Attributes().PutStr(string(conventions.CloudAccountIDKey), accountID)
 
 	return resource
+}
+
+// serviceResource builds the resource for ECS service-level metrics (daemonset DescribeServices data).
+func serviceResource(sm ecsutil.ServiceMetadata) pcommon.Resource {
+	resource := pcommon.NewResource()
+	resource.Attributes().PutStr(attributeECSCluster, sm.ClusterName)
+	if sm.ClusterARN != "" {
+		resource.Attributes().PutStr(attributeECSClusterARN, sm.ClusterARN)
+	}
+	resource.Attributes().PutStr(attributeECSServiceName, sm.ServiceName)
+	if sm.ServiceArn != "" {
+		resource.Attributes().PutStr(attributeECSServiceARN, sm.ServiceArn)
+		region, accountID := getRegionAndAccountFromGenericARN(sm.ServiceArn)
+		if region != "" {
+			resource.Attributes().PutStr(string(conventions.CloudRegionKey), region)
+		}
+		if accountID != "" {
+			resource.Attributes().PutStr(string(conventions.CloudAccountIDKey), accountID)
+		}
+		// Stable logical identity for this service resource (matches prior serviceMetricsToOTLP behavior).
+		resource.Attributes().PutStr(string(conventions.HostIDKey), sm.ServiceArn)
+	}
+	if sm.Status != "" {
+		resource.Attributes().PutStr(attributeECSServiceStatus, sm.Status)
+	}
+	if sm.TaskDefinition != "" {
+		resource.Attributes().PutStr(attributeECSTaskDefinitionARN, sm.TaskDefinition)
+	}
+	if sm.LaunchType != "" {
+		resource.Attributes().PutStr(attributeECSServiceLaunchType, sm.LaunchType)
+		switch lt := strings.ToLower(sm.LaunchType); lt {
+		case "ec2":
+			resource.Attributes().PutStr(string(conventions.AWSECSLaunchtypeKey), conventions.AWSECSLaunchtypeEC2.Value.AsString())
+		case "fargate":
+			resource.Attributes().PutStr(string(conventions.AWSECSLaunchtypeKey), conventions.AWSECSLaunchtypeFargate.Value.AsString())
+		}
+	}
+	if sm.SchedulingStrategy != "" {
+		resource.Attributes().PutStr(attributeECSServiceSchedulingStrategy, sm.SchedulingStrategy)
+	}
+	if sm.PlatformFamily != "" {
+		resource.Attributes().PutStr(attributeECSServicePlatformFamily, sm.PlatformFamily)
+	}
+	if sm.PlatformVersion != "" {
+		resource.Attributes().PutStr(attributeECSServicePlatformVersion, sm.PlatformVersion)
+	}
+	if sm.CreatedAt != "" {
+		resource.Attributes().PutStr(attributeECSServiceCreatedAt, sm.CreatedAt)
+	}
+	if sm.HealthCheckGracePeriodSeconds != nil {
+		resource.Attributes().PutInt(attributeECSServiceHealthCheckGracePeriodSecs, int64(*sm.HealthCheckGracePeriodSeconds))
+	}
+	resource.Attributes().PutBool(attributeECSServiceEnableExecuteCommand, sm.EnableExecuteCommand)
+	resource.Attributes().PutBool(attributeECSServiceEnableECSManagedTags, sm.EnableECSManagedTags)
+	if sm.PropagateTags != "" {
+		resource.Attributes().PutStr(attributeECSServicePropagateTags, sm.PropagateTags)
+	}
+	if sm.RoleArn != "" {
+		resource.Attributes().PutStr(attributeECSServiceRoleArn, sm.RoleArn)
+	}
+	return resource
+}
+
+// getRegionAndAccountFromGenericARN parses region and account from a generic AWS ARN (e.g. ECS service ARN).
+func getRegionAndAccountFromGenericARN(arn string) (region, accountID string) {
+	if arn == "" || !strings.HasPrefix(arn, "arn:aws:") {
+		return "", ""
+	}
+	parts := strings.Split(arn, ":")
+	if len(parts) >= 5 {
+		return parts[3], parts[4]
+	}
+	return "", ""
 }
 
 // https://docs.aws.amazon.com/AmazonECS/latest/userguide/ecs-account-settings.html
