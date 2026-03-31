@@ -16,6 +16,9 @@ resourceLogs:
               - key: db.query.text
                 value:
                   stringValue: select * from pg_stat_activity where id = ?
+              - key: db.query.comment
+                value:
+                  stringValue: ""
               - key: postgresql.calls
                 value:
                   intValue: "3"
@@ -57,9 +60,7 @@ resourceLogs:
                   stringValue: '[{"Plan":{"Node Type":"Merge Join","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.43,"Total Cost":55.27,"Plan Rows":290,"Plan Width":1675,"Inner Unique":"?","Merge Cond":"( e.businessentityid = p.businessentityid )","Plans":[{"Node Type":"Index Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"PK_Employee_BusinessEntityID","Relation Name":"employee","Alias":"e","Startup Cost":0.15,"Total Cost":21.5,"Plan Rows":290,"Plan Width":112},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"PK_Person_BusinessEntityID","Relation Name":"person","Alias":"p","Startup Cost":0.29,"Total Cost":2261.87,"Plan Rows":19972,"Plan Width":1563}]}}]'
               - key: db.query.tables
                 value:
-                  arrayValue:
-                    values:
-                      - stringValue: pg_stat_activity
+                  stringValue: pg_stat_activity
               - key: event.type
                 value:
                   stringValue: top_query
@@ -72,7 +73,8 @@ resourceLogs:
               - key: postgresql.blk_write_time
                 value:
                   doubleValue: 0.2
-            body: {}
+            body:
+              stringValue: select * from pg_stat_activity where id = ?
             eventName: db.server.top_query
             timeUnixNano: "1768935581499020293"
         scope:

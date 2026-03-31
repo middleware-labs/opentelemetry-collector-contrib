@@ -130,9 +130,12 @@ attributes:
   db.postgresql.version_string:
     description: The PostgreSQL version string (e.g. "PostgreSQL 15.0").
     type: string
+  db.query.comment:
+    description: SQL comments extracted from the raw query before obfuscation.
+    type: string
   db.query.tables:
-    description: List of tables referenced in the query.
-    type: slice
+    description: Comma-separated list of tables referenced in the query.
+    type: string
   db.query.text:
     description: The text of the database query being executed.
     type: string
@@ -406,6 +409,7 @@ events:
       - db.namespace
       - event.type
       - db.query.text
+      - db.query.comment
       - db.query.tables
       - user.name
       - postgresql.state
@@ -508,6 +512,7 @@ events:
       - db.namespace
       - event.type
       - db.query.text
+      - db.query.comment
       - db.query.tables
       - user.name
       - postgresql.calls

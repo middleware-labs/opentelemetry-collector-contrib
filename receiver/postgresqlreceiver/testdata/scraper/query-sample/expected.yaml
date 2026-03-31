@@ -19,11 +19,12 @@ resourceLogs:
               - key: db.query.text
                 value:
                   stringValue: select * from pg_stat_activity where id = ?
+              - key: db.query.comment
+                value:
+                  stringValue: ""
               - key: db.query.tables
                 value:
-                  arrayValue:
-                    values:
-                      - stringValue: pg_stat_activity
+                  stringValue: pg_stat_activity
               - key: user.name
                 value:
                   stringValue: otelu
@@ -72,7 +73,8 @@ resourceLogs:
               - key: postgresql.total_exec_time
                 value:
                   doubleValue: 1.2
-            body: {}
+            body:
+              stringValue: select * from pg_stat_activity where id = ?
             eventName: db.server.query_sample
             timeUnixNano: "1772875050491154182"
         scope:

@@ -174,7 +174,10 @@ func commonForeignKeyDetailsQuery() string {
 }
 
 func commonViewDefinitionQuery() string {
-	return `SELECT pg_get_viewdef($1, true)`
+	// Cast to oid: with a prepared statement, $1 is otherwise inferred as a
+	// generic integer and PostgreSQL picks pg_get_viewdef(text/name, bool),
+	// which treats the value as a relation name (e.g. "16401") and fails.
+	return `SELECT pg_get_viewdef($1::oid, true)`
 }
 
 func commonExtensionsQuery() string {

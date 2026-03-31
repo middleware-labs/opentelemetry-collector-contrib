@@ -136,7 +136,7 @@ func TestLogsBuilder(t *testing.T) {
 			lb.RecordDbServerExtensionsCollectionEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", 6, 25, "db.postgresql.version_string-val", "cloud.provider-val", "event.type-val", AttributeCollectionTypeFullSnapshot, 25, 26, "collection.extensions-val", 23)
 			defaultEventsCount++
 			allEventsCount++
-			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "event.type-val", "db.query.text-val", []any{"db.query.tables-item1", "db.query.tables-item2"}, "user.name-val", "postgresql.state-val", 14, "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.backend_type-val", "postgresql.xact_start-val", "postgresql.query_start-val", "postgresql.state_change-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", 22, "postgresql.query_id-val", 26.100000)
+			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "event.type-val", "db.query.text-val", "db.query.comment-val", "db.query.tables-val", "user.name-val", "postgresql.state-val", 14, "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.backend_type-val", "postgresql.xact_start-val", "postgresql.query_start-val", "postgresql.state_change-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", 22, "postgresql.query_id-val", 26.100000)
 			defaultEventsCount++
 			allEventsCount++
 			lb.RecordDbServerSchemaCollectionEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", 6, 25, "db.postgresql.version_string-val", "cloud.provider-val", "event.type-val", AttributeCollectionTypeFullSnapshot, 22, 26, 23, 22, 27, 26, 27, 22, false, 22, 27.100000, 23, 25, "collection.extensions-val", "collection.settings-val", 24, "collection.errors-val", 9, "table.schema_name-val", "table.name-val", "table.type-val", "table.owner-val", 10, 16, true, "table.description-val", 17, 17, 23, 15, 18, 17, 21, 16, 22, "table.last_vacuum-val", "table.last_autovacuum-val", "table.last_analyze-val", "table.last_autoanalyze-val", "table.view_definition-val", true, 16, "table.partition_expr-val", 18, 17, 22, "table.columns-val", "table.indexes-val", "table.constraints-val")
@@ -145,7 +145,7 @@ func TestLogsBuilder(t *testing.T) {
 			lb.RecordDbServerSettingsCollectionEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", 6, 25, "db.postgresql.version_string-val", "cloud.provider-val", "event.type-val", AttributeCollectionTypeFullSnapshot, 25, 24, "collection.settings-val", 23)
 			defaultEventsCount++
 			allEventsCount++
-			lb.RecordDbServerTopQueryEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "event.type-val", "db.query.text-val", []any{"db.query.tables-item1", "db.query.tables-item2"}, "user.name-val", 16, 15, 30, 26, 27, 30, 25, 28, "postgresql.queryid-val", "postgresql.rolname-val", 26.100000, 26.100000, "postgresql.query_plan-val", 24.100000, 25.100000)
+			lb.RecordDbServerTopQueryEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "event.type-val", "db.query.text-val", "db.query.comment-val", "db.query.tables-val", "user.name-val", 16, 15, 30, 26, 27, 30, 25, 28, "postgresql.queryid-val", "postgresql.rolname-val", 26.100000, 26.100000, "postgresql.query_plan-val", 24.100000, 25.100000)
 
 			rb := lb.NewResourceBuilder()
 			rb.SetPostgresqlDatabaseName("postgresql.database.name-val")
@@ -238,9 +238,12 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("db.query.text")
 					assert.True(t, ok)
 					assert.Equal(t, "db.query.text-val", attrVal.Str())
+					attrVal, ok = lr.Attributes().Get("db.query.comment")
+					assert.True(t, ok)
+					assert.Equal(t, "db.query.comment-val", attrVal.Str())
 					attrVal, ok = lr.Attributes().Get("db.query.tables")
 					assert.True(t, ok)
-					assert.Equal(t, []any{"db.query.tables-item1", "db.query.tables-item2"}, attrVal.Slice().AsRaw())
+					assert.Equal(t, "db.query.tables-val", attrVal.Str())
 					attrVal, ok = lr.Attributes().Get("user.name")
 					assert.True(t, ok)
 					assert.Equal(t, "user.name-val", attrVal.Str())
@@ -529,9 +532,12 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("db.query.text")
 					assert.True(t, ok)
 					assert.Equal(t, "db.query.text-val", attrVal.Str())
+					attrVal, ok = lr.Attributes().Get("db.query.comment")
+					assert.True(t, ok)
+					assert.Equal(t, "db.query.comment-val", attrVal.Str())
 					attrVal, ok = lr.Attributes().Get("db.query.tables")
 					assert.True(t, ok)
-					assert.Equal(t, []any{"db.query.tables-item1", "db.query.tables-item2"}, attrVal.Slice().AsRaw())
+					assert.Equal(t, "db.query.tables-val", attrVal.Str())
 					attrVal, ok = lr.Attributes().Get("user.name")
 					assert.True(t, ok)
 					assert.Equal(t, "user.name-val", attrVal.Str())

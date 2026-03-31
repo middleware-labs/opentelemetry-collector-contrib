@@ -86,6 +86,63 @@ func isPrepareTypeOrPlanningError(errStr string) bool {
 		strings.Contains(errStr, "syntax error")
 }
 
+// isExplainPermissionError returns true when the monitoring user lacks SELECT
+// privilege on a table referenced by the query. EXPLAIN (and PREPARE) checks
+// table ACLs even though no rows are read. This is a permanent, expected
+// condition when the collector user is not a superuser — we skip explain
+// silently rather than emitting a noisy warning on every plan-cache refresh.
+func isExplainPermissionError(errStr string) bool {
+	return strings.Contains(errStr, "permission denied for table") ||
+		strings.Contains(errStr, "permission denied for relation") ||
+		strings.Contains(errStr, "permission denied for schema") ||
+		strings.Contains(errStr, "permission denied for sequence")
+}
+
+// sqlCommentPattern matches both block (/* ... */) and line (-- ...) SQL comments.
+var sqlCommentPattern = regexp.MustCompile(`/\*.*?\*/|--[^\n]*`)
+var traceparentInCommentPattern = regexp.MustCompile(`(?i)\btraceparent\s*=\s*['"]?([^'" ]+)['"]?`)
+
+// extractSQLComments returns all comments found in the raw SQL string,
+// with leading/trailing whitespace and comment delimiters stripped.
+func extractSQLComments(rawSQL string) []string {
+	matches := sqlCommentPattern.FindAllString(rawSQL, -1)
+	if len(matches) == 0 {
+		return nil
+	}
+	comments := make([]string, 0, len(matches))
+	for _, m := range matches {
+		var c string
+		if strings.HasPrefix(m, "/*") {
+			c = strings.TrimSpace(m[2 : len(m)-2])
+		} else {
+			c = strings.TrimSpace(m[2:])
+		}
+		if c != "" {
+			comments = append(comments, c)
+		}
+	}
+	return comments
+}
+
+// extractTraceparentValue returns a traceparent candidate from a comment.
+// Supports:
+// - raw value: "00-<traceid>-<spanid>-<flags>"
+// - keyed form: "traceparent=00-..." or "traceparent='00-...'"
+func extractTraceparentValue(comment string) string {
+	c := strings.TrimSpace(comment)
+	if c == "" {
+		return ""
+	}
+	if strings.HasPrefix(strings.ToLower(c), "00-") {
+		return c
+	}
+	m := traceparentInCommentPattern.FindStringSubmatch(c)
+	if len(m) == 2 {
+		return strings.TrimSpace(m[1])
+	}
+	return ""
+}
+
 const (
 	lagMetricsInSecondsFeatureGateID = "postgresqlreceiver.preciselagmetrics"
 	querySampleTraceContextKey       = "_otel_trace_context"
@@ -201,6 +258,13 @@ func (c *postgreSQLClient) explainNonParameterized(ctx context.Context, query, q
 	var plan string
 	err := c.client.QueryRowContext(ctx, explainSQL).Scan(&plan)
 	if err != nil {
+		if isExplainPermissionError(err.Error()) {
+			logger.Debug("skipping explain: monitoring user lacks table privilege",
+				zap.String("queryID", queryID),
+				zap.String("query_prefix", truncateForLog(query, 120)),
+				zap.Error(err))
+			return "", nil
+		}
 		logger.Warn("explain failed",
 			zap.String("queryID", queryID),
 			zap.String("query_prefix", truncateForLog(query, 120)),
@@ -234,8 +298,15 @@ func (c *postgreSQLClient) explainParameterizedDatadog(ctx context.Context, quer
 	if err != nil {
 		errStr := err.Error()
 		if isPrepareTypeOrPlanningError(errStr) {
-			logger.Warn("skipping explain: PREPARE failed (type/planning/syntax), query too complex for generic plan",
+			logger.Debug("skipping explain: PREPARE failed (type/planning/syntax), query too complex for generic plan",
 				zap.String("queryID", queryID),
+				zap.Error(err))
+			return "", nil
+		}
+		if isExplainPermissionError(errStr) {
+			logger.Debug("skipping explain: monitoring user lacks table privilege",
+				zap.String("queryID", queryID),
+				zap.String("query_prefix", truncateForLog(query, 120)),
 				zap.Error(err))
 			return "", nil
 		}
@@ -1600,20 +1671,40 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 			}
 		}
 
-		obfuscated, err := obfuscateSQL(row[querySampleColumnQuery])
-		if err != nil {
-			logger.Warn("failed to obfuscate query", zap.String("query", row[querySampleColumnQuery]))
-			obfuscated = ""
-		}
-		
-		tables := extractTablesFromQuery(row[querySampleColumnQuery])
-		tableAnys := make([]any, 0, len(tables))
-		for _, t := range tables {
-			tableAnys = append(tableAnys, t)
+		rawQuery := row[querySampleColumnQuery]
+
+		// Extract comments before obfuscation (obfuscation strips them).
+		comments := extractSQLComments(rawQuery)
+		if len(comments) > 0 {
+			currentAttributes["db.query.comment"] = strings.Join(comments, "; ")
+			// If no trace context was found in application_name, try SQL comments.
+			if traceCtx == nil {
+				for _, c := range comments {
+					tp := extractTraceparentValue(c)
+					if tp == "" {
+						continue
+					}
+					ctxFromComment := propagator.Extract(context.Background(), propagation.MapCarrier{
+						traceparentCarrierKey: tp,
+					})
+					if trace.SpanContextFromContext(ctxFromComment).IsValid() {
+						traceCtx = ctxFromComment
+						currentAttributes[querySampleTraceContextKey] = traceCtx
+						break
+					}
+				}
+			}
 		}
 
+		obfuscated, err := obfuscateSQL(rawQuery)
+		if err != nil {
+			logger.Warn("failed to obfuscate query", zap.String("query", rawQuery))
+			obfuscated = ""
+		}
+
+		tables := extractTablesFromQuery(rawQuery)
+		currentAttributes["db.query.tables"] = strings.Join(tables, ",")
 		currentAttributes[dbAttributePrefix+querySampleColumnBackendXid] = backendXid
-		currentAttributes["db.query.tables"] = tableAnys
 		currentAttributes["event.type"] = "query_sample"
 		currentAttributes[dbAttributePrefix+querySampleColumnPID] = pid
 		currentAttributes[string(semconv.NetworkPeerPortKey)] = clientPort
@@ -1669,12 +1760,15 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 	tmpl := template.Must(template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
 	buf := bytes.Buffer{}
 
-	// TODO: Only get query after the oldest query we got from the previous sample query colelction.
-	// For instance, if from the last sample query we got queries executed between 8:00 ~ 8:15,
-	// in this query, we should only gather query after 8:15
+	orderByExecTimeCol := "total_time"
+	if major >= 13 {
+		orderByExecTimeCol = "total_exec_time"
+	}
+
 	if err := tmpl.Execute(&buf, map[string]any{
-		"limit":          limit,
-		"hasPG13Columns": major >= 13,
+		"limit":              limit,
+		"hasPG13Columns":     major >= 13,
+		"orderByExecTimeCol": orderByExecTimeCol,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
 		return []map[string]any{}, fmt.Errorf("failed executing template: %w", err)
@@ -1720,6 +1814,25 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 		// Store raw query before obfuscation (needed for EXPLAIN with $N placeholders)
 		if rawQuery, ok := row["query"]; ok {
 			currentAttributes[dbAttributePrefix+"raw_query"] = rawQuery
+
+			comments := extractSQLComments(rawQuery)
+			if len(comments) > 0 {
+				currentAttributes["db.query.comment"] = strings.Join(comments, "; ")
+				propagator := propagation.TraceContext{}
+				for _, c := range comments {
+					tp := extractTraceparentValue(c)
+					if tp == "" {
+						continue
+					}
+					ctxFromComment := propagator.Extract(context.Background(), propagation.MapCarrier{
+						traceparentCarrierKey: tp,
+					})
+					if trace.SpanContextFromContext(ctxFromComment).IsValid() {
+						currentAttributes[querySampleTraceContextKey] = ctxFromComment
+						break
+					}
+				}
+			}
 		}
 
 		for col := range row {
@@ -1734,8 +1847,6 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 					errs = append(errs, err)
 				}
 			case col == "query":
-				// Obfuscate query for display/logging (converts $1,$2 to ?)
-				// Raw query is already stored separately for EXPLAIN
 				val, err = obfuscateSQL(row[col])
 				if err != nil {
 					logger.Error("failed to obfuscate query", zap.String("query", row[col]))

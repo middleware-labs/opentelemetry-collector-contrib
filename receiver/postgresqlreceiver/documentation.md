@@ -704,7 +704,8 @@ query sample
 | db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
 | event.type | The type of schema collection event. | Any Str |
 | db.query.text | The text of the database query being executed. | Any Str |
-| db.query.tables | List of tables referenced in the query. | Any Slice |
+| db.query.comment | SQL comments extracted from the raw query before obfuscation. | Any Str |
+| db.query.tables | Comma-separated list of tables referenced in the query. | Any Str |
 | user.name | Name of the user logged into this backend. | Any Str |
 | postgresql.state | Current overall state of this backend | Any Str |
 | postgresql.pid | Process ID of this backend. | Any Int |
@@ -821,7 +822,8 @@ top query
 | db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
 | event.type | The type of schema collection event. | Any Str |
 | db.query.text | The text of the database query being executed. | Any Str |
-| db.query.tables | List of tables referenced in the query. | Any Slice |
+| db.query.comment | SQL comments extracted from the raw query before obfuscation. | Any Str |
+| db.query.tables | Comma-separated list of tables referenced in the query. | Any Str |
 | user.name | Name of the user logged into this backend. | Any Str |
 | postgresql.calls | Number of times the statement was executed, reported in delta value. | Any Int |
 | postgresql.rows | Total number of rows retrieved or affected by the statement, reported in delta value. | Any Int |
