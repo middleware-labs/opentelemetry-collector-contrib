@@ -136,7 +136,7 @@ func TestLogsBuilder(t *testing.T) {
 			lb.RecordDbServerExtensionsCollectionEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", 6, 25, "db.postgresql.version_string-val", "cloud.provider-val", "event.type-val", AttributeCollectionTypeFullSnapshot, 25, 26, "collection.extensions-val", 23)
 			defaultEventsCount++
 			allEventsCount++
-			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "event.type-val", "db.query.text-val", "db.query.comment-val", "db.query.tables-val", "user.name-val", "postgresql.state-val", 14, "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.backend_type-val", "postgresql.xact_start-val", "postgresql.query_start-val", "postgresql.state_change-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", 22, "postgresql.query_id-val", 26.100000)
+			lb.RecordDbServerQuerySampleEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", "event.type-val", "db.query.text-val", "db.query.comment-val", "db.query.tables-val", "user.name-val", "postgresql.state-val", 14, "postgresql.application_name-val", "network.peer.address-val", 17, "postgresql.client_hostname-val", "postgresql.backend_type-val", "postgresql.xact_start-val", "postgresql.query_start-val", "postgresql.state_change-val", "postgresql.wait_event-val", "postgresql.wait_event_type-val", []any{"postgresql.blocking_pids-item1", "postgresql.blocking_pids-item2"}, 22, "postgresql.query_id-val", 26.100000)
 			defaultEventsCount++
 			allEventsCount++
 			lb.RecordDbServerSchemaCollectionEvent(ctx, timestamp, AttributeDbSystemNamePostgresql, "db.namespace-val", 6, 25, "db.postgresql.version_string-val", "cloud.provider-val", "event.type-val", AttributeCollectionTypeFullSnapshot, 22, 26, 23, 22, 27, 26, 27, 22, false, 22, 27.100000, 23, 25, "collection.extensions-val", "collection.settings-val", 24, "collection.errors-val", 9, "table.schema_name-val", "table.name-val", "table.type-val", "table.owner-val", 10, 16, true, "table.description-val", 17, 17, 23, 15, 18, 17, 21, 16, 22, "table.last_vacuum-val", "table.last_autovacuum-val", "table.last_analyze-val", "table.last_autoanalyze-val", "table.view_definition-val", true, 16, "table.partition_expr-val", 18, 17, 22, "table.columns-val", "table.indexes-val", "table.constraints-val")
@@ -283,6 +283,9 @@ func TestLogsBuilder(t *testing.T) {
 					attrVal, ok = lr.Attributes().Get("postgresql.wait_event_type")
 					assert.True(t, ok)
 					assert.Equal(t, "postgresql.wait_event_type-val", attrVal.Str())
+					attrVal, ok = lr.Attributes().Get("postgresql.blocking_pids")
+					assert.True(t, ok)
+					assert.Equal(t, []any{"postgresql.blocking_pids-item1", "postgresql.blocking_pids-item2"}, attrVal.Slice().AsRaw())
 					attrVal, ok = lr.Attributes().Get("postgresql.backend_xid")
 					assert.True(t, ok)
 					assert.EqualValues(t, 22, attrVal.Int())

@@ -418,6 +418,7 @@ var querySampleColumns = []string{
 	querySampleColumnQueryID,
 	querySampleColumnPID,
 	querySampleColumnApplicationName,
+	querySampleColumnBlockingPids,
 	querySampleColumnQueryStartTimestamp,
 	querySampleColumnState,
 	querySampleColumnQuery,
@@ -1368,4 +1369,127 @@ func TestGetInstanceId(t *testing.T) {
 	localInstanceID = getInstanceID(hostNameErrorSample, zap.NewNop())
 	assert.NotNil(t, localInstanceID)
 	assert.Equal(t, "unknown:5432", localInstanceID)
+}
+
+func TestParseBlockingPids(t *testing.T) {
+	logger := zap.NewNop()
+
+	tests := []struct {
+		name  string
+		input string
+		want  []any
+	}{
+		{name: "empty string", input: "", want: []any{}},
+		{name: "empty array literal", input: "{}", want: []any{}},
+		{name: "single pid", input: "{12345}", want: []any{int64(12345)}},
+		{name: "multiple sorted", input: "{12345,67890}", want: []any{int64(12345), int64(67890)}},
+		{name: "multiple unsorted is sorted ascending", input: "{67890,12345}", want: []any{int64(12345), int64(67890)}},
+		{name: "spaces tolerated", input: "{ 67890 , 12345 }", want: []any{int64(12345), int64(67890)}},
+		{name: "malformed surroundings yields empty", input: "12345,67890", want: []any{}},
+		{name: "malformed element skipped", input: "{12345,not_a_number,67890}", want: []any{int64(12345), int64(67890)}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := parseBlockingPids(tt.input, logger)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestBlockingPidsToKey(t *testing.T) {
+	tests := []struct {
+		name string
+		in   []any
+		want string
+	}{
+		{name: "nil", in: nil, want: ""},
+		{name: "empty", in: []any{}, want: ""},
+		{name: "single", in: []any{int64(42)}, want: "42"},
+		{name: "two", in: []any{int64(1), int64(2)}, want: "1,2"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, blockingPidsToKey(tt.in))
+		})
+	}
+}
+
+// TestQuerySampleDedupKeyIncludesBlockingPids exercises the hybrid dedup behaviour:
+// a row with the same (pid, query_start) but a different blocking_pids set must
+// re-emit, while an identical re-sighting must be skipped.
+func TestQuerySampleDedupKeyIncludesBlockingPids(t *testing.T) {
+	cfg := createDefaultConfig().(*Config)
+	cfg.Databases = []string{}
+	cfg.Events.DbServerQuerySample.Enabled = true
+
+	settings := receivertest.NewNopSettings(metadata.Type)
+	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
+
+	scraper := newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newCache(1), newTTLCache[string](1, time.Second))
+
+	baseRow := func() map[string]any {
+		return map[string]any{
+			dbAttributePrefix + querySampleColumnState:           "active",
+			dbAttributePrefix + querySampleColumnPID:             int64(1450),
+			dbAttributePrefix + querySampleColumnQueryStart:      "2025-02-12T16:37:54.843+08:00",
+			dbAttributePrefix + querySampleColumnApplicationName: "receiver",
+			dbAttributePrefix + querySampleColumnClientHostname:  "otel",
+			dbAttributePrefix + querySampleColumnBackendType:     "client backend",
+			dbAttributePrefix + querySampleColumnXactStart:       "",
+			dbAttributePrefix + querySampleColumnStateChange:     "",
+			dbAttributePrefix + querySampleColumnWaitEvent:       "",
+			dbAttributePrefix + querySampleColumnWaitEventType:   "",
+			dbAttributePrefix + querySampleColumnBackendXid:      int64(0),
+			dbAttributePrefix + querySampleColumnQueryID:         "qid",
+			postgresqlTotalExecTimeAttributeName:                 float64(1.2),
+			"event.type":                                         "query_sample",
+			"db.query.comment":                                   "",
+			"db.query.tables":                                    "pg_stat_activity",
+			"db.namespace":                                       "postgres",
+			"user.name":                                          "otelu",
+			"db.query.text":                                      "select 1",
+			"network.peer.address":                               "11.4.5.14",
+			"network.peer.port":                                  int64(114514),
+		}
+	}
+
+	withBlocking := func(pids []any) map[string]any {
+		row := baseRow()
+		row[dbAttributePrefix+querySampleColumnBlockingPids] = pids
+		return row
+	}
+
+	// Each step represents one scrape and produces zero or more events.
+	// Capture how many events were emitted by counting log records before and after.
+	scrape := func(rows []map[string]any) int {
+		client := &fakeQuerySamplesClient{rows: rows}
+		before := scraper.lb.Emit().LogRecordCount()
+		scraper.collectQuerySamples(t.Context(), client, 30, &errsMux{}, zap.NewNop())
+		after := scraper.lb.Emit().LogRecordCount()
+		// The Emit() above drains the buffer, so the diff equals what this scrape produced.
+		_ = before
+		return after
+	}
+
+	// 1. blocking=[] -> emit
+	require.Equal(t, 1, scrape([]map[string]any{withBlocking([]any{})}))
+	// 2. blocking=[100] -> emit (key changed)
+	require.Equal(t, 1, scrape([]map[string]any{withBlocking([]any{int64(100)})}))
+	// 3. blocking=[100] again -> skip
+	require.Equal(t, 0, scrape([]map[string]any{withBlocking([]any{int64(100)})}))
+	// 4. blocking=[] again -> emit (key changed back)
+	require.Equal(t, 1, scrape([]map[string]any{withBlocking([]any{})}))
+}
+
+// fakeQuerySamplesClient implements just enough of the client interface for the
+// dedup-key transition test above; only getQuerySamples is exercised.
+type fakeQuerySamplesClient struct {
+	client
+	rows []map[string]any
+}
+
+func (f *fakeQuerySamplesClient) getQuerySamples(_ context.Context, _ int64, newest float64, _ *zap.Logger) ([]map[string]any, float64, error) {
+	return f.rows, newest, nil
 }

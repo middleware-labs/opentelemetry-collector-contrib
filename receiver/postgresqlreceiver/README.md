@@ -24,6 +24,8 @@ See PostgreSQL documentation for [supported versions](https://www.postgresql.org
 
 The monitoring user must be granted `SELECT` on `pg_stat_database`.
 
+For full setup (roles, `pg_stat_statements`, grants, and end-to-end sample config), see [Prerequisites.md](./Prerequisites.md).
+
 ## Configuration
 
 The following settings are required to create a database connection:

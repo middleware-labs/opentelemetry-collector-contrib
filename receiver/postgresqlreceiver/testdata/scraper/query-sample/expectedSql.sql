@@ -14,6 +14,12 @@ SELECT
     COALESCE(query_id::TEXT, '') AS query_id,
     COALESCE(pid::TEXT, '') AS pid,
     COALESCE(application_name::TEXT, '') AS application_name,
+    COALESCE(
+      CASE WHEN COALESCE(wait_event_type, '') = 'Lock'
+           THEN pg_blocking_pids(pid)::TEXT
+      END,
+      ''
+    ) AS blocking_pids,
     EXTRACT(EPOCH FROM query_start) AS _query_start_timestamp,
     state,
     query,
@@ -34,10 +40,10 @@ WHERE
     ) != ''
     AND query != '<insufficient privilege>'
     AND query NOT LIKE '/* otel-collector-ignore */%'
-    AND backend_type = 'client backend'
-    AND NOT (
+    AND NOT COALESCE(
 
       query_start < TO_TIMESTAMP(123440.111)
-      AND state = 'idle'
+      AND state = 'idle',
+      false
     )
 LIMIT 30;

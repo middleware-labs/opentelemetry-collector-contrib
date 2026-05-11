@@ -13,6 +13,7 @@ import (
 	"math"
 	"net"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"text/template"
@@ -1705,6 +1706,7 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		tables := extractTablesFromQuery(rawQuery)
 		currentAttributes["db.query.tables"] = strings.Join(tables, ",")
 		currentAttributes[dbAttributePrefix+querySampleColumnBackendXid] = backendXid
+		currentAttributes[dbAttributePrefix+querySampleColumnBlockingPids] = parseBlockingPids(row[querySampleColumnBlockingPids], logger)
 		currentAttributes["event.type"] = "query_sample"
 		currentAttributes[dbAttributePrefix+querySampleColumnPID] = pid
 		currentAttributes[string(semconv.NetworkPeerPortKey)] = clientPort
@@ -1741,6 +1743,45 @@ func convertToInt(column, value string, logger *zap.Logger) (any, error) {
 		}
 	}
 	return int64(result), err
+}
+
+// parseBlockingPids converts a Postgres int[] textual representation
+// (e.g. "{12345,67890}", "{}", or "") into a sorted []any of int64 values.
+// The result is sorted ascending so callers can build deterministic dedup keys.
+// Malformed entries are skipped with a warning; the function never returns nil.
+func parseBlockingPids(value string, logger *zap.Logger) []any {
+	value = strings.TrimSpace(value)
+	if value == "" || value == "{}" {
+		return []any{}
+	}
+	if !strings.HasPrefix(value, "{") || !strings.HasSuffix(value, "}") {
+		logger.Warn("unexpected blocking_pids format", zap.String("value", value))
+		return []any{}
+	}
+	inner := value[1 : len(value)-1]
+	if inner == "" {
+		return []any{}
+	}
+	parts := strings.Split(inner, ",")
+	pids := make([]int64, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		n, err := strconv.ParseInt(p, 10, 64)
+		if err != nil {
+			logger.Warn("failed to parse blocking_pids element", zap.String("value", p), zap.Error(err))
+			continue
+		}
+		pids = append(pids, n)
+	}
+	sort.Slice(pids, func(i, j int) bool { return pids[i] < pids[j] })
+	out := make([]any, len(pids))
+	for i, v := range pids {
+		out[i] = v
+	}
+	return out
 }
 
 //go:embed templates/topQueryTemplate.tmpl

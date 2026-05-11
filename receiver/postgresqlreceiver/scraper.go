@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -235,16 +236,20 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 		return
 	}
 
-	// Build a set of (pid:query_start) keys visible in this scrape.
-	// Any key already in seenQuerySamples was emitted before and is skipped.
+	// Build a set of (pid:query_start:sorted_blocking_pids) keys visible in this
+	// scrape. Any key already in seenQuerySamples was emitted before and is
+	// skipped. Including the sorted blocking-pid set in the key means a query
+	// re-emits whenever its blocking-pid set changes (becomes blocked, blocking
+	// changes, or unblocks), even though pid+query_start are unchanged.
 	currentSeen := make(map[string]struct{}, len(attributes))
 
 	for _, atts := range attributes {
 		state := atts[dbAttributePrefix+querySampleColumnState].(string)
 		pid := atts[dbAttributePrefix+querySampleColumnPID].(int64)
 		queryStart := atts[dbAttributePrefix+querySampleColumnQueryStart].(string)
+		blockingPids, _ := atts[dbAttributePrefix+querySampleColumnBlockingPids].([]any)
 
-		key := fmt.Sprintf("%d:%s", pid, queryStart)
+		key := fmt.Sprintf("%d:%s:%s", pid, queryStart, blockingPidsToKey(blockingPids))
 		currentSeen[key] = struct{}{}
 		if _, alreadySeen := p.seenQuerySamples[key]; alreadySeen {
 			continue
@@ -279,6 +284,7 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 			atts[dbAttributePrefix+querySampleColumnStateChange].(string),
 			atts[dbAttributePrefix+querySampleColumnWaitEvent].(string),
 			atts[dbAttributePrefix+querySampleColumnWaitEventType].(string),
+			blockingPids,
 			atts[dbAttributePrefix+querySampleColumnBackendXid].(int64),
 			atts[dbAttributePrefix+querySampleColumnQueryID].(string),
 			atts[postgresqlTotalExecTimeAttributeName].(float64),
@@ -1046,4 +1052,28 @@ func getInstanceID(instanceString string, logger *zap.Logger) string {
 		}
 	}
 	return host + ":" + port
+}
+
+// blockingPidsToKey renders a (presumed already-sorted) []any of int64 PIDs as a
+// comma-joined string suitable for inclusion in the seenQuerySamples dedup key.
+// The empty slice yields "".
+func blockingPidsToKey(pids []any) string {
+	if len(pids) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	for i, v := range pids {
+		if i > 0 {
+			b.WriteByte(',')
+		}
+		switch n := v.(type) {
+		case int64:
+			b.WriteString(strconv.FormatInt(n, 10))
+		case int:
+			b.WriteString(strconv.Itoa(n))
+		default:
+			fmt.Fprintf(&b, "%v", v)
+		}
+	}
+	return b.String()
 }

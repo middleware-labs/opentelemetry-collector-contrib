@@ -64,6 +64,9 @@ resourceLogs:
               - key: postgresql.wait_event_type
                 value:
                   stringValue: ""
+              - key: postgresql.blocking_pids
+                value:
+                  arrayValue: {}
               - key: postgresql.backend_xid
                 value:
                   intValue: "0"

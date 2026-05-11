@@ -25,6 +25,7 @@ const (
 	querySampleColumnApplicationName      = "application_name"
 	querySampleColumnBackendType          = "backend_type"
 	querySampleColumnBackendXid           = "backend_xid"
+	querySampleColumnBlockingPids         = "blocking_pids"
 	querySampleColumnClientAddr           = "client_addr"
 	querySampleColumnClientHostname       = "client_hostname"
 	querySampleColumnClientPort           = "client_port"

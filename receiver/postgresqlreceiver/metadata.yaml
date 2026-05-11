@@ -183,6 +183,9 @@ attributes:
   postgresql.blk_write_time:
     description: Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on.
     type: double
+  postgresql.blocking_pids:
+    description: List of PIDs of sessions that are blocking this backend. Populated when wait_event_type = 'Lock'; empty otherwise.
+    type: slice
   postgresql.calls:
     description: Number of times the statement was executed, reported in delta value.
     type: int
@@ -424,6 +427,7 @@ events:
       - postgresql.state_change
       - postgresql.wait_event
       - postgresql.wait_event_type
+      - postgresql.blocking_pids
       - postgresql.backend_xid
       - postgresql.query_id
       - postgresql.total_exec_time
