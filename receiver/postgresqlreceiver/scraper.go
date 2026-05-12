@@ -214,7 +214,9 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 	defer dbClient.Close()
 
 	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder(), "", "", "", "")
-	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
+	logs := p.lb.Emit(metadata.WithLogsResource(rb.Emit()))
+	stripEmptyLogAttrs(logs)
+	return logs, nil
 }
 
 func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (plog.Logs, error) {
@@ -223,7 +225,9 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 	p.collectTopQuery(ctx, p.clientFactory, maxRowsPerQuery, topNQuery, maxExplainEachInterval, &errs, p.logger)
 
 	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder(), "", "", "", "")
-	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
+	logs := p.lb.Emit(metadata.WithLogsResource(rb.Emit()))
+	stripEmptyLogAttrs(logs)
+	return logs, nil
 }
 
 func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient client, limit int64, mux *errsMux, logger *zap.Logger) {

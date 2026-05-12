@@ -217,6 +217,7 @@ func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (plog.Lo
 		dbEvents.ResourceLogs().MoveAndAppendTo(allEvents.ResourceLogs())
 	}
 
+	stripEmptyLogAttrs(allEvents)
 	return allEvents, nil
 }
 
