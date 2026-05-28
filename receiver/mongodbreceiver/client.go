@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-version"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -210,8 +209,8 @@ func (c *mongodbClient) GetReplicationInfo(ctx context.Context) (bson.M, error) 
 		return nil, fmt.Errorf("unable to get last oplog entry: %w", err)
 	}
 
-	firstTimestamp, firstOk := firstEntry["ts"].(primitive.Timestamp)
-	lastTimestamp, lastOk := lastEntry["ts"].(primitive.Timestamp)
+	firstTimestamp, firstOk := firstEntry["ts"].(bson.Timestamp)
+	lastTimestamp, lastOk := lastEntry["ts"].(bson.Timestamp)
 
 	if firstOk && lastOk {
 		firstTime := time.Unix(int64(firstTimestamp.T), 0)
