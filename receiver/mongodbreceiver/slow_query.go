@@ -9,8 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -62,7 +61,7 @@ type SlowOperationEvent struct {
 // Create a slow operation event from a BSON map
 func createSlowOperationEvent(slowOperation bson.M) SlowOperationEvent {
 	var event SlowOperationEvent
-	if ts, ok := slowOperation["ts"].(primitive.DateTime); ok {
+	if ts, ok := slowOperation["ts"].(bson.DateTime); ok {
 		event.Timestamp = ts.Time().UnixMilli() // Convert to milliseconds
 	}
 	event.Database = getStringValue(slowOperation, "dbname")
@@ -271,6 +270,25 @@ var RemovedKeys = map[string]struct{}{
 	"txnNumber":    {},
 }
 
+// toBsonM converts an arbitrary BSON document value to bson.M.
+// The v2 driver decodes nested documents inside a bson.M as bson.D, so any
+// path that does v.(bson.M) on nested fields panics. This normalizes either
+// concrete type into bson.M.
+func toBsonM(v interface{}) (bson.M, bool) {
+	switch x := v.(type) {
+	case bson.M:
+		return x, true
+	case bson.D:
+		m := make(bson.M, len(x))
+		for _, e := range x {
+			m[e.Key] = e.Value
+		}
+		return m, true
+	default:
+		return nil, false
+	}
+}
+
 // obfuscateCommand removes sensitive information from the command.
 func obfuscateCommand(command bson.M) bson.M {
 	// Create a new map to hold the obfuscated command
@@ -281,25 +299,29 @@ func obfuscateCommand(command bson.M) bson.M {
 			continue // Skip this key
 		}
 
-		// If the value is a nested bson.M, recursively obfuscate it
-		switch v := value.(type) {
-		case bson.M:
-			obfuscatedCommand[key] = obfuscateCommand(v)
-		case bson.A:
+		// If the value is a nested document (bson.M or bson.D from v2 driver),
+		// recursively obfuscate it.
+		if nested, ok := toBsonM(value); ok {
+			obfuscatedCommand[key] = obfuscateCommand(nested)
+			continue
+		}
+
+		if arr, ok := value.(bson.A); ok {
 			// If the value is a slice, process each element
-			obfuscatedSlice := make([]interface{}, len(v))
-			for i, item := range v {
-				if nestedMap, ok := item.(bson.M); ok {
+			obfuscatedSlice := make([]interface{}, len(arr))
+			for i, item := range arr {
+				if nestedMap, ok := toBsonM(item); ok {
 					obfuscatedSlice[i] = obfuscateCommand(nestedMap)
 				} else {
 					obfuscatedSlice[i] = item // Keep non-map items as they are
 				}
 			}
 			obfuscatedCommand[key] = obfuscatedSlice
-		default:
-			// For all other types, just copy the value
-			obfuscatedCommand[key] = value
+			continue
 		}
+
+		// For all other types, just copy the value
+		obfuscatedCommand[key] = value
 	}
 
 	return obfuscatedCommand
@@ -323,8 +345,17 @@ func computeExecPlanSignature(normalizedJsonPlan string) string {
 
 // Function to obfuscate a slow operation
 func obfuscateSlowOperation(slowOperation bson.M, dbName string) bson.M {
-	// Obfuscate the command
-	originalCommand := slowOperation["command"].(bson.M)
+	// Obfuscate the command. The v2 driver may give us bson.D here; normalize.
+	originalCommand, ok := toBsonM(slowOperation["command"])
+	if !ok {
+		// No command (or unexpected shape) — nothing to obfuscate.
+		slowOperation["dbname"] = dbName
+		slowOperation["obfuscated_command"] = bson.M{}
+		return slowOperation
+	}
+	// Pin the normalized form so downstream consumers (createSlowOperationEvent)
+	// can rely on bson.M.
+	slowOperation["command"] = originalCommand
 	obfuscatedCommand := obfuscateCommand(originalCommand)
 
 	// Compute query signature
@@ -341,7 +372,7 @@ func obfuscateSlowOperation(slowOperation bson.M, dbName string) bson.M {
 
 	// Handle originating command if it exists
 	if originatingCommand, ok := slowOperation["originatingCommand"]; ok {
-		if origCmdMap, ok := originatingCommand.(bson.M); ok {
+		if origCmdMap, ok := toBsonM(originatingCommand); ok {
 			slowOperation["originatingCommandComment"] = origCmdMap["comment"]
 			origCmdMap["command"] = obfuscateCommand(origCmdMap)
 			slowOperation["originatingCommand"] = origCmdMap
