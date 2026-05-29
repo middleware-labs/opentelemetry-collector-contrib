@@ -106,9 +106,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					KafkaClusterAlias: ResourceAttributeConfig{Enabled: true},
-				},
-				ResourceAttributes: ResourceAttributesConfig{
+					KafkaClusterAlias:   ResourceAttributeConfig{Enabled: true},
 					RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: true},
 				},
 			},
@@ -197,9 +195,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					},
 				},
 				ResourceAttributes: ResourceAttributesConfig{
-					KafkaClusterAlias: ResourceAttributeConfig{Enabled: false},
-				},
-				ResourceAttributes: ResourceAttributesConfig{
+					KafkaClusterAlias:   ResourceAttributeConfig{Enabled: false},
 					RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: false},
 				},
 			},
@@ -236,15 +232,14 @@ func TestResourceAttributesConfig(t *testing.T) {
 		{
 			name: "all_set",
 			want: ResourceAttributesConfig{
-				KafkaClusterAlias: ResourceAttributeConfig{Enabled: true},
+				KafkaClusterAlias:   ResourceAttributeConfig{Enabled: true},
 				RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: true},
-
 			},
 		},
 		{
 			name: "none_set",
 			want: ResourceAttributesConfig{
-				KafkaClusterAlias: ResourceAttributeConfig{Enabled: false},
+				KafkaClusterAlias:   ResourceAttributeConfig{Enabled: false},
 				RuntimeMetricsKafka: ResourceAttributeConfig{Enabled: false},
 			},
 		},
@@ -252,9 +247,8 @@ func TestResourceAttributesConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, tt.name)
-			if diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{})); diff != "" {
-                t.Errorf("Config mismatch (-expected +actual):\n%s", diff)
-            }
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ResourceAttributeConfig{}))
+			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
 }

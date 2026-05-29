@@ -406,7 +406,7 @@ The number of ports in the service
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
-| 1 | Gauge | Int | Development |
+|  | Gauge | Int | Development |
 
 ### k8s.serviceaccount.secret_count
 
@@ -651,32 +651,39 @@ The number of load balancer ingress points (external IPs/hostnames) assigned to 
 | container.image.tag | The container image tag | Any Str | true | - |
 | container.runtime | The container runtime used by Kubernetes Node. | Any Str | false | - |
 | container.runtime.version | The version of container runtime used by Kubernetes Node. | Any Str | false | - |
-| k8s.cluster.name | The k8s cluster name. | Any Str | true |
-| k8s.clusterrole.annotations | Annotations of the Cluster Role. | Any Str | true |
-| k8s.clusterrole.labels | Labels of the Cluster Role. | Any Str | true |
-| k8s.clusterrole.name | The name of the Cluster Role. | Any Str | true |
-| k8s.clusterrole.rules | Rules of the Cluster Role. | Any Str | true |
-| k8s.clusterrole.start_time | The start time of the Cluster Role. | Any Str | true |
-| k8s.clusterrole.type | The type of the Cluster Role. | Any Str | true |
-| k8s.clusterrole.uid | The UID of the Role. | Any Str | true |
-| k8s.clusterrolebinding.annotations | Annotations of the Cluster Role Binding. | Any Str | true |
-| k8s.clusterrolebinding.labels | Labels of the Cluster Role Binding. | Any Str | true |
-| k8s.clusterrolebinding.name | The name of the Cluster Role Binding. | Any Str | true |
-| k8s.clusterrolebinding.role_ref | RoleRef can reference a Cluster Role. | Any Str | true |
-| k8s.clusterrolebinding.start_time | The start time of the Cluster Role Binding. | Any Str | true |
-| k8s.clusterrolebinding.subjects | Subjects holds references to the objects, the cluster role applies to. | Any Str | true |
-| k8s.clusterrolebinding.type | The type of the Cluster Role Binding. | Any Str | true |
-| k8s.clusterrolebinding.uid | The UID of the Cluster Role Binding. | Any Str | true |
+| k8s.cluster.name | The k8s cluster name. | Any Str | true | - |
+| k8s.clusterrole.annotations | Annotations of the Cluster Role. | Any Str | true | - |
+| k8s.clusterrole.labels | Labels of the Cluster Role. | Any Str | true | - |
+| k8s.clusterrole.name | The name of the Cluster Role. | Any Str | true | - |
+| k8s.clusterrole.rules | Rules of the Cluster Role. | Any Str | true | - |
+| k8s.clusterrole.start_time | The start time of the Cluster Role. | Any Str | true | - |
+| k8s.clusterrole.type | The type of the Cluster Role. | Any Str | true | - |
+| k8s.clusterrole.uid | The UID of the Role. | Any Str | true | - |
+| k8s.clusterrolebinding.annotations | Annotations of the Cluster Role Binding. | Any Str | true | - |
+| k8s.clusterrolebinding.labels | Labels of the Cluster Role Binding. | Any Str | true | - |
+| k8s.clusterrolebinding.name | The name of the Cluster Role Binding. | Any Str | true | - |
+| k8s.clusterrolebinding.role_ref | RoleRef can reference a Cluster Role. | Any Str | true | - |
+| k8s.clusterrolebinding.start_time | The start time of the Cluster Role Binding. | Any Str | true | - |
+| k8s.clusterrolebinding.subjects | Subjects holds references to the objects, the cluster role applies to. | Any Str | true | - |
+| k8s.clusterrolebinding.type | The type of the Cluster Role Binding. | Any Str | true | - |
+| k8s.clusterrolebinding.uid | The UID of the Cluster Role Binding. | Any Str | true | - |
 | k8s.container.name | The k8s container name | Any Str | true | - |
-| k8s.container.status.current_waiting_reason | Current waiting reason of the Container. | Any Str | true |
-| k8s.container.status.last_terminated_reason | Last terminated reason of a container. | Any Str | true | - |
-| k8s.cronjob.name | The k8s CronJob name | Any Str | true |
+| k8s.container.status.current_waiting_reason | Current waiting reason of the Container. | Any Str | true | - |
+| k8s.container.status.last_terminated_reason | Last terminated reason of a container. | Any Str | false | - |
+| k8s.cronjob.concurrency_policy | The concurrency policy of the k8s CronJob. | Any Str | true | - |
+| k8s.cronjob.last_schedule_time | The time when the CronJob was last scheduled. | Any Str | true | - |
+| k8s.cronjob.last_successful_time | The time when the CronJob last completed successfully. | Any Str | true | - |
+| k8s.cronjob.name | The k8s CronJob name | Any Str | true | - |
+| k8s.cronjob.schedule | The schedule of the k8s CronJob in Cron format. | Any Str | true | - |
 | k8s.cronjob.start_time | The start time of the Cronjob. | Any Str | true | - |
+| k8s.cronjob.suspend | The suspension state of the k8s CronJob. | Any Str | true | - |
 | k8s.cronjob.uid | The k8s CronJob uid. | Any Str | true | - |
 | k8s.daemonset.name | The k8s daemonset name. | Any Str | true | - |
-| k8s.daemonset.start_time | The start time of the Daemonset. | Any Str | true |
+| k8s.daemonset.selectors | The selectors used to identify which nodes the DaemonSet pods should be scheduled on. | Any Str | true | - |
+| k8s.daemonset.start_time | The start time of the Daemonset. | Any Str | true | - |
+| k8s.daemonset.strategy | The deployment strategy used for DaemonSet updates (RollingUpdate or OnDelete). | Any Str | true | - |
 | k8s.daemonset.uid | The k8s daemonset uid. | Any Str | true | - |
-| k8s.deployment.name | The name of the Deployment. | Any Str | true |
+| k8s.deployment.name | The name of the Deployment. | Any Str | true | - |
 | k8s.deployment.start_time | The start time of the Deployment. | Any Str | true | - |
 | k8s.deployment.uid | The UID of the Deployment. | Any Str | true | - |
 | k8s.hpa.name | The k8s hpa name. | Any Str | true | - |
@@ -684,44 +691,101 @@ The number of load balancer ingress points (external IPs/hostnames) assigned to 
 | k8s.hpa.scaletargetref.kind | The kind of the target resource to scale for the HorizontalPodAutoscaler. | Any Str | false | - |
 | k8s.hpa.scaletargetref.name | The name of the target resource to scale for the HorizontalPodAutoscaler. | Any Str | false | - |
 | k8s.hpa.uid | The k8s hpa uid. | Any Str | true | - |
-| k8s.ingress.annotations | Annotations of the Ingress. | Any Str | true |
-| k8s.ingress.labels | Labels of the Ingress. | Any Str | true |
-| k8s.ingress.name | The name of the Ingress. | Any Str | true |
-| k8s.ingress.namespace | The namespace of the Ingress. | Any Str | true |
-| k8s.ingress.rules | Rules of the Ingress. | Any Str | true |
-| k8s.ingress.start_time | The start time of the Ingress. | Any Str | true |
-| k8s.ingress.type | The type of the Ingress. | Any Str | true |
-| k8s.ingress.uid | The UID of the Ingress. | Any Str | true |
+| k8s.ingress.annotations | Annotations of the Ingress. | Any Str | true | - |
+| k8s.ingress.labels | Labels of the Ingress. | Any Str | true | - |
+| k8s.ingress.name | The name of the Ingress. | Any Str | true | - |
+| k8s.ingress.namespace | The namespace of the Ingress. | Any Str | true | - |
+| k8s.ingress.rules | Rules of the Ingress. | Any Str | true | - |
+| k8s.ingress.start_time | The start time of the Ingress. | Any Str | true | - |
+| k8s.ingress.type | The type of the Ingress. | Any Str | true | - |
+| k8s.ingress.uid | The UID of the Ingress. | Any Str | true | - |
+| k8s.job.end_time | The end time of the Job. | Any Str | true | - |
 | k8s.job.name | The k8s pod name. | Any Str | true | - |
-| k8s.job.start_time | The start time of the Job. | Any Str | true |
+| k8s.job.start_time | The start time of the Job. | Any Str | true | - |
 | k8s.job.uid | The k8s job uid. | Any Str | true | - |
 | k8s.kubelet.version | The version of Kubelet running on the node. | Any Str | false | - |
-| k8s.namespace.name | The k8s namespace name. | Any Str | true |
+| k8s.namespace.name | The k8s namespace name. | Any Str | true | - |
 | k8s.namespace.start_time | The start time of the Namespace. | Any Str | true | - |
 | k8s.namespace.uid | The k8s namespace uid. | Any Str | true | - |
 | k8s.node.name | The k8s node name. | Any Str | true | - |
-| k8s.node.start_time | The start time of the Node. | Any Str | true |
+| k8s.node.start_time | The start time of the Node. | Any Str | true | - |
 | k8s.node.uid | The k8s node uid. | Any Str | true | - |
+| k8s.persistentvolume.access_modes | The access modes of the Persistent Volume. | Any Str | true | - |
+| k8s.persistentvolume.annotations | The annotations of the Persistent Volume. | Any Str | true | - |
+| k8s.persistentvolume.finalizers | Finalizers of the Persistent Volume. | Any Str | true | - |
+| k8s.persistentvolume.labels | Labels of the Persistent Volume | Any Str | true | - |
 | k8s.persistentvolume.name | The name of the PersistentVolume. | Any Str | true | - |
+| k8s.persistentvolume.namespace | The namespace of the Persistent Volume | Any Str | true | - |
+| k8s.persistentvolume.phase | The phase of the Persistent Volume. | Any Str | true | - |
 | k8s.persistentvolume.reclaim_policy | The reclaim policy of the PersistentVolume. | Str: ``Delete``, ``Recycle``, ``Retain`` | false | - |
+| k8s.persistentvolume.start_time | The start time of the Persistent Volume. | Any Str | true | - |
+| k8s.persistentvolume.storage_class | The storage class of the Persistent Volume. | Any Str | true | - |
+| k8s.persistentvolume.type | The type of the Persistent Volume. | Any Str | true | - |
 | k8s.persistentvolume.uid | The UID of the PersistentVolume. | Any Str | true | - |
+| k8s.persistentvolume.volume_mode | The volume mode of the Persistent Volume. | Any Str | true | - |
+| k8s.persistentvolumeclaim.access_modes | Access modes of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.annotations | The annotations of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.finalizers | Finalizers of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.labels | Labels of the Persistent Volume Claim. | Any Str | true | - |
 | k8s.persistentvolumeclaim.name | The name of the PersistentVolumeClaim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.namespace | The namespace of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.phase | The phase of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.selector | The selector of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.start_time | The start time of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.storage_class | The storage class of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.type | The type of the Persistent Volume Claim. | Any Str | true | - |
 | k8s.persistentvolumeclaim.uid | The UID of the PersistentVolumeClaim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.volume_mode | The volume mode of the Persistent Volume Claim. | Any Str | true | - |
+| k8s.persistentvolumeclaim.volume_name | The volume name of the Persistent Volume Claim. | Any Str | true | - |
 | k8s.pod.name | The k8s pod name. | Any Str | true | - |
 | k8s.pod.qos_class | The k8s pod qos class name. One of Guaranteed, Burstable, BestEffort. | Any Str | false | - |
+| k8s.pod.start_time | The start time of the Pod. | Any Str | true | - |
 | k8s.pod.uid | The k8s pod uid. | Any Str | true | - |
 | k8s.replicaset.name | The k8s replicaset name | Any Str | true | - |
+| k8s.replicaset.start_time | The start time of the Replicaset. | Any Str | true | - |
 | k8s.replicaset.uid | The k8s replicaset uid | Any Str | true | - |
 | k8s.replicationcontroller.name | The k8s replicationcontroller name. | Any Str | true | - |
 | k8s.replicationcontroller.uid | The k8s replicationcontroller uid. | Any Str | true | - |
 | k8s.resourcequota.name | The k8s resourcequota name. | Any Str | true | - |
 | k8s.resourcequota.uid | The k8s resourcequota uid. | Any Str | true | - |
+| k8s.role.annotations | Annotations of the Role. | Any Str | true | - |
+| k8s.role.labels | Labels of the Role. | Any Str | true | - |
+| k8s.role.name | The name of the Role. | Any Str | true | - |
+| k8s.role.namespace | The namespace of the Role. | Any Str | true | - |
+| k8s.role.rules | Rules of the Role. | Any Str | true | - |
+| k8s.role.start_time | The start time of the Role. | Any Str | true | - |
+| k8s.role.type | The type of the Role. | Any Str | true | - |
+| k8s.role.uid | The UID of the Role. | Any Str | true | - |
+| k8s.rolebinding.annotations | Annotations of the Role Binding. | Any Str | true | - |
+| k8s.rolebinding.labels | Labels of the Role Binding. | Any Str | true | - |
+| k8s.rolebinding.name | The name of the Role Binding. | Any Str | true | - |
+| k8s.rolebinding.namespace | The namespace of the Role Binding. | Any Str | true | - |
+| k8s.rolebinding.role_ref | RoleRef can reference a Role in the current namespace. | Any Str | true | - |
+| k8s.rolebinding.start_time | The start time of the Role Binding. | Any Str | true | - |
+| k8s.rolebinding.subjects | Subjects holds references to the objects, the role applies to. | Any Str | true | - |
+| k8s.rolebinding.type | The type of the Role Binding. | Any Str | true | - |
+| k8s.rolebinding.uid | The UID of the Role Binding. | Any Str | true | - |
+| k8s.service.cluster_ip | The cluster IP of the service | Any Str | true | - |
 | k8s.service.name | The k8s service name. | Any Str | true | - |
+| k8s.service.namespace | The namespace of the service | Any Str | true | - |
 | k8s.service.publish_not_ready_addresses | Whether the Service publishes not-ready endpoints. | Any Bool | false | - |
 | k8s.service.traffic_distribution | The traffic distribution policy for the Service (e.g., PreferClose). | Any Str | false | - |
 | k8s.service.type | The k8s service type. | Any Str | true | - |
 | k8s.service.uid | The k8s service uid. | Any Str | true | - |
+| k8s.serviceaccount.annotations | Annotations of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.automount_serviceaccount_token | Automount service account token of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.image_pull_secrets | Image pull secrets of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.labels | Labels of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.name | The name of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.namespace | The namespace of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.secrets | Secrets of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.start_time | The start time of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.type | The type of the Service Account. | Any Str | true | - |
+| k8s.serviceaccount.uid | The UID of the Service Account. | Any Str | true | - |
 | k8s.statefulset.name | The k8s statefulset name. | Any Str | true | - |
+| k8s.statefulset.pod_management_policy | The k8s statefulset Pod creation and termination order policy. | Any Str | true | - |
+| k8s.statefulset.service_name | The k8s statefulset service name. | Any Str | true | - |
+| k8s.statefulset.start_time | The start time of the Statefulset. | Any Str | true | - |
 | k8s.statefulset.uid | The k8s statefulset uid. | Any Str | true | - |
 | k8s.storageclass.name | The name of the StorageClass. | Any Str | true | - |
 | openshift.clusterquota.name | The k8s ClusterResourceQuota name. | Any Str | true | - |
@@ -732,6 +796,32 @@ The number of load balancer ingress points (external IPs/hostnames) assigned to 
 ## Entities
 
 The following entities are defined for this component:
+
+### k8s.ingress
+
+A Kubernetes Ingress object
+
+**Stability:** Development
+
+**Identifying Attributes:**
+- `k8s.ingress.uid`
+
+**Descriptive Attributes:**
+- `k8s.ingress.name`
+- `k8s.ingress.namespace`
+
+### k8s.serviceaccount
+
+A Kubernetes service account
+
+**Stability:** Development
+
+**Identifying Attributes:**
+- `k8s.serviceaccount.uid`
+
+**Descriptive Attributes:**
+- `k8s.serviceaccount.name`
+- `k8s.serviceaccount.namespace`
 
 ### k8s.namespace
 
@@ -744,6 +834,8 @@ A Kubernetes namespace
 
 **Descriptive Attributes:**
 - `k8s.namespace.name`
+- `k8s.cluster.name`
+- `k8s.namespace.start_time`
 
 ### k8s.node
 
@@ -761,6 +853,54 @@ A Kubernetes node
 - `container.runtime.version`
 - `os.description`
 - `os.type`
+
+### k8s.role
+
+A Kubernetes role
+
+**Stability:** Development
+
+**Identifying Attributes:**
+- `k8s.role.uid`
+
+**Descriptive Attributes:**
+- `k8s.role.name`
+
+### k8s.rolebinding
+
+A Kubernetes role binding
+
+**Stability:** Development
+
+**Identifying Attributes:**
+- `k8s.rolebinding.uid`
+
+**Descriptive Attributes:**
+- `k8s.rolebinding.name`
+
+### k8s.clusterrole
+
+A Kubernetes cluster role
+
+**Stability:** Development
+
+**Identifying Attributes:**
+- `k8s.clusterrole.uid`
+
+**Descriptive Attributes:**
+- `k8s.clusterrole.name`
+
+### k8s.clusterrolebinding
+
+A Kubernetes cluster role binding
+
+**Stability:** Development
+
+**Identifying Attributes:**
+- `k8s.clusterrolebinding.uid`
+
+**Descriptive Attributes:**
+- `k8s.clusterrolebinding.name`
 
 ### k8s.deployment
 
@@ -952,82 +1092,3 @@ An OpenShift cluster resource quota
 
 **Descriptive Attributes:**
 - `openshift.clusterquota.name`
-| k8s.node.uid | The k8s node uid. | Any Str | true |
-| k8s.persistentvolume.access_modes | The access modes of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.annotations | The annotations of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.finalizers | Finalizers of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.labels | Labels of the Persistent Volume | Any Str | true |
-| k8s.persistentvolume.name | The name of the Persistent Volume | Any Str | true |
-| k8s.persistentvolume.namespace | The namespace of the Persistent Volume | Any Str | true |
-| k8s.persistentvolume.phase | The phase of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.reclaim_policy | The reclaim policy of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.start_time | The start time of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.storage_class | The storage class of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.type | The type of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolume.uid | The UID of the Persistent Volume | Any Str | true |
-| k8s.persistentvolume.volume_mode | The volume mode of the Persistent Volume. | Any Str | true |
-| k8s.persistentvolumeclaim.access_modes | Access modes of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.annotations | The annotations of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.finalizers | Finalizers of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.labels | Labels of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.name | The Name of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.namespace | The namespace of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.phase | The phase of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.selector | The selector of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.start_time | The start time of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.storage_class | The storage class of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.type | The type of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.uid | The UID of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.volume_mode | The volume mode of the Persistent Volume Claim. | Any Str | true |
-| k8s.persistentvolumeclaim.volume_name | The volume name of the Persistent Volume Claim. | Any Str | true |
-| k8s.pod.name | The k8s pod name. | Any Str | true |
-| k8s.pod.qos_class | The k8s pod qos class name. One of Guaranteed, Burstable, BestEffort. | Any Str | false |
-| k8s.pod.start_time | The start time of the Pod. | Any Str | true |
-| k8s.pod.uid | The k8s pod uid. | Any Str | true |
-| k8s.replicaset.name | The k8s replicaset name | Any Str | true |
-| k8s.replicaset.start_time | The start time of the Replicaset. | Any Str | true |
-| k8s.replicaset.uid | The k8s replicaset uid | Any Str | true |
-| k8s.replicationcontroller.name | The k8s replicationcontroller name. | Any Str | true |
-| k8s.replicationcontroller.uid | The k8s replicationcontroller uid. | Any Str | true |
-| k8s.resourcequota.name | The k8s resourcequota name. | Any Str | true |
-| k8s.resourcequota.uid | The k8s resourcequota uid. | Any Str | true |
-| k8s.role.annotations | Annotations of the Role. | Any Str | true |
-| k8s.role.labels | Labels of the Role. | Any Str | true |
-| k8s.role.name | The name of the Role. | Any Str | true |
-| k8s.role.namespace | The namespace of the Role. | Any Str | true |
-| k8s.role.rules | Rules of the Role. | Any Str | true |
-| k8s.role.start_time | The start time of the Role. | Any Str | true |
-| k8s.role.type | The type of the Role. | Any Str | true |
-| k8s.role.uid | The UID of the Role. | Any Str | true |
-| k8s.rolebinding.annotations | Annotations of the Role Binding. | Any Str | true |
-| k8s.rolebinding.labels | Labels of the Role Binding. | Any Str | true |
-| k8s.rolebinding.name | The name of the Role Binding. | Any Str | true |
-| k8s.rolebinding.namespace | The namespace of the Role Binding. | Any Str | true |
-| k8s.rolebinding.role_ref | RoleRef can reference a Role in the current namespace. | Any Str | true |
-| k8s.rolebinding.start_time | The start time of the Role Binding. | Any Str | true |
-| k8s.rolebinding.subjects | Subjects holds references to the objects, the role applies to. | Any Str | true |
-| k8s.rolebinding.type | The type of the Role Binding. | Any Str | true |
-| k8s.rolebinding.uid | The UID of the Role Binding. | Any Str | true |
-| k8s.service.cluster_ip | The cluster IP of the service | Any Str | true |
-| k8s.service.name | The name of the service | Any Str | true |
-| k8s.service.namespace | The namespace of the service | Any Str | true |
-| k8s.service.type | The type of the service | Any Str | true |
-| k8s.service.uid | The UID of the service | Any Str | true |
-| k8s.service_account.name | The name of the Service-account | Any Str | true |
-| k8s.serviceaccount.annotations | Annotations of the Service Account. | Any Str | true |
-| k8s.serviceaccount.automount_serviceaccount_token | Automount service account token of the Service Account. | Any Str | true |
-| k8s.serviceaccount.image_pull_secrets | Image pull secrets of the Service Account. | Any Str | true |
-| k8s.serviceaccount.labels | Labels of the Service Account. | Any Str | true |
-| k8s.serviceaccount.name | The name of the Service Account. | Any Str | true |
-| k8s.serviceaccount.namespace | The namespace of the Service Account. | Any Str | true |
-| k8s.serviceaccount.secrets | Secrets of the Service Account. | Any Str | true |
-| k8s.serviceaccount.start_time | The start time of the Service Account. | Any Str | true |
-| k8s.serviceaccount.type | The type of the Service Account. | Any Str | true |
-| k8s.serviceaccount.uid | The UID of the Service Account. | Any Str | true |
-| k8s.statefulset.name | The k8s statefulset name. | Any Str | true |
-| k8s.statefulset.start_time | The start time of the Statefulset. | Any Str | true |
-| k8s.statefulset.uid | The k8s statefulset uid. | Any Str | true |
-| openshift.clusterquota.name | The k8s ClusterResourceQuota name. | Any Str | true |
-| openshift.clusterquota.uid | The k8s ClusterResourceQuota uid. | Any Str | true |
-| os.description | The os description used by Kubernetes Node. | Any Str | false |
-| os.type | The os type used by Kubernetes Node. | Any Str | false |

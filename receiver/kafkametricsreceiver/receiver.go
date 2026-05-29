@@ -42,10 +42,9 @@ var newMetricsReceiver = func(
 		if !ok {
 			return nil, fmt.Errorf("no scraper found for key: %s", key)
 		}
-			s, err := factory(ctx, config, params)
-			if err != nil {
-				return nil, err
-
+		s, err := factory(ctx, config, params)
+		if err != nil {
+			return nil, err
 		}
 		scraperControllerOptions = append(scraperControllerOptions, scraperhelper.AddMetricsScraper(metadata.Type, s))
 	}

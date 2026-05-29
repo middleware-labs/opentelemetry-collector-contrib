@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	defaultStatementEventsDigestTextLimit = 1024
+	defaultStatementEventsDigestTextLimit = 120
 	defaultStatementEventsLimit           = 250
 	defaultStatementEventsTimeLimit       = 24 * time.Hour
 )

@@ -1901,23 +1901,13 @@ func (ms *ContainerRestartsMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
-// ContainerStateHealthStatusMetricAttributeKey specifies the key of an attribute for the container.state.health.status metric.
-type ContainerStateHealthStatusMetricAttributeKey string
-
-const (
-	ContainerStateHealthStatusMetricAttributeKeyContainerStateHealthState ContainerStateHealthStatusMetricAttributeKey = "container.state.health.state"
-)
-
-// ContainerStateHealthStatusMetricConfig provides config for the container.state.health.status metric.
-type ContainerStateHealthStatusMetricConfig struct {
+// ContainerStatusMetricConfig provides config for the container.status metric.
+type ContainerStatusMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
 	enabledSetByUser bool
-
-	AggregationStrategy string                                         `mapstructure:"aggregation_strategy"`
-	EnabledAttributes   []ContainerStateHealthStatusMetricAttributeKey `mapstructure:"attributes"`
 }
 
-func (ms *ContainerStateHealthStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
+func (ms *ContainerStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -1928,72 +1918,6 @@ func (ms *ContainerStateHealthStatusMetricConfig) Unmarshal(parser *confmap.Conf
 	}
 
 	ms.enabledSetByUser = parser.IsSet("enabled")
-	return nil
-}
-
-func (ms *ContainerStateHealthStatusMetricConfig) Validate() error {
-	for _, val := range ms.EnabledAttributes {
-		switch val {
-		case ContainerStateHealthStatusMetricAttributeKeyContainerStateHealthState:
-		default:
-			return fmt.Errorf("metric container.state.health.status doesn't have an attribute %v, valid attributes: [container.state.health.state]", val)
-		}
-	}
-
-	switch ms.AggregationStrategy {
-	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
-	default:
-		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
-	}
-
-	return nil
-}
-
-// ContainerStateStatusMetricAttributeKey specifies the key of an attribute for the container.state.status metric.
-type ContainerStateStatusMetricAttributeKey string
-
-const (
-	ContainerStateStatusMetricAttributeKeyContainerStateStatus ContainerStateStatusMetricAttributeKey = "container.state.status"
-)
-
-// ContainerStateStatusMetricConfig provides config for the container.state.status metric.
-type ContainerStateStatusMetricConfig struct {
-	Enabled          bool `mapstructure:"enabled"`
-	enabledSetByUser bool
-
-	AggregationStrategy string                                   `mapstructure:"aggregation_strategy"`
-	EnabledAttributes   []ContainerStateStatusMetricAttributeKey `mapstructure:"attributes"`
-}
-
-func (ms *ContainerStateStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
-	if parser == nil {
-		return nil
-	}
-
-	err := parser.Unmarshal(ms)
-	if err != nil {
-		return err
-	}
-
-	ms.enabledSetByUser = parser.IsSet("enabled")
-	return nil
-}
-
-func (ms *ContainerStateStatusMetricConfig) Validate() error {
-	for _, val := range ms.EnabledAttributes {
-		switch val {
-		case ContainerStateStatusMetricAttributeKeyContainerStateStatus:
-		default:
-			return fmt.Errorf("metric container.state.status doesn't have an attribute %v, valid attributes: [container.state.status]", val)
-		}
-	}
-
-	switch ms.AggregationStrategy {
-	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
-	default:
-		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
-	}
-
 	return nil
 }
 
@@ -2089,8 +2013,7 @@ type MetricsConfig struct {
 	ContainerPidsCount                         ContainerPidsCountMetricConfig                         `mapstructure:"container.pids.count"`
 	ContainerPidsLimit                         ContainerPidsLimitMetricConfig                         `mapstructure:"container.pids.limit"`
 	ContainerRestarts                          ContainerRestartsMetricConfig                          `mapstructure:"container.restarts"`
-	ContainerStateHealthStatus                 ContainerStateHealthStatusMetricConfig                 `mapstructure:"container.state.health.status"`
-	ContainerStateStatus                       ContainerStateStatusMetricConfig                       `mapstructure:"container.state.status"`
+	ContainerStatus                            ContainerStatusMetricConfig                            `mapstructure:"container.status"`
 	ContainerUptime                            ContainerUptimeMetricConfig                            `mapstructure:"container.uptime"`
 }
 
@@ -2340,15 +2263,8 @@ func DefaultMetricsConfig() MetricsConfig {
 		ContainerRestarts: ContainerRestartsMetricConfig{
 			Enabled: false,
 		},
-		ContainerStateHealthStatus: ContainerStateHealthStatusMetricConfig{
-			Enabled:             false,
-			AggregationStrategy: AggregationStrategySum,
-			EnabledAttributes:   []ContainerStateHealthStatusMetricAttributeKey{ContainerStateHealthStatusMetricAttributeKeyContainerStateHealthState},
-		},
-		ContainerStateStatus: ContainerStateStatusMetricConfig{
-			Enabled:             false,
-			AggregationStrategy: AggregationStrategySum,
-			EnabledAttributes:   []ContainerStateStatusMetricAttributeKey{ContainerStateStatusMetricAttributeKeyContainerStateStatus},
+		ContainerStatus: ContainerStatusMetricConfig{
+			Enabled: true,
 		},
 		ContainerUptime: ContainerUptimeMetricConfig{
 			Enabled: false,
@@ -2391,6 +2307,7 @@ type ResourceAttributesConfig struct {
 	ContainerImageName   ResourceAttributeConfig `mapstructure:"container.image.name"`
 	ContainerName        ResourceAttributeConfig `mapstructure:"container.name"`
 	ContainerRuntime     ResourceAttributeConfig `mapstructure:"container.runtime"`
+	ContainerStartedOn   ResourceAttributeConfig `mapstructure:"container.started_on"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -2416,6 +2333,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		ContainerRuntime: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		ContainerStartedOn: ResourceAttributeConfig{
+			Enabled: true,
+		},
 	}
 }
 
@@ -2430,4 +2350,9 @@ func NewDefaultMetricsBuilderConfig() MetricsBuilderConfig {
 		Metrics:            DefaultMetricsConfig(),
 		ResourceAttributes: DefaultResourceAttributesConfig(),
 	}
+}
+
+// Deprecated: Use NewDefaultMetricsBuilderConfig.
+func DefaultMetricsBuilderConfig() MetricsBuilderConfig {
+	return NewDefaultMetricsBuilderConfig()
 }

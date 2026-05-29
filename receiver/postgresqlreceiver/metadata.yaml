@@ -53,10 +53,6 @@ resource_attributes:
     description: The table name.
     enabled: true
     type: string
-  postgresql.db.version:
-    description: The version of postgresql databse
-    enabled: true
-    type: string
   service.instance.id:
     description: A unique identifier of the PostgreSQL instance in the format host:port (defaults to 'unknown:5432' in case of error in generating this value).
     enabled: true
@@ -593,6 +589,7 @@ metrics:
       value_type: int
     extended_documentation: |
       This metric requires WAL to be enabled with at least one replica.
+
 tests:
   config:
   goleak:
@@ -605,15 +602,3 @@ tests:
         # Can be removed once the following issue is resolved:
         # https://github.com/snowflakedb/gosnowflake/issues/1369
         - "github.com/snowflakedb/gosnowflake.initOCSPCacheClearer.func1"
-
-      This metric requires WAL to be enabled with at least one replica.
-  postgresql.connection.count:
-    enabled: true
-    description: The number of active connections to this database. If DBM is enabled,
-      this metric is tagged with state, app, db and user
-    unit: '{connection}'
-    gauge:
-      value_type: int
-
-tests:
-  config:

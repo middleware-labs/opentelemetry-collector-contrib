@@ -55,7 +55,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, node *corev1.Node, ts pcommon.Ti
 	e.SetK8sNodeName(node.Name)
 	e.SetK8sKubeletVersion(node.Status.NodeInfo.KubeletVersion)
 	e.SetK8sNodeStartTime(node.GetCreationTimestamp().String())
-    e.SetK8sClusterName("unknown")
+	e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sNode(e)
 	for _, c := range node.Status.Conditions {
 		eb.RecordK8sNodeConditionDataPoint(ts, nodeConditionValues[c.Status], string(c.Type))

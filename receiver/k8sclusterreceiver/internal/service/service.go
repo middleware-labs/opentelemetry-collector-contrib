@@ -7,12 +7,6 @@ import (
 	"strings"
 	"time"
 
-	resourcepb "github.com/census-instrumentation/opencensus-proto/gen-go/resource/v1"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
-
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	conventions "go.opentelemetry.io/collector/semconv/v1.6.1"
-	"go.uber.org/zap"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -22,7 +16,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/constants"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
-	imetadata "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
 )
 
 func shouldSkipAnnotation(key string) bool {
@@ -47,11 +40,10 @@ func Transform(service *corev1.Service) *corev1.Service {
 	return &corev1.Service{
 		ObjectMeta: om,
 		Spec: corev1.ServiceSpec{
-			Selector:  service.Spec.Selector,
-			ClusterIP: service.Spec.ClusterIP,
-			Type:      service.Spec.Type,
-			Ports:     service.Spec.Ports,
+			Selector:                 service.Spec.Selector,
+			ClusterIP:                service.Spec.ClusterIP,
 			Type:                     service.Spec.Type,
+			Ports:                    service.Spec.Ports,
 			PublishNotReadyAddresses: service.Spec.PublishNotReadyAddresses,
 			TrafficDistribution:      service.Spec.TrafficDistribution,
 		},
@@ -175,17 +167,4 @@ func GetPodServiceTags(pod *corev1.Pod, services map[string]cache.Store) map[str
 		}
 	}
 	return properties
-}
-
-func RecordMetrics(mb *imetadata.MetricsBuilder, svc *corev1.Service, ts pcommon.Timestamp) {
-	mb.RecordK8sServicePortCountDataPoint(ts, int64(len(svc.Spec.Ports)))
-
-	rb := mb.NewResourceBuilder()
-	rb.SetK8sServiceUID(string(svc.UID))
-	rb.SetK8sServiceName(svc.ObjectMeta.Name)
-	rb.SetK8sServiceNamespace(svc.ObjectMeta.Namespace)
-	rb.SetK8sServiceClusterIP(svc.Spec.ClusterIP)
-	rb.SetK8sServiceType(string(svc.Spec.Type))
-	rb.SetK8sClusterName("unknown")
-	mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }

@@ -8,8 +8,73 @@ all_set:
       attributes: ["state"]
     nginx.connections_handled:
       enabled: true
+    nginx.load_timestamp:
+      enabled: true
+    nginx.net.reading:
+      enabled: true
+    nginx.net.waiting:
+      enabled: true
+    nginx.net.writing:
+      enabled: true
     nginx.requests:
       enabled: true
+    nginx.server_zone.received:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.server_zone.responses.1xx:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.server_zone.responses.2xx:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.server_zone.responses.3xx:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.server_zone.responses.4xx:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.server_zone.responses.5xx:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.server_zone.sent:
+      enabled: true
+      attributes: ["serverzone_name"]
+    nginx.upstream.peers.backup:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.health_checks.last_passed:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.received:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.requests:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.response_time:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.responses.1xx:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.responses.2xx:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.responses.3xx:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.responses.4xx:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.responses.5xx:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.sent:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
+    nginx.upstream.peers.weight:
+      enabled: true
+      attributes: ["upstream_block_name","upstream_peer_address"]
 reaggregate_set:
   metrics:
     nginx.connections_accepted:
@@ -31,42 +96,61 @@ reaggregate_set:
       enabled: true
     nginx.server_zone.received:
       enabled: true
+      attributes: []
     nginx.server_zone.responses.1xx:
       enabled: true
+      attributes: []
     nginx.server_zone.responses.2xx:
       enabled: true
+      attributes: []
     nginx.server_zone.responses.3xx:
       enabled: true
+      attributes: []
     nginx.server_zone.responses.4xx:
       enabled: true
+      attributes: []
     nginx.server_zone.responses.5xx:
       enabled: true
+      attributes: []
     nginx.server_zone.sent:
       enabled: true
+      attributes: []
     nginx.upstream.peers.backup:
       enabled: true
+      attributes: []
     nginx.upstream.peers.health_checks.last_passed:
       enabled: true
+      attributes: []
     nginx.upstream.peers.received:
       enabled: true
+      attributes: []
     nginx.upstream.peers.requests:
       enabled: true
+      attributes: []
     nginx.upstream.peers.response_time:
       enabled: true
+      attributes: []
     nginx.upstream.peers.responses.1xx:
       enabled: true
+      attributes: []
     nginx.upstream.peers.responses.2xx:
       enabled: true
+      attributes: []
     nginx.upstream.peers.responses.3xx:
       enabled: true
+      attributes: []
     nginx.upstream.peers.responses.4xx:
       enabled: true
+      attributes: []
     nginx.upstream.peers.responses.5xx:
       enabled: true
+      attributes: []
     nginx.upstream.peers.sent:
       enabled: true
+      attributes: []
     nginx.upstream.peers.weight:
       enabled: true
+      attributes: []
 none_set:
   metrics:
     nginx.connections_accepted:
@@ -88,39 +172,58 @@ none_set:
       enabled: false
     nginx.server_zone.received:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.server_zone.responses.1xx:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.server_zone.responses.2xx:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.server_zone.responses.3xx:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.server_zone.responses.4xx:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.server_zone.responses.5xx:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.server_zone.sent:
       enabled: false
+      attributes: ["serverzone_name"]
     nginx.upstream.peers.backup:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.health_checks.last_passed:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.received:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.requests:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.response_time:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.responses.1xx:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.responses.2xx:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.responses.3xx:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.responses.4xx:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.responses.5xx:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.sent:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]
     nginx.upstream.peers.weight:
       enabled: false
+      attributes: ["upstream_block_name","upstream_peer_address"]

@@ -37,8 +37,115 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					NginxConnectionsHandled: NginxConnectionsHandledMetricConfig{
 						Enabled: true,
 					},
+					NginxLoadTimestamp: NginxLoadTimestampMetricConfig{
+						Enabled: true,
+					},
+					NginxNetReading: NginxNetReadingMetricConfig{
+						Enabled: true,
+					},
+					NginxNetWaiting: NginxNetWaitingMetricConfig{
+						Enabled: true,
+					},
+					NginxNetWriting: NginxNetWritingMetricConfig{
+						Enabled: true,
+					},
 					NginxRequests: NginxRequestsMetricConfig{
 						Enabled: true,
+					},
+					NginxServerZoneReceived: NginxServerZoneReceivedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneReceivedMetricAttributeKey{NginxServerZoneReceivedMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses1xx: NginxServerZoneResponses1xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses1xxMetricAttributeKey{NginxServerZoneResponses1xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses2xx: NginxServerZoneResponses2xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses2xxMetricAttributeKey{NginxServerZoneResponses2xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses3xx: NginxServerZoneResponses3xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses3xxMetricAttributeKey{NginxServerZoneResponses3xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses4xx: NginxServerZoneResponses4xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses4xxMetricAttributeKey{NginxServerZoneResponses4xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses5xx: NginxServerZoneResponses5xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses5xxMetricAttributeKey{NginxServerZoneResponses5xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneSent: NginxServerZoneSentMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneSentMetricAttributeKey{NginxServerZoneSentMetricAttributeKeyServerzoneName},
+					},
+					NginxUpstreamPeersBackup: NginxUpstreamPeersBackupMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersBackupMetricAttributeKey{NginxUpstreamPeersBackupMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersBackupMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersHealthChecksLastPassed: NginxUpstreamPeersHealthChecksLastPassedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey{NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersReceived: NginxUpstreamPeersReceivedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersReceivedMetricAttributeKey{NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersRequests: NginxUpstreamPeersRequestsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersRequestsMetricAttributeKey{NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponseTime: NginxUpstreamPeersResponseTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersResponseTimeMetricAttributeKey{NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses1xx: NginxUpstreamPeersResponses1xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses1xxMetricAttributeKey{NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses2xx: NginxUpstreamPeersResponses2xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses2xxMetricAttributeKey{NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses3xx: NginxUpstreamPeersResponses3xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses3xxMetricAttributeKey{NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses4xx: NginxUpstreamPeersResponses4xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses4xxMetricAttributeKey{NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses5xx: NginxUpstreamPeersResponses5xxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses5xxMetricAttributeKey{NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersSent: NginxUpstreamPeersSentMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersSentMetricAttributeKey{NginxUpstreamPeersSentMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersSentMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersWeight: NginxUpstreamPeersWeightMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersWeightMetricAttributeKey{NginxUpstreamPeersWeightMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersWeightMetricAttributeKeyUpstreamPeerAddress},
 					},
 				},
 			},
@@ -58,8 +165,115 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					NginxConnectionsHandled: NginxConnectionsHandledMetricConfig{
 						Enabled: false,
 					},
+					NginxLoadTimestamp: NginxLoadTimestampMetricConfig{
+						Enabled: false,
+					},
+					NginxNetReading: NginxNetReadingMetricConfig{
+						Enabled: false,
+					},
+					NginxNetWaiting: NginxNetWaitingMetricConfig{
+						Enabled: false,
+					},
+					NginxNetWriting: NginxNetWritingMetricConfig{
+						Enabled: false,
+					},
 					NginxRequests: NginxRequestsMetricConfig{
 						Enabled: false,
+					},
+					NginxServerZoneReceived: NginxServerZoneReceivedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneReceivedMetricAttributeKey{NginxServerZoneReceivedMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses1xx: NginxServerZoneResponses1xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses1xxMetricAttributeKey{NginxServerZoneResponses1xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses2xx: NginxServerZoneResponses2xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses2xxMetricAttributeKey{NginxServerZoneResponses2xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses3xx: NginxServerZoneResponses3xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses3xxMetricAttributeKey{NginxServerZoneResponses3xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses4xx: NginxServerZoneResponses4xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses4xxMetricAttributeKey{NginxServerZoneResponses4xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneResponses5xx: NginxServerZoneResponses5xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneResponses5xxMetricAttributeKey{NginxServerZoneResponses5xxMetricAttributeKeyServerzoneName},
+					},
+					NginxServerZoneSent: NginxServerZoneSentMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxServerZoneSentMetricAttributeKey{NginxServerZoneSentMetricAttributeKeyServerzoneName},
+					},
+					NginxUpstreamPeersBackup: NginxUpstreamPeersBackupMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersBackupMetricAttributeKey{NginxUpstreamPeersBackupMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersBackupMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersHealthChecksLastPassed: NginxUpstreamPeersHealthChecksLastPassedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey{NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersReceived: NginxUpstreamPeersReceivedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersReceivedMetricAttributeKey{NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersRequests: NginxUpstreamPeersRequestsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersRequestsMetricAttributeKey{NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponseTime: NginxUpstreamPeersResponseTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersResponseTimeMetricAttributeKey{NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses1xx: NginxUpstreamPeersResponses1xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses1xxMetricAttributeKey{NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses2xx: NginxUpstreamPeersResponses2xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses2xxMetricAttributeKey{NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses3xx: NginxUpstreamPeersResponses3xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses3xxMetricAttributeKey{NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses4xx: NginxUpstreamPeersResponses4xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses4xxMetricAttributeKey{NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersResponses5xx: NginxUpstreamPeersResponses5xxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersResponses5xxMetricAttributeKey{NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersSent: NginxUpstreamPeersSentMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []NginxUpstreamPeersSentMetricAttributeKey{NginxUpstreamPeersSentMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersSentMetricAttributeKeyUpstreamPeerAddress},
+					},
+					NginxUpstreamPeersWeight: NginxUpstreamPeersWeightMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []NginxUpstreamPeersWeightMetricAttributeKey{NginxUpstreamPeersWeightMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersWeightMetricAttributeKeyUpstreamPeerAddress},
 					},
 				},
 			},
@@ -68,7 +282,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(NginxConnectionsAcceptedMetricConfig{}, NginxConnectionsCurrentMetricConfig{}, NginxConnectionsHandledMetricConfig{}, NginxRequestsMetricConfig{}))
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(NginxConnectionsAcceptedMetricConfig{}, NginxConnectionsCurrentMetricConfig{}, NginxConnectionsHandledMetricConfig{}, NginxLoadTimestampMetricConfig{}, NginxNetReadingMetricConfig{}, NginxNetWaitingMetricConfig{}, NginxNetWritingMetricConfig{}, NginxRequestsMetricConfig{}, NginxServerZoneReceivedMetricConfig{}, NginxServerZoneResponses1xxMetricConfig{}, NginxServerZoneResponses2xxMetricConfig{}, NginxServerZoneResponses3xxMetricConfig{}, NginxServerZoneResponses4xxMetricConfig{}, NginxServerZoneResponses5xxMetricConfig{}, NginxServerZoneSentMetricConfig{}, NginxUpstreamPeersBackupMetricConfig{}, NginxUpstreamPeersHealthChecksLastPassedMetricConfig{}, NginxUpstreamPeersReceivedMetricConfig{}, NginxUpstreamPeersRequestsMetricConfig{}, NginxUpstreamPeersResponseTimeMetricConfig{}, NginxUpstreamPeersResponses1xxMetricConfig{}, NginxUpstreamPeersResponses2xxMetricConfig{}, NginxUpstreamPeersResponses3xxMetricConfig{}, NginxUpstreamPeersResponses4xxMetricConfig{}, NginxUpstreamPeersResponses5xxMetricConfig{}, NginxUpstreamPeersSentMetricConfig{}, NginxUpstreamPeersWeightMetricConfig{}))
 			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}

@@ -60,6 +60,7 @@ func (s *brokerScraperFranz) scrape(ctx context.Context) (pmetric.Metrics, error
 	now := pcommon.NewTimestampFromTime(time.Now())
 	rb := s.mb.NewResourceBuilder()
 	rb.SetKafkaClusterAlias(s.config.ClusterAlias)
+	rb.SetRuntimeMetricsKafka("true")
 
 	// BrokerMetadata returns the broker list and cluster ID in one topic-less request.
 	meta, err := adm.BrokerMetadata(ctx)

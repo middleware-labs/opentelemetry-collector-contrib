@@ -10,7 +10,6 @@ import (
 	"go.opentelemetry.io/collector/filter"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
-	"go.opentelemetry.io/collector/pdata/xpdata/xhash"
 	"go.opentelemetry.io/collector/receiver"
 )
 
@@ -20,15 +19,6 @@ const (
 	AggregationStrategyMin = "min"
 	AggregationStrategyMax = "max"
 )
-
-// dataPointKey hashes dp's attributes and timestamps for O(1) dedup lookup.
-func dataPointKey(dp pmetric.NumberDataPoint) uint64 {
-	return xhash.Hash64(
-		xhash.WithMap(dp.Attributes()),
-		xhash.WithValue(pcommon.NewValueInt(int64(dp.StartTimestamp()))),
-		xhash.WithValue(pcommon.NewValueInt(int64(dp.Timestamp()))),
-	)
-}
 
 // AttributeDirection specifies the value direction attribute.
 type AttributeDirection int
@@ -89,6 +79,9 @@ var MetricsInfo = metricsInfo{
 	ContainerCPUUsage: metricInfo{
 		Name: "container.cpu.usage",
 	},
+	ContainerCPUUtilization: metricInfo{
+		Name: "container.cpu.utilization",
+	},
 	ContainerFilesystemAvailable: metricInfo{
 		Name: "container.filesystem.available",
 	},
@@ -97,6 +90,9 @@ var MetricsInfo = metricsInfo{
 	},
 	ContainerFilesystemUsage: metricInfo{
 		Name: "container.filesystem.usage",
+	},
+	ContainerFilesystemUtilization: metricInfo{
+		Name: "container.filesystem.utilization",
 	},
 	ContainerMemoryAvailable: metricInfo{
 		Name: "container.memory.available",
@@ -129,8 +125,7 @@ var MetricsInfo = metricsInfo{
 		Name: "k8s.container.cpu_request_utilization",
 	},
 	K8sContainerEphemeralStorageUsage: metricInfo{
-		Name:       "k8s.container.ephemeral_storage.usage",
-		Attributes: []string{"fs.type"},
+		Name: "k8s.container.ephemeral_storage.usage",
 	},
 	K8sContainerMemoryNodeUtilization: metricInfo{
 		Name: "k8s.container.memory.node.utilization",
@@ -147,20 +142,20 @@ var MetricsInfo = metricsInfo{
 	K8sNodeCPUUsage: metricInfo{
 		Name: "k8s.node.cpu.usage",
 	},
+	K8sNodeCPUUtilization: metricInfo{
+		Name: "k8s.node.cpu.utilization",
+	},
 	K8sNodeFilesystemAvailable: metricInfo{
 		Name: "k8s.node.filesystem.available",
 	},
 	K8sNodeFilesystemCapacity: metricInfo{
 		Name: "k8s.node.filesystem.capacity",
 	},
-	K8sNodeFilesystemInodeCount: metricInfo{
-		Name: "k8s.node.filesystem.inode.count",
-	},
-	K8sNodeFilesystemInodeFree: metricInfo{
-		Name: "k8s.node.filesystem.inode.free",
-	},
 	K8sNodeFilesystemUsage: metricInfo{
 		Name: "k8s.node.filesystem.usage",
+	},
+	K8sNodeFilesystemUtilization: metricInfo{
+		Name: "k8s.node.filesystem.utilization",
 	},
 	K8sNodeMemoryAvailable: metricInfo{
 		Name: "k8s.node.memory.available",
@@ -181,18 +176,10 @@ var MetricsInfo = metricsInfo{
 		Name: "k8s.node.memory.working_set",
 	},
 	K8sNodeNetworkErrors: metricInfo{
-		Name:       "k8s.node.network.errors",
-		Attributes: []string{"interface", "direction"},
+		Name: "k8s.node.network.errors",
 	},
 	K8sNodeNetworkIo: metricInfo{
-		Name:       "k8s.node.network.io",
-		Attributes: []string{"interface", "direction"},
-	},
-	K8sNodePidLimit: metricInfo{
-		Name: "k8s.node.pid.limit",
-	},
-	K8sNodePidUsage: metricInfo{
-		Name: "k8s.node.pid.usage",
+		Name: "k8s.node.network.io",
 	},
 	K8sNodeSystemContainerCPUTime: metricInfo{
 		Name: "k8s.node.system_container.cpu.time",
@@ -218,6 +205,9 @@ var MetricsInfo = metricsInfo{
 	K8sPodCPUUsage: metricInfo{
 		Name: "k8s.pod.cpu.usage",
 	},
+	K8sPodCPUUtilization: metricInfo{
+		Name: "k8s.pod.cpu.utilization",
+	},
 	K8sPodCPULimitUtilization: metricInfo{
 		Name: "k8s.pod.cpu_limit_utilization",
 	},
@@ -232,6 +222,9 @@ var MetricsInfo = metricsInfo{
 	},
 	K8sPodFilesystemUsage: metricInfo{
 		Name: "k8s.pod.filesystem.usage",
+	},
+	K8sPodFilesystemUtilization: metricInfo{
+		Name: "k8s.pod.filesystem.utilization",
 	},
 	K8sPodMemoryAvailable: metricInfo{
 		Name: "k8s.pod.memory.available",
@@ -261,12 +254,10 @@ var MetricsInfo = metricsInfo{
 		Name: "k8s.pod.memory_request_utilization",
 	},
 	K8sPodNetworkErrors: metricInfo{
-		Name:       "k8s.pod.network.errors",
-		Attributes: []string{"interface", "direction"},
+		Name: "k8s.pod.network.errors",
 	},
 	K8sPodNetworkIo: metricInfo{
-		Name:       "k8s.pod.network.io",
-		Attributes: []string{"interface", "direction"},
+		Name: "k8s.pod.network.io",
 	},
 	K8sPodUptime: metricInfo{
 		Name: "k8s.pod.uptime",
@@ -294,9 +285,11 @@ var MetricsInfo = metricsInfo{
 type metricsInfo struct {
 	ContainerCPUTime                       metricInfo
 	ContainerCPUUsage                      metricInfo
+	ContainerCPUUtilization                metricInfo
 	ContainerFilesystemAvailable           metricInfo
 	ContainerFilesystemCapacity            metricInfo
 	ContainerFilesystemUsage               metricInfo
+	ContainerFilesystemUtilization         metricInfo
 	ContainerMemoryAvailable               metricInfo
 	ContainerMemoryMajorPageFaults         metricInfo
 	ContainerMemoryPageFaults              metricInfo
@@ -313,11 +306,11 @@ type metricsInfo struct {
 	K8sContainerMemoryRequestUtilization   metricInfo
 	K8sNodeCPUTime                         metricInfo
 	K8sNodeCPUUsage                        metricInfo
+	K8sNodeCPUUtilization                  metricInfo
 	K8sNodeFilesystemAvailable             metricInfo
 	K8sNodeFilesystemCapacity              metricInfo
-	K8sNodeFilesystemInodeCount            metricInfo
-	K8sNodeFilesystemInodeFree             metricInfo
 	K8sNodeFilesystemUsage                 metricInfo
+	K8sNodeFilesystemUtilization           metricInfo
 	K8sNodeMemoryAvailable                 metricInfo
 	K8sNodeMemoryMajorPageFaults           metricInfo
 	K8sNodeMemoryPageFaults                metricInfo
@@ -326,8 +319,6 @@ type metricsInfo struct {
 	K8sNodeMemoryWorkingSet                metricInfo
 	K8sNodeNetworkErrors                   metricInfo
 	K8sNodeNetworkIo                       metricInfo
-	K8sNodePidLimit                        metricInfo
-	K8sNodePidUsage                        metricInfo
 	K8sNodeSystemContainerCPUTime          metricInfo
 	K8sNodeSystemContainerCPUUsage         metricInfo
 	K8sNodeSystemContainerMemoryUsage      metricInfo
@@ -336,11 +327,13 @@ type metricsInfo struct {
 	K8sPodCPUNodeUtilization               metricInfo
 	K8sPodCPUTime                          metricInfo
 	K8sPodCPUUsage                         metricInfo
+	K8sPodCPUUtilization                   metricInfo
 	K8sPodCPULimitUtilization              metricInfo
 	K8sPodCPURequestUtilization            metricInfo
 	K8sPodFilesystemAvailable              metricInfo
 	K8sPodFilesystemCapacity               metricInfo
 	K8sPodFilesystemUsage                  metricInfo
+	K8sPodFilesystemUtilization            metricInfo
 	K8sPodMemoryAvailable                  metricInfo
 	K8sPodMemoryMajorPageFaults            metricInfo
 	K8sPodMemoryNodeUtilization            metricInfo
@@ -362,8 +355,7 @@ type metricsInfo struct {
 }
 
 type metricInfo struct {
-	Name       string
-	Attributes []string
+	Name string
 }
 
 type metricContainerCPUTime struct {
@@ -460,6 +452,56 @@ func (m *metricContainerCPUUsage) emit(metrics pmetric.MetricSlice) {
 
 func newMetricContainerCPUUsage(cfg ContainerCPUUsageMetricConfig) metricContainerCPUUsage {
 	m := metricContainerCPUUsage{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricContainerCPUUtilization struct {
+	data     pmetric.Metric                      // data buffer for generated metric.
+	config   ContainerCPUUtilizationMetricConfig // metric config provided by user.
+	capacity int                                 // max observed number of data points added to the metric.
+}
+
+// init fills container.cpu.utilization metric with initial data.
+func (m *metricContainerCPUUtilization) init() {
+	m.data.SetName("container.cpu.utilization")
+	m.data.SetDescription("Container CPU utilization")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricContainerCPUUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricContainerCPUUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricContainerCPUUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricContainerCPUUtilization(cfg ContainerCPUUtilizationMetricConfig) metricContainerCPUUtilization {
+	m := metricContainerCPUUtilization{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -610,6 +652,56 @@ func (m *metricContainerFilesystemUsage) emit(metrics pmetric.MetricSlice) {
 
 func newMetricContainerFilesystemUsage(cfg ContainerFilesystemUsageMetricConfig) metricContainerFilesystemUsage {
 	m := metricContainerFilesystemUsage{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricContainerFilesystemUtilization struct {
+	data     pmetric.Metric                             // data buffer for generated metric.
+	config   ContainerFilesystemUtilizationMetricConfig // metric config provided by user.
+	capacity int                                        // max observed number of data points added to the metric.
+}
+
+// init fills container.filesystem.utilization metric with initial data.
+func (m *metricContainerFilesystemUtilization) init() {
+	m.data.SetName("container.filesystem.utilization")
+	m.data.SetDescription("Container filesystem utilization")
+	m.data.SetUnit("")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricContainerFilesystemUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricContainerFilesystemUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricContainerFilesystemUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricContainerFilesystemUtilization(cfg ContainerFilesystemUtilizationMetricConfig) metricContainerFilesystemUtilization {
+	m := metricContainerFilesystemUtilization{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -1125,7 +1217,6 @@ type metricK8sContainerEphemeralStorageUsage struct {
 	config        K8sContainerEphemeralStorageUsageMetricConfig // metric config provided by user.
 	capacity      int                                           // max observed number of data points added to the metric.
 	aggDataPoints []int64                                       // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                                // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills k8s.container.ephemeral_storage.usage metric with initial data.
@@ -1138,7 +1229,6 @@ func (m *metricK8sContainerEphemeralStorageUsage) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricK8sContainerEphemeralStorageUsage) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, fsTypeAttributeValue string) {
@@ -1154,31 +1244,31 @@ func (m *metricK8sContainerEphemeralStorageUsage) recordDataPoint(start pcommon.
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -1465,6 +1555,56 @@ func newMetricK8sNodeCPUUsage(cfg K8sNodeCPUUsageMetricConfig) metricK8sNodeCPUU
 	return m
 }
 
+type metricK8sNodeCPUUtilization struct {
+	data     pmetric.Metric                    // data buffer for generated metric.
+	config   K8sNodeCPUUtilizationMetricConfig // metric config provided by user.
+	capacity int                               // max observed number of data points added to the metric.
+}
+
+// init fills k8s.node.cpu.utilization metric with initial data.
+func (m *metricK8sNodeCPUUtilization) init() {
+	m.data.SetName("k8s.node.cpu.utilization")
+	m.data.SetDescription("Node CPU utilization")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sNodeCPUUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sNodeCPUUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sNodeCPUUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sNodeCPUUtilization(cfg K8sNodeCPUUtilizationMetricConfig) metricK8sNodeCPUUtilization {
+	m := metricK8sNodeCPUUtilization{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricK8sNodeFilesystemAvailable struct {
 	data     pmetric.Metric                         // data buffer for generated metric.
 	config   K8sNodeFilesystemAvailableMetricConfig // metric config provided by user.
@@ -1565,110 +1705,6 @@ func newMetricK8sNodeFilesystemCapacity(cfg K8sNodeFilesystemCapacityMetricConfi
 	return m
 }
 
-type metricK8sNodeFilesystemInodeCount struct {
-	data     pmetric.Metric                          // data buffer for generated metric.
-	config   K8sNodeFilesystemInodeCountMetricConfig // metric config provided by user.
-	capacity int                                     // max observed number of data points added to the metric.
-}
-
-// init fills k8s.node.filesystem.inode.count metric with initial data.
-func (m *metricK8sNodeFilesystemInodeCount) init() {
-	m.data.SetName("k8s.node.filesystem.inode.count")
-	m.data.SetDescription("Total number of inodes in the node's root filesystem.")
-	m.data.SetUnit("{inode}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(false)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-}
-
-func (m *metricK8sNodeFilesystemInodeCount) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Sum().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricK8sNodeFilesystemInodeCount) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricK8sNodeFilesystemInodeCount) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricK8sNodeFilesystemInodeCount(cfg K8sNodeFilesystemInodeCountMetricConfig) metricK8sNodeFilesystemInodeCount {
-	m := metricK8sNodeFilesystemInodeCount{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricK8sNodeFilesystemInodeFree struct {
-	data     pmetric.Metric                         // data buffer for generated metric.
-	config   K8sNodeFilesystemInodeFreeMetricConfig // metric config provided by user.
-	capacity int                                    // max observed number of data points added to the metric.
-}
-
-// init fills k8s.node.filesystem.inode.free metric with initial data.
-func (m *metricK8sNodeFilesystemInodeFree) init() {
-	m.data.SetName("k8s.node.filesystem.inode.free")
-	m.data.SetDescription("Number of free inodes in the node's root filesystem.")
-	m.data.SetUnit("{inode}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(false)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-}
-
-func (m *metricK8sNodeFilesystemInodeFree) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Sum().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricK8sNodeFilesystemInodeFree) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricK8sNodeFilesystemInodeFree) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricK8sNodeFilesystemInodeFree(cfg K8sNodeFilesystemInodeFreeMetricConfig) metricK8sNodeFilesystemInodeFree {
-	m := metricK8sNodeFilesystemInodeFree{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
 type metricK8sNodeFilesystemUsage struct {
 	data     pmetric.Metric                     // data buffer for generated metric.
 	config   K8sNodeFilesystemUsageMetricConfig // metric config provided by user.
@@ -1711,6 +1747,56 @@ func (m *metricK8sNodeFilesystemUsage) emit(metrics pmetric.MetricSlice) {
 
 func newMetricK8sNodeFilesystemUsage(cfg K8sNodeFilesystemUsageMetricConfig) metricK8sNodeFilesystemUsage {
 	m := metricK8sNodeFilesystemUsage{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricK8sNodeFilesystemUtilization struct {
+	data     pmetric.Metric                           // data buffer for generated metric.
+	config   K8sNodeFilesystemUtilizationMetricConfig // metric config provided by user.
+	capacity int                                      // max observed number of data points added to the metric.
+}
+
+// init fills k8s.node.filesystem.utilization metric with initial data.
+func (m *metricK8sNodeFilesystemUtilization) init() {
+	m.data.SetName("k8s.node.filesystem.utilization")
+	m.data.SetDescription("Node filesystem utilization")
+	m.data.SetUnit("")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sNodeFilesystemUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sNodeFilesystemUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sNodeFilesystemUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sNodeFilesystemUtilization(cfg K8sNodeFilesystemUtilizationMetricConfig) metricK8sNodeFilesystemUtilization {
+	m := metricK8sNodeFilesystemUtilization{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -2024,7 +2110,6 @@ type metricK8sNodeNetworkErrors struct {
 	config        K8sNodeNetworkErrorsMetricConfig // metric config provided by user.
 	capacity      int                              // max observed number of data points added to the metric.
 	aggDataPoints []int64                          // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                   // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills k8s.node.network.errors metric with initial data.
@@ -2037,7 +2122,6 @@ func (m *metricK8sNodeNetworkErrors) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricK8sNodeNetworkErrors) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, interfaceAttributeValue string, directionAttributeValue string) {
@@ -2056,31 +2140,31 @@ func (m *metricK8sNodeNetworkErrors) recordDataPoint(start pcommon.Timestamp, ts
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -2120,7 +2204,6 @@ type metricK8sNodeNetworkIo struct {
 	config        K8sNodeNetworkIoMetricConfig // metric config provided by user.
 	capacity      int                          // max observed number of data points added to the metric.
 	aggDataPoints []int64                      // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int               // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills k8s.node.network.io metric with initial data.
@@ -2133,7 +2216,6 @@ func (m *metricK8sNodeNetworkIo) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricK8sNodeNetworkIo) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, interfaceAttributeValue string, directionAttributeValue string) {
@@ -2152,31 +2234,31 @@ func (m *metricK8sNodeNetworkIo) recordDataPoint(start pcommon.Timestamp, ts pco
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -2203,110 +2285,6 @@ func (m *metricK8sNodeNetworkIo) emit(metrics pmetric.MetricSlice) {
 
 func newMetricK8sNodeNetworkIo(cfg K8sNodeNetworkIoMetricConfig) metricK8sNodeNetworkIo {
 	m := metricK8sNodeNetworkIo{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricK8sNodePidLimit struct {
-	data     pmetric.Metric              // data buffer for generated metric.
-	config   K8sNodePidLimitMetricConfig // metric config provided by user.
-	capacity int                         // max observed number of data points added to the metric.
-}
-
-// init fills k8s.node.pid.limit metric with initial data.
-func (m *metricK8sNodePidLimit) init() {
-	m.data.SetName("k8s.node.pid.limit")
-	m.data.SetDescription("Total number of processes/threads allowed by the operating system on the node. Derived from the Kubelet Summary API (NodeStats.Rlimit.MaxPID), representing the system-wide task limit (the lower of kernel.pid_max and kernel.threads-max).")
-	m.data.SetUnit("{thread}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(false)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-}
-
-func (m *metricK8sNodePidLimit) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Sum().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricK8sNodePidLimit) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricK8sNodePidLimit) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricK8sNodePidLimit(cfg K8sNodePidLimitMetricConfig) metricK8sNodePidLimit {
-	m := metricK8sNodePidLimit{config: cfg}
-
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
-type metricK8sNodePidUsage struct {
-	data     pmetric.Metric              // data buffer for generated metric.
-	config   K8sNodePidUsageMetricConfig // metric config provided by user.
-	capacity int                         // max observed number of data points added to the metric.
-}
-
-// init fills k8s.node.pid.usage metric with initial data.
-func (m *metricK8sNodePidUsage) init() {
-	m.data.SetName("k8s.node.pid.usage")
-	m.data.SetDescription("Total number of existing processes and threads on the node. Derived from the Kubelet Summary API (NodeStats.Rlimit.NumOfRunningProcesses), which reads the total count of scheduling entities (threads/processes across all states) from /proc/loadavg. Unlike system.processes.count in hostmetricsreceiver, this is an aggregate count collected via Kubelet without requiring host-level privileges.")
-	m.data.SetUnit("{thread}")
-	m.data.SetEmptySum()
-	m.data.Sum().SetIsMonotonic(false)
-	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
-}
-
-func (m *metricK8sNodePidUsage) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Sum().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-// updateCapacity saves max length of data point slices that will be used for the slice capacity.
-func (m *metricK8sNodePidUsage) updateCapacity() {
-	if m.data.Sum().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Sum().DataPoints().Len()
-	}
-}
-
-// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
-func (m *metricK8sNodePidUsage) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricK8sNodePidUsage(cfg K8sNodePidUsageMetricConfig) metricK8sNodePidUsage {
-	m := metricK8sNodePidUsage{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -2721,6 +2699,56 @@ func newMetricK8sPodCPUUsage(cfg K8sPodCPUUsageMetricConfig) metricK8sPodCPUUsag
 	return m
 }
 
+type metricK8sPodCPUUtilization struct {
+	data     pmetric.Metric                   // data buffer for generated metric.
+	config   K8sPodCPUUtilizationMetricConfig // metric config provided by user.
+	capacity int                              // max observed number of data points added to the metric.
+}
+
+// init fills k8s.pod.cpu.utilization metric with initial data.
+func (m *metricK8sPodCPUUtilization) init() {
+	m.data.SetName("k8s.pod.cpu.utilization")
+	m.data.SetDescription("Pod CPU utilization")
+	m.data.SetUnit("1")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sPodCPUUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sPodCPUUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sPodCPUUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sPodCPUUtilization(cfg K8sPodCPUUtilizationMetricConfig) metricK8sPodCPUUtilization {
+	m := metricK8sPodCPUUtilization{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricK8sPodCPULimitUtilization struct {
 	data     pmetric.Metric                        // data buffer for generated metric.
 	config   K8sPodCPULimitUtilizationMetricConfig // metric config provided by user.
@@ -2963,6 +2991,56 @@ func (m *metricK8sPodFilesystemUsage) emit(metrics pmetric.MetricSlice) {
 
 func newMetricK8sPodFilesystemUsage(cfg K8sPodFilesystemUsageMetricConfig) metricK8sPodFilesystemUsage {
 	m := metricK8sPodFilesystemUsage{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricK8sPodFilesystemUtilization struct {
+	data     pmetric.Metric                          // data buffer for generated metric.
+	config   K8sPodFilesystemUtilizationMetricConfig // metric config provided by user.
+	capacity int                                     // max observed number of data points added to the metric.
+}
+
+// init fills k8s.pod.filesystem.utilization metric with initial data.
+func (m *metricK8sPodFilesystemUtilization) init() {
+	m.data.SetName("k8s.pod.filesystem.utilization")
+	m.data.SetDescription("Pod filesystem utilization")
+	m.data.SetUnit("")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricK8sPodFilesystemUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricK8sPodFilesystemUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricK8sPodFilesystemUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricK8sPodFilesystemUtilization(cfg K8sPodFilesystemUtilizationMetricConfig) metricK8sPodFilesystemUtilization {
+	m := metricK8sPodFilesystemUtilization{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -3426,7 +3504,6 @@ type metricK8sPodNetworkErrors struct {
 	config        K8sPodNetworkErrorsMetricConfig // metric config provided by user.
 	capacity      int                             // max observed number of data points added to the metric.
 	aggDataPoints []int64                         // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int                  // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills k8s.pod.network.errors metric with initial data.
@@ -3439,7 +3516,6 @@ func (m *metricK8sPodNetworkErrors) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricK8sPodNetworkErrors) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, interfaceAttributeValue string, directionAttributeValue string) {
@@ -3458,31 +3534,31 @@ func (m *metricK8sPodNetworkErrors) recordDataPoint(start pcommon.Timestamp, ts 
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -3522,7 +3598,6 @@ type metricK8sPodNetworkIo struct {
 	config        K8sPodNetworkIoMetricConfig // metric config provided by user.
 	capacity      int                         // max observed number of data points added to the metric.
 	aggDataPoints []int64                     // slice containing number of aggregated datapoints at each index
-	dpIndex       map[uint64]int              // maps a data point's hash to its index, for O(1) dedup lookup.
 }
 
 // init fills k8s.pod.network.io metric with initial data.
@@ -3535,7 +3610,6 @@ func (m *metricK8sPodNetworkIo) init() {
 	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
 	m.data.Sum().DataPoints().EnsureCapacity(m.capacity)
 	m.aggDataPoints = m.aggDataPoints[:0]
-	m.dpIndex = make(map[uint64]int, m.capacity)
 }
 
 func (m *metricK8sPodNetworkIo) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, interfaceAttributeValue string, directionAttributeValue string) {
@@ -3554,31 +3628,31 @@ func (m *metricK8sPodNetworkIo) recordDataPoint(start pcommon.Timestamp, ts pcom
 	}
 
 	var s string
-	key := dataPointKey(dp)
 	dps := m.data.Sum().DataPoints()
-	if i, ok := m.dpIndex[key]; ok {
+	for i := 0; i < dps.Len(); i++ {
 		dpi := dps.At(i)
-		switch s = m.config.AggregationStrategy; s {
-		case AggregationStrategySum, AggregationStrategyAvg:
-			dpi.SetIntValue(dpi.IntValue() + val)
-			m.aggDataPoints[i] += 1
-			return
-		case AggregationStrategyMin:
-			if dpi.IntValue() > val {
-				dpi.SetIntValue(val)
+		if dp.Attributes().Equal(dpi.Attributes()) && dp.StartTimestamp() == dpi.StartTimestamp() && dp.Timestamp() == dpi.Timestamp() {
+			switch s = m.config.AggregationStrategy; s {
+			case AggregationStrategySum, AggregationStrategyAvg:
+				dpi.SetIntValue(dpi.IntValue() + val)
+				m.aggDataPoints[i] += 1
+				return
+			case AggregationStrategyMin:
+				if dpi.IntValue() > val {
+					dpi.SetIntValue(val)
+				}
+				return
+			case AggregationStrategyMax:
+				if dpi.IntValue() < val {
+					dpi.SetIntValue(val)
+				}
+				return
 			}
-			return
-		case AggregationStrategyMax:
-			if dpi.IntValue() < val {
-				dpi.SetIntValue(val)
-			}
-			return
 		}
 	}
 
 	dp.SetIntValue(val)
 	m.aggDataPoints = append(m.aggDataPoints, 1)
-	m.dpIndex[key] = dps.Len()
 	dp.MoveTo(dps.AppendEmpty())
 }
 
@@ -3979,9 +4053,11 @@ type MetricsBuilder struct {
 	resourceAttributeExcludeFilter               map[string]filter.Filter
 	metricContainerCPUTime                       metricContainerCPUTime
 	metricContainerCPUUsage                      metricContainerCPUUsage
+	metricContainerCPUUtilization                metricContainerCPUUtilization
 	metricContainerFilesystemAvailable           metricContainerFilesystemAvailable
 	metricContainerFilesystemCapacity            metricContainerFilesystemCapacity
 	metricContainerFilesystemUsage               metricContainerFilesystemUsage
+	metricContainerFilesystemUtilization         metricContainerFilesystemUtilization
 	metricContainerMemoryAvailable               metricContainerMemoryAvailable
 	metricContainerMemoryMajorPageFaults         metricContainerMemoryMajorPageFaults
 	metricContainerMemoryPageFaults              metricContainerMemoryPageFaults
@@ -3998,11 +4074,11 @@ type MetricsBuilder struct {
 	metricK8sContainerMemoryRequestUtilization   metricK8sContainerMemoryRequestUtilization
 	metricK8sNodeCPUTime                         metricK8sNodeCPUTime
 	metricK8sNodeCPUUsage                        metricK8sNodeCPUUsage
+	metricK8sNodeCPUUtilization                  metricK8sNodeCPUUtilization
 	metricK8sNodeFilesystemAvailable             metricK8sNodeFilesystemAvailable
 	metricK8sNodeFilesystemCapacity              metricK8sNodeFilesystemCapacity
-	metricK8sNodeFilesystemInodeCount            metricK8sNodeFilesystemInodeCount
-	metricK8sNodeFilesystemInodeFree             metricK8sNodeFilesystemInodeFree
 	metricK8sNodeFilesystemUsage                 metricK8sNodeFilesystemUsage
+	metricK8sNodeFilesystemUtilization           metricK8sNodeFilesystemUtilization
 	metricK8sNodeMemoryAvailable                 metricK8sNodeMemoryAvailable
 	metricK8sNodeMemoryMajorPageFaults           metricK8sNodeMemoryMajorPageFaults
 	metricK8sNodeMemoryPageFaults                metricK8sNodeMemoryPageFaults
@@ -4011,8 +4087,6 @@ type MetricsBuilder struct {
 	metricK8sNodeMemoryWorkingSet                metricK8sNodeMemoryWorkingSet
 	metricK8sNodeNetworkErrors                   metricK8sNodeNetworkErrors
 	metricK8sNodeNetworkIo                       metricK8sNodeNetworkIo
-	metricK8sNodePidLimit                        metricK8sNodePidLimit
-	metricK8sNodePidUsage                        metricK8sNodePidUsage
 	metricK8sNodeSystemContainerCPUTime          metricK8sNodeSystemContainerCPUTime
 	metricK8sNodeSystemContainerCPUUsage         metricK8sNodeSystemContainerCPUUsage
 	metricK8sNodeSystemContainerMemoryUsage      metricK8sNodeSystemContainerMemoryUsage
@@ -4021,11 +4095,13 @@ type MetricsBuilder struct {
 	metricK8sPodCPUNodeUtilization               metricK8sPodCPUNodeUtilization
 	metricK8sPodCPUTime                          metricK8sPodCPUTime
 	metricK8sPodCPUUsage                         metricK8sPodCPUUsage
+	metricK8sPodCPUUtilization                   metricK8sPodCPUUtilization
 	metricK8sPodCPULimitUtilization              metricK8sPodCPULimitUtilization
 	metricK8sPodCPURequestUtilization            metricK8sPodCPURequestUtilization
 	metricK8sPodFilesystemAvailable              metricK8sPodFilesystemAvailable
 	metricK8sPodFilesystemCapacity               metricK8sPodFilesystemCapacity
 	metricK8sPodFilesystemUsage                  metricK8sPodFilesystemUsage
+	metricK8sPodFilesystemUtilization            metricK8sPodFilesystemUtilization
 	metricK8sPodMemoryAvailable                  metricK8sPodMemoryAvailable
 	metricK8sPodMemoryMajorPageFaults            metricK8sPodMemoryMajorPageFaults
 	metricK8sPodMemoryNodeUtilization            metricK8sPodMemoryNodeUtilization
@@ -4064,17 +4140,14 @@ func WithStartTime(startTime pcommon.Timestamp) MetricBuilderOption {
 	})
 }
 func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, options ...MetricBuilderOption) *MetricsBuilder {
-	if mbc.Metrics.K8sContainerCPUNodeUtilization.Enabled {
-		settings.Logger.Warn("[WARNING] `k8s.container.cpu.node.utilization` should not be enabled: This metric is deprecated and will be removed in a future release. It uses node capacity as the limit. `container.cpu.usage / k8s.node.allocatable_cpu` is an allocatable-based alternative (not an equivalent calculation) that users could use.")
+	if mbc.Metrics.ContainerCPUUtilization.Enabled {
+		settings.Logger.Warn("[WARNING] `container.cpu.utilization` should not be enabled: This metric will be disabled in a future release. Use metric container.cpu.usage instead.")
 	}
-	if mbc.Metrics.K8sContainerMemoryNodeUtilization.Enabled {
-		settings.Logger.Warn("[WARNING] `k8s.container.memory.node.utilization` should not be enabled: This metric is deprecated and will be removed in a future release. It uses node capacity as the limit. `container.memory.usage / k8s.node.allocatable_memory` is an allocatable-based alternative (not an equivalent calculation) that users could use.")
+	if mbc.Metrics.K8sNodeCPUUtilization.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.node.cpu.utilization` should not be enabled: This metric will be disabled in a future release. Use metric k8s.node.cpu.usage instead.")
 	}
-	if mbc.Metrics.K8sPodCPUNodeUtilization.Enabled {
-		settings.Logger.Warn("[WARNING] `k8s.pod.cpu.node.utilization` should not be enabled: This metric is deprecated and will be removed in a future release. It uses node capacity as the limit. `k8s.pod.cpu.usage / k8s.node.allocatable_cpu` is an allocatable-based alternative (not an equivalent calculation) that users could use.")
-	}
-	if mbc.Metrics.K8sPodMemoryNodeUtilization.Enabled {
-		settings.Logger.Warn("[WARNING] `k8s.pod.memory.node.utilization` should not be enabled: This metric is deprecated and will be removed in a future release. It uses node capacity as the limit. `k8s.pod.memory.usage / k8s.node.allocatable_memory` is an allocatable-based alternative (not an equivalent calculation) that users could use.")
+	if mbc.Metrics.K8sPodCPUUtilization.Enabled {
+		settings.Logger.Warn("[WARNING] `k8s.pod.cpu.utilization` should not be enabled: This metric will be disabled in a future release. Use metric k8s.pod.cpu.usage instead.")
 	}
 	if mbc.ResourceAttributes.AwsVolumeID.Enabled {
 		settings.Logger.Warn("[WARNING] `aws.volume.id` should not be enabled: This resource_attribute is deprecated and will be removed soon")
@@ -4101,9 +4174,11 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		buildInfo:                                    settings.BuildInfo,
 		metricContainerCPUTime:                       newMetricContainerCPUTime(mbc.Metrics.ContainerCPUTime),
 		metricContainerCPUUsage:                      newMetricContainerCPUUsage(mbc.Metrics.ContainerCPUUsage),
+		metricContainerCPUUtilization:                newMetricContainerCPUUtilization(mbc.Metrics.ContainerCPUUtilization),
 		metricContainerFilesystemAvailable:           newMetricContainerFilesystemAvailable(mbc.Metrics.ContainerFilesystemAvailable),
 		metricContainerFilesystemCapacity:            newMetricContainerFilesystemCapacity(mbc.Metrics.ContainerFilesystemCapacity),
 		metricContainerFilesystemUsage:               newMetricContainerFilesystemUsage(mbc.Metrics.ContainerFilesystemUsage),
+		metricContainerFilesystemUtilization:         newMetricContainerFilesystemUtilization(mbc.Metrics.ContainerFilesystemUtilization),
 		metricContainerMemoryAvailable:               newMetricContainerMemoryAvailable(mbc.Metrics.ContainerMemoryAvailable),
 		metricContainerMemoryMajorPageFaults:         newMetricContainerMemoryMajorPageFaults(mbc.Metrics.ContainerMemoryMajorPageFaults),
 		metricContainerMemoryPageFaults:              newMetricContainerMemoryPageFaults(mbc.Metrics.ContainerMemoryPageFaults),
@@ -4120,11 +4195,11 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricK8sContainerMemoryRequestUtilization:   newMetricK8sContainerMemoryRequestUtilization(mbc.Metrics.K8sContainerMemoryRequestUtilization),
 		metricK8sNodeCPUTime:                         newMetricK8sNodeCPUTime(mbc.Metrics.K8sNodeCPUTime),
 		metricK8sNodeCPUUsage:                        newMetricK8sNodeCPUUsage(mbc.Metrics.K8sNodeCPUUsage),
+		metricK8sNodeCPUUtilization:                  newMetricK8sNodeCPUUtilization(mbc.Metrics.K8sNodeCPUUtilization),
 		metricK8sNodeFilesystemAvailable:             newMetricK8sNodeFilesystemAvailable(mbc.Metrics.K8sNodeFilesystemAvailable),
 		metricK8sNodeFilesystemCapacity:              newMetricK8sNodeFilesystemCapacity(mbc.Metrics.K8sNodeFilesystemCapacity),
-		metricK8sNodeFilesystemInodeCount:            newMetricK8sNodeFilesystemInodeCount(mbc.Metrics.K8sNodeFilesystemInodeCount),
-		metricK8sNodeFilesystemInodeFree:             newMetricK8sNodeFilesystemInodeFree(mbc.Metrics.K8sNodeFilesystemInodeFree),
 		metricK8sNodeFilesystemUsage:                 newMetricK8sNodeFilesystemUsage(mbc.Metrics.K8sNodeFilesystemUsage),
+		metricK8sNodeFilesystemUtilization:           newMetricK8sNodeFilesystemUtilization(mbc.Metrics.K8sNodeFilesystemUtilization),
 		metricK8sNodeMemoryAvailable:                 newMetricK8sNodeMemoryAvailable(mbc.Metrics.K8sNodeMemoryAvailable),
 		metricK8sNodeMemoryMajorPageFaults:           newMetricK8sNodeMemoryMajorPageFaults(mbc.Metrics.K8sNodeMemoryMajorPageFaults),
 		metricK8sNodeMemoryPageFaults:                newMetricK8sNodeMemoryPageFaults(mbc.Metrics.K8sNodeMemoryPageFaults),
@@ -4133,8 +4208,6 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricK8sNodeMemoryWorkingSet:                newMetricK8sNodeMemoryWorkingSet(mbc.Metrics.K8sNodeMemoryWorkingSet),
 		metricK8sNodeNetworkErrors:                   newMetricK8sNodeNetworkErrors(mbc.Metrics.K8sNodeNetworkErrors),
 		metricK8sNodeNetworkIo:                       newMetricK8sNodeNetworkIo(mbc.Metrics.K8sNodeNetworkIo),
-		metricK8sNodePidLimit:                        newMetricK8sNodePidLimit(mbc.Metrics.K8sNodePidLimit),
-		metricK8sNodePidUsage:                        newMetricK8sNodePidUsage(mbc.Metrics.K8sNodePidUsage),
 		metricK8sNodeSystemContainerCPUTime:          newMetricK8sNodeSystemContainerCPUTime(mbc.Metrics.K8sNodeSystemContainerCPUTime),
 		metricK8sNodeSystemContainerCPUUsage:         newMetricK8sNodeSystemContainerCPUUsage(mbc.Metrics.K8sNodeSystemContainerCPUUsage),
 		metricK8sNodeSystemContainerMemoryUsage:      newMetricK8sNodeSystemContainerMemoryUsage(mbc.Metrics.K8sNodeSystemContainerMemoryUsage),
@@ -4143,11 +4216,13 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricK8sPodCPUNodeUtilization:               newMetricK8sPodCPUNodeUtilization(mbc.Metrics.K8sPodCPUNodeUtilization),
 		metricK8sPodCPUTime:                          newMetricK8sPodCPUTime(mbc.Metrics.K8sPodCPUTime),
 		metricK8sPodCPUUsage:                         newMetricK8sPodCPUUsage(mbc.Metrics.K8sPodCPUUsage),
+		metricK8sPodCPUUtilization:                   newMetricK8sPodCPUUtilization(mbc.Metrics.K8sPodCPUUtilization),
 		metricK8sPodCPULimitUtilization:              newMetricK8sPodCPULimitUtilization(mbc.Metrics.K8sPodCPULimitUtilization),
 		metricK8sPodCPURequestUtilization:            newMetricK8sPodCPURequestUtilization(mbc.Metrics.K8sPodCPURequestUtilization),
 		metricK8sPodFilesystemAvailable:              newMetricK8sPodFilesystemAvailable(mbc.Metrics.K8sPodFilesystemAvailable),
 		metricK8sPodFilesystemCapacity:               newMetricK8sPodFilesystemCapacity(mbc.Metrics.K8sPodFilesystemCapacity),
 		metricK8sPodFilesystemUsage:                  newMetricK8sPodFilesystemUsage(mbc.Metrics.K8sPodFilesystemUsage),
+		metricK8sPodFilesystemUtilization:            newMetricK8sPodFilesystemUtilization(mbc.Metrics.K8sPodFilesystemUtilization),
 		metricK8sPodMemoryAvailable:                  newMetricK8sPodMemoryAvailable(mbc.Metrics.K8sPodMemoryAvailable),
 		metricK8sPodMemoryMajorPageFaults:            newMetricK8sPodMemoryMajorPageFaults(mbc.Metrics.K8sPodMemoryMajorPageFaults),
 		metricK8sPodMemoryNodeUtilization:            newMetricK8sPodMemoryNodeUtilization(mbc.Metrics.K8sPodMemoryNodeUtilization),
@@ -4205,11 +4280,29 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.GlusterfsPath.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["glusterfs.path"] = filter.CreateFilter(mbc.ResourceAttributes.GlusterfsPath.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sClusterName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.cluster.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sClusterName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sClusterName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.cluster.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sClusterName.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sContainerName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.container.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerName.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sContainerName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.container.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sContainerName.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sJobName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.job.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sJobName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.job.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobName.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sJobUID.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.job.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobUID.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sJobUID.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.job.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sJobUID.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sNamespaceName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.namespace.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNamespaceName.MetricsInclude)
@@ -4223,11 +4316,23 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sNodeName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.node.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sNodeStartTime.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.node.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeStartTime.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sNodeStartTime.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.node.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeStartTime.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sNodeSystemContainerName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.node.system_container.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeSystemContainerName.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sNodeSystemContainerName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.node.system_container.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeSystemContainerName.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sNodeUID.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.node.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeUID.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sNodeUID.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.node.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sNodeUID.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sPersistentvolumeclaimName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.persistentvolumeclaim.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sPersistentvolumeclaimName.MetricsInclude)
@@ -4241,11 +4346,29 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.K8sPodName.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.pod.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sPodName.MetricsExclude)
 	}
+	if mbc.ResourceAttributes.K8sPodStartTime.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.pod.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sPodStartTime.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sPodStartTime.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.pod.start_time"] = filter.CreateFilter(mbc.ResourceAttributes.K8sPodStartTime.MetricsExclude)
+	}
 	if mbc.ResourceAttributes.K8sPodUID.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.pod.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sPodUID.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.K8sPodUID.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["k8s.pod.uid"] = filter.CreateFilter(mbc.ResourceAttributes.K8sPodUID.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sServiceName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.service.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sServiceName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sServiceName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.service.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sServiceName.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.K8sServiceAccountName.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["k8s.service_account.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sServiceAccountName.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.K8sServiceAccountName.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["k8s.service_account.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sServiceAccountName.MetricsExclude)
 	}
 	if mbc.ResourceAttributes.K8sVolumeName.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["k8s.volume.name"] = filter.CreateFilter(mbc.ResourceAttributes.K8sVolumeName.MetricsInclude)
@@ -4336,9 +4459,11 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	ils.Metrics().EnsureCapacity(mb.metricsCapacity)
 	mb.metricContainerCPUTime.emit(ils.Metrics())
 	mb.metricContainerCPUUsage.emit(ils.Metrics())
+	mb.metricContainerCPUUtilization.emit(ils.Metrics())
 	mb.metricContainerFilesystemAvailable.emit(ils.Metrics())
 	mb.metricContainerFilesystemCapacity.emit(ils.Metrics())
 	mb.metricContainerFilesystemUsage.emit(ils.Metrics())
+	mb.metricContainerFilesystemUtilization.emit(ils.Metrics())
 	mb.metricContainerMemoryAvailable.emit(ils.Metrics())
 	mb.metricContainerMemoryMajorPageFaults.emit(ils.Metrics())
 	mb.metricContainerMemoryPageFaults.emit(ils.Metrics())
@@ -4355,11 +4480,11 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricK8sContainerMemoryRequestUtilization.emit(ils.Metrics())
 	mb.metricK8sNodeCPUTime.emit(ils.Metrics())
 	mb.metricK8sNodeCPUUsage.emit(ils.Metrics())
+	mb.metricK8sNodeCPUUtilization.emit(ils.Metrics())
 	mb.metricK8sNodeFilesystemAvailable.emit(ils.Metrics())
 	mb.metricK8sNodeFilesystemCapacity.emit(ils.Metrics())
-	mb.metricK8sNodeFilesystemInodeCount.emit(ils.Metrics())
-	mb.metricK8sNodeFilesystemInodeFree.emit(ils.Metrics())
 	mb.metricK8sNodeFilesystemUsage.emit(ils.Metrics())
+	mb.metricK8sNodeFilesystemUtilization.emit(ils.Metrics())
 	mb.metricK8sNodeMemoryAvailable.emit(ils.Metrics())
 	mb.metricK8sNodeMemoryMajorPageFaults.emit(ils.Metrics())
 	mb.metricK8sNodeMemoryPageFaults.emit(ils.Metrics())
@@ -4368,8 +4493,6 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricK8sNodeMemoryWorkingSet.emit(ils.Metrics())
 	mb.metricK8sNodeNetworkErrors.emit(ils.Metrics())
 	mb.metricK8sNodeNetworkIo.emit(ils.Metrics())
-	mb.metricK8sNodePidLimit.emit(ils.Metrics())
-	mb.metricK8sNodePidUsage.emit(ils.Metrics())
 	mb.metricK8sNodeSystemContainerCPUTime.emit(ils.Metrics())
 	mb.metricK8sNodeSystemContainerCPUUsage.emit(ils.Metrics())
 	mb.metricK8sNodeSystemContainerMemoryUsage.emit(ils.Metrics())
@@ -4378,11 +4501,13 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricK8sPodCPUNodeUtilization.emit(ils.Metrics())
 	mb.metricK8sPodCPUTime.emit(ils.Metrics())
 	mb.metricK8sPodCPUUsage.emit(ils.Metrics())
+	mb.metricK8sPodCPUUtilization.emit(ils.Metrics())
 	mb.metricK8sPodCPULimitUtilization.emit(ils.Metrics())
 	mb.metricK8sPodCPURequestUtilization.emit(ils.Metrics())
 	mb.metricK8sPodFilesystemAvailable.emit(ils.Metrics())
 	mb.metricK8sPodFilesystemCapacity.emit(ils.Metrics())
 	mb.metricK8sPodFilesystemUsage.emit(ils.Metrics())
+	mb.metricK8sPodFilesystemUtilization.emit(ils.Metrics())
 	mb.metricK8sPodMemoryAvailable.emit(ils.Metrics())
 	mb.metricK8sPodMemoryMajorPageFaults.emit(ils.Metrics())
 	mb.metricK8sPodMemoryNodeUtilization.emit(ils.Metrics())
@@ -4442,6 +4567,11 @@ func (mb *MetricsBuilder) RecordContainerCPUUsageDataPoint(ts pcommon.Timestamp,
 	mb.metricContainerCPUUsage.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordContainerCPUUtilizationDataPoint adds a data point to container.cpu.utilization metric.
+func (mb *MetricsBuilder) RecordContainerCPUUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricContainerCPUUtilization.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordContainerFilesystemAvailableDataPoint adds a data point to container.filesystem.available metric.
 func (mb *MetricsBuilder) RecordContainerFilesystemAvailableDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricContainerFilesystemAvailable.recordDataPoint(mb.startTime, ts, val)
@@ -4455,6 +4585,11 @@ func (mb *MetricsBuilder) RecordContainerFilesystemCapacityDataPoint(ts pcommon.
 // RecordContainerFilesystemUsageDataPoint adds a data point to container.filesystem.usage metric.
 func (mb *MetricsBuilder) RecordContainerFilesystemUsageDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricContainerFilesystemUsage.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordContainerFilesystemUtilizationDataPoint adds a data point to container.filesystem.utilization metric.
+func (mb *MetricsBuilder) RecordContainerFilesystemUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricContainerFilesystemUtilization.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordContainerMemoryAvailableDataPoint adds a data point to container.memory.available metric.
@@ -4537,6 +4672,11 @@ func (mb *MetricsBuilder) RecordK8sNodeCPUUsageDataPoint(ts pcommon.Timestamp, v
 	mb.metricK8sNodeCPUUsage.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordK8sNodeCPUUtilizationDataPoint adds a data point to k8s.node.cpu.utilization metric.
+func (mb *MetricsBuilder) RecordK8sNodeCPUUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricK8sNodeCPUUtilization.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordK8sNodeFilesystemAvailableDataPoint adds a data point to k8s.node.filesystem.available metric.
 func (mb *MetricsBuilder) RecordK8sNodeFilesystemAvailableDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricK8sNodeFilesystemAvailable.recordDataPoint(mb.startTime, ts, val)
@@ -4547,19 +4687,14 @@ func (mb *MetricsBuilder) RecordK8sNodeFilesystemCapacityDataPoint(ts pcommon.Ti
 	mb.metricK8sNodeFilesystemCapacity.recordDataPoint(mb.startTime, ts, val)
 }
 
-// RecordK8sNodeFilesystemInodeCountDataPoint adds a data point to k8s.node.filesystem.inode.count metric.
-func (mb *MetricsBuilder) RecordK8sNodeFilesystemInodeCountDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricK8sNodeFilesystemInodeCount.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordK8sNodeFilesystemInodeFreeDataPoint adds a data point to k8s.node.filesystem.inode.free metric.
-func (mb *MetricsBuilder) RecordK8sNodeFilesystemInodeFreeDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricK8sNodeFilesystemInodeFree.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordK8sNodeFilesystemUsageDataPoint adds a data point to k8s.node.filesystem.usage metric.
 func (mb *MetricsBuilder) RecordK8sNodeFilesystemUsageDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricK8sNodeFilesystemUsage.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordK8sNodeFilesystemUtilizationDataPoint adds a data point to k8s.node.filesystem.utilization metric.
+func (mb *MetricsBuilder) RecordK8sNodeFilesystemUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricK8sNodeFilesystemUtilization.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordK8sNodeMemoryAvailableDataPoint adds a data point to k8s.node.memory.available metric.
@@ -4602,16 +4737,6 @@ func (mb *MetricsBuilder) RecordK8sNodeNetworkIoDataPoint(ts pcommon.Timestamp, 
 	mb.metricK8sNodeNetworkIo.recordDataPoint(mb.startTime, ts, val, interfaceAttributeValue, directionAttributeValue.String())
 }
 
-// RecordK8sNodePidLimitDataPoint adds a data point to k8s.node.pid.limit metric.
-func (mb *MetricsBuilder) RecordK8sNodePidLimitDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricK8sNodePidLimit.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordK8sNodePidUsageDataPoint adds a data point to k8s.node.pid.usage metric.
-func (mb *MetricsBuilder) RecordK8sNodePidUsageDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricK8sNodePidUsage.recordDataPoint(mb.startTime, ts, val)
-}
-
 // RecordK8sNodeSystemContainerCPUTimeDataPoint adds a data point to k8s.node.system_container.cpu.time metric.
 func (mb *MetricsBuilder) RecordK8sNodeSystemContainerCPUTimeDataPoint(ts pcommon.Timestamp, val float64) {
 	mb.metricK8sNodeSystemContainerCPUTime.recordDataPoint(mb.startTime, ts, val)
@@ -4652,6 +4777,11 @@ func (mb *MetricsBuilder) RecordK8sPodCPUUsageDataPoint(ts pcommon.Timestamp, va
 	mb.metricK8sPodCPUUsage.recordDataPoint(mb.startTime, ts, val)
 }
 
+// RecordK8sPodCPUUtilizationDataPoint adds a data point to k8s.pod.cpu.utilization metric.
+func (mb *MetricsBuilder) RecordK8sPodCPUUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricK8sPodCPUUtilization.recordDataPoint(mb.startTime, ts, val)
+}
+
 // RecordK8sPodCPULimitUtilizationDataPoint adds a data point to k8s.pod.cpu_limit_utilization metric.
 func (mb *MetricsBuilder) RecordK8sPodCPULimitUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
 	mb.metricK8sPodCPULimitUtilization.recordDataPoint(mb.startTime, ts, val)
@@ -4675,6 +4805,11 @@ func (mb *MetricsBuilder) RecordK8sPodFilesystemCapacityDataPoint(ts pcommon.Tim
 // RecordK8sPodFilesystemUsageDataPoint adds a data point to k8s.pod.filesystem.usage metric.
 func (mb *MetricsBuilder) RecordK8sPodFilesystemUsageDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricK8sPodFilesystemUsage.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordK8sPodFilesystemUtilizationDataPoint adds a data point to k8s.pod.filesystem.utilization metric.
+func (mb *MetricsBuilder) RecordK8sPodFilesystemUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricK8sPodFilesystemUtilization.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordK8sPodMemoryAvailableDataPoint adds a data point to k8s.pod.memory.available metric.

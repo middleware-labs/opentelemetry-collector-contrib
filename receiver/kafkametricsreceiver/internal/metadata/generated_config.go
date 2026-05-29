@@ -890,8 +890,8 @@ func (rac *ResourceAttributeConfig) Unmarshal(parser *confmap.Conf) error {
 
 // ResourceAttributesConfig provides config for kafka_metrics resource attributes.
 type ResourceAttributesConfig struct {
-	KafkaClusterAlias ResourceAttributeConfig `mapstructure:"kafka.cluster.alias"`
-	KafkaClusterID    ResourceAttributeConfig `mapstructure:"kafka.cluster.id"`
+	KafkaClusterAlias   ResourceAttributeConfig `mapstructure:"kafka.cluster.alias"`
+	RuntimeMetricsKafka ResourceAttributeConfig `mapstructure:"runtime.metrics.kafka"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -899,8 +899,8 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		KafkaClusterAlias: ResourceAttributeConfig{
 			Enabled: false,
 		},
-		KafkaClusterID: ResourceAttributeConfig{
-			Enabled: false,
+		RuntimeMetricsKafka: ResourceAttributeConfig{
+			Enabled: true,
 		},
 	}
 }
@@ -916,4 +916,9 @@ func NewDefaultMetricsBuilderConfig() MetricsBuilderConfig {
 		Metrics:            DefaultMetricsConfig(),
 		ResourceAttributes: DefaultResourceAttributesConfig(),
 	}
+}
+
+// Deprecated: Use NewDefaultMetricsBuilderConfig.
+func DefaultMetricsBuilderConfig() MetricsBuilderConfig {
+	return NewDefaultMetricsBuilderConfig()
 }

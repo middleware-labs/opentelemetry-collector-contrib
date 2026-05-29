@@ -39,7 +39,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, dep *appsv1.Deployment, ts pcomm
 	eb.RecordK8sDeploymentDesiredDataPoint(ts, int64(*dep.Spec.Replicas))
 	eb.RecordK8sDeploymentAvailableDataPoint(ts, int64(dep.Status.AvailableReplicas))
 	eb.RecordK8sDeploymentCurrentDataPoint(ts, int64(dep.Status.Replicas))
-    eb.RecordK8sDeploymentUpdatedDataPoint(ts, int64(dep.Status.UpdatedReplicas))
+	eb.RecordK8sDeploymentUpdatedDataPoint(ts, int64(dep.Status.UpdatedReplicas))
 	eb.Emit()
 }
 

@@ -76,25 +76,26 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 
 func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
 	var jobName, jobUID string
-    ownerReference := findOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
-    if ownerReference != nil && ownerReference.Kind == constants.K8sKindJob {
-        jobName = ownerReference.Name
-        jobUID = string(ownerReference.UID)
-    }
-
-    jobInfo := getJobInfoForPod(client, pod)
+	ownerReference := findOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
+	if ownerReference != nil && ownerReference.Kind == constants.K8sKindJob {
+		jobName = ownerReference.Name
+		jobUID = string(ownerReference.UID)
+	}
 
 	e := metadata.NewK8sPodEntity(string(pod.UID))
 	e.SetK8sPodName(pod.Name)
 	e.SetK8sPodQosClass(string(pod.Status.QOSClass))
 	e.SetK8sJobName(jobName)
 	e.SetK8sJobUID(string(jobUID))
-    e.SetK8sClusterName("unknown")
+	e.SetK8sClusterName("unknown")
 	e.SetK8sNamespaceName(pod.Namespace)
 	e.SetK8sNodeName(pod.Spec.NodeName)
 	e.SetK8sPodStartTime(pod.GetCreationTimestamp().String())
-	s.SetK8sServiceName(getServiceNameForPod(pod))
-    s.SetK8sServiceAccountName(getServiceAccountNameForPod(pod))
+	svcName, ok := pod.Labels[constants.MWK8sServiceName]
+	if ok {
+		e.SetK8sServiceName(svcName)
+	}
+	e.SetK8sServiceaccountName(pod.Spec.ServiceAccountName)
 	eb := mb.ForK8sPod(e)
 	eb.RecordK8sPodPhaseDataPoint(ts, int64(phaseToInt(pod.Status.Phase)))
 	eb.RecordK8sPodStatusReasonDataPoint(ts, int64(reasonToInt(pod.Status.Reason)))

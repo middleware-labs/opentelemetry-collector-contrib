@@ -51,9 +51,9 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/pod"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/replicaset"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/replicationcontroller"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/role"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/rolebinding"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/serviceaccount"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/statefulset"
 )
@@ -345,7 +345,9 @@ func (rw *resourceWatcher) setupInformerForKind(kind schema.GroupVersionKind, fa
 			rw.setupInformer(kind, ns, factory.Core().V1().Services().Informer())
 		}
 	case gvk.ServiceAccount:
-		rw.setupInformer(kind, factory.Core().V1().ServiceAccounts().Informer())
+		for ns, factory := range factories {
+			rw.setupInformer(kind, ns, factory.Core().V1().ServiceAccounts().Informer())
+		}
 	case gvk.EndpointSlice:
 		for ns, factory := range factories {
 			rw.setupInformer(kind, ns, factory.Discovery().V1().EndpointSlices().Informer())
@@ -617,10 +619,6 @@ func (rw *resourceWatcher) objMetadata(obj any) map[experimentalmetricmetadata.R
 		return hpa.GetMetadata(o)
 	case *corev1.Namespace:
 		return namespace.GetMetadata(o)
-	case *corev1.PersistentVolume:
-		return persistentvolume.GetMetadata(o)
-	case *corev1.PersistentVolumeClaim:
-		return persistentvolumeclaim.GetMetadata(o)
 	}
 	return nil
 }
