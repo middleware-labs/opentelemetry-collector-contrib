@@ -4,6 +4,13 @@ $defs:
     description: MetricsConfig provides config for apache metrics.
     type: object
     properties:
+      apache.bytes_per_sec:
+        description: "ApacheBytesPerSecMetricConfig provides config for the apache.bytes_per_sec metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       apache.connections.async:
         description: "ApacheConnectionsAsyncMetricConfig provides config for the apache.connections.async metric."
         type: object
@@ -27,6 +34,27 @@ $defs:
                 - "connection_state"
             default:
               - "connection_state"
+      apache.conns_async_closing:
+        description: "ApacheConnsAsyncClosingMetricConfig provides config for the apache.conns_async_closing metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      apache.conns_async_keep_alive:
+        description: "ApacheConnsAsyncKeepAliveMetricConfig provides config for the apache.conns_async_keep_alive metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      apache.conns_async_writing:
+        description: "ApacheConnsAsyncWritingMetricConfig provides config for the apache.conns_async_writing metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       apache.cpu.load:
         description: "ApacheCPULoadMetricConfig provides config for the apache.cpu.load metric."
         type: object
@@ -87,6 +115,13 @@ $defs:
           enabled:
             type: boolean
             default: true
+      apache.max_workers:
+        description: "ApacheMaxWorkersMetricConfig provides config for the apache.max_workers metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       apache.request.time:
         description: "ApacheRequestTimeMetricConfig provides config for the apache.request.time metric."
         type: object
@@ -96,6 +131,13 @@ $defs:
             default: true
       apache.requests:
         description: "ApacheRequestsMetricConfig provides config for the apache.requests metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      apache.requests_per_sec:
+        description: "ApacheRequestsPerSecMetricConfig provides config for the apache.requests_per_sec metric."
         type: object
         properties:
           enabled:

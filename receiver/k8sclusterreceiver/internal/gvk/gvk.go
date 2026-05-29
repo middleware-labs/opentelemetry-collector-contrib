@@ -9,15 +9,13 @@ import "k8s.io/apimachinery/pkg/runtime/schema"
 var (
 	Pod                         = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Pod"}
 	Node                        = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Node"}
-	PersistentVolume            = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolume"}
-	PersistentVolumeClaim       = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolumeClaim"}
 	Namespace                   = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Namespace"}
 	ReplicationController       = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ReplicationController"}
 	ResourceQuota               = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ResourceQuota"}
 	Service                     = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Service"}
-	PersistentVolume        = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolume"}
-	PersistentVolumeClaim   = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolumeClaim"}
-	EndpointSlice           = schema.GroupVersionKind{Group: "discovery.k8s.io", Version: "v1", Kind: "EndpointSlice"}
+	PersistentVolume            = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolume"}
+	PersistentVolumeClaim       = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "PersistentVolumeClaim"}
+	EndpointSlice               = schema.GroupVersionKind{Group: "discovery.k8s.io", Version: "v1", Kind: "EndpointSlice"}
 	ServiceAccount              = schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ServiceAccount"}
 	DaemonSet                   = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "DaemonSet"}
 	Deployment                  = schema.GroupVersionKind{Group: "apps", Version: "v1", Kind: "Deployment"}

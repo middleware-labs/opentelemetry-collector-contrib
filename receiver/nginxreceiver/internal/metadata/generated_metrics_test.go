@@ -59,6 +59,25 @@ func TestMetricsBuilder(t *testing.T) {
 			mb := NewMetricsBuilder(loadMetricsBuilderConfig(t, tt.name), settings, WithStartTime(start))
 			aggMap := make(map[string]string) // contains the aggregation strategies for each metric name
 			aggMap["nginx.connections_current"] = mb.metricNginxConnectionsCurrent.config.AggregationStrategy
+			aggMap["nginx.server_zone.received"] = mb.metricNginxServerZoneReceived.config.AggregationStrategy
+			aggMap["nginx.server_zone.responses.1xx"] = mb.metricNginxServerZoneResponses1xx.config.AggregationStrategy
+			aggMap["nginx.server_zone.responses.2xx"] = mb.metricNginxServerZoneResponses2xx.config.AggregationStrategy
+			aggMap["nginx.server_zone.responses.3xx"] = mb.metricNginxServerZoneResponses3xx.config.AggregationStrategy
+			aggMap["nginx.server_zone.responses.4xx"] = mb.metricNginxServerZoneResponses4xx.config.AggregationStrategy
+			aggMap["nginx.server_zone.responses.5xx"] = mb.metricNginxServerZoneResponses5xx.config.AggregationStrategy
+			aggMap["nginx.server_zone.sent"] = mb.metricNginxServerZoneSent.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.backup"] = mb.metricNginxUpstreamPeersBackup.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.health_checks.last_passed"] = mb.metricNginxUpstreamPeersHealthChecksLastPassed.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.received"] = mb.metricNginxUpstreamPeersReceived.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.requests"] = mb.metricNginxUpstreamPeersRequests.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.response_time"] = mb.metricNginxUpstreamPeersResponseTime.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.responses.1xx"] = mb.metricNginxUpstreamPeersResponses1xx.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.responses.2xx"] = mb.metricNginxUpstreamPeersResponses2xx.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.responses.3xx"] = mb.metricNginxUpstreamPeersResponses3xx.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.responses.4xx"] = mb.metricNginxUpstreamPeersResponses4xx.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.responses.5xx"] = mb.metricNginxUpstreamPeersResponses5xx.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.sent"] = mb.metricNginxUpstreamPeersSent.config.AggregationStrategy
+			aggMap["nginx.upstream.peers.weight"] = mb.metricNginxUpstreamPeersWeight.config.AggregationStrategy
 
 			expectedWarnings := 0
 			if tt.metricsSet != testDataSetReag {
@@ -85,12 +104,180 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordNginxLoadTimestampDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxNetReadingDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxNetWaitingDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxNetWritingDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordNginxRequestsDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneReceivedDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneReceivedDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses1xxDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneResponses1xxDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses2xxDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneResponses2xxDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses3xxDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneResponses3xxDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses4xxDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneResponses4xxDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneResponses5xxDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneResponses5xxDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxServerZoneSentDataPoint(ts, 1, "serverzone_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxServerZoneSentDataPoint(ts, 3, "serverzone_name-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersBackupDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersBackupDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersReceivedDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersReceivedDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersRequestsDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersRequestsDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersResponseTimeDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersResponseTimeDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersResponses1xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersResponses1xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersResponses2xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersResponses2xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersResponses3xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersResponses3xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersResponses4xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersResponses4xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersResponses5xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersResponses5xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersSentDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersSentDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordNginxUpstreamPeersWeightDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordNginxUpstreamPeersWeightDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+			}
 
 			res := pcommon.NewResource()
 			metrics := mb.Emit(WithResource(res))
 			if tt.name == "reaggregate_set" {
 				assert.Empty(t, mb.metricNginxConnectionsCurrent.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneReceived.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneResponses1xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneResponses2xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneResponses3xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneResponses4xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneResponses5xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxServerZoneSent.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersBackup.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersHealthChecksLastPassed.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersReceived.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersRequests.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersResponseTime.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersResponses1xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersResponses2xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersResponses3xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersResponses4xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersResponses5xx.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersSent.aggDataPoints)
+				assert.Empty(t, mb.metricNginxUpstreamPeersWeight.aggDataPoints)
 			}
 
 			if tt.expectEmpty {
@@ -190,6 +377,54 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.load_timestamp":
+					assert.False(t, validatedMetrics["nginx.load_timestamp"], "Found a duplicate in the metrics slice: nginx.load_timestamp")
+					validatedMetrics["nginx.load_timestamp"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Time of the last reload of configuration (time since Epoch).", mi.Description())
+					assert.Equal(t, "ms", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.net.reading":
+					assert.False(t, validatedMetrics["nginx.net.reading"], "Found a duplicate in the metrics slice: nginx.net.reading")
+					validatedMetrics["nginx.net.reading"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Current number of connections where NGINX is reading the request header", mi.Description())
+					assert.Equal(t, "connections", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.net.waiting":
+					assert.False(t, validatedMetrics["nginx.net.waiting"], "Found a duplicate in the metrics slice: nginx.net.waiting")
+					validatedMetrics["nginx.net.waiting"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Current number of connections where NGINX is waiting the response back to the client", mi.Description())
+					assert.Equal(t, "connections", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.net.writing":
+					assert.False(t, validatedMetrics["nginx.net.writing"], "Found a duplicate in the metrics slice: nginx.net.writing")
+					validatedMetrics["nginx.net.writing"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Current number of connections where NGINX is writing the response back to the client", mi.Description())
+					assert.Equal(t, "connections", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "nginx.requests":
 					assert.False(t, validatedMetrics["nginx.requests"], "Found a duplicate in the metrics slice: nginx.requests")
 					validatedMetrics["nginx.requests"] = true
@@ -204,6 +439,886 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "nginx.server_zone.received":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.received"], "Found a duplicate in the metrics slice: nginx.server_zone.received")
+						validatedMetrics["nginx.server_zone.received"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes received by server zones", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.received"], "Found a duplicate in the metrics slice: nginx.server_zone.received")
+						validatedMetrics["nginx.server_zone.received"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes received by server zones", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.received"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.server_zone.responses.1xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.1xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.1xx")
+						validatedMetrics["nginx.server_zone.responses.1xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 1xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.1xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.1xx")
+						validatedMetrics["nginx.server_zone.responses.1xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 1xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.responses.1xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.server_zone.responses.2xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.2xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.2xx")
+						validatedMetrics["nginx.server_zone.responses.2xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 2xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.2xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.2xx")
+						validatedMetrics["nginx.server_zone.responses.2xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 2xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.responses.2xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.server_zone.responses.3xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.3xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.3xx")
+						validatedMetrics["nginx.server_zone.responses.3xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 3xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.3xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.3xx")
+						validatedMetrics["nginx.server_zone.responses.3xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 3xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.responses.3xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.server_zone.responses.4xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.4xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.4xx")
+						validatedMetrics["nginx.server_zone.responses.4xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 4xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.4xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.4xx")
+						validatedMetrics["nginx.server_zone.responses.4xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 4xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.responses.4xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.server_zone.responses.5xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.5xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.5xx")
+						validatedMetrics["nginx.server_zone.responses.5xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 5xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.responses.5xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.5xx")
+						validatedMetrics["nginx.server_zone.responses.5xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of responses with 5xx status code.", mi.Description())
+						assert.Equal(t, "response", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.responses.5xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.server_zone.sent":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.server_zone.sent"], "Found a duplicate in the metrics slice: nginx.server_zone.sent")
+						validatedMetrics["nginx.server_zone.sent"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes sent by server zones", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						serverzoneNameAttrVal, ok := dp.Attributes().Get("serverzone_name")
+						assert.True(t, ok)
+						assert.Equal(t, "serverzone_name-val", serverzoneNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.server_zone.sent"], "Found a duplicate in the metrics slice: nginx.server_zone.sent")
+						validatedMetrics["nginx.server_zone.sent"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes sent by server zones", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.server_zone.sent"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("serverzone_name")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.backup":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.backup"], "Found a duplicate in the metrics slice: nginx.upstream.peers.backup")
+						validatedMetrics["nginx.upstream.peers.backup"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Whether upstream server is a backup server", mi.Description())
+						assert.Equal(t, "{state}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.backup"], "Found a duplicate in the metrics slice: nginx.upstream.peers.backup")
+						validatedMetrics["nginx.upstream.peers.backup"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Whether upstream server is a backup server", mi.Description())
+						assert.Equal(t, "{state}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.backup"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.health_checks.last_passed":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.health_checks.last_passed"], "Found a duplicate in the metrics slice: nginx.upstream.peers.health_checks.last_passed")
+						validatedMetrics["nginx.upstream.peers.health_checks.last_passed"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Boolean indicating if the last health check request was successful and passed tests.", mi.Description())
+						assert.Equal(t, "{status}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.health_checks.last_passed"], "Found a duplicate in the metrics slice: nginx.upstream.peers.health_checks.last_passed")
+						validatedMetrics["nginx.upstream.peers.health_checks.last_passed"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Boolean indicating if the last health check request was successful and passed tests.", mi.Description())
+						assert.Equal(t, "{status}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.health_checks.last_passed"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.received":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.received"], "Found a duplicate in the metrics slice: nginx.upstream.peers.received")
+						validatedMetrics["nginx.upstream.peers.received"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes received from upstream servers", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.received"], "Found a duplicate in the metrics slice: nginx.upstream.peers.received")
+						validatedMetrics["nginx.upstream.peers.received"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes received from upstream servers", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.received"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.requests":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.requests"], "Found a duplicate in the metrics slice: nginx.upstream.peers.requests")
+						validatedMetrics["nginx.upstream.peers.requests"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of requests made to upstream servers", mi.Description())
+						assert.Equal(t, "requests", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.requests"], "Found a duplicate in the metrics slice: nginx.upstream.peers.requests")
+						validatedMetrics["nginx.upstream.peers.requests"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of requests made to upstream servers", mi.Description())
+						assert.Equal(t, "requests", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.requests"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.response_time":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.response_time"], "Found a duplicate in the metrics slice: nginx.upstream.peers.response_time")
+						validatedMetrics["nginx.upstream.peers.response_time"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The average time to receive the last byte of data from this server.", mi.Description())
+						assert.Equal(t, "ms", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.response_time"], "Found a duplicate in the metrics slice: nginx.upstream.peers.response_time")
+						validatedMetrics["nginx.upstream.peers.response_time"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The average time to receive the last byte of data from this server.", mi.Description())
+						assert.Equal(t, "ms", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.response_time"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.responses.1xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.1xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.1xx")
+						validatedMetrics["nginx.upstream.peers.responses.1xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 1xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.1xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.1xx")
+						validatedMetrics["nginx.upstream.peers.responses.1xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 1xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.responses.1xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.responses.2xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.2xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.2xx")
+						validatedMetrics["nginx.upstream.peers.responses.2xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 2xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.2xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.2xx")
+						validatedMetrics["nginx.upstream.peers.responses.2xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 2xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.responses.2xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.responses.3xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.3xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.3xx")
+						validatedMetrics["nginx.upstream.peers.responses.3xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 3xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.3xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.3xx")
+						validatedMetrics["nginx.upstream.peers.responses.3xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 3xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.responses.3xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.responses.4xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.4xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.4xx")
+						validatedMetrics["nginx.upstream.peers.responses.4xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 4xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.4xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.4xx")
+						validatedMetrics["nginx.upstream.peers.responses.4xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 4xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.responses.4xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.responses.5xx":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.5xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.5xx")
+						validatedMetrics["nginx.upstream.peers.responses.5xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 5xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.5xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.5xx")
+						validatedMetrics["nginx.upstream.peers.responses.5xx"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of responses from upstream with 5xx status codes", mi.Description())
+						assert.Equal(t, "responses", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.responses.5xx"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.sent":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.sent"], "Found a duplicate in the metrics slice: nginx.upstream.peers.sent")
+						validatedMetrics["nginx.upstream.peers.sent"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes sent from upstream servers", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.sent"], "Found a duplicate in the metrics slice: nginx.upstream.peers.sent")
+						validatedMetrics["nginx.upstream.peers.sent"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Bytes sent from upstream servers", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.sent"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
+				case "nginx.upstream.peers.weight":
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.weight"], "Found a duplicate in the metrics slice: nginx.upstream.peers.weight")
+						validatedMetrics["nginx.upstream.peers.weight"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Weight of upstream server", mi.Description())
+						assert.Equal(t, "weight", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						upstreamBlockNameAttrVal, ok := dp.Attributes().Get("upstream_block_name")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_block_name-val", upstreamBlockNameAttrVal.Str())
+						upstreamPeerAddressAttrVal, ok := dp.Attributes().Get("upstream_peer_address")
+						assert.True(t, ok)
+						assert.Equal(t, "upstream_peer_address-val", upstreamPeerAddressAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["nginx.upstream.peers.weight"], "Found a duplicate in the metrics slice: nginx.upstream.peers.weight")
+						validatedMetrics["nginx.upstream.peers.weight"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Weight of upstream server", mi.Description())
+						assert.Equal(t, "weight", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						switch aggMap["nginx.upstream.peers.weight"] {
+						case "sum":
+							assert.InDelta(t, float64(4), dp.DoubleValue(), 0.01)
+						case "avg":
+							assert.InDelta(t, float64(2), dp.DoubleValue(), 0.01)
+						case "min":
+							assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						case "max":
+							assert.InDelta(t, float64(3), dp.DoubleValue(), 0.01)
+						}
+						_, ok := dp.Attributes().Get("upstream_block_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("upstream_peer_address")
+						assert.False(t, ok)
+					}
 				}
 			}
 		})

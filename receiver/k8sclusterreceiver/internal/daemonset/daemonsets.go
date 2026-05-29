@@ -40,10 +40,10 @@ func RecordMetrics(mb *metadata.MetricsBuilder, ds *appsv1.DaemonSet, ts pcommon
 	e.SetK8sDaemonsetStartTime(ds.GetCreationTimestamp().String())
 	e.SetK8sClusterName("unknown")
 	if ds.Spec.Selector != nil && ds.Spec.Selector.MatchLabels != nil {
-        e.SetK8sDaemonsetSelectors(mapToString(ds.Spec.Selector.MatchLabels, "&"))
-    }
-    // Set update strategy if available
-    e.SetK8sDaemonsetStrategy(string(ds.Spec.UpdateStrategy.Type))
+		e.SetK8sDaemonsetSelectors(mapToString(ds.Spec.Selector.MatchLabels, "&"))
+	}
+	// Set update strategy if available
+	e.SetK8sDaemonsetStrategy(string(ds.Spec.UpdateStrategy.Type))
 	eb := mb.ForK8sDaemonset(e)
 	eb.RecordK8sDaemonsetCurrentScheduledNodesDataPoint(ts, int64(ds.Status.CurrentNumberScheduled))
 	eb.RecordK8sDaemonsetDesiredScheduledNodesDataPoint(ts, int64(ds.Status.DesiredNumberScheduled))

@@ -159,6 +159,7 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.scrapeIndexIoWaitsStats(now, errs)
 
 	// collect table size metrics.
+
 	m.scrapeTableStats(now, errs)
 
 	// collect performance event statements metrics.
@@ -170,27 +171,9 @@ func (m *mySQLScraper) scrape(context.Context) (pmetric.Metrics, error) {
 	m.scrapeGlobalStats(now, errs)
 
 	// collect replicas status metrics.
-	// collect row operation stats from performance schema as sometimes
-	// innodb row stats are unreliable
-	m.scrapeRowOperationStats(now, errs)
-	// colect replicas status metrics.
 	m.scrapeReplicaStatusStats(now)
 
-	m.scrapeTotalRows(now, errs)
-
-	// collect total errors
-	m.scrapeTotalErrors(now, errs)
-
-	m.scraperInnodbMetricsForDBM(now, errs)
-
 	rb := m.mb.NewResourceBuilder()
-
-	version, err := m.sqlclient.getVersion()
-	if err != nil {
-		m.logger.Error("Failed to fetch the version of mysql database", zap.Error(err))
-	}
-
-	rb.SetMysqlDbVersion(version)
 	rb.SetMysqlInstanceEndpoint(m.config.Endpoint)
 	m.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 
@@ -235,24 +218,6 @@ func (m *mySQLScraper) scrapeQuerySampleFunc(ctx context.Context) (plog.Logs, er
 
 	m.scrapeQuerySamples(ctx, now, errs)
 	return m.emitLogsWithScopeAttrs(errs)
-}
-
-func (m *mySQLScraper) scrapeRowOperationStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	rowOperationStats, err := m.sqlclient.getRowOperationStats()
-	if err != nil {
-		m.logger.Error("Failed to fetch row operation stats from performance schema", zap.Error(err))
-		errs.AddPartial(4, err)
-		return
-	}
-	rowsDeleted := strconv.FormatInt(rowOperationStats.rowsDeleted, 10)
-	rowsInserted := strconv.FormatInt(rowOperationStats.rowsInserted, 10)
-	rowsUpdated := strconv.FormatInt(rowOperationStats.rowsUpdated, 10)
-	rowsRead := strconv.FormatInt(rowOperationStats.rowsInserted, 10)
-
-	m.mb.RecordMysqlPerformanceRowsDeletedDataPoint(now, rowsDeleted)
-	m.mb.RecordMysqlPerformanceRowsInsertedDataPoint(now, rowsInserted)
-	m.mb.RecordMysqlPerformanceRowsUpdatedDataPoint(now, rowsUpdated)
-	m.mb.RecordMysqlPerformanceRowsReadDataPoint(now, rowsRead)
 }
 
 func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
@@ -573,49 +538,6 @@ func (m *mySQLScraper) scrapeGlobalStats(now pcommon.Timestamp, errs *scrapererr
 	}
 }
 
-func (m *mySQLScraper) scrapeTotalRows(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	nrows, err := m.sqlclient.getTotalRows()
-	if err != nil {
-		m.logger.Error("Failed to fetch Total Rows", zap.Error(err))
-		errs.AddPartial(1, err)
-		return
-	}
-	for _, r := range nrows {
-		if r.totalRows.Valid {
-			m.mb.RecordMysqlTotalRowsDataPoint(now, r.totalRows.Int64, r.dbname)
-		}
-	}
-}
-
-func (m *mySQLScraper) scraperInnodbMetricsForDBM(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	innodbStatusStats, err, nfailedMetrics := m.sqlclient.getInnodbStatusStats()
-	if err != nil {
-		if nfailedMetrics == 0 {
-			m.logger.Error("Failed to fetch innodb status stats", zap.Error(err))
-			errs.AddPartial(1, err)
-			return
-		} else {
-			m.logger.Error("failed to parse some metrics. ", zap.Error(err))
-		}
-	}
-	for k, v := range innodbStatusStats {
-		strVal := strconv.FormatInt(v, 10)
-		switch k {
-		case "Innodb_rows_inserted":
-			addPartialIfError(errs, m.mb.RecordMysqlInnodbRowsInsertedDataPoint(now, strVal))
-
-		case "Innodb_rows_updated":
-			addPartialIfError(errs, m.mb.RecordMysqlInnodbRowsUpdatedDataPoint(now, strVal))
-
-		case "Innodb_rows_deleted":
-			addPartialIfError(errs, m.mb.RecordMysqlInnodbRowsDeletedDataPoint(now, strVal))
-
-		case "Innodb_rows_read":
-			addPartialIfError(errs, m.mb.RecordMysqlInnodbRowsReadDataPoint(now, strVal))
-		}
-	}
-}
-
 func (m *mySQLScraper) scrapeTableStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	tableStats, err := m.sqlclient.getTableStats()
 	if err != nil {
@@ -627,18 +549,10 @@ func (m *mySQLScraper) scrapeTableStats(now pcommon.Timestamp, errs *scrapererro
 	for i := range tableStats {
 		s := tableStats[i]
 		// counts
-		if s.rows.Valid {
-			m.mb.RecordMysqlTableRowsDataPoint(now, s.rows.Int64, s.name, s.schema)
-		}
-		if s.averageRowLength.Valid {
-			m.mb.RecordMysqlTableAverageRowLengthDataPoint(now, s.averageRowLength.Int64, s.name, s.schema)
-		}
-		if s.dataLength.Valid {
-			m.mb.RecordMysqlTableSizeDataPoint(now, s.dataLength.Int64, s.name, s.schema, metadata.AttributeTableSizeTypeData)
-		}
-		if s.indexLength.Valid {
-			m.mb.RecordMysqlTableSizeDataPoint(now, s.indexLength.Int64, s.name, s.schema, metadata.AttributeTableSizeTypeIndex)
-		}
+		m.mb.RecordMysqlTableRowsDataPoint(now, s.rows, s.name, s.schema)
+		m.mb.RecordMysqlTableAverageRowLengthDataPoint(now, s.averageRowLength, s.name, s.schema)
+		m.mb.RecordMysqlTableSizeDataPoint(now, s.dataLength, s.name, s.schema, metadata.AttributeTableSizeTypeData)
+		m.mb.RecordMysqlTableSizeDataPoint(now, s.indexLength, s.name, s.schema, metadata.AttributeTableSizeTypeIndex)
 	}
 }
 
@@ -713,6 +627,7 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 		errs.AddPartial(8, err)
 		return
 	}
+
 	for i := range statementEventsStats {
 		s := statementEventsStats[i]
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countCreatedTmpDiskTables, s.schema, s.digest, s.digestText, metadata.AttributeEventStateCreatedTmpDiskTables)
@@ -726,20 +641,8 @@ func (m *mySQLScraper) scrapeStatementEventsStats(now pcommon.Timestamp, errs *s
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countSortRows, s.schema, s.digest, s.digestText, metadata.AttributeEventStateSortRows)
 		m.mb.RecordMysqlStatementEventCountDataPoint(now, s.countWarnings, s.schema, s.digest, s.digestText, metadata.AttributeEventStateWarnings)
 
-		m.mb.RecordMysqlStatementEventErrorsDataPoint(now, s.countErrors, s.schema, s.digest, s.digestText)
-		m.mb.RecordMysqlStatementEventCountStarsDataPoint(now, s.countStar, s.schema, s.digest, s.digestText)
 		m.mb.RecordMysqlStatementEventWaitTimeDataPoint(now, s.sumTimerWait, s.schema, s.digest, s.digestText)
 	}
-}
-
-func (m *mySQLScraper) scrapeTotalErrors(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
-	totalErrors, err := m.sqlclient.getTotalErrors()
-	if err != nil {
-		m.logger.Error("Failed to fetch total errors ", zap.Error(err))
-		errs.AddPartial(1, err)
-		return
-	}
-	m.mb.RecordMysqlQueryTotalErrorsDataPoint(now, totalErrors)
 }
 
 func (m *mySQLScraper) scrapeTableLockWaitEventStats(now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {

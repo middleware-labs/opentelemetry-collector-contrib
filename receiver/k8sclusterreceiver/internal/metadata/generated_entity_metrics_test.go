@@ -18,10 +18,188 @@ func TestEntityBuilders(t *testing.T) {
 	settings := receivertest.NewNopSettings(receivertest.NopType)
 	mb := NewMetricsBuilder(NewDefaultMetricsBuilderConfig(), settings, WithStartTime(start))
 
+	t.Run("k8s.ingress", func(t *testing.T) {
+		e := NewK8sIngressEntity("k8s.ingress.uid-val")
+		require.NotNil(t, e)
+		e.SetK8sIngressName("k8s.ingress.name-val")
+		e.SetK8sIngressNamespace("k8s.ingress.namespace-val")
+
+		eb := mb.ForK8sIngress(e)
+		eb.RecordK8sIngressRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.ingress")
+		require.True(t, ok)
+		k8sIngressUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.ingress.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.ingress.uid-val", k8sIngressUIDAttrVal.Str())
+		k8sIngressNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.ingress.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.ingress.name-val", k8sIngressNameAttrVal.Str())
+		k8sIngressNamespaceAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.ingress.namespace")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.ingress.namespace-val", k8sIngressNamespaceAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.ingress/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sIngressUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sIngressEntity("k8s.ingress.uid-val")
+		e.SetK8sIngressName("k8s.ingress.name-val")
+		e.SetK8sIngressNamespace("k8s.ingress.namespace-val")
+
+		eb := mb.ForK8sIngress(e)
+		eb.RecordK8sIngressRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.ingress")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.ingress.name")
+		assert.True(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.ingress.namespace")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.ingress/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sIngressName.Enabled = false
+		cfg.ResourceAttributes.K8sIngressNamespace.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sIngressEntity("k8s.ingress.uid-val")
+		e.SetK8sIngressName("k8s.ingress.name-val")
+		e.SetK8sIngressNamespace("k8s.ingress.namespace-val")
+
+		eb := mb.ForK8sIngress(e)
+		eb.RecordK8sIngressRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.ingress")
+		require.True(t, ok)
+		k8sIngressUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.ingress.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.ingress.uid-val", k8sIngressUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.ingress.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.ingress.namespace")
+		assert.False(t, ok)
+	})
+
+	t.Run("k8s.serviceaccount", func(t *testing.T) {
+		e := NewK8sServiceaccountEntity("k8s.serviceaccount.uid-val")
+		require.NotNil(t, e)
+		e.SetK8sServiceaccountName("k8s.serviceaccount.name-val")
+		e.SetK8sServiceaccountNamespace("k8s.serviceaccount.namespace-val")
+
+		eb := mb.ForK8sServiceaccount(e)
+		eb.RecordK8sServiceaccountSecretCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.serviceaccount")
+		require.True(t, ok)
+		k8sServiceaccountUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.serviceaccount.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.serviceaccount.uid-val", k8sServiceaccountUIDAttrVal.Str())
+		k8sServiceaccountNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.serviceaccount.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.serviceaccount.name-val", k8sServiceaccountNameAttrVal.Str())
+		k8sServiceaccountNamespaceAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.serviceaccount.namespace")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.serviceaccount.namespace-val", k8sServiceaccountNamespaceAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.serviceaccount/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sServiceaccountUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sServiceaccountEntity("k8s.serviceaccount.uid-val")
+		e.SetK8sServiceaccountName("k8s.serviceaccount.name-val")
+		e.SetK8sServiceaccountNamespace("k8s.serviceaccount.namespace-val")
+
+		eb := mb.ForK8sServiceaccount(e)
+		eb.RecordK8sServiceaccountSecretCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.serviceaccount")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.serviceaccount.name")
+		assert.True(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.serviceaccount.namespace")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.serviceaccount/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sServiceaccountName.Enabled = false
+		cfg.ResourceAttributes.K8sServiceaccountNamespace.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sServiceaccountEntity("k8s.serviceaccount.uid-val")
+		e.SetK8sServiceaccountName("k8s.serviceaccount.name-val")
+		e.SetK8sServiceaccountNamespace("k8s.serviceaccount.namespace-val")
+
+		eb := mb.ForK8sServiceaccount(e)
+		eb.RecordK8sServiceaccountSecretCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.serviceaccount")
+		require.True(t, ok)
+		k8sServiceaccountUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.serviceaccount.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.serviceaccount.uid-val", k8sServiceaccountUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.serviceaccount.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.serviceaccount.namespace")
+		assert.False(t, ok)
+	})
+
 	t.Run("k8s.namespace", func(t *testing.T) {
 		e := NewK8sNamespaceEntity("k8s.namespace.uid-val")
 		require.NotNil(t, e)
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sNamespaceStartTime("k8s.namespace.start_time-val")
 
 		eb := mb.ForK8sNamespace(e)
 		eb.RecordK8sNamespacePhaseDataPoint(ts, 1)
@@ -38,6 +216,12 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		k8sClusterNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
+		k8sNamespaceStartTimeAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.namespace.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.namespace.start_time-val", k8sNamespaceStartTimeAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
@@ -52,6 +236,8 @@ func TestEntityBuilders(t *testing.T) {
 
 		e := NewK8sNamespaceEntity("k8s.namespace.uid-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sNamespaceStartTime("k8s.namespace.start_time-val")
 
 		eb := mb.ForK8sNamespace(e)
 		eb.RecordK8sNamespacePhaseDataPoint(ts, 1)
@@ -66,16 +252,24 @@ func TestEntityBuilders(t *testing.T) {
 		// Enabled descriptive attributes should still be on the resource directly.
 		_, ok = rm.Resource().Attributes().Get("k8s.namespace.name")
 		assert.True(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.cluster.name")
+		assert.True(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.namespace.start_time")
+		assert.True(t, ok)
 	})
 	t.Run("k8s.namespace/disabled_descriptive_attr", func(t *testing.T) {
 		// When a descriptive attribute is disabled, the entity is still produced
 		// with its identity but the disabled attribute is not added.
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
+		cfg.ResourceAttributes.K8sNamespaceStartTime.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sNamespaceEntity("k8s.namespace.uid-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sNamespaceStartTime("k8s.namespace.start_time-val")
 
 		eb := mb.ForK8sNamespace(e)
 		eb.RecordK8sNamespacePhaseDataPoint(ts, 1)
@@ -93,6 +287,10 @@ func TestEntityBuilders(t *testing.T) {
 		// Disabled descriptive/extra attributes must not be present.
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.start_time")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.node", func(t *testing.T) {
@@ -104,6 +302,8 @@ func TestEntityBuilders(t *testing.T) {
 		e.SetContainerRuntimeVersion("container.runtime.version-val")
 		e.SetOsDescription("os.description-val")
 		e.SetOsType("os.type-val")
+		e.SetK8sNodeStartTime("k8s.node.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sNode(e)
 		eb.RecordK8sNodeConditionDataPoint(ts, 1, "condition-val")
@@ -113,15 +313,347 @@ func TestEntityBuilders(t *testing.T) {
 		assert.Equal(t, 0, metrics.ResourceMetrics().Len())
 	})
 
+	t.Run("k8s.role", func(t *testing.T) {
+		e := NewK8sRoleEntity("k8s.role.uid-val")
+		require.NotNil(t, e)
+		e.SetK8sRoleName("k8s.role.name-val")
+		e.SetK8sNamespaceName("k8s.namespace.name-val")
+
+		eb := mb.ForK8sRole(e)
+		eb.RecordK8sRoleRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.role")
+		require.True(t, ok)
+		k8sRoleUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.role.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.role.uid-val", k8sRoleUIDAttrVal.Str())
+		k8sRoleNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.role.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.role.name-val", k8sRoleNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.role/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sRoleUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sRoleEntity("k8s.role.uid-val")
+		e.SetK8sRoleName("k8s.role.name-val")
+
+		eb := mb.ForK8sRole(e)
+		eb.RecordK8sRoleRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.role")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.role.name")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.role/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sRoleName.Enabled = false
+		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sRoleEntity("k8s.role.uid-val")
+		e.SetK8sRoleName("k8s.role.name-val")
+		e.SetK8sNamespaceName("k8s.namespace.name-val")
+
+		eb := mb.ForK8sRole(e)
+		eb.RecordK8sRoleRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.role")
+		require.True(t, ok)
+		k8sRoleUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.role.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.role.uid-val", k8sRoleUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.role.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+	})
+
+	t.Run("k8s.rolebinding", func(t *testing.T) {
+		e := NewK8sRolebindingEntity("k8s.rolebinding.uid-val")
+		require.NotNil(t, e)
+		e.SetK8sRolebindingName("k8s.rolebinding.name-val")
+		e.SetK8sNamespaceName("k8s.namespace.name-val")
+
+		eb := mb.ForK8sRolebinding(e)
+		eb.RecordK8sRolebindingSubjectCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.rolebinding")
+		require.True(t, ok)
+		k8sRolebindingUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.rolebinding.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.rolebinding.uid-val", k8sRolebindingUIDAttrVal.Str())
+		k8sRolebindingNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.rolebinding.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.rolebinding.name-val", k8sRolebindingNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.rolebinding/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sRolebindingUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sRolebindingEntity("k8s.rolebinding.uid-val")
+		e.SetK8sRolebindingName("k8s.rolebinding.name-val")
+
+		eb := mb.ForK8sRolebinding(e)
+		eb.RecordK8sRolebindingSubjectCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.rolebinding")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.rolebinding.name")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.rolebinding/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sRolebindingName.Enabled = false
+		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sRolebindingEntity("k8s.rolebinding.uid-val")
+		e.SetK8sRolebindingName("k8s.rolebinding.name-val")
+		e.SetK8sNamespaceName("k8s.namespace.name-val")
+
+		eb := mb.ForK8sRolebinding(e)
+		eb.RecordK8sRolebindingSubjectCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.rolebinding")
+		require.True(t, ok)
+		k8sRolebindingUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.rolebinding.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.rolebinding.uid-val", k8sRolebindingUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.rolebinding.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+	})
+
+	t.Run("k8s.clusterrole", func(t *testing.T) {
+		e := NewK8sClusterroleEntity("k8s.clusterrole.uid-val")
+		require.NotNil(t, e)
+		e.SetK8sClusterroleName("k8s.clusterrole.name-val")
+
+		eb := mb.ForK8sClusterrole(e)
+		eb.RecordK8sClusterroleRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.clusterrole")
+		require.True(t, ok)
+		k8sClusterroleUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.clusterrole.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.clusterrole.uid-val", k8sClusterroleUIDAttrVal.Str())
+		k8sClusterroleNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.clusterrole.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.clusterrole.name-val", k8sClusterroleNameAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.clusterrole/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sClusterroleUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sClusterroleEntity("k8s.clusterrole.uid-val")
+		e.SetK8sClusterroleName("k8s.clusterrole.name-val")
+
+		eb := mb.ForK8sClusterrole(e)
+		eb.RecordK8sClusterroleRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.clusterrole")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.clusterrole.name")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.clusterrole/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sClusterroleName.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sClusterroleEntity("k8s.clusterrole.uid-val")
+		e.SetK8sClusterroleName("k8s.clusterrole.name-val")
+
+		eb := mb.ForK8sClusterrole(e)
+		eb.RecordK8sClusterroleRuleCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.clusterrole")
+		require.True(t, ok)
+		k8sClusterroleUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.clusterrole.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.clusterrole.uid-val", k8sClusterroleUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.clusterrole.name")
+		assert.False(t, ok)
+	})
+
+	t.Run("k8s.clusterrolebinding", func(t *testing.T) {
+		e := NewK8sClusterrolebindingEntity("k8s.clusterrolebinding.uid-val")
+		require.NotNil(t, e)
+		e.SetK8sClusterrolebindingName("k8s.clusterrolebinding.name-val")
+
+		eb := mb.ForK8sClusterrolebinding(e)
+		eb.RecordK8sClusterrolebindingSubjectCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.clusterrolebinding")
+		require.True(t, ok)
+		k8sClusterrolebindingUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.clusterrolebinding.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.clusterrolebinding.uid-val", k8sClusterrolebindingUIDAttrVal.Str())
+		k8sClusterrolebindingNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.clusterrolebinding.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.clusterrolebinding.name-val", k8sClusterrolebindingNameAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.clusterrolebinding/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sClusterrolebindingUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sClusterrolebindingEntity("k8s.clusterrolebinding.uid-val")
+		e.SetK8sClusterrolebindingName("k8s.clusterrolebinding.name-val")
+
+		eb := mb.ForK8sClusterrolebinding(e)
+		eb.RecordK8sClusterrolebindingSubjectCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.clusterrolebinding")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.clusterrolebinding.name")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.clusterrolebinding/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sClusterrolebindingName.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sClusterrolebindingEntity("k8s.clusterrolebinding.uid-val")
+		e.SetK8sClusterrolebindingName("k8s.clusterrolebinding.name-val")
+
+		eb := mb.ForK8sClusterrolebinding(e)
+		eb.RecordK8sClusterrolebindingSubjectCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.clusterrolebinding")
+		require.True(t, ok)
+		k8sClusterrolebindingUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.clusterrolebinding.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.clusterrolebinding.uid-val", k8sClusterrolebindingUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.clusterrolebinding.name")
+		assert.False(t, ok)
+	})
+
 	t.Run("k8s.deployment", func(t *testing.T) {
 		e := NewK8sDeploymentEntity("k8s.deployment.uid-val")
 		require.NotNil(t, e)
 		e.SetK8sDeploymentName("k8s.deployment.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sDeploymentStartTime("k8s.deployment.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sDeployment(e)
 		eb.RecordK8sDeploymentAvailableDataPoint(ts, 1)
+		eb.RecordK8sDeploymentCurrentDataPoint(ts, 1)
 		eb.RecordK8sDeploymentDesiredDataPoint(ts, 1)
+		eb.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
 
@@ -140,10 +672,20 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.deployment.start_time")
+		assert.False(t, ok)
+		k8sDeploymentStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.deployment.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.deployment.start_time-val", k8sDeploymentStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
-		assert.Equal(t, 2, ms.Len())
+		assert.Equal(t, 4, ms.Len())
 	})
 	t.Run("k8s.deployment/disabled_identity_attr", func(t *testing.T) {
 		// When an identity attribute is disabled, the entity is not produced but
@@ -157,7 +699,9 @@ func TestEntityBuilders(t *testing.T) {
 
 		eb := mb.ForK8sDeployment(e)
 		eb.RecordK8sDeploymentAvailableDataPoint(ts, 1)
+		eb.RecordK8sDeploymentCurrentDataPoint(ts, 1)
 		eb.RecordK8sDeploymentDesiredDataPoint(ts, 1)
+		eb.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
 
@@ -176,15 +720,21 @@ func TestEntityBuilders(t *testing.T) {
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sDeploymentName.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sDeploymentStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sDeploymentEntity("k8s.deployment.uid-val")
 		e.SetK8sDeploymentName("k8s.deployment.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sDeploymentStartTime("k8s.deployment.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sDeployment(e)
 		eb.RecordK8sDeploymentAvailableDataPoint(ts, 1)
+		eb.RecordK8sDeploymentCurrentDataPoint(ts, 1)
 		eb.RecordK8sDeploymentDesiredDataPoint(ts, 1)
+		eb.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
 
@@ -201,6 +751,10 @@ func TestEntityBuilders(t *testing.T) {
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.deployment.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.replicaset", func(t *testing.T) {
@@ -208,10 +762,14 @@ func TestEntityBuilders(t *testing.T) {
 		require.NotNil(t, e)
 		e.SetK8sReplicasetName("k8s.replicaset.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sReplicasetStartTime("k8s.replicaset.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sReplicaset(e)
 		eb.RecordK8sReplicasetAvailableDataPoint(ts, 1)
+		eb.RecordK8sReplicasetCurrentDataPoint(ts, 1)
 		eb.RecordK8sReplicasetDesiredDataPoint(ts, 1)
+		eb.RecordK8sReplicasetReadyDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
 
@@ -230,10 +788,20 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.replicaset.start_time")
+		assert.False(t, ok)
+		k8sReplicasetStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.replicaset.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.replicaset.start_time-val", k8sReplicasetStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
-		assert.Equal(t, 2, ms.Len())
+		assert.Equal(t, 4, ms.Len())
 	})
 	t.Run("k8s.replicaset/disabled_identity_attr", func(t *testing.T) {
 		// When an identity attribute is disabled, the entity is not produced but
@@ -247,7 +815,9 @@ func TestEntityBuilders(t *testing.T) {
 
 		eb := mb.ForK8sReplicaset(e)
 		eb.RecordK8sReplicasetAvailableDataPoint(ts, 1)
+		eb.RecordK8sReplicasetCurrentDataPoint(ts, 1)
 		eb.RecordK8sReplicasetDesiredDataPoint(ts, 1)
+		eb.RecordK8sReplicasetReadyDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
 
@@ -266,15 +836,21 @@ func TestEntityBuilders(t *testing.T) {
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sReplicasetName.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sReplicasetStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sReplicasetEntity("k8s.replicaset.uid-val")
 		e.SetK8sReplicasetName("k8s.replicaset.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sReplicasetStartTime("k8s.replicaset.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sReplicaset(e)
 		eb.RecordK8sReplicasetAvailableDataPoint(ts, 1)
+		eb.RecordK8sReplicasetCurrentDataPoint(ts, 1)
 		eb.RecordK8sReplicasetDesiredDataPoint(ts, 1)
+		eb.RecordK8sReplicasetReadyDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
 
@@ -291,6 +867,10 @@ func TestEntityBuilders(t *testing.T) {
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.replicaset.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.statefulset", func(t *testing.T) {
@@ -298,6 +878,10 @@ func TestEntityBuilders(t *testing.T) {
 		require.NotNil(t, e)
 		e.SetK8sStatefulsetName("k8s.statefulset.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sStatefulsetPodManagementPolicy("k8s.statefulset.pod_management_policy-val")
+		e.SetK8sStatefulsetServiceName("k8s.statefulset.service_name-val")
+		e.SetK8sStatefulsetStartTime("k8s.statefulset.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sStatefulset(e)
 		eb.RecordK8sStatefulsetCurrentPodsDataPoint(ts, 1)
@@ -322,6 +906,26 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.statefulset.pod_management_policy")
+		assert.False(t, ok)
+		k8sStatefulsetPodManagementPolicyAttrVal, ok := rm.Resource().Attributes().Get("k8s.statefulset.pod_management_policy")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.statefulset.pod_management_policy-val", k8sStatefulsetPodManagementPolicyAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.statefulset.service_name")
+		assert.False(t, ok)
+		k8sStatefulsetServiceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.statefulset.service_name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.statefulset.service_name-val", k8sStatefulsetServiceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.statefulset.start_time")
+		assert.False(t, ok)
+		k8sStatefulsetStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.statefulset.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.statefulset.start_time-val", k8sStatefulsetStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
@@ -360,11 +964,19 @@ func TestEntityBuilders(t *testing.T) {
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sStatefulsetName.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sStatefulsetPodManagementPolicy.Enabled = false
+		cfg.ResourceAttributes.K8sStatefulsetServiceName.Enabled = false
+		cfg.ResourceAttributes.K8sStatefulsetStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sStatefulsetEntity("k8s.statefulset.uid-val")
 		e.SetK8sStatefulsetName("k8s.statefulset.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sStatefulsetPodManagementPolicy("k8s.statefulset.pod_management_policy-val")
+		e.SetK8sStatefulsetServiceName("k8s.statefulset.service_name-val")
+		e.SetK8sStatefulsetStartTime("k8s.statefulset.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sStatefulset(e)
 		eb.RecordK8sStatefulsetCurrentPodsDataPoint(ts, 1)
@@ -387,6 +999,14 @@ func TestEntityBuilders(t *testing.T) {
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.statefulset.pod_management_policy")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.statefulset.service_name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.statefulset.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.daemonset", func(t *testing.T) {
@@ -394,6 +1014,10 @@ func TestEntityBuilders(t *testing.T) {
 		require.NotNil(t, e)
 		e.SetK8sDaemonsetName("k8s.daemonset.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sDaemonsetStartTime("k8s.daemonset.start_time-val")
+		e.SetK8sDaemonsetSelectors("k8s.daemonset.selectors-val")
+		e.SetK8sDaemonsetStrategy("k8s.daemonset.strategy-val")
 
 		eb := mb.ForK8sDaemonset(e)
 		eb.RecordK8sDaemonsetCurrentScheduledNodesDataPoint(ts, 1)
@@ -418,6 +1042,26 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.daemonset.start_time")
+		assert.False(t, ok)
+		k8sDaemonsetStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.daemonset.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.daemonset.start_time-val", k8sDaemonsetStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.daemonset.selectors")
+		assert.False(t, ok)
+		k8sDaemonsetSelectorsAttrVal, ok := rm.Resource().Attributes().Get("k8s.daemonset.selectors")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.daemonset.selectors-val", k8sDaemonsetSelectorsAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.daemonset.strategy")
+		assert.False(t, ok)
+		k8sDaemonsetStrategyAttrVal, ok := rm.Resource().Attributes().Get("k8s.daemonset.strategy")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.daemonset.strategy-val", k8sDaemonsetStrategyAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
@@ -456,11 +1100,19 @@ func TestEntityBuilders(t *testing.T) {
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sDaemonsetName.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
+		cfg.ResourceAttributes.K8sDaemonsetStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sDaemonsetSelectors.Enabled = false
+		cfg.ResourceAttributes.K8sDaemonsetStrategy.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sDaemonsetEntity("k8s.daemonset.uid-val")
 		e.SetK8sDaemonsetName("k8s.daemonset.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sDaemonsetStartTime("k8s.daemonset.start_time-val")
+		e.SetK8sDaemonsetSelectors("k8s.daemonset.selectors-val")
+		e.SetK8sDaemonsetStrategy("k8s.daemonset.strategy-val")
 
 		eb := mb.ForK8sDaemonset(e)
 		eb.RecordK8sDaemonsetCurrentScheduledNodesDataPoint(ts, 1)
@@ -483,6 +1135,14 @@ func TestEntityBuilders(t *testing.T) {
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.daemonset.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.daemonset.selectors")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.daemonset.strategy")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.cronjob", func(t *testing.T) {
@@ -490,6 +1150,13 @@ func TestEntityBuilders(t *testing.T) {
 		require.NotNil(t, e)
 		e.SetK8sCronjobName("k8s.cronjob.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sCronjobConcurrencyPolicy("k8s.cronjob.concurrency_policy-val")
+		e.SetK8sCronjobSuspend("k8s.cronjob.suspend-val")
+		e.SetK8sCronjobSchedule("k8s.cronjob.schedule-val")
+		e.SetK8sCronjobLastScheduleTime("k8s.cronjob.last_schedule_time-val")
+		e.SetK8sCronjobLastSuccessfulTime("k8s.cronjob.last_successful_time-val")
+		e.SetK8sCronjobStartTime("k8s.cronjob.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sCronjob(e)
 		eb.RecordK8sCronjobActiveJobsDataPoint(ts, 1)
@@ -511,6 +1178,41 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.concurrency_policy")
+		assert.False(t, ok)
+		k8sCronjobConcurrencyPolicyAttrVal, ok := rm.Resource().Attributes().Get("k8s.cronjob.concurrency_policy")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cronjob.concurrency_policy-val", k8sCronjobConcurrencyPolicyAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.suspend")
+		assert.False(t, ok)
+		k8sCronjobSuspendAttrVal, ok := rm.Resource().Attributes().Get("k8s.cronjob.suspend")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cronjob.suspend-val", k8sCronjobSuspendAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.schedule")
+		assert.False(t, ok)
+		k8sCronjobScheduleAttrVal, ok := rm.Resource().Attributes().Get("k8s.cronjob.schedule")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cronjob.schedule-val", k8sCronjobScheduleAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.last_schedule_time")
+		assert.False(t, ok)
+		k8sCronjobLastScheduleTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.cronjob.last_schedule_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cronjob.last_schedule_time-val", k8sCronjobLastScheduleTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.last_successful_time")
+		assert.False(t, ok)
+		k8sCronjobLastSuccessfulTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.cronjob.last_successful_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cronjob.last_successful_time-val", k8sCronjobLastSuccessfulTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.start_time")
+		assert.False(t, ok)
+		k8sCronjobStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.cronjob.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cronjob.start_time-val", k8sCronjobStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
@@ -546,11 +1248,25 @@ func TestEntityBuilders(t *testing.T) {
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sCronjobName.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sCronjobConcurrencyPolicy.Enabled = false
+		cfg.ResourceAttributes.K8sCronjobSuspend.Enabled = false
+		cfg.ResourceAttributes.K8sCronjobSchedule.Enabled = false
+		cfg.ResourceAttributes.K8sCronjobLastScheduleTime.Enabled = false
+		cfg.ResourceAttributes.K8sCronjobLastSuccessfulTime.Enabled = false
+		cfg.ResourceAttributes.K8sCronjobStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sCronjobEntity("k8s.cronjob.uid-val")
 		e.SetK8sCronjobName("k8s.cronjob.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sCronjobConcurrencyPolicy("k8s.cronjob.concurrency_policy-val")
+		e.SetK8sCronjobSuspend("k8s.cronjob.suspend-val")
+		e.SetK8sCronjobSchedule("k8s.cronjob.schedule-val")
+		e.SetK8sCronjobLastScheduleTime("k8s.cronjob.last_schedule_time-val")
+		e.SetK8sCronjobLastSuccessfulTime("k8s.cronjob.last_successful_time-val")
+		e.SetK8sCronjobStartTime("k8s.cronjob.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sCronjob(e)
 		eb.RecordK8sCronjobActiveJobsDataPoint(ts, 1)
@@ -570,6 +1286,20 @@ func TestEntityBuilders(t *testing.T) {
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.concurrency_policy")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.suspend")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.schedule")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.last_schedule_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.last_successful_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cronjob.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.job", func(t *testing.T) {
@@ -577,9 +1307,13 @@ func TestEntityBuilders(t *testing.T) {
 		require.NotNil(t, e)
 		e.SetK8sJobName("k8s.job.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sJobStartTime("k8s.job.start_time-val")
+		e.SetK8sJobEndTime("k8s.job.end_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sJob(e)
 		eb.RecordK8sJobActivePodsDataPoint(ts, 1)
+		eb.RecordK8sJobBackoffLimitDataPoint(ts, 1)
 		eb.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
 		eb.RecordK8sJobFailedPodsDataPoint(ts, 1)
 		eb.RecordK8sJobMaxParallelPodsDataPoint(ts, 1)
@@ -602,10 +1336,25 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.start_time")
+		assert.False(t, ok)
+		k8sJobStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.job.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.job.start_time-val", k8sJobStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.end_time")
+		assert.False(t, ok)
+		k8sJobEndTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.job.end_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.job.end_time-val", k8sJobEndTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
-		assert.Equal(t, 5, ms.Len())
+		assert.Equal(t, 6, ms.Len())
 	})
 	t.Run("k8s.job/disabled_identity_attr", func(t *testing.T) {
 		// When an identity attribute is disabled, the entity is not produced but
@@ -619,6 +1368,7 @@ func TestEntityBuilders(t *testing.T) {
 
 		eb := mb.ForK8sJob(e)
 		eb.RecordK8sJobActivePodsDataPoint(ts, 1)
+		eb.RecordK8sJobBackoffLimitDataPoint(ts, 1)
 		eb.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
 		eb.RecordK8sJobFailedPodsDataPoint(ts, 1)
 		eb.RecordK8sJobMaxParallelPodsDataPoint(ts, 1)
@@ -641,14 +1391,21 @@ func TestEntityBuilders(t *testing.T) {
 		cfg := NewDefaultMetricsBuilderConfig()
 		cfg.ResourceAttributes.K8sJobName.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sJobStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sJobEndTime.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sJobEntity("k8s.job.uid-val")
 		e.SetK8sJobName("k8s.job.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sJobStartTime("k8s.job.start_time-val")
+		e.SetK8sJobEndTime("k8s.job.end_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
 
 		eb := mb.ForK8sJob(e)
 		eb.RecordK8sJobActivePodsDataPoint(ts, 1)
+		eb.RecordK8sJobBackoffLimitDataPoint(ts, 1)
 		eb.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
 		eb.RecordK8sJobFailedPodsDataPoint(ts, 1)
 		eb.RecordK8sJobMaxParallelPodsDataPoint(ts, 1)
@@ -669,6 +1426,12 @@ func TestEntityBuilders(t *testing.T) {
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.end_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.pod", func(t *testing.T) {
@@ -678,6 +1441,12 @@ func TestEntityBuilders(t *testing.T) {
 		e.SetK8sPodQosClass("k8s.pod.qos_class-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
 		e.SetK8sNodeName("k8s.node.name-val")
+		e.SetK8sPodStartTime("k8s.pod.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sJobName("k8s.job.name-val")
+		e.SetK8sJobUID("k8s.job.uid-val")
+		e.SetK8sServiceaccountName("k8s.serviceaccount.name-val")
+		e.SetK8sServiceName("k8s.service.name-val")
 
 		eb := mb.ForK8sPod(e)
 		eb.RecordK8sPodPhaseDataPoint(ts, 1)
@@ -707,6 +1476,36 @@ func TestEntityBuilders(t *testing.T) {
 		k8sNodeNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.node.name")
 		require.True(t, ok)
 		assert.Equal(t, "k8s.node.name-val", k8sNodeNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.pod.start_time")
+		assert.False(t, ok)
+		k8sPodStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.pod.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.pod.start_time-val", k8sPodStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.name")
+		assert.False(t, ok)
+		k8sJobNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.job.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.job.name-val", k8sJobNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.uid")
+		assert.False(t, ok)
+		k8sJobUIDAttrVal, ok := rm.Resource().Attributes().Get("k8s.job.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.job.uid-val", k8sJobUIDAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.serviceaccount.name")
+		assert.False(t, ok)
+		k8sServiceaccountNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.serviceaccount.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.serviceaccount.name-val", k8sServiceaccountNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.name")
+		assert.False(t, ok)
+		k8sServiceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.service.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.service.name-val", k8sServiceNameAttrVal.Str())
 
 		require.Equal(t, 1, rm.ScopeMetrics().Len())
 		ms := rm.ScopeMetrics().At(0).Metrics()
@@ -746,6 +1545,12 @@ func TestEntityBuilders(t *testing.T) {
 		cfg.ResourceAttributes.K8sPodQosClass.Enabled = false
 		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
 		cfg.ResourceAttributes.K8sNodeName.Enabled = false
+		cfg.ResourceAttributes.K8sPodStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
+		cfg.ResourceAttributes.K8sJobName.Enabled = false
+		cfg.ResourceAttributes.K8sJobUID.Enabled = false
+		cfg.ResourceAttributes.K8sServiceaccountName.Enabled = false
+		cfg.ResourceAttributes.K8sServiceName.Enabled = false
 		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
 
 		e := NewK8sPodEntity("k8s.pod.uid-val")
@@ -753,6 +1558,12 @@ func TestEntityBuilders(t *testing.T) {
 		e.SetK8sPodQosClass("k8s.pod.qos_class-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
 		e.SetK8sNodeName("k8s.node.name-val")
+		e.SetK8sPodStartTime("k8s.pod.start_time-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sJobName("k8s.job.name-val")
+		e.SetK8sJobUID("k8s.job.uid-val")
+		e.SetK8sServiceaccountName("k8s.serviceaccount.name-val")
+		e.SetK8sServiceName("k8s.service.name-val")
 
 		eb := mb.ForK8sPod(e)
 		eb.RecordK8sPodPhaseDataPoint(ts, 1)
@@ -776,6 +1587,18 @@ func TestEntityBuilders(t *testing.T) {
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
 		assert.False(t, ok)
 		_, ok = entityVal.DescriptiveAttributes().Get("k8s.node.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.pod.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.job.uid")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.serviceaccount.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.name")
 		assert.False(t, ok)
 	})
 
@@ -1151,10 +1974,113 @@ func TestEntityBuilders(t *testing.T) {
 		eb := mb.ForK8sService(e)
 		eb.RecordK8sServiceEndpointCountDataPoint(ts, 1, AttributeK8sServiceEndpointAddressTypeIPv4, AttributeK8sServiceEndpointConditionReady, "k8s.service.endpoint.zone-val")
 		eb.RecordK8sServiceLoadBalancerIngressCountDataPoint(ts, 1)
+		eb.RecordK8sServicePortCountDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
-		// All metrics for this entity are disabled by default.
-		assert.Equal(t, 0, metrics.ResourceMetrics().Len())
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.service")
+		require.True(t, ok)
+		k8sServiceUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.service.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.service.uid-val", k8sServiceUIDAttrVal.Str())
+		k8sServiceNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.service.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.service.name-val", k8sServiceNameAttrVal.Str())
+		k8sServiceTypeAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.service.type")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.service.type-val", k8sServiceTypeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.publish_not_ready_addresses")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.traffic_distribution")
+		assert.False(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.service.traffic_distribution")
+		assert.False(t, ok)
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.service/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sServiceUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sServiceEntity("k8s.service.uid-val")
+		e.SetK8sServiceName("k8s.service.name-val")
+		e.SetK8sServiceType("k8s.service.type-val")
+		e.SetK8sServicePublishNotReadyAddresses(false)
+
+		eb := mb.ForK8sService(e)
+		eb.RecordK8sServiceEndpointCountDataPoint(ts, 1, AttributeK8sServiceEndpointAddressTypeIPv4, AttributeK8sServiceEndpointConditionReady, "k8s.service.endpoint.zone-val")
+		eb.RecordK8sServiceLoadBalancerIngressCountDataPoint(ts, 1)
+		eb.RecordK8sServicePortCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.service")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.service.name")
+		assert.True(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.service.type")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.service/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sServiceName.Enabled = false
+		cfg.ResourceAttributes.K8sServiceType.Enabled = false
+		cfg.ResourceAttributes.K8sServicePublishNotReadyAddresses.Enabled = false
+		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sServiceTrafficDistribution.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sServiceEntity("k8s.service.uid-val")
+		e.SetK8sServiceName("k8s.service.name-val")
+		e.SetK8sServiceType("k8s.service.type-val")
+		e.SetK8sServicePublishNotReadyAddresses(false)
+		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sServiceTrafficDistribution("k8s.service.traffic_distribution-val")
+
+		eb := mb.ForK8sService(e)
+		eb.RecordK8sServiceEndpointCountDataPoint(ts, 1, AttributeK8sServiceEndpointAddressTypeIPv4, AttributeK8sServiceEndpointConditionReady, "k8s.service.endpoint.zone-val")
+		eb.RecordK8sServiceLoadBalancerIngressCountDataPoint(ts, 1)
+		eb.RecordK8sServicePortCountDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.service")
+		require.True(t, ok)
+		k8sServiceUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.service.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.service.uid-val", k8sServiceUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.type")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.publish_not_ready_addresses")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.service.traffic_distribution")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.persistentvolume", func(t *testing.T) {
@@ -1163,14 +2089,220 @@ func TestEntityBuilders(t *testing.T) {
 		e.SetK8sPersistentvolumeName("k8s.persistentvolume.name-val")
 		e.SetK8sStorageclassName("k8s.storageclass.name-val")
 		e.SetK8sPersistentvolumeReclaimPolicy("Delete")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sPersistentvolumeAccessModes("k8s.persistentvolume.access_modes-val")
+		e.SetK8sPersistentvolumeAnnotations("k8s.persistentvolume.annotations-val")
+		e.SetK8sPersistentvolumeFinalizers("k8s.persistentvolume.finalizers-val")
+		e.SetK8sPersistentvolumeLabels("k8s.persistentvolume.labels-val")
+		e.SetK8sPersistentvolumeNamespace("k8s.persistentvolume.namespace-val")
+		e.SetK8sPersistentvolumePhase("k8s.persistentvolume.phase-val")
+		e.SetK8sPersistentvolumeStartTime("k8s.persistentvolume.start_time-val")
+		e.SetK8sPersistentvolumeStorageClass("k8s.persistentvolume.storage_class-val")
+		e.SetK8sPersistentvolumeVolumeMode("k8s.persistentvolume.volume_mode-val")
+		e.SetK8sPersistentvolumeclaimUID("k8s.persistentvolumeclaim.uid-val")
+		e.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
 
 		eb := mb.ForK8sPersistentvolume(e)
+		eb.RecordK8sPersistentvolumeCapacityDataPoint(ts, 1)
 		eb.RecordK8sPersistentvolumeStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeStatusPhasePending)
 		eb.RecordK8sPersistentvolumeStorageCapacityDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
-		// All metrics for this entity are disabled by default.
-		assert.Equal(t, 0, metrics.ResourceMetrics().Len())
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.persistentvolume")
+		require.True(t, ok)
+		k8sPersistentvolumeUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.persistentvolume.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.uid-val", k8sPersistentvolumeUIDAttrVal.Str())
+		k8sPersistentvolumeNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.name-val", k8sPersistentvolumeNameAttrVal.Str())
+		k8sStorageclassNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.storageclass.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.storageclass.name-val", k8sStorageclassNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.reclaim_policy")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.access_modes")
+		assert.False(t, ok)
+		k8sPersistentvolumeAccessModesAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.access_modes")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.access_modes-val", k8sPersistentvolumeAccessModesAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.annotations")
+		assert.False(t, ok)
+		k8sPersistentvolumeAnnotationsAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.annotations")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.annotations-val", k8sPersistentvolumeAnnotationsAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.finalizers")
+		assert.False(t, ok)
+		k8sPersistentvolumeFinalizersAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.finalizers")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.finalizers-val", k8sPersistentvolumeFinalizersAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.labels")
+		assert.False(t, ok)
+		k8sPersistentvolumeLabelsAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.labels")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.labels-val", k8sPersistentvolumeLabelsAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.namespace")
+		assert.False(t, ok)
+		k8sPersistentvolumeNamespaceAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.namespace")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.namespace-val", k8sPersistentvolumeNamespaceAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.phase")
+		assert.False(t, ok)
+		k8sPersistentvolumePhaseAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.phase")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.phase-val", k8sPersistentvolumePhaseAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.start_time")
+		assert.False(t, ok)
+		k8sPersistentvolumeStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.start_time-val", k8sPersistentvolumeStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.storage_class")
+		assert.False(t, ok)
+		k8sPersistentvolumeStorageClassAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.storage_class")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.storage_class-val", k8sPersistentvolumeStorageClassAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.volume_mode")
+		assert.False(t, ok)
+		k8sPersistentvolumeVolumeModeAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolume.volume_mode")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.volume_mode-val", k8sPersistentvolumeVolumeModeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.uid")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimUIDAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.uid-val", k8sPersistentvolumeclaimUIDAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.name")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.name-val", k8sPersistentvolumeclaimNameAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 1, ms.Len())
+	})
+	t.Run("k8s.persistentvolume/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sPersistentvolumeUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sPersistentvolumeEntity("k8s.persistentvolume.uid-val")
+		e.SetK8sPersistentvolumeName("k8s.persistentvolume.name-val")
+		e.SetK8sStorageclassName("k8s.storageclass.name-val")
+		e.SetK8sPersistentvolumeReclaimPolicy("Delete")
+
+		eb := mb.ForK8sPersistentvolume(e)
+		eb.RecordK8sPersistentvolumeCapacityDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeStatusPhasePending)
+		eb.RecordK8sPersistentvolumeStorageCapacityDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.persistentvolume")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.persistentvolume.name")
+		assert.True(t, ok)
+		_, ok = rm.Resource().Attributes().Get("k8s.storageclass.name")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.persistentvolume/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sPersistentvolumeName.Enabled = false
+		cfg.ResourceAttributes.K8sStorageclassName.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeReclaimPolicy.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeAccessModes.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeAnnotations.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeFinalizers.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeLabels.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeNamespace.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumePhase.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeStorageClass.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeVolumeMode.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimUID.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimName.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sPersistentvolumeEntity("k8s.persistentvolume.uid-val")
+		e.SetK8sPersistentvolumeName("k8s.persistentvolume.name-val")
+		e.SetK8sStorageclassName("k8s.storageclass.name-val")
+		e.SetK8sPersistentvolumeReclaimPolicy("Delete")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sPersistentvolumeAccessModes("k8s.persistentvolume.access_modes-val")
+		e.SetK8sPersistentvolumeAnnotations("k8s.persistentvolume.annotations-val")
+		e.SetK8sPersistentvolumeFinalizers("k8s.persistentvolume.finalizers-val")
+		e.SetK8sPersistentvolumeLabels("k8s.persistentvolume.labels-val")
+		e.SetK8sPersistentvolumeNamespace("k8s.persistentvolume.namespace-val")
+		e.SetK8sPersistentvolumePhase("k8s.persistentvolume.phase-val")
+		e.SetK8sPersistentvolumeStartTime("k8s.persistentvolume.start_time-val")
+		e.SetK8sPersistentvolumeStorageClass("k8s.persistentvolume.storage_class-val")
+		e.SetK8sPersistentvolumeVolumeMode("k8s.persistentvolume.volume_mode-val")
+		e.SetK8sPersistentvolumeclaimUID("k8s.persistentvolumeclaim.uid-val")
+		e.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
+
+		eb := mb.ForK8sPersistentvolume(e)
+		eb.RecordK8sPersistentvolumeCapacityDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeStatusPhasePending)
+		eb.RecordK8sPersistentvolumeStorageCapacityDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.persistentvolume")
+		require.True(t, ok)
+		k8sPersistentvolumeUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.persistentvolume.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolume.uid-val", k8sPersistentvolumeUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.storageclass.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.reclaim_policy")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.access_modes")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.annotations")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.finalizers")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.labels")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.namespace")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.phase")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.storage_class")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolume.volume_mode")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.uid")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.name")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.persistentvolumeclaim", func(t *testing.T) {
@@ -1179,15 +2311,197 @@ func TestEntityBuilders(t *testing.T) {
 		e.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
 		e.SetK8sNamespaceName("k8s.namespace.name-val")
 		e.SetK8sStorageclassName("k8s.storageclass.name-val")
+		e.SetK8sPersistentvolumeclaimAnnotations("k8s.persistentvolumeclaim.annotations-val")
+		e.SetK8sPersistentvolumeclaimVolumeName("k8s.persistentvolumeclaim.volume_name-val")
+		e.SetK8sPersistentvolumeclaimType("k8s.persistentvolumeclaim.type-val")
+		e.SetK8sPersistentvolumeclaimStartTime("k8s.persistentvolumeclaim.start_time-val")
+		e.SetK8sPersistentvolumeclaimFinalizers("k8s.persistentvolumeclaim.finalizers-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sPersistentvolumeclaimVolumeMode("k8s.persistentvolumeclaim.volume_mode-val")
+		e.SetK8sPersistentvolumeclaimAccessModes("k8s.persistentvolumeclaim.access_modes-val")
+		e.SetK8sPersistentvolumeclaimStorageClass("k8s.persistentvolumeclaim.storage_class-val")
 
 		eb := mb.ForK8sPersistentvolumeclaim(e)
+		eb.RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimCapacityDataPoint(ts, 1)
 		eb.RecordK8sPersistentvolumeclaimStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeclaimStatusPhasePending)
 		eb.RecordK8sPersistentvolumeclaimStorageCapacityDataPoint(ts, 1)
 		eb.RecordK8sPersistentvolumeclaimStorageRequestDataPoint(ts, 1)
 		eb.Emit()
 		metrics := mb.Emit()
-		// All metrics for this entity are disabled by default.
-		assert.Equal(t, 0, metrics.ResourceMetrics().Len())
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.persistentvolumeclaim")
+		require.True(t, ok)
+		k8sPersistentvolumeclaimUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.persistentvolumeclaim.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.uid-val", k8sPersistentvolumeclaimUIDAttrVal.Str())
+		k8sPersistentvolumeclaimNameAttrVal, ok := entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.name-val", k8sPersistentvolumeclaimNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+		k8sNamespaceNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.namespace.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.namespace.name-val", k8sNamespaceNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.storageclass.name")
+		assert.False(t, ok)
+		k8sStorageclassNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.storageclass.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.storageclass.name-val", k8sStorageclassNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.annotations")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimAnnotationsAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.annotations")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.annotations-val", k8sPersistentvolumeclaimAnnotationsAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.volume_name")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimVolumeNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.volume_name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.volume_name-val", k8sPersistentvolumeclaimVolumeNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.type")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimTypeAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.type")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.type-val", k8sPersistentvolumeclaimTypeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.start_time")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimStartTimeAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.start_time")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.start_time-val", k8sPersistentvolumeclaimStartTimeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.finalizers")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimFinalizersAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.finalizers")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.finalizers-val", k8sPersistentvolumeclaimFinalizersAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		k8sClusterNameAttrVal, ok := rm.Resource().Attributes().Get("k8s.cluster.name")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.volume_mode")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimVolumeModeAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.volume_mode")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.volume_mode-val", k8sPersistentvolumeclaimVolumeModeAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.access_modes")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimAccessModesAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.access_modes")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.access_modes-val", k8sPersistentvolumeclaimAccessModesAttrVal.Str())
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.storage_class")
+		assert.False(t, ok)
+		k8sPersistentvolumeclaimStorageClassAttrVal, ok := rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.storage_class")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.storage_class-val", k8sPersistentvolumeclaimStorageClassAttrVal.Str())
+
+		require.Equal(t, 1, rm.ScopeMetrics().Len())
+		ms := rm.ScopeMetrics().At(0).Metrics()
+		assert.Equal(t, 2, ms.Len())
+	})
+	t.Run("k8s.persistentvolumeclaim/disabled_identity_attr", func(t *testing.T) {
+		// When an identity attribute is disabled, the entity is not produced but
+		// other enabled attributes are still added to the resource directly.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimUID.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sPersistentvolumeclaimEntity("k8s.persistentvolumeclaim.uid-val")
+		e.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
+
+		eb := mb.ForK8sPersistentvolumeclaim(e)
+		eb.RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimCapacityDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeclaimStatusPhasePending)
+		eb.RecordK8sPersistentvolumeclaimStorageCapacityDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimStorageRequestDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must not be present since its identity attribute is disabled.
+		_, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.persistentvolumeclaim")
+		assert.False(t, ok)
+		// Enabled descriptive attributes should still be on the resource directly.
+		_, ok = rm.Resource().Attributes().Get("k8s.persistentvolumeclaim.name")
+		assert.True(t, ok)
+	})
+	t.Run("k8s.persistentvolumeclaim/disabled_descriptive_attr", func(t *testing.T) {
+		// When a descriptive attribute is disabled, the entity is still produced
+		// with its identity but the disabled attribute is not added.
+		cfg := NewDefaultMetricsBuilderConfig()
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimName.Enabled = false
+		cfg.ResourceAttributes.K8sNamespaceName.Enabled = false
+		cfg.ResourceAttributes.K8sStorageclassName.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimAnnotations.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimVolumeName.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimType.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimStartTime.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimFinalizers.Enabled = false
+		cfg.ResourceAttributes.K8sClusterName.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimVolumeMode.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimAccessModes.Enabled = false
+		cfg.ResourceAttributes.K8sPersistentvolumeclaimStorageClass.Enabled = false
+		mb := NewMetricsBuilder(cfg, settings, WithStartTime(start))
+
+		e := NewK8sPersistentvolumeclaimEntity("k8s.persistentvolumeclaim.uid-val")
+		e.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
+		e.SetK8sNamespaceName("k8s.namespace.name-val")
+		e.SetK8sStorageclassName("k8s.storageclass.name-val")
+		e.SetK8sPersistentvolumeclaimAnnotations("k8s.persistentvolumeclaim.annotations-val")
+		e.SetK8sPersistentvolumeclaimVolumeName("k8s.persistentvolumeclaim.volume_name-val")
+		e.SetK8sPersistentvolumeclaimType("k8s.persistentvolumeclaim.type-val")
+		e.SetK8sPersistentvolumeclaimStartTime("k8s.persistentvolumeclaim.start_time-val")
+		e.SetK8sPersistentvolumeclaimFinalizers("k8s.persistentvolumeclaim.finalizers-val")
+		e.SetK8sClusterName("k8s.cluster.name-val")
+		e.SetK8sPersistentvolumeclaimVolumeMode("k8s.persistentvolumeclaim.volume_mode-val")
+		e.SetK8sPersistentvolumeclaimAccessModes("k8s.persistentvolumeclaim.access_modes-val")
+		e.SetK8sPersistentvolumeclaimStorageClass("k8s.persistentvolumeclaim.storage_class-val")
+
+		eb := mb.ForK8sPersistentvolumeclaim(e)
+		eb.RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimCapacityDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeclaimStatusPhasePending)
+		eb.RecordK8sPersistentvolumeclaimStorageCapacityDataPoint(ts, 1)
+		eb.RecordK8sPersistentvolumeclaimStorageRequestDataPoint(ts, 1)
+		eb.Emit()
+		metrics := mb.Emit()
+
+		require.Equal(t, 1, metrics.ResourceMetrics().Len())
+		rm := metrics.ResourceMetrics().At(0)
+		// Entity must still be produced since identity attributes are enabled.
+		entityVal, ok := entity.ResourceEntities(rm.Resource()).Get("k8s.persistentvolumeclaim")
+		require.True(t, ok)
+		k8sPersistentvolumeclaimUIDAttrVal, ok := entityVal.IdentifyingAttributes().Get("k8s.persistentvolumeclaim.uid")
+		require.True(t, ok)
+		assert.Equal(t, "k8s.persistentvolumeclaim.uid-val", k8sPersistentvolumeclaimUIDAttrVal.Str())
+		// Disabled descriptive/extra attributes must not be present.
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.namespace.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.storageclass.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.annotations")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.volume_name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.type")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.start_time")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.finalizers")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.cluster.name")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.volume_mode")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.access_modes")
+		assert.False(t, ok)
+		_, ok = entityVal.DescriptiveAttributes().Get("k8s.persistentvolumeclaim.storage_class")
+		assert.False(t, ok)
 	})
 
 	t.Run("k8s.hpa", func(t *testing.T) {

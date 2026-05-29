@@ -96,6 +96,86 @@ func (ms *NginxConnectionsHandledMetricConfig) Unmarshal(parser *confmap.Conf) e
 	return nil
 }
 
+// NginxLoadTimestampMetricConfig provides config for the nginx.load_timestamp metric.
+type NginxLoadTimestampMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *NginxLoadTimestampMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// NginxNetReadingMetricConfig provides config for the nginx.net.reading metric.
+type NginxNetReadingMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *NginxNetReadingMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// NginxNetWaitingMetricConfig provides config for the nginx.net.waiting metric.
+type NginxNetWaitingMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *NginxNetWaitingMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// NginxNetWritingMetricConfig provides config for the nginx.net.writing metric.
+type NginxNetWritingMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *NginxNetWritingMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // NginxRequestsMetricConfig provides config for the nginx.requests metric.
 type NginxRequestsMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -116,12 +196,959 @@ func (ms *NginxRequestsMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+// NginxServerZoneReceivedMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.received metric.
+type NginxServerZoneReceivedMetricAttributeKey string
+
+const (
+	NginxServerZoneReceivedMetricAttributeKeyServerzoneName NginxServerZoneReceivedMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneReceivedMetricConfig provides config for the nginx.server_zone.received metric.
+type NginxServerZoneReceivedMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                      `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneReceivedMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneReceivedMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneReceivedMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneReceivedMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.received doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxServerZoneResponses1xxMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.responses.1xx metric.
+type NginxServerZoneResponses1xxMetricAttributeKey string
+
+const (
+	NginxServerZoneResponses1xxMetricAttributeKeyServerzoneName NginxServerZoneResponses1xxMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneResponses1xxMetricConfig provides config for the nginx.server_zone.responses.1xx metric.
+type NginxServerZoneResponses1xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                          `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneResponses1xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneResponses1xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneResponses1xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneResponses1xxMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.responses.1xx doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxServerZoneResponses2xxMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.responses.2xx metric.
+type NginxServerZoneResponses2xxMetricAttributeKey string
+
+const (
+	NginxServerZoneResponses2xxMetricAttributeKeyServerzoneName NginxServerZoneResponses2xxMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneResponses2xxMetricConfig provides config for the nginx.server_zone.responses.2xx metric.
+type NginxServerZoneResponses2xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                          `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneResponses2xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneResponses2xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneResponses2xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneResponses2xxMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.responses.2xx doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxServerZoneResponses3xxMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.responses.3xx metric.
+type NginxServerZoneResponses3xxMetricAttributeKey string
+
+const (
+	NginxServerZoneResponses3xxMetricAttributeKeyServerzoneName NginxServerZoneResponses3xxMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneResponses3xxMetricConfig provides config for the nginx.server_zone.responses.3xx metric.
+type NginxServerZoneResponses3xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                          `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneResponses3xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneResponses3xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneResponses3xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneResponses3xxMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.responses.3xx doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxServerZoneResponses4xxMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.responses.4xx metric.
+type NginxServerZoneResponses4xxMetricAttributeKey string
+
+const (
+	NginxServerZoneResponses4xxMetricAttributeKeyServerzoneName NginxServerZoneResponses4xxMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneResponses4xxMetricConfig provides config for the nginx.server_zone.responses.4xx metric.
+type NginxServerZoneResponses4xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                          `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneResponses4xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneResponses4xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneResponses4xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneResponses4xxMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.responses.4xx doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxServerZoneResponses5xxMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.responses.5xx metric.
+type NginxServerZoneResponses5xxMetricAttributeKey string
+
+const (
+	NginxServerZoneResponses5xxMetricAttributeKeyServerzoneName NginxServerZoneResponses5xxMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneResponses5xxMetricConfig provides config for the nginx.server_zone.responses.5xx metric.
+type NginxServerZoneResponses5xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                          `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneResponses5xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneResponses5xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneResponses5xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneResponses5xxMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.responses.5xx doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxServerZoneSentMetricAttributeKey specifies the key of an attribute for the nginx.server_zone.sent metric.
+type NginxServerZoneSentMetricAttributeKey string
+
+const (
+	NginxServerZoneSentMetricAttributeKeyServerzoneName NginxServerZoneSentMetricAttributeKey = "serverzone_name"
+)
+
+// NginxServerZoneSentMetricConfig provides config for the nginx.server_zone.sent metric.
+type NginxServerZoneSentMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                  `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxServerZoneSentMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxServerZoneSentMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxServerZoneSentMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxServerZoneSentMetricAttributeKeyServerzoneName:
+		default:
+			return fmt.Errorf("metric nginx.server_zone.sent doesn't have an attribute %v, valid attributes: [serverzone_name]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersBackupMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.backup metric.
+type NginxUpstreamPeersBackupMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersBackupMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersBackupMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersBackupMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersBackupMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersBackupMetricConfig provides config for the nginx.upstream.peers.backup metric.
+type NginxUpstreamPeersBackupMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                       `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersBackupMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersBackupMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersBackupMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersBackupMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersBackupMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.backup doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.health_checks.last_passed metric.
+type NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersHealthChecksLastPassedMetricConfig provides config for the nginx.upstream.peers.health_checks.last_passed metric.
+type NginxUpstreamPeersHealthChecksLastPassedMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                                       `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersHealthChecksLastPassedMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersHealthChecksLastPassedMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.health_checks.last_passed doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersReceivedMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.received metric.
+type NginxUpstreamPeersReceivedMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersReceivedMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersReceivedMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersReceivedMetricConfig provides config for the nginx.upstream.peers.received metric.
+type NginxUpstreamPeersReceivedMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                         `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersReceivedMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersReceivedMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersReceivedMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.received doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersRequestsMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.requests metric.
+type NginxUpstreamPeersRequestsMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersRequestsMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersRequestsMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersRequestsMetricConfig provides config for the nginx.upstream.peers.requests metric.
+type NginxUpstreamPeersRequestsMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                         `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersRequestsMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersRequestsMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersRequestsMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.requests doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersResponseTimeMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.response_time metric.
+type NginxUpstreamPeersResponseTimeMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersResponseTimeMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersResponseTimeMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersResponseTimeMetricConfig provides config for the nginx.upstream.peers.response_time metric.
+type NginxUpstreamPeersResponseTimeMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                             `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersResponseTimeMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersResponseTimeMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersResponseTimeMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.response_time doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersResponses1xxMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.responses.1xx metric.
+type NginxUpstreamPeersResponses1xxMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersResponses1xxMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersResponses1xxMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersResponses1xxMetricConfig provides config for the nginx.upstream.peers.responses.1xx metric.
+type NginxUpstreamPeersResponses1xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                             `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersResponses1xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersResponses1xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersResponses1xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.responses.1xx doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersResponses2xxMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.responses.2xx metric.
+type NginxUpstreamPeersResponses2xxMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersResponses2xxMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersResponses2xxMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersResponses2xxMetricConfig provides config for the nginx.upstream.peers.responses.2xx metric.
+type NginxUpstreamPeersResponses2xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                             `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersResponses2xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersResponses2xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersResponses2xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.responses.2xx doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersResponses3xxMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.responses.3xx metric.
+type NginxUpstreamPeersResponses3xxMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersResponses3xxMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersResponses3xxMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersResponses3xxMetricConfig provides config for the nginx.upstream.peers.responses.3xx metric.
+type NginxUpstreamPeersResponses3xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                             `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersResponses3xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersResponses3xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersResponses3xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.responses.3xx doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersResponses4xxMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.responses.4xx metric.
+type NginxUpstreamPeersResponses4xxMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersResponses4xxMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersResponses4xxMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersResponses4xxMetricConfig provides config for the nginx.upstream.peers.responses.4xx metric.
+type NginxUpstreamPeersResponses4xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                             `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersResponses4xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersResponses4xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersResponses4xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.responses.4xx doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersResponses5xxMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.responses.5xx metric.
+type NginxUpstreamPeersResponses5xxMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersResponses5xxMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersResponses5xxMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersResponses5xxMetricConfig provides config for the nginx.upstream.peers.responses.5xx metric.
+type NginxUpstreamPeersResponses5xxMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                             `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersResponses5xxMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersResponses5xxMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersResponses5xxMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.responses.5xx doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersSentMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.sent metric.
+type NginxUpstreamPeersSentMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersSentMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersSentMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersSentMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersSentMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersSentMetricConfig provides config for the nginx.upstream.peers.sent metric.
+type NginxUpstreamPeersSentMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                     `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersSentMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersSentMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersSentMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersSentMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersSentMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.sent doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
+// NginxUpstreamPeersWeightMetricAttributeKey specifies the key of an attribute for the nginx.upstream.peers.weight metric.
+type NginxUpstreamPeersWeightMetricAttributeKey string
+
+const (
+	NginxUpstreamPeersWeightMetricAttributeKeyUpstreamBlockName   NginxUpstreamPeersWeightMetricAttributeKey = "upstream_block_name"
+	NginxUpstreamPeersWeightMetricAttributeKeyUpstreamPeerAddress NginxUpstreamPeersWeightMetricAttributeKey = "upstream_peer_address"
+)
+
+// NginxUpstreamPeersWeightMetricConfig provides config for the nginx.upstream.peers.weight metric.
+type NginxUpstreamPeersWeightMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+
+	AggregationStrategy string                                       `mapstructure:"aggregation_strategy"`
+	EnabledAttributes   []NginxUpstreamPeersWeightMetricAttributeKey `mapstructure:"attributes"`
+}
+
+func (ms *NginxUpstreamPeersWeightMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+func (ms *NginxUpstreamPeersWeightMetricConfig) Validate() error {
+	for _, val := range ms.EnabledAttributes {
+		switch val {
+		case NginxUpstreamPeersWeightMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersWeightMetricAttributeKeyUpstreamPeerAddress:
+		default:
+			return fmt.Errorf("metric nginx.upstream.peers.weight doesn't have an attribute %v, valid attributes: [upstream_block_name, upstream_peer_address]", val)
+		}
+	}
+
+	switch ms.AggregationStrategy {
+	case AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax:
+	default:
+		return fmt.Errorf("invalid aggregation strategy %q, valid strategies: [%s, %s, %s, %s]", ms.AggregationStrategy, AggregationStrategySum, AggregationStrategyAvg, AggregationStrategyMin, AggregationStrategyMax)
+	}
+
+	return nil
+}
+
 // MetricsConfig provides config for nginx metrics.
 type MetricsConfig struct {
-	NginxConnectionsAccepted NginxConnectionsAcceptedMetricConfig `mapstructure:"nginx.connections_accepted"`
-	NginxConnectionsCurrent  NginxConnectionsCurrentMetricConfig  `mapstructure:"nginx.connections_current"`
-	NginxConnectionsHandled  NginxConnectionsHandledMetricConfig  `mapstructure:"nginx.connections_handled"`
-	NginxRequests            NginxRequestsMetricConfig            `mapstructure:"nginx.requests"`
+	NginxConnectionsAccepted                 NginxConnectionsAcceptedMetricConfig                 `mapstructure:"nginx.connections_accepted"`
+	NginxConnectionsCurrent                  NginxConnectionsCurrentMetricConfig                  `mapstructure:"nginx.connections_current"`
+	NginxConnectionsHandled                  NginxConnectionsHandledMetricConfig                  `mapstructure:"nginx.connections_handled"`
+	NginxLoadTimestamp                       NginxLoadTimestampMetricConfig                       `mapstructure:"nginx.load_timestamp"`
+	NginxNetReading                          NginxNetReadingMetricConfig                          `mapstructure:"nginx.net.reading"`
+	NginxNetWaiting                          NginxNetWaitingMetricConfig                          `mapstructure:"nginx.net.waiting"`
+	NginxNetWriting                          NginxNetWritingMetricConfig                          `mapstructure:"nginx.net.writing"`
+	NginxRequests                            NginxRequestsMetricConfig                            `mapstructure:"nginx.requests"`
+	NginxServerZoneReceived                  NginxServerZoneReceivedMetricConfig                  `mapstructure:"nginx.server_zone.received"`
+	NginxServerZoneResponses1xx              NginxServerZoneResponses1xxMetricConfig              `mapstructure:"nginx.server_zone.responses.1xx"`
+	NginxServerZoneResponses2xx              NginxServerZoneResponses2xxMetricConfig              `mapstructure:"nginx.server_zone.responses.2xx"`
+	NginxServerZoneResponses3xx              NginxServerZoneResponses3xxMetricConfig              `mapstructure:"nginx.server_zone.responses.3xx"`
+	NginxServerZoneResponses4xx              NginxServerZoneResponses4xxMetricConfig              `mapstructure:"nginx.server_zone.responses.4xx"`
+	NginxServerZoneResponses5xx              NginxServerZoneResponses5xxMetricConfig              `mapstructure:"nginx.server_zone.responses.5xx"`
+	NginxServerZoneSent                      NginxServerZoneSentMetricConfig                      `mapstructure:"nginx.server_zone.sent"`
+	NginxUpstreamPeersBackup                 NginxUpstreamPeersBackupMetricConfig                 `mapstructure:"nginx.upstream.peers.backup"`
+	NginxUpstreamPeersHealthChecksLastPassed NginxUpstreamPeersHealthChecksLastPassedMetricConfig `mapstructure:"nginx.upstream.peers.health_checks.last_passed"`
+	NginxUpstreamPeersReceived               NginxUpstreamPeersReceivedMetricConfig               `mapstructure:"nginx.upstream.peers.received"`
+	NginxUpstreamPeersRequests               NginxUpstreamPeersRequestsMetricConfig               `mapstructure:"nginx.upstream.peers.requests"`
+	NginxUpstreamPeersResponseTime           NginxUpstreamPeersResponseTimeMetricConfig           `mapstructure:"nginx.upstream.peers.response_time"`
+	NginxUpstreamPeersResponses1xx           NginxUpstreamPeersResponses1xxMetricConfig           `mapstructure:"nginx.upstream.peers.responses.1xx"`
+	NginxUpstreamPeersResponses2xx           NginxUpstreamPeersResponses2xxMetricConfig           `mapstructure:"nginx.upstream.peers.responses.2xx"`
+	NginxUpstreamPeersResponses3xx           NginxUpstreamPeersResponses3xxMetricConfig           `mapstructure:"nginx.upstream.peers.responses.3xx"`
+	NginxUpstreamPeersResponses4xx           NginxUpstreamPeersResponses4xxMetricConfig           `mapstructure:"nginx.upstream.peers.responses.4xx"`
+	NginxUpstreamPeersResponses5xx           NginxUpstreamPeersResponses5xxMetricConfig           `mapstructure:"nginx.upstream.peers.responses.5xx"`
+	NginxUpstreamPeersSent                   NginxUpstreamPeersSentMetricConfig                   `mapstructure:"nginx.upstream.peers.sent"`
+	NginxUpstreamPeersWeight                 NginxUpstreamPeersWeightMetricConfig                 `mapstructure:"nginx.upstream.peers.weight"`
 }
 
 func DefaultMetricsConfig() MetricsConfig {
@@ -137,8 +1164,115 @@ func DefaultMetricsConfig() MetricsConfig {
 		NginxConnectionsHandled: NginxConnectionsHandledMetricConfig{
 			Enabled: true,
 		},
+		NginxLoadTimestamp: NginxLoadTimestampMetricConfig{
+			Enabled: true,
+		},
+		NginxNetReading: NginxNetReadingMetricConfig{
+			Enabled: true,
+		},
+		NginxNetWaiting: NginxNetWaitingMetricConfig{
+			Enabled: true,
+		},
+		NginxNetWriting: NginxNetWritingMetricConfig{
+			Enabled: true,
+		},
 		NginxRequests: NginxRequestsMetricConfig{
 			Enabled: true,
+		},
+		NginxServerZoneReceived: NginxServerZoneReceivedMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneReceivedMetricAttributeKey{NginxServerZoneReceivedMetricAttributeKeyServerzoneName},
+		},
+		NginxServerZoneResponses1xx: NginxServerZoneResponses1xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneResponses1xxMetricAttributeKey{NginxServerZoneResponses1xxMetricAttributeKeyServerzoneName},
+		},
+		NginxServerZoneResponses2xx: NginxServerZoneResponses2xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneResponses2xxMetricAttributeKey{NginxServerZoneResponses2xxMetricAttributeKeyServerzoneName},
+		},
+		NginxServerZoneResponses3xx: NginxServerZoneResponses3xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneResponses3xxMetricAttributeKey{NginxServerZoneResponses3xxMetricAttributeKeyServerzoneName},
+		},
+		NginxServerZoneResponses4xx: NginxServerZoneResponses4xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneResponses4xxMetricAttributeKey{NginxServerZoneResponses4xxMetricAttributeKeyServerzoneName},
+		},
+		NginxServerZoneResponses5xx: NginxServerZoneResponses5xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneResponses5xxMetricAttributeKey{NginxServerZoneResponses5xxMetricAttributeKeyServerzoneName},
+		},
+		NginxServerZoneSent: NginxServerZoneSentMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxServerZoneSentMetricAttributeKey{NginxServerZoneSentMetricAttributeKeyServerzoneName},
+		},
+		NginxUpstreamPeersBackup: NginxUpstreamPeersBackupMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []NginxUpstreamPeersBackupMetricAttributeKey{NginxUpstreamPeersBackupMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersBackupMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersHealthChecksLastPassed: NginxUpstreamPeersHealthChecksLastPassedMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey{NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersReceived: NginxUpstreamPeersReceivedMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersReceivedMetricAttributeKey{NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersReceivedMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersRequests: NginxUpstreamPeersRequestsMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersRequestsMetricAttributeKey{NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersRequestsMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersResponseTime: NginxUpstreamPeersResponseTimeMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []NginxUpstreamPeersResponseTimeMetricAttributeKey{NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponseTimeMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersResponses1xx: NginxUpstreamPeersResponses1xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersResponses1xxMetricAttributeKey{NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses1xxMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersResponses2xx: NginxUpstreamPeersResponses2xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersResponses2xxMetricAttributeKey{NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses2xxMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersResponses3xx: NginxUpstreamPeersResponses3xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersResponses3xxMetricAttributeKey{NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses3xxMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersResponses4xx: NginxUpstreamPeersResponses4xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersResponses4xxMetricAttributeKey{NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses4xxMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersResponses5xx: NginxUpstreamPeersResponses5xxMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersResponses5xxMetricAttributeKey{NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersResponses5xxMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersSent: NginxUpstreamPeersSentMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategySum,
+			EnabledAttributes:   []NginxUpstreamPeersSentMetricAttributeKey{NginxUpstreamPeersSentMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersSentMetricAttributeKeyUpstreamPeerAddress},
+		},
+		NginxUpstreamPeersWeight: NginxUpstreamPeersWeightMetricConfig{
+			Enabled:             true,
+			AggregationStrategy: AggregationStrategyAvg,
+			EnabledAttributes:   []NginxUpstreamPeersWeightMetricAttributeKey{NginxUpstreamPeersWeightMetricAttributeKeyUpstreamBlockName, NginxUpstreamPeersWeightMetricAttributeKeyUpstreamPeerAddress},
 		},
 	}
 }

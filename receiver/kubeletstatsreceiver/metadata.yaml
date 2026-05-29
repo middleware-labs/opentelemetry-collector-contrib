@@ -1,148 +1,154 @@
 display_name: Kubelet Stats Receiver
 type: kubelet_stats
 deprecated_type: kubeletstats
-
+reaggregation_enabled: true
 description: |
   The Kubelet Stats Receiver pulls node, pod, container, and volume metrics from the API server on a kubelet
   and sends it down the metric pipeline for further processing.
-
 status:
   class: receiver
   stability:
-    beta: [metrics]
-  distributions: [contrib, k8s]
+    beta:
+    - metrics
+  distributions:
+  - contrib
+  - k8s
   codeowners:
-    active: [dmitryax, TylerHelmuth, ChrsMark]
-
+    active:
+    - dmitryax
+    - TylerHelmuth
+    - ChrsMark
 resource_attributes:
-  k8s.node.uid:
-    description: "The UID of the Node"
-    enabled: true
-    type: string
-  k8s.node.name:
-    description: "The name of the Node"
   aws.volume.id:
-    description: "[DEPRECATED] The id of the AWS Volume"
+    description: '[DEPRECATED] The id of the AWS Volume'
     enabled: false
     type: string
     warnings:
-      if_enabled: "This resource_attribute is deprecated and will be removed soon"
-  k8s.node.start_time:
-    description: "The start time of the Node."
-    enabled: true
-    type: string
-  k8s.pod.uid:
-    description: "The UID of the Pod"
+      if_enabled: This resource_attribute is deprecated and will be removed soon
   container.id:
-    description: "Container id used to identify container"
+    description: Container id used to identify container
     enabled: true
     type: string
   fs.type:
-    description: "[DEPRECATED] The filesystem type of the Volume"
+    description: '[DEPRECATED] The filesystem type of the Volume'
     enabled: false
     type: string
-  k8s.pod.start_time:
-    description: "The start time of the Pod."
-    enabled: true
+    warnings:
+      if_enabled: This resource_attribute is deprecated and will be removed soon
+  gce.pd.name:
+    description: '[DEPRECATED] The name of the persistent disk in GCE'
+    enabled: false
     type: string
     warnings:
-      if_enabled: "This resource_attribute is deprecated and will be removed soon"
-  k8s.service.name:
-    description: "The name of the Service"
+      if_enabled: This resource_attribute is deprecated and will be removed soon
+  glusterfs.endpoints.name:
+    description: '[DEPRECATED] The endpoint name that details Glusterfs topology'
+    enabled: false
+    type: string
+    warnings:
+      if_enabled: This resource_attribute is deprecated and will be removed soon
+  glusterfs.path:
+    description: '[DEPRECATED] Glusterfs volume path'
+    enabled: false
+    type: string
+    warnings:
+      if_enabled: This resource_attribute is deprecated and will be removed soon
+  k8s.cluster.name:
+    description: The name of the Cluster
+    type: string
+    enabled: true
+  k8s.container.name:
+    description: Container name used by container runtime
+    enabled: true
+    type: string
+  k8s.job.name:
+    description: The name of the Job
     type: string
     enabled: true
   k8s.job.uid:
-    description: "The UID of the Job"
-    type: string
-    enabled: true
-  k8s.job.name:
-    description: "The name of the Job"
-    type: string
-    enabled: true
-  k8s.service_account.name:
-    description: "The name of the Service-account"
-    type: string
-    enabled: true
-  k8s.cluster.name:
-    description: "The name of the Cluster"
+    description: The UID of the Job
     type: string
     enabled: true
   k8s.namespace.name:
-    description: "The name of the namespace that the pod is running in"
-  gce.pd.name:
-    description: "[DEPRECATED] The name of the persistent disk in GCE"
-    enabled: false
-    type: string
-    warnings:
-      if_enabled: "This resource_attribute is deprecated and will be removed soon"
-  glusterfs.endpoints.name:
-    description: "[DEPRECATED] The endpoint name that details Glusterfs topology"
-    enabled: false
-    type: string
-    warnings:
-      if_enabled: "This resource_attribute is deprecated and will be removed soon"
-  glusterfs.path:
-    description: "[DEPRECATED] Glusterfs volume path"
-    enabled: false
-    type: string
-    warnings:
-      if_enabled: "This resource_attribute is deprecated and will be removed soon"
-
-  k8s.container.name:
-    description: "Container name used by container runtime"
-    enabled: true
-    type: string
-  k8s.namespace.name:
-    description: "The name of the namespace that the pod is running in"
+    description: The name of the namespace that the pod is running in
     enabled: true
     type: string
   k8s.node.name:
-    description: "The name of the Node"
+    description: The name of the Node
+    enabled: true
+    type: string
+  k8s.node.start_time:
+    description: The start time of the Node.
     enabled: true
     type: string
   k8s.node.system_container.name:
-    description: "The name of the system container"
+    description: The name of the system container
+    enabled: true
+    type: string
+  k8s.node.uid:
+    description: The UID of the Node
     enabled: true
     type: string
   k8s.persistentvolumeclaim.name:
-    description: "The name of the Persistent Volume Claim"
+    description: The name of the Persistent Volume Claim
     enabled: true
     type: string
   k8s.pod.name:
-    description: "The name of the Pod"
+    description: The name of the Pod
+    enabled: true
+    type: string
+  k8s.pod.start_time:
+    description: The start time of the Pod.
     enabled: true
     type: string
   k8s.pod.uid:
-    description: "The UID of the Pod"
+    description: The UID of the Pod
     enabled: true
     type: string
+  k8s.service.name:
+    description: The name of the Service
+    type: string
+    enabled: true
+  k8s.service_account.name:
+    description: The name of the Service-account
+    type: string
+    enabled: true
   k8s.volume.name:
-    description: "The name of the Volume"
+    description: The name of the Volume
     enabled: true
     type: string
   k8s.volume.type:
-    description: "The type of the Volume"
+    description: The type of the Volume
     enabled: true
     type: string
   partition:
-    description: "[DEPRECATED] The partition in the Volume"
+    description: '[DEPRECATED] The partition in the Volume'
     enabled: false
     type: string
     warnings:
-      if_enabled: "This resource_attribute is deprecated and will be removed soon"
+      if_enabled: This resource_attribute is deprecated and will be removed soon
 attributes:
   direction:
     description: Direction of flow of bytes/operations (receive or transmit).
+    requirement_level: recommended
     type: string
-    enum: [receive, transmit]
+    enum:
+    - receive
+    - transmit
+  fs.type:
+    description: The type of filesystem component.
+    type: string
+    enum:
+    - rootfs
+    - logs
   interface:
     description: Name of the network interface.
+    requirement_level: recommended
     type: string
-
 metrics:
   container.cpu.time:
     enabled: true
-    description: "Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation"
+    description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
     unit: s
     stability: development
     sum:
@@ -151,27 +157,26 @@ metrics:
       aggregation_temporality: cumulative
     attributes: []
   container.cpu.usage:
-    enabled: false
-    description: "Total CPU usage (sum of all cores per second) averaged over the sample window"
-    unit: "{cpu}"
+    enabled: true
+    description: Total CPU usage (sum of all cores per second) averaged over the sample window
+    unit: '{cpu}'
     stability: development
     gauge:
       value_type: double
     attributes: []
   container.cpu.utilization:
     enabled: true
-    description: "Container CPU utilization"
-    stability:
-      level: development
+    description: Container CPU utilization
+    stability: development
     warnings:
-      if_enabled: "This metric will be disabled in a future release. Use metric container.cpu.usage instead."
-    unit: "1"
+      if_enabled: This metric will be disabled in a future release. Use metric container.cpu.usage instead.
+    unit: '1'
     gauge:
       value_type: double
-    attributes: [ ]
+    attributes: []
   container.filesystem.available:
     enabled: true
-    description: "Container filesystem available"
+    description: Container filesystem available
     unit: By
     stability: development
     gauge:
@@ -179,7 +184,7 @@ metrics:
     attributes: []
   container.filesystem.capacity:
     enabled: true
-    description: "Container filesystem capacity"
+    description: Container filesystem capacity
     unit: By
     stability: development
     gauge:
@@ -187,15 +192,23 @@ metrics:
     attributes: []
   container.filesystem.usage:
     enabled: true
-    description: "Container filesystem usage"
+    description: Container filesystem usage
     unit: By
     stability: development
     gauge:
       value_type: int
     attributes: []
+  container.filesystem.utilization:
+    enabled: true
+    description: Container filesystem utilization
+    unit: ''
+    stability: development
+    gauge:
+      value_type: double
+    attributes: []
   container.memory.available:
     enabled: true
-    description: "Container memory available"
+    description: Container memory available
     unit: By
     stability: development
     gauge:
@@ -203,23 +216,23 @@ metrics:
     attributes: []
   container.memory.major_page_faults:
     enabled: true
-    description: "Container memory major_page_faults"
-    unit: "1"
+    description: Container memory major_page_faults
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   container.memory.page_faults:
     enabled: true
-    description: "Container memory page_faults"
-    unit: "1"
+    description: Container memory page_faults
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   container.memory.rss:
     enabled: true
-    description: "Container memory rss"
+    description: Container memory rss
     unit: By
     stability: development
     gauge:
@@ -227,7 +240,7 @@ metrics:
     attributes: []
   container.memory.usage:
     enabled: true
-    description: "Container memory usage"
+    description: Container memory usage
     unit: By
     stability: development
     gauge:
@@ -235,51 +248,15 @@ metrics:
     attributes: []
   container.memory.working_set:
     enabled: true
-    description: "Container memory working_set"
+    description: Container memory working_set
     unit: By
     stability: development
     gauge:
       value_type: int
     attributes: []
-  k8s.node.filesystem.utilization:
-    enabled: true
-    description: "Node filesystem utilization"
-    unit: 1
-    gauge:
-      value_type: double
-    attributes: [ ]
-  k8s.node.network.io:
-    enabled: true
-    description: "Node network IO"
-    unit: By
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
-  k8s.node.network.errors:
-    enabled: true
-    description: "Node network errors"
-    unit: "1"
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
   container.uptime:
     enabled: false
-    description: "The time since the container started"
-    unit: s
-    stability:
-      level: development
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: [ ]
-  k8s.node.uptime:
-    enabled: false
-    description: "The time since the container started"
+    description: The time since the container started
     unit: s
     stability: development
     sum:
@@ -289,55 +266,66 @@ metrics:
     attributes: []
   k8s.container.cpu.node.utilization:
     enabled: false
-    description: "Container cpu utilization as a ratio of the node's capacity"
-    unit: "1"
+    description: Container cpu utilization as a ratio of the node's capacity
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.container.cpu_limit_utilization:
     enabled: false
-    description: "Container cpu utilization as a ratio of the container's limits"
-    unit: "1"
+    description: Container cpu utilization as a ratio of the container's limits
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.container.cpu_request_utilization:
     enabled: false
-    description: "Container cpu utilization as a ratio of the container's requests"
-    unit: "1"
+    description: Container cpu utilization as a ratio of the container's requests
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
+  k8s.container.ephemeral_storage.usage:
+    enabled: false
+    description: Ephemeral storage used by the container.
+    unit: By
+    stability: development
+    sum:
+      value_type: int
+      aggregation_temporality: cumulative
+      monotonic: false
+    attributes:
+    - fs.type
   k8s.container.memory.node.utilization:
     enabled: false
-    description: "Container memory utilization as a ratio of the node's capacity"
-    unit: "1"
+    description: Container memory utilization as a ratio of the node's capacity
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.container.memory_limit_utilization:
     enabled: false
-    description: "Container memory utilization as a ratio of the container's limits"
-    unit: "1"
+    description: Container memory utilization as a ratio of the container's limits
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.container.memory_request_utilization:
     enabled: false
-    description: "Container memory utilization as a ratio of the container's requests"
-    unit: "1"
+    description: Container memory utilization as a ratio of the container's requests
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.node.cpu.time:
     enabled: true
-    description: "Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation"
+    description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
     unit: s
     stability: development
     sum:
@@ -346,27 +334,26 @@ metrics:
       aggregation_temporality: cumulative
     attributes: []
   k8s.node.cpu.usage:
-    enabled: false
-    description: "Total CPU usage (sum of all cores per second) averaged over the sample window"
-    unit: "{cpu}"
+    enabled: true
+    description: Total CPU usage (sum of all cores per second) averaged over the sample window
+    unit: '{cpu}'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.node.cpu.utilization:
     enabled: true
-    description: "Node CPU utilization"
-    stability:
-      level: development
+    description: Node CPU utilization
+    stability: development
     warnings:
-      if_enabled: "This metric will be disabled in a future release. Use metric k8s.node.cpu.usage instead."
-    unit: "1"
+      if_enabled: This metric will be disabled in a future release. Use metric k8s.node.cpu.usage instead.
+    unit: '1'
     gauge:
       value_type: double
     attributes: []
   k8s.node.filesystem.available:
     enabled: true
-    description: "Node filesystem available"
+    description: Node filesystem available
     unit: By
     stability: development
     gauge:
@@ -374,7 +361,7 @@ metrics:
     attributes: []
   k8s.node.filesystem.capacity:
     enabled: true
-    description: "Node filesystem capacity"
+    description: Node filesystem capacity
     unit: By
     stability: development
     gauge:
@@ -382,15 +369,23 @@ metrics:
     attributes: []
   k8s.node.filesystem.usage:
     enabled: true
-    description: "Node filesystem usage"
+    description: Node filesystem usage
     unit: By
     stability: development
     gauge:
       value_type: int
     attributes: []
+  k8s.node.filesystem.utilization:
+    enabled: true
+    description: Node filesystem utilization
+    unit: ''
+    stability: development
+    gauge:
+      value_type: double
+    attributes: []
   k8s.node.memory.available:
     enabled: true
-    description: "Node memory available"
+    description: Node memory available
     unit: By
     stability: development
     gauge:
@@ -398,23 +393,23 @@ metrics:
     attributes: []
   k8s.node.memory.major_page_faults:
     enabled: true
-    description: "Node memory major_page_faults"
-    unit: "1"
+    description: Node memory major_page_faults
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   k8s.node.memory.page_faults:
     enabled: true
-    description: "Node memory page_faults"
-    unit: "1"
+    description: Node memory page_faults
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   k8s.node.memory.rss:
     enabled: true
-    description: "Node memory rss"
+    description: Node memory rss
     unit: By
     stability: development
     gauge:
@@ -422,7 +417,7 @@ metrics:
     attributes: []
   k8s.node.memory.usage:
     enabled: true
-    description: "Node memory usage"
+    description: Node memory usage
     unit: By
     stability: development
     gauge:
@@ -430,42 +425,39 @@ metrics:
     attributes: []
   k8s.node.memory.working_set:
     enabled: true
-    description: "Node memory working_set"
+    description: Node memory working_set
     unit: By
     stability: development
     gauge:
       value_type: int
-    attributes: []
-  k8s.pod.filesystem.utilization:
-    enabled: true
-    description: "Pod filesystem utilization"
-    unit: 1
-    gauge:
-      value_type: double
     attributes: []
   k8s.node.network.errors:
     enabled: true
-    description: "Node network errors"
-    unit: "1"
+    description: Node network errors
+    unit: '1'
     stability: development
     sum:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
+    attributes:
+    - interface
+    - direction
   k8s.node.network.io:
     enabled: true
-    description: "Node network IO"
+    description: Node network IO
     unit: By
     stability: development
     sum:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
+    attributes:
+    - interface
+    - direction
   k8s.node.system_container.cpu.time:
     enabled: false
-    description: "Total cumulative CPU time (sum of all cores) spent by the system container since its creation"
+    description: Total cumulative CPU time (sum of all cores) spent by the system container since its creation
     unit: s
     stability: development
     sum:
@@ -475,15 +467,15 @@ metrics:
     attributes: []
   k8s.node.system_container.cpu.usage:
     enabled: false
-    description: "Total CPU usage (sum of all cores per second) averaged over the sample window for the system container"
-    unit: "{cpu}"
+    description: Total CPU usage (sum of all cores per second) averaged over the sample window for the system container
+    unit: '{cpu}'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.node.system_container.memory.usage:
     enabled: false
-    description: "System container memory usage"
+    description: System container memory usage
     unit: By
     stability: development
     gauge:
@@ -491,7 +483,7 @@ metrics:
     attributes: []
   k8s.node.system_container.memory.working_set:
     enabled: false
-    description: "System container memory working_set"
+    description: System container memory working_set
     unit: By
     stability: development
     gauge:
@@ -499,7 +491,7 @@ metrics:
     attributes: []
   k8s.node.uptime:
     enabled: false
-    description: "The time since the node started"
+    description: The time since the node started
     unit: s
     stability: development
     sum:
@@ -509,15 +501,15 @@ metrics:
     attributes: []
   k8s.pod.cpu.node.utilization:
     enabled: false
-    description: "Pod cpu utilization as a ratio of the node's capacity"
-    unit: "1"
+    description: Pod cpu utilization as a ratio of the node's capacity
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.cpu.time:
     enabled: true
-    description: "Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation"
+    description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation
     unit: s
     stability: development
     sum:
@@ -526,43 +518,42 @@ metrics:
       aggregation_temporality: cumulative
     attributes: []
   k8s.pod.cpu.usage:
-    enabled: false
-    description: "Total CPU usage (sum of all cores per second) averaged over the sample window"
-    unit: "{cpu}"
+    enabled: true
+    description: Total CPU usage (sum of all cores per second) averaged over the sample window
+    unit: '{cpu}'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.cpu.utilization:
     enabled: true
-    description: "Pod CPU utilization"
-    stability:
-      level: development
+    description: Pod CPU utilization
+    stability: development
     warnings:
-      if_enabled: "This metric will be disabled in a future release. Use metric k8s.pod.cpu.usage instead."
-    unit: "1"
+      if_enabled: This metric will be disabled in a future release. Use metric k8s.pod.cpu.usage instead.
+    unit: '1'
     gauge:
       value_type: double
-    attributes: [ ]
+    attributes: []
   k8s.pod.cpu_limit_utilization:
     enabled: false
-    description: "Pod cpu utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted."
-    unit: "1"
+    description: Pod cpu utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted.
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.cpu_request_utilization:
     enabled: false
-    description: "Pod cpu utilization as a ratio of the pod's total container requests. If any container is missing a request the metric is not emitted."
-    unit: "1"
+    description: Pod cpu utilization as a ratio of the pod's total container requests. If any container is missing a request the metric is not emitted.
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.filesystem.available:
     enabled: true
-    description: "Pod filesystem available"
+    description: Pod filesystem available
     unit: By
     stability: development
     gauge:
@@ -570,7 +561,7 @@ metrics:
     attributes: []
   k8s.pod.filesystem.capacity:
     enabled: true
-    description: "Pod filesystem capacity"
+    description: Pod filesystem capacity
     unit: By
     stability: development
     gauge:
@@ -578,15 +569,23 @@ metrics:
     attributes: []
   k8s.pod.filesystem.usage:
     enabled: true
-    description: "Pod filesystem usage"
+    description: Pod filesystem usage
     unit: By
     stability: development
     gauge:
       value_type: int
     attributes: []
+  k8s.pod.filesystem.utilization:
+    enabled: true
+    description: Pod filesystem utilization
+    unit: ''
+    stability: development
+    gauge:
+      value_type: double
+    attributes: []
   k8s.pod.memory.available:
     enabled: true
-    description: "Pod memory available"
+    description: Pod memory available
     unit: By
     stability: development
     gauge:
@@ -594,31 +593,31 @@ metrics:
     attributes: []
   k8s.pod.memory.major_page_faults:
     enabled: true
-    description: "Pod memory major_page_faults"
-    unit: "1"
+    description: Pod memory major_page_faults
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   k8s.pod.memory.node.utilization:
     enabled: false
-    description: "Pod memory utilization as a ratio of the node's capacity"
-    unit: "1"
+    description: Pod memory utilization as a ratio of the node's capacity
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.memory.page_faults:
     enabled: true
-    description: "Pod memory page_faults"
-    unit: "1"
+    description: Pod memory page_faults
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   k8s.pod.memory.rss:
     enabled: true
-    description: "Pod memory rss"
+    description: Pod memory rss
     unit: By
     stability: development
     gauge:
@@ -626,7 +625,7 @@ metrics:
     attributes: []
   k8s.pod.memory.usage:
     enabled: true
-    description: "Pod memory usage"
+    description: Pod memory usage
     unit: By
     stability: development
     gauge:
@@ -634,59 +633,55 @@ metrics:
     attributes: []
   k8s.pod.memory.working_set:
     enabled: true
-    description: "Pod memory working_set"
+    description: Pod memory working_set
     unit: By
     stability: development
     gauge:
       value_type: int
     attributes: []
-  container.filesystem.utilization:
-    enabled: true
-    description: "Container filesystem utilization"
-    unit: 1
-    gauge:
-      value_type: double
-    attributes: [ ]
-  container.uptime:
   k8s.pod.memory_limit_utilization:
     enabled: false
-    description: "Pod memory utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted."
-    unit: "1"
+    description: Pod memory utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted.
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.memory_request_utilization:
     enabled: false
-    description: "Pod memory utilization as a ratio of the pod's total container requests. If any container is missing a request the metric is not emitted."
-    unit: "1"
+    description: Pod memory utilization as a ratio of the pod's total container requests. If any container is missing a request the metric is not emitted.
+    unit: '1'
     stability: development
     gauge:
       value_type: double
     attributes: []
   k8s.pod.network.errors:
     enabled: true
-    description: "Pod network errors"
-    unit: "1"
+    description: Pod network errors
+    unit: '1'
     stability: development
     sum:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
+    attributes:
+    - interface
+    - direction
   k8s.pod.network.io:
     enabled: true
-    description: "Pod network IO"
+    description: Pod network IO
     unit: By
     stability: development
     sum:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    attributes: ["interface", "direction"]
+    attributes:
+    - interface
+    - direction
   k8s.pod.uptime:
     enabled: false
-    description: "The time since the pod started"
+    description: The time since the pod started
     unit: s
     stability: development
     sum:
@@ -696,7 +691,7 @@ metrics:
     attributes: []
   k8s.pod.volume.usage:
     enabled: false
-    description: "The number of used bytes in the pod volume."
+    description: The number of used bytes in the pod volume.
     unit: By
     stability: development
     sum:
@@ -706,7 +701,7 @@ metrics:
     attributes: []
   k8s.volume.available:
     enabled: true
-    description: "The number of available bytes in the volume."
+    description: The number of available bytes in the volume.
     unit: By
     stability: development
     gauge:
@@ -714,7 +709,7 @@ metrics:
     attributes: []
   k8s.volume.capacity:
     enabled: true
-    description: "The total capacity in bytes of the volume."
+    description: The total capacity in bytes of the volume.
     unit: By
     stability: development
     gauge:
@@ -722,33 +717,32 @@ metrics:
     attributes: []
   k8s.volume.inodes:
     enabled: true
-    description: "The total inodes in the filesystem."
-    unit: "1"
+    description: The total inodes in the filesystem.
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   k8s.volume.inodes.free:
     enabled: true
-    description: "The free inodes in the filesystem."
-    unit: "1"
+    description: The free inodes in the filesystem.
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
   k8s.volume.inodes.used:
     enabled: true
-    description: "The inodes used by the filesystem. This may not equal inodes - free because filesystem may share inodes with other filesystems."
-    unit: "1"
+    description: The inodes used by the filesystem. This may not equal inodes - free because filesystem may share inodes with other filesystems.
+    unit: '1'
     stability: development
     gauge:
       value_type: int
     attributes: []
-
 tests:
   config:
-    ca_file: "testdata/testcert.crt"
-    key_file: "testdata/testkey.key"
-    cert_file: "testdata/testcert.crt"
+    ca_file: testdata/testcert.crt
+    key_file: testdata/testkey.key
+    cert_file: testdata/testcert.crt
   goleak:
     skip: true

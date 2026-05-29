@@ -51,6 +51,8 @@ all_set:
   resource_attributes:
     kafka.cluster.alias:
       enabled: true
+    runtime.metrics.kafka:
+      enabled: true
 reaggregate_set:
   metrics:
     kafka.broker.log_retention_period:
@@ -99,6 +101,7 @@ reaggregate_set:
       attributes: []
     kafka.topic.replication_factor:
       enabled: true
+      attributes: []
   resource_attributes:
     kafka.cluster.alias:
       enabled: true

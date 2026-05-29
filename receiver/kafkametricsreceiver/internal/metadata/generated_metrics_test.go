@@ -189,9 +189,6 @@ func TestMetricsBuilder(t *testing.T) {
 				mb.RecordKafkaTopicPartitionsDataPoint(ts, 3, "topic-val-2")
 			}
 
-			rb := mb.NewResourceBuilder()
-			rb.SetRuntimeMetricsKafka("runtime.metrics.kafka-val")
-			res := rb.Emit()
 			allMetricsCount++
 			mb.RecordKafkaTopicReplicationFactorDataPoint(ts, 1, "topic-val")
 			if tt.name == "reaggregate_set" {
@@ -200,6 +197,7 @@ func TestMetricsBuilder(t *testing.T) {
 
 			rb := mb.NewResourceBuilder()
 			rb.SetKafkaClusterAlias("kafka.cluster.alias-val")
+			rb.SetRuntimeMetricsKafka("runtime.metrics.kafka-val")
 			res := rb.Emit()
 			metrics := mb.Emit(WithResource(res))
 			if tt.name == "reaggregate_set" {

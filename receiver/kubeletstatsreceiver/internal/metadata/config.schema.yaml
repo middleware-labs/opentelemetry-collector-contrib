@@ -18,6 +18,13 @@ $defs:
           enabled:
             type: boolean
             default: true
+      container.cpu.utilization:
+        description: "ContainerCPUUtilizationMetricConfig provides config for the container.cpu.utilization metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       container.filesystem.available:
         description: "ContainerFilesystemAvailableMetricConfig provides config for the container.filesystem.available metric."
         type: object
@@ -34,6 +41,13 @@ $defs:
             default: true
       container.filesystem.usage:
         description: "ContainerFilesystemUsageMetricConfig provides config for the container.filesystem.usage metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      container.filesystem.utilization:
+        description: "ContainerFilesystemUtilizationMetricConfig provides config for the container.filesystem.utilization metric."
         type: object
         properties:
           enabled:
@@ -109,6 +123,29 @@ $defs:
           enabled:
             type: boolean
             default: false
+      k8s.container.ephemeral_storage.usage:
+        description: "K8sContainerEphemeralStorageUsageMetricConfig provides config for the k8s.container.ephemeral_storage.usage metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: false
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "fs.type"
+            default:
+              - "fs.type"
       k8s.container.memory.node.utilization:
         description: "K8sContainerMemoryNodeUtilizationMetricConfig provides config for the k8s.container.memory.node.utilization metric."
         type: object
@@ -144,6 +181,13 @@ $defs:
           enabled:
             type: boolean
             default: true
+      k8s.node.cpu.utilization:
+        description: "K8sNodeCPUUtilizationMetricConfig provides config for the k8s.node.cpu.utilization metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       k8s.node.filesystem.available:
         description: "K8sNodeFilesystemAvailableMetricConfig provides config for the k8s.node.filesystem.available metric."
         type: object
@@ -160,6 +204,13 @@ $defs:
             default: true
       k8s.node.filesystem.usage:
         description: "K8sNodeFilesystemUsageMetricConfig provides config for the k8s.node.filesystem.usage metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      k8s.node.filesystem.utilization:
+        description: "K8sNodeFilesystemUtilizationMetricConfig provides config for the k8s.node.filesystem.utilization metric."
         type: object
         properties:
           enabled:
@@ -214,6 +265,24 @@ $defs:
           enabled:
             type: boolean
             default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "interface"
+                - "direction"
+            default:
+              - "interface"
+              - "direction"
       k8s.node.network.io:
         description: "K8sNodeNetworkIoMetricConfig provides config for the k8s.node.network.io metric."
         type: object
@@ -221,6 +290,24 @@ $defs:
           enabled:
             type: boolean
             default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "interface"
+                - "direction"
+            default:
+              - "interface"
+              - "direction"
       k8s.node.system_container.cpu.time:
         description: "K8sNodeSystemContainerCPUTimeMetricConfig provides config for the k8s.node.system_container.cpu.time metric."
         type: object
@@ -277,6 +364,13 @@ $defs:
           enabled:
             type: boolean
             default: true
+      k8s.pod.cpu.utilization:
+        description: "K8sPodCPUUtilizationMetricConfig provides config for the k8s.pod.cpu.utilization metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       k8s.pod.cpu_limit_utilization:
         description: "K8sPodCPULimitUtilizationMetricConfig provides config for the k8s.pod.cpu_limit_utilization metric."
         type: object
@@ -307,6 +401,13 @@ $defs:
             default: true
       k8s.pod.filesystem.usage:
         description: "K8sPodFilesystemUsageMetricConfig provides config for the k8s.pod.filesystem.usage metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      k8s.pod.filesystem.utilization:
+        description: "K8sPodFilesystemUtilizationMetricConfig provides config for the k8s.pod.filesystem.utilization metric."
         type: object
         properties:
           enabled:
@@ -382,6 +483,24 @@ $defs:
           enabled:
             type: boolean
             default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "interface"
+                - "direction"
+            default:
+              - "interface"
+              - "direction"
       k8s.pod.network.io:
         description: "K8sPodNetworkIoMetricConfig provides config for the k8s.pod.network.io metric."
         type: object
@@ -389,6 +508,24 @@ $defs:
           enabled:
             type: boolean
             default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "interface"
+                - "direction"
+            default:
+              - "interface"
+              - "direction"
       k8s.pod.uptime:
         description: "K8sPodUptimeMetricConfig provides config for the k8s.pod.uptime metric."
         type: object
@@ -544,8 +681,59 @@ $defs:
             type: array
             items:
               $ref: go.opentelemetry.io/collector/filter.config
+      k8s.cluster.name:
+        description: ResourceAttributeConfig provides common config for a k8s.cluster.name resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
       k8s.container.name:
         description: ResourceAttributeConfig provides common config for a k8s.container.name resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+      k8s.job.name:
+        description: ResourceAttributeConfig provides common config for a k8s.job.name resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+      k8s.job.uid:
+        description: ResourceAttributeConfig provides common config for a k8s.job.uid resource attribute.
         type: object
         properties:
           enabled:
@@ -595,8 +783,42 @@ $defs:
             type: array
             items:
               $ref: go.opentelemetry.io/collector/filter.config
+      k8s.node.start_time:
+        description: ResourceAttributeConfig provides common config for a k8s.node.start_time resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
       k8s.node.system_container.name:
         description: ResourceAttributeConfig provides common config for a k8s.node.system_container.name resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+      k8s.node.uid:
+        description: ResourceAttributeConfig provides common config for a k8s.node.uid resource attribute.
         type: object
         properties:
           enabled:
@@ -646,8 +868,59 @@ $defs:
             type: array
             items:
               $ref: go.opentelemetry.io/collector/filter.config
+      k8s.pod.start_time:
+        description: ResourceAttributeConfig provides common config for a k8s.pod.start_time resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
       k8s.pod.uid:
         description: ResourceAttributeConfig provides common config for a k8s.pod.uid resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+      k8s.service.name:
+        description: ResourceAttributeConfig provides common config for a k8s.service.name resource attribute.
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          metrics_include:
+            description: "Experimental: MetricsInclude defines a list of filters for attribute values. If the list is not empty, only metrics with matching resource attribute values will be emitted."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+          metrics_exclude:
+            description: "Experimental: MetricsExclude defines a list of filters for attribute values. If the list is not empty, metrics with matching resource attribute values will not be emitted. MetricsInclude has higher priority than MetricsExclude."
+            type: array
+            items:
+              $ref: go.opentelemetry.io/collector/filter.config
+      k8s.service_account.name:
+        description: ResourceAttributeConfig provides common config for a k8s.service_account.name resource attribute.
         type: object
         properties:
           enabled:

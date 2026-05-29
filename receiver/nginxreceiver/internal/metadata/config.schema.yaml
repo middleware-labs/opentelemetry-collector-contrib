@@ -41,6 +41,34 @@ $defs:
           enabled:
             type: boolean
             default: true
+      nginx.load_timestamp:
+        description: "NginxLoadTimestampMetricConfig provides config for the nginx.load_timestamp metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      nginx.net.reading:
+        description: "NginxNetReadingMetricConfig provides config for the nginx.net.reading metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      nginx.net.waiting:
+        description: "NginxNetWaitingMetricConfig provides config for the nginx.net.waiting metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      nginx.net.writing:
+        description: "NginxNetWritingMetricConfig provides config for the nginx.net.writing metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
       nginx.requests:
         description: "NginxRequestsMetricConfig provides config for the nginx.requests metric."
         type: object
@@ -48,6 +76,467 @@ $defs:
           enabled:
             type: boolean
             default: true
+      nginx.server_zone.received:
+        description: "NginxServerZoneReceivedMetricConfig provides config for the nginx.server_zone.received metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.server_zone.responses.1xx:
+        description: "NginxServerZoneResponses1xxMetricConfig provides config for the nginx.server_zone.responses.1xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.server_zone.responses.2xx:
+        description: "NginxServerZoneResponses2xxMetricConfig provides config for the nginx.server_zone.responses.2xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.server_zone.responses.3xx:
+        description: "NginxServerZoneResponses3xxMetricConfig provides config for the nginx.server_zone.responses.3xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.server_zone.responses.4xx:
+        description: "NginxServerZoneResponses4xxMetricConfig provides config for the nginx.server_zone.responses.4xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.server_zone.responses.5xx:
+        description: "NginxServerZoneResponses5xxMetricConfig provides config for the nginx.server_zone.responses.5xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.server_zone.sent:
+        description: "NginxServerZoneSentMetricConfig provides config for the nginx.server_zone.sent metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "serverzone_name"
+            default:
+              - "serverzone_name"
+      nginx.upstream.peers.backup:
+        description: "NginxUpstreamPeersBackupMetricConfig provides config for the nginx.upstream.peers.backup metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "avg"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.health_checks.last_passed:
+        description: "NginxUpstreamPeersHealthChecksLastPassedMetricConfig provides config for the nginx.upstream.peers.health_checks.last_passed metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "avg"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.received:
+        description: "NginxUpstreamPeersReceivedMetricConfig provides config for the nginx.upstream.peers.received metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.requests:
+        description: "NginxUpstreamPeersRequestsMetricConfig provides config for the nginx.upstream.peers.requests metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.response_time:
+        description: "NginxUpstreamPeersResponseTimeMetricConfig provides config for the nginx.upstream.peers.response_time metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "avg"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.responses.1xx:
+        description: "NginxUpstreamPeersResponses1xxMetricConfig provides config for the nginx.upstream.peers.responses.1xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.responses.2xx:
+        description: "NginxUpstreamPeersResponses2xxMetricConfig provides config for the nginx.upstream.peers.responses.2xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.responses.3xx:
+        description: "NginxUpstreamPeersResponses3xxMetricConfig provides config for the nginx.upstream.peers.responses.3xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.responses.4xx:
+        description: "NginxUpstreamPeersResponses4xxMetricConfig provides config for the nginx.upstream.peers.responses.4xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.responses.5xx:
+        description: "NginxUpstreamPeersResponses5xxMetricConfig provides config for the nginx.upstream.peers.responses.5xx metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.sent:
+        description: "NginxUpstreamPeersSentMetricConfig provides config for the nginx.upstream.peers.sent metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
+      nginx.upstream.peers.weight:
+        description: "NginxUpstreamPeersWeightMetricConfig provides config for the nginx.upstream.peers.weight metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "avg"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "upstream_block_name"
+                - "upstream_peer_address"
+            default:
+              - "upstream_block_name"
+              - "upstream_peer_address"
   metrics_builder_config:
     description: MetricsBuilderConfig is a configuration for nginx metrics builder.
     type: object

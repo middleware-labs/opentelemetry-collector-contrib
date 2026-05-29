@@ -270,6 +270,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					ContainerRestarts: ContainerRestartsMetricConfig{
 						Enabled: true,
 					},
+					ContainerStatus: ContainerStatusMetricConfig{
+						Enabled: true,
+					},
 					ContainerUptime: ContainerUptimeMetricConfig{
 						Enabled: true,
 					},
@@ -282,6 +285,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					ContainerImageName:   ResourceAttributeConfig{Enabled: true},
 					ContainerName:        ResourceAttributeConfig{Enabled: true},
 					ContainerRuntime:     ResourceAttributeConfig{Enabled: true},
+					ContainerStartedOn:   ResourceAttributeConfig{Enabled: true},
 				},
 			},
 		},
@@ -533,6 +537,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					ContainerRestarts: ContainerRestartsMetricConfig{
 						Enabled: false,
 					},
+					ContainerStatus: ContainerStatusMetricConfig{
+						Enabled: false,
+					},
 					ContainerUptime: ContainerUptimeMetricConfig{
 						Enabled: false,
 					},
@@ -545,6 +552,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					ContainerImageName:   ResourceAttributeConfig{Enabled: false},
 					ContainerName:        ResourceAttributeConfig{Enabled: false},
 					ContainerRuntime:     ResourceAttributeConfig{Enabled: false},
+					ContainerStartedOn:   ResourceAttributeConfig{Enabled: false},
 				},
 			},
 		},
@@ -552,7 +560,7 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ContainerBlockioIoMergedRecursiveMetricConfig{}, ContainerBlockioIoQueuedRecursiveMetricConfig{}, ContainerBlockioIoServiceBytesRecursiveMetricConfig{}, ContainerBlockioIoServiceTimeRecursiveMetricConfig{}, ContainerBlockioIoServicedRecursiveMetricConfig{}, ContainerBlockioIoTimeRecursiveMetricConfig{}, ContainerBlockioIoWaitTimeRecursiveMetricConfig{}, ContainerBlockioSectorsRecursiveMetricConfig{}, ContainerCPULimitMetricConfig{}, ContainerCPULogicalCountMetricConfig{}, ContainerCPUSharesMetricConfig{}, ContainerCPUThrottlingDataPeriodsMetricConfig{}, ContainerCPUThrottlingDataThrottledPeriodsMetricConfig{}, ContainerCPUThrottlingDataThrottledTimeMetricConfig{}, ContainerCPUUsageKernelmodeMetricConfig{}, ContainerCPUUsagePercpuMetricConfig{}, ContainerCPUUsageSystemMetricConfig{}, ContainerCPUUsageTotalMetricConfig{}, ContainerCPUUsageUsermodeMetricConfig{}, ContainerCPUUtilizationMetricConfig{}, ContainerMemoryActiveAnonMetricConfig{}, ContainerMemoryActiveFileMetricConfig{}, ContainerMemoryAnonMetricConfig{}, ContainerMemoryCacheMetricConfig{}, ContainerMemoryDirtyMetricConfig{}, ContainerMemoryFailsMetricConfig{}, ContainerMemoryFileMetricConfig{}, ContainerMemoryHierarchicalMemoryLimitMetricConfig{}, ContainerMemoryHierarchicalMemswLimitMetricConfig{}, ContainerMemoryInactiveAnonMetricConfig{}, ContainerMemoryInactiveFileMetricConfig{}, ContainerMemoryMappedFileMetricConfig{}, ContainerMemoryPercentMetricConfig{}, ContainerMemoryPgfaultMetricConfig{}, ContainerMemoryPgmajfaultMetricConfig{}, ContainerMemoryPgpginMetricConfig{}, ContainerMemoryPgpgoutMetricConfig{}, ContainerMemoryRssMetricConfig{}, ContainerMemoryRssHugeMetricConfig{}, ContainerMemoryTotalActiveAnonMetricConfig{}, ContainerMemoryTotalActiveFileMetricConfig{}, ContainerMemoryTotalCacheMetricConfig{}, ContainerMemoryTotalDirtyMetricConfig{}, ContainerMemoryTotalInactiveAnonMetricConfig{}, ContainerMemoryTotalInactiveFileMetricConfig{}, ContainerMemoryTotalMappedFileMetricConfig{}, ContainerMemoryTotalPgfaultMetricConfig{}, ContainerMemoryTotalPgmajfaultMetricConfig{}, ContainerMemoryTotalPgpginMetricConfig{}, ContainerMemoryTotalPgpgoutMetricConfig{}, ContainerMemoryTotalRssMetricConfig{}, ContainerMemoryTotalRssHugeMetricConfig{}, ContainerMemoryTotalUnevictableMetricConfig{}, ContainerMemoryTotalWritebackMetricConfig{}, ContainerMemoryUnevictableMetricConfig{}, ContainerMemoryUsageLimitMetricConfig{}, ContainerMemoryUsageMaxMetricConfig{}, ContainerMemoryUsageTotalMetricConfig{}, ContainerMemoryWritebackMetricConfig{}, ContainerNetworkIoUsageRxBytesMetricConfig{}, ContainerNetworkIoUsageRxDroppedMetricConfig{}, ContainerNetworkIoUsageRxErrorsMetricConfig{}, ContainerNetworkIoUsageRxPacketsMetricConfig{}, ContainerNetworkIoUsageTxBytesMetricConfig{}, ContainerNetworkIoUsageTxDroppedMetricConfig{}, ContainerNetworkIoUsageTxErrorsMetricConfig{}, ContainerNetworkIoUsageTxPacketsMetricConfig{}, ContainerPidsCountMetricConfig{}, ContainerPidsLimitMetricConfig{}, ContainerRestartsMetricConfig{}, ContainerUptimeMetricConfig{}, ResourceAttributeConfig{}))
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(ContainerBlockioIoMergedRecursiveMetricConfig{}, ContainerBlockioIoQueuedRecursiveMetricConfig{}, ContainerBlockioIoServiceBytesRecursiveMetricConfig{}, ContainerBlockioIoServiceTimeRecursiveMetricConfig{}, ContainerBlockioIoServicedRecursiveMetricConfig{}, ContainerBlockioIoTimeRecursiveMetricConfig{}, ContainerBlockioIoWaitTimeRecursiveMetricConfig{}, ContainerBlockioSectorsRecursiveMetricConfig{}, ContainerCPULimitMetricConfig{}, ContainerCPULogicalCountMetricConfig{}, ContainerCPUSharesMetricConfig{}, ContainerCPUThrottlingDataPeriodsMetricConfig{}, ContainerCPUThrottlingDataThrottledPeriodsMetricConfig{}, ContainerCPUThrottlingDataThrottledTimeMetricConfig{}, ContainerCPUUsageKernelmodeMetricConfig{}, ContainerCPUUsagePercpuMetricConfig{}, ContainerCPUUsageSystemMetricConfig{}, ContainerCPUUsageTotalMetricConfig{}, ContainerCPUUsageUsermodeMetricConfig{}, ContainerCPUUtilizationMetricConfig{}, ContainerMemoryActiveAnonMetricConfig{}, ContainerMemoryActiveFileMetricConfig{}, ContainerMemoryAnonMetricConfig{}, ContainerMemoryCacheMetricConfig{}, ContainerMemoryDirtyMetricConfig{}, ContainerMemoryFailsMetricConfig{}, ContainerMemoryFileMetricConfig{}, ContainerMemoryHierarchicalMemoryLimitMetricConfig{}, ContainerMemoryHierarchicalMemswLimitMetricConfig{}, ContainerMemoryInactiveAnonMetricConfig{}, ContainerMemoryInactiveFileMetricConfig{}, ContainerMemoryMappedFileMetricConfig{}, ContainerMemoryPercentMetricConfig{}, ContainerMemoryPgfaultMetricConfig{}, ContainerMemoryPgmajfaultMetricConfig{}, ContainerMemoryPgpginMetricConfig{}, ContainerMemoryPgpgoutMetricConfig{}, ContainerMemoryRssMetricConfig{}, ContainerMemoryRssHugeMetricConfig{}, ContainerMemoryTotalActiveAnonMetricConfig{}, ContainerMemoryTotalActiveFileMetricConfig{}, ContainerMemoryTotalCacheMetricConfig{}, ContainerMemoryTotalDirtyMetricConfig{}, ContainerMemoryTotalInactiveAnonMetricConfig{}, ContainerMemoryTotalInactiveFileMetricConfig{}, ContainerMemoryTotalMappedFileMetricConfig{}, ContainerMemoryTotalPgfaultMetricConfig{}, ContainerMemoryTotalPgmajfaultMetricConfig{}, ContainerMemoryTotalPgpginMetricConfig{}, ContainerMemoryTotalPgpgoutMetricConfig{}, ContainerMemoryTotalRssMetricConfig{}, ContainerMemoryTotalRssHugeMetricConfig{}, ContainerMemoryTotalUnevictableMetricConfig{}, ContainerMemoryTotalWritebackMetricConfig{}, ContainerMemoryUnevictableMetricConfig{}, ContainerMemoryUsageLimitMetricConfig{}, ContainerMemoryUsageMaxMetricConfig{}, ContainerMemoryUsageTotalMetricConfig{}, ContainerMemoryWritebackMetricConfig{}, ContainerNetworkIoUsageRxBytesMetricConfig{}, ContainerNetworkIoUsageRxDroppedMetricConfig{}, ContainerNetworkIoUsageRxErrorsMetricConfig{}, ContainerNetworkIoUsageRxPacketsMetricConfig{}, ContainerNetworkIoUsageTxBytesMetricConfig{}, ContainerNetworkIoUsageTxDroppedMetricConfig{}, ContainerNetworkIoUsageTxErrorsMetricConfig{}, ContainerNetworkIoUsageTxPacketsMetricConfig{}, ContainerPidsCountMetricConfig{}, ContainerPidsLimitMetricConfig{}, ContainerRestartsMetricConfig{}, ContainerStatusMetricConfig{}, ContainerUptimeMetricConfig{}, ResourceAttributeConfig{}))
 			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
@@ -587,6 +595,7 @@ func TestResourceAttributesConfig(t *testing.T) {
 				ContainerImageName:   ResourceAttributeConfig{Enabled: true},
 				ContainerName:        ResourceAttributeConfig{Enabled: true},
 				ContainerRuntime:     ResourceAttributeConfig{Enabled: true},
+				ContainerStartedOn:   ResourceAttributeConfig{Enabled: true},
 			},
 		},
 		{
@@ -599,6 +608,7 @@ func TestResourceAttributesConfig(t *testing.T) {
 				ContainerImageName:   ResourceAttributeConfig{Enabled: false},
 				ContainerName:        ResourceAttributeConfig{Enabled: false},
 				ContainerRuntime:     ResourceAttributeConfig{Enabled: false},
+				ContainerStartedOn:   ResourceAttributeConfig{Enabled: false},
 			},
 		},
 	}

@@ -148,7 +148,6 @@ func RecordSpecMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, c corev1
 			}
 			eb.RecordK8sContainerStatusReasonDataPoint(ts, val, attrVal)
 		}
-		break
 	}
 
 	eb.Emit()

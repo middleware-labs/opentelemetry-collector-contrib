@@ -4661,9 +4661,9 @@ func newMetricContainerRestarts(cfg ContainerRestartsMetricConfig) metricContain
 }
 
 type metricContainerStatus struct {
-	data     pmetric.Metric // data buffer for generated metric.
-	config   MetricConfig   // metric config provided by user.
-	capacity int            // max observed number of data points added to the metric.
+	data     pmetric.Metric              // data buffer for generated metric.
+	config   ContainerStatusMetricConfig // metric config provided by user.
+	capacity int                         // max observed number of data points added to the metric.
 }
 
 // init fills container.status metric with initial data.
@@ -4700,8 +4700,9 @@ func (m *metricContainerStatus) emit(metrics pmetric.MetricSlice) {
 	}
 }
 
-func newMetricContainerStatus(cfg MetricConfig) metricContainerStatus {
+func newMetricContainerStatus(cfg ContainerStatusMetricConfig) metricContainerStatus {
 	m := metricContainerStatus{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()

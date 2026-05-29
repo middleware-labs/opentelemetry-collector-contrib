@@ -39,7 +39,7 @@ func RecordMetrics(mb *metadata.MetricsBuilder, rs *appsv1.ReplicaSet, ts pcommo
 		eb.RecordK8sReplicasetDesiredDataPoint(ts, int64(*rs.Spec.Replicas))
 		eb.RecordK8sReplicasetAvailableDataPoint(ts, int64(rs.Status.AvailableReplicas))
 	}
-    eb.RecordK8sReplicasetReadyDataPoint(ts, int64(rs.Status.ReadyReplicas))
+	eb.RecordK8sReplicasetReadyDataPoint(ts, int64(rs.Status.ReadyReplicas))
 	eb.Emit()
 }
 

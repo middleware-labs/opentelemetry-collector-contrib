@@ -82,10 +82,26 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordApacheBytesPerSecDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordApacheConnectionsAsyncDataPoint(ts, "1", AttributeConnectionStateWriting)
 			if tt.name == "reaggregate_set" {
 				mb.RecordApacheConnectionsAsyncDataPoint(ts, "3", AttributeConnectionStateKeepalive)
 			}
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheConnsAsyncClosingDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheConnsAsyncKeepAliveDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheConnsAsyncWritingDataPoint(ts, "1")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -116,11 +132,19 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			mb.RecordApacheMaxWorkersDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			mb.RecordApacheRequestTimeDataPoint(ts, "1")
 
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordApacheRequestsDataPoint(ts, "1")
+
+			defaultMetricsCount++
+			allMetricsCount++
+			mb.RecordApacheRequestsPerSecDataPoint(ts, "1")
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -181,6 +205,20 @@ func TestMetricsBuilder(t *testing.T) {
 			validatedMetrics := make(map[string]bool)
 			for _, mi := range allMetricsList {
 				switch mi.Name() {
+				case "apache.bytes_per_sec":
+					assert.False(t, validatedMetrics["apache.bytes_per_sec"], "Found a duplicate in the metrics slice: apache.bytes_per_sec")
+					validatedMetrics["apache.bytes_per_sec"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+					assert.Equal(t, "Served bytes per second", mi.Description())
+					assert.Equal(t, "{bytes/second}", mi.Unit())
+					assert.True(t, mi.Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+					dp := mi.Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "apache.connections.async":
 					if tt.name != "reaggregate_set" {
 						assert.False(t, validatedMetrics["apache.connections.async"], "Found a duplicate in the metrics slice: apache.connections.async")
@@ -221,6 +259,42 @@ func TestMetricsBuilder(t *testing.T) {
 						_, ok := dp.Attributes().Get("connection_state")
 						assert.False(t, ok)
 					}
+				case "apache.conns_async_closing":
+					assert.False(t, validatedMetrics["apache.conns_async_closing"], "Found a duplicate in the metrics slice: apache.conns_async_closing")
+					validatedMetrics["apache.conns_async_closing"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of asynchronous closing connections.", mi.Description())
+					assert.Equal(t, "{connections}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "apache.conns_async_keep_alive":
+					assert.False(t, validatedMetrics["apache.conns_async_keep_alive"], "Found a duplicate in the metrics slice: apache.conns_async_keep_alive")
+					validatedMetrics["apache.conns_async_keep_alive"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of asynchronous keep alive connections.", mi.Description())
+					assert.Equal(t, "{connections}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "apache.conns_async_writing":
+					assert.False(t, validatedMetrics["apache.conns_async_writing"], "Found a duplicate in the metrics slice: apache.conns_async_writing")
+					validatedMetrics["apache.conns_async_writing"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of asynchronous writes connections.", mi.Description())
+					assert.Equal(t, "{connections}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "apache.cpu.load":
 					assert.False(t, validatedMetrics["apache.cpu.load"], "Found a duplicate in the metrics slice: apache.cpu.load")
 					validatedMetrics["apache.cpu.load"] = true
@@ -332,6 +406,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
 					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+				case "apache.max_workers":
+					assert.False(t, validatedMetrics["apache.max_workers"], "Found a duplicate in the metrics slice: apache.max_workers")
+					validatedMetrics["apache.max_workers"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The maximum number of workers apache web server can start.", mi.Description())
+					assert.Equal(t, "{thread}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "apache.request.time":
 					assert.False(t, validatedMetrics["apache.request.time"], "Found a duplicate in the metrics slice: apache.request.time")
 					validatedMetrics["apache.request.time"] = true
@@ -353,6 +439,20 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 					assert.Equal(t, "The number of requests serviced by the HTTP server per second.", mi.Description())
 					assert.Equal(t, "{requests}", mi.Unit())
+					assert.True(t, mi.Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+					dp := mi.Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "apache.requests_per_sec":
+					assert.False(t, validatedMetrics["apache.requests_per_sec"], "Found a duplicate in the metrics slice: apache.requests_per_sec")
+					validatedMetrics["apache.requests_per_sec"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+					assert.Equal(t, "Incoming requests per second", mi.Description())
+					assert.Equal(t, "{request/second}", mi.Unit())
 					assert.True(t, mi.Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 					dp := mi.Sum().DataPoints().At(0)

@@ -12,14 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
-	"go.opentelemetry.io/collector/pdata/pcommon"
-	corev1 "k8s.io/api/core/v1"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/common/maps"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata"
-
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
-	imetadata "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/metadata"
 )
 
 const (
@@ -27,7 +20,7 @@ const (
 	AttributeK8SPersistentvolumeUID  = "k8s.persistentvolume.uid"
 	AttributeK8SPersistentvolumeName = "k8s.persistentvolume.name"
 	persistentvolumeCreationTime     = "persistentvolume.creation_timestamp"
-	k8sPVCreationTime = "k8s.persistentvolume.creation_timestamp"
+	k8sPVCreationTime                = "k8s.persistentvolume.creation_timestamp"
 )
 
 // Transform transforms the PersistentVolume to remove the fields that we don't use to reduce RAM utilization.
@@ -62,11 +55,11 @@ func Transform(pv *corev1.PersistentVolume) *corev1.PersistentVolume {
 			UID:       pv.Spec.ClaimRef.UID,
 		}
 	}
-    newPv.Spec.Capacity = pv.Spec.Capacity
-    for _, c := range pv.Spec.AccessModes {
-        newPv.Spec.AccessModes = append(newPv.Spec.AccessModes, c)
-    }
-  	return newPV
+	newPV.Spec.Capacity = pv.Spec.Capacity
+	for _, c := range pv.Spec.AccessModes {
+		newPV.Spec.AccessModes = append(newPV.Spec.AccessModes, c)
+	}
+	return newPV
 }
 
 func shouldSkipAnnotation(key string) bool {
@@ -80,29 +73,29 @@ func RecordMetrics(mb *metadata.MetricsBuilder, pv *corev1.PersistentVolume, ts 
 	if pv.Spec.StorageClassName != "" {
 		e.SetK8sStorageclassName(pv.Spec.StorageClassName)
 	}
-    e.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
-    e.SetK8sClusterName("unknown")
+	e.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
+	e.SetK8sClusterName("unknown")
 	if pv.Spec.PersistentVolumeReclaimPolicy != "" {
 		e.SetK8sPersistentvolumeReclaimPolicy(string(pv.Spec.PersistentVolumeReclaimPolicy))
 		e.SetK8sClusterName("unknown")
 	}
-    e.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
+	e.SetK8sPersistentvolumeStartTime(pv.GetCreationTimestamp().String())
 
 	volumeMode := "unknown"
-    if pv.Spec.VolumeMode != nil {
-        volumeMode = string(*pv.Spec.VolumeMode)
-    }
-    e.SetK8sPersistentvolumeVolumeMode(string(volumeMode))
+	if pv.Spec.VolumeMode != nil {
+		volumeMode = string(*pv.Spec.VolumeMode)
+	}
+	e.SetK8sPersistentvolumeVolumeMode(string(volumeMode))
 
-    volumeClaimRefUID := "unknown"
-    volumeClaimRefName := "unknown"
-    if pv.Spec.ClaimRef != nil {
-        volumeClaimRefUID = string((*pv.Spec.ClaimRef).UID)
-        volumeClaimRefName = (*pv.Spec.ClaimRef).Name
-    }
-    e.SetK8sPersistentvolumeclaimUID(volumeClaimRefUID)
-    e.SetK8sPersistentvolumeclaimName(volumeClaimRefName)
-    e.SetK8sClusterName("unknown")
+	volumeClaimRefUID := "unknown"
+	volumeClaimRefName := "unknown"
+	if pv.Spec.ClaimRef != nil {
+		volumeClaimRefUID = string((*pv.Spec.ClaimRef).UID)
+		volumeClaimRefName = (*pv.Spec.ClaimRef).Name
+	}
+	e.SetK8sPersistentvolumeclaimUID(volumeClaimRefUID)
+	e.SetK8sPersistentvolumeclaimName(volumeClaimRefName)
+	e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sPersistentvolume(e)
 	for phaseStr, phaseAttr := range metadata.MapAttributeK8sPersistentvolumeStatusPhase {
 		val := int64(0)

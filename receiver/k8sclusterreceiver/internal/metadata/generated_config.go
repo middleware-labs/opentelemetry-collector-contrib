@@ -10,6 +10,46 @@ import (
 	"go.opentelemetry.io/collector/filter"
 )
 
+// K8sClusterroleRuleCountMetricConfig provides config for the k8s.clusterrole.rule_count metric.
+type K8sClusterroleRuleCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sClusterroleRuleCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sClusterrolebindingSubjectCountMetricConfig provides config for the k8s.clusterrolebinding.subject_count metric.
+type K8sClusterrolebindingSubjectCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sClusterrolebindingSubjectCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // K8sContainerCPULimitMetricConfig provides config for the k8s.container.cpu_limit metric.
 type K8sContainerCPULimitMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -370,6 +410,26 @@ func (ms *K8sDeploymentAvailableMetricConfig) Unmarshal(parser *confmap.Conf) er
 	return nil
 }
 
+// K8sDeploymentCurrentMetricConfig provides config for the k8s.deployment.current metric.
+type K8sDeploymentCurrentMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sDeploymentCurrentMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // K8sDeploymentDesiredMetricConfig provides config for the k8s.deployment.desired metric.
 type K8sDeploymentDesiredMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -377,6 +437,26 @@ type K8sDeploymentDesiredMetricConfig struct {
 }
 
 func (ms *K8sDeploymentDesiredMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sDeploymentUpdatedMetricConfig provides config for the k8s.deployment.updated metric.
+type K8sDeploymentUpdatedMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sDeploymentUpdatedMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -470,6 +550,26 @@ func (ms *K8sHpaMinReplicasMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+// K8sIngressRuleCountMetricConfig provides config for the k8s.ingress.rule_count metric.
+type K8sIngressRuleCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sIngressRuleCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // K8sJobActivePodsMetricConfig provides config for the k8s.job.active_pods metric.
 type K8sJobActivePodsMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -477,6 +577,26 @@ type K8sJobActivePodsMetricConfig struct {
 }
 
 func (ms *K8sJobActivePodsMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sJobBackoffLimitMetricConfig provides config for the k8s.job.backoff_limit metric.
+type K8sJobBackoffLimitMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sJobBackoffLimitMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -610,6 +730,26 @@ func (ms *K8sNodeConditionMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+// K8sPersistentvolumeCapacityMetricConfig provides config for the k8s.persistentvolume.capacity metric.
+type K8sPersistentvolumeCapacityMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sPersistentvolumeCapacityMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // K8sPersistentvolumeStatusPhaseMetricConfig provides config for the k8s.persistentvolume.status.phase metric.
 type K8sPersistentvolumeStatusPhaseMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -637,6 +777,46 @@ type K8sPersistentvolumeStorageCapacityMetricConfig struct {
 }
 
 func (ms *K8sPersistentvolumeStorageCapacityMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sPersistentvolumeclaimAllocatedMetricConfig provides config for the k8s.persistentvolumeclaim.allocated metric.
+type K8sPersistentvolumeclaimAllocatedMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sPersistentvolumeclaimAllocatedMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sPersistentvolumeclaimCapacityMetricConfig provides config for the k8s.persistentvolumeclaim.capacity metric.
+type K8sPersistentvolumeclaimCapacityMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sPersistentvolumeclaimCapacityMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -770,6 +950,26 @@ func (ms *K8sReplicasetAvailableMetricConfig) Unmarshal(parser *confmap.Conf) er
 	return nil
 }
 
+// K8sReplicasetCurrentMetricConfig provides config for the k8s.replicaset.current metric.
+type K8sReplicasetCurrentMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sReplicasetCurrentMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // K8sReplicasetDesiredMetricConfig provides config for the k8s.replicaset.desired metric.
 type K8sReplicasetDesiredMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -777,6 +977,26 @@ type K8sReplicasetDesiredMetricConfig struct {
 }
 
 func (ms *K8sReplicasetDesiredMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sReplicasetReadyMetricConfig provides config for the k8s.replicaset.ready metric.
+type K8sReplicasetReadyMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sReplicasetReadyMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -870,6 +1090,46 @@ func (ms *K8sResourceQuotaUsedMetricConfig) Unmarshal(parser *confmap.Conf) erro
 	return nil
 }
 
+// K8sRoleRuleCountMetricConfig provides config for the k8s.role.rule_count metric.
+type K8sRoleRuleCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sRoleRuleCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sRolebindingSubjectCountMetricConfig provides config for the k8s.rolebinding.subject_count metric.
+type K8sRolebindingSubjectCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sRolebindingSubjectCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // K8sServiceEndpointCountMetricAttributeKey specifies the key of an attribute for the k8s.service.endpoint.count metric.
 type K8sServiceEndpointCountMetricAttributeKey string
 
@@ -927,6 +1187,46 @@ type K8sServiceLoadBalancerIngressCountMetricConfig struct {
 }
 
 func (ms *K8sServiceLoadBalancerIngressCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sServicePortCountMetricConfig provides config for the k8s.service.port_count metric.
+type K8sServicePortCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sServicePortCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
+// K8sServiceaccountSecretCountMetricConfig provides config for the k8s.serviceaccount.secret_count metric.
+type K8sServiceaccountSecretCountMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *K8sServiceaccountSecretCountMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
@@ -1166,6 +1466,8 @@ func (ms *OpenshiftClusterquotaUsedMetricConfig) Unmarshal(parser *confmap.Conf)
 
 // MetricsConfig provides config for k8s_cluster metrics.
 type MetricsConfig struct {
+	K8sClusterroleRuleCount                 K8sClusterroleRuleCountMetricConfig                 `mapstructure:"k8s.clusterrole.rule_count"`
+	K8sClusterrolebindingSubjectCount       K8sClusterrolebindingSubjectCountMetricConfig       `mapstructure:"k8s.clusterrolebinding.subject_count"`
 	K8sContainerCPULimit                    K8sContainerCPULimitMetricConfig                    `mapstructure:"k8s.container.cpu_limit"`
 	K8sContainerCPURequest                  K8sContainerCPURequestMetricConfig                  `mapstructure:"k8s.container.cpu_request"`
 	K8sContainerEphemeralstorageLimit       K8sContainerEphemeralstorageLimitMetricConfig       `mapstructure:"k8s.container.ephemeralstorage_limit"`
@@ -1184,33 +1486,46 @@ type MetricsConfig struct {
 	K8sDaemonsetMisscheduledNodes           K8sDaemonsetMisscheduledNodesMetricConfig           `mapstructure:"k8s.daemonset.misscheduled_nodes"`
 	K8sDaemonsetReadyNodes                  K8sDaemonsetReadyNodesMetricConfig                  `mapstructure:"k8s.daemonset.ready_nodes"`
 	K8sDeploymentAvailable                  K8sDeploymentAvailableMetricConfig                  `mapstructure:"k8s.deployment.available"`
+	K8sDeploymentCurrent                    K8sDeploymentCurrentMetricConfig                    `mapstructure:"k8s.deployment.current"`
 	K8sDeploymentDesired                    K8sDeploymentDesiredMetricConfig                    `mapstructure:"k8s.deployment.desired"`
+	K8sDeploymentUpdated                    K8sDeploymentUpdatedMetricConfig                    `mapstructure:"k8s.deployment.updated"`
 	K8sHpaCurrentReplicas                   K8sHpaCurrentReplicasMetricConfig                   `mapstructure:"k8s.hpa.current_replicas"`
 	K8sHpaDesiredReplicas                   K8sHpaDesiredReplicasMetricConfig                   `mapstructure:"k8s.hpa.desired_replicas"`
 	K8sHpaMaxReplicas                       K8sHpaMaxReplicasMetricConfig                       `mapstructure:"k8s.hpa.max_replicas"`
 	K8sHpaMinReplicas                       K8sHpaMinReplicasMetricConfig                       `mapstructure:"k8s.hpa.min_replicas"`
+	K8sIngressRuleCount                     K8sIngressRuleCountMetricConfig                     `mapstructure:"k8s.ingress.rule_count"`
 	K8sJobActivePods                        K8sJobActivePodsMetricConfig                        `mapstructure:"k8s.job.active_pods"`
+	K8sJobBackoffLimit                      K8sJobBackoffLimitMetricConfig                      `mapstructure:"k8s.job.backoff_limit"`
 	K8sJobDesiredSuccessfulPods             K8sJobDesiredSuccessfulPodsMetricConfig             `mapstructure:"k8s.job.desired_successful_pods"`
 	K8sJobFailedPods                        K8sJobFailedPodsMetricConfig                        `mapstructure:"k8s.job.failed_pods"`
 	K8sJobMaxParallelPods                   K8sJobMaxParallelPodsMetricConfig                   `mapstructure:"k8s.job.max_parallel_pods"`
 	K8sJobSuccessfulPods                    K8sJobSuccessfulPodsMetricConfig                    `mapstructure:"k8s.job.successful_pods"`
 	K8sNamespacePhase                       K8sNamespacePhaseMetricConfig                       `mapstructure:"k8s.namespace.phase"`
 	K8sNodeCondition                        K8sNodeConditionMetricConfig                        `mapstructure:"k8s.node.condition"`
+	K8sPersistentvolumeCapacity             K8sPersistentvolumeCapacityMetricConfig             `mapstructure:"k8s.persistentvolume.capacity"`
 	K8sPersistentvolumeStatusPhase          K8sPersistentvolumeStatusPhaseMetricConfig          `mapstructure:"k8s.persistentvolume.status.phase"`
 	K8sPersistentvolumeStorageCapacity      K8sPersistentvolumeStorageCapacityMetricConfig      `mapstructure:"k8s.persistentvolume.storage.capacity"`
+	K8sPersistentvolumeclaimAllocated       K8sPersistentvolumeclaimAllocatedMetricConfig       `mapstructure:"k8s.persistentvolumeclaim.allocated"`
+	K8sPersistentvolumeclaimCapacity        K8sPersistentvolumeclaimCapacityMetricConfig        `mapstructure:"k8s.persistentvolumeclaim.capacity"`
 	K8sPersistentvolumeclaimStatusPhase     K8sPersistentvolumeclaimStatusPhaseMetricConfig     `mapstructure:"k8s.persistentvolumeclaim.status.phase"`
 	K8sPersistentvolumeclaimStorageCapacity K8sPersistentvolumeclaimStorageCapacityMetricConfig `mapstructure:"k8s.persistentvolumeclaim.storage.capacity"`
 	K8sPersistentvolumeclaimStorageRequest  K8sPersistentvolumeclaimStorageRequestMetricConfig  `mapstructure:"k8s.persistentvolumeclaim.storage.request"`
 	K8sPodPhase                             K8sPodPhaseMetricConfig                             `mapstructure:"k8s.pod.phase"`
 	K8sPodStatusReason                      K8sPodStatusReasonMetricConfig                      `mapstructure:"k8s.pod.status_reason"`
 	K8sReplicasetAvailable                  K8sReplicasetAvailableMetricConfig                  `mapstructure:"k8s.replicaset.available"`
+	K8sReplicasetCurrent                    K8sReplicasetCurrentMetricConfig                    `mapstructure:"k8s.replicaset.current"`
 	K8sReplicasetDesired                    K8sReplicasetDesiredMetricConfig                    `mapstructure:"k8s.replicaset.desired"`
+	K8sReplicasetReady                      K8sReplicasetReadyMetricConfig                      `mapstructure:"k8s.replicaset.ready"`
 	K8sReplicationControllerAvailable       K8sReplicationControllerAvailableMetricConfig       `mapstructure:"k8s.replication_controller.available"`
 	K8sReplicationControllerDesired         K8sReplicationControllerDesiredMetricConfig         `mapstructure:"k8s.replication_controller.desired"`
 	K8sResourceQuotaHardLimit               K8sResourceQuotaHardLimitMetricConfig               `mapstructure:"k8s.resource_quota.hard_limit"`
 	K8sResourceQuotaUsed                    K8sResourceQuotaUsedMetricConfig                    `mapstructure:"k8s.resource_quota.used"`
+	K8sRoleRuleCount                        K8sRoleRuleCountMetricConfig                        `mapstructure:"k8s.role.rule_count"`
+	K8sRolebindingSubjectCount              K8sRolebindingSubjectCountMetricConfig              `mapstructure:"k8s.rolebinding.subject_count"`
 	K8sServiceEndpointCount                 K8sServiceEndpointCountMetricConfig                 `mapstructure:"k8s.service.endpoint.count"`
 	K8sServiceLoadBalancerIngressCount      K8sServiceLoadBalancerIngressCountMetricConfig      `mapstructure:"k8s.service.load_balancer.ingress.count"`
+	K8sServicePortCount                     K8sServicePortCountMetricConfig                     `mapstructure:"k8s.service.port_count"`
+	K8sServiceaccountSecretCount            K8sServiceaccountSecretCountMetricConfig            `mapstructure:"k8s.serviceaccount.secret_count"`
 	K8sStatefulsetCurrentPods               K8sStatefulsetCurrentPodsMetricConfig               `mapstructure:"k8s.statefulset.current_pods"`
 	K8sStatefulsetDesiredPods               K8sStatefulsetDesiredPodsMetricConfig               `mapstructure:"k8s.statefulset.desired_pods"`
 	K8sStatefulsetReadyPods                 K8sStatefulsetReadyPodsMetricConfig                 `mapstructure:"k8s.statefulset.ready_pods"`
@@ -1223,6 +1538,12 @@ type MetricsConfig struct {
 
 func DefaultMetricsConfig() MetricsConfig {
 	return MetricsConfig{
+		K8sClusterroleRuleCount: K8sClusterroleRuleCountMetricConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingSubjectCount: K8sClusterrolebindingSubjectCountMetricConfig{
+			Enabled: true,
+		},
 		K8sContainerCPULimit: K8sContainerCPULimitMetricConfig{
 			Enabled: true,
 		},
@@ -1277,7 +1598,13 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sDeploymentAvailable: K8sDeploymentAvailableMetricConfig{
 			Enabled: true,
 		},
+		K8sDeploymentCurrent: K8sDeploymentCurrentMetricConfig{
+			Enabled: true,
+		},
 		K8sDeploymentDesired: K8sDeploymentDesiredMetricConfig{
+			Enabled: true,
+		},
+		K8sDeploymentUpdated: K8sDeploymentUpdatedMetricConfig{
 			Enabled: true,
 		},
 		K8sHpaCurrentReplicas: K8sHpaCurrentReplicasMetricConfig{
@@ -1292,7 +1619,13 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sHpaMinReplicas: K8sHpaMinReplicasMetricConfig{
 			Enabled: true,
 		},
+		K8sIngressRuleCount: K8sIngressRuleCountMetricConfig{
+			Enabled: true,
+		},
 		K8sJobActivePods: K8sJobActivePodsMetricConfig{
+			Enabled: true,
+		},
+		K8sJobBackoffLimit: K8sJobBackoffLimitMetricConfig{
 			Enabled: true,
 		},
 		K8sJobDesiredSuccessfulPods: K8sJobDesiredSuccessfulPodsMetricConfig{
@@ -1313,11 +1646,20 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sNodeCondition: K8sNodeConditionMetricConfig{
 			Enabled: false,
 		},
+		K8sPersistentvolumeCapacity: K8sPersistentvolumeCapacityMetricConfig{
+			Enabled: true,
+		},
 		K8sPersistentvolumeStatusPhase: K8sPersistentvolumeStatusPhaseMetricConfig{
 			Enabled: false,
 		},
 		K8sPersistentvolumeStorageCapacity: K8sPersistentvolumeStorageCapacityMetricConfig{
 			Enabled: false,
+		},
+		K8sPersistentvolumeclaimAllocated: K8sPersistentvolumeclaimAllocatedMetricConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimCapacity: K8sPersistentvolumeclaimCapacityMetricConfig{
+			Enabled: true,
 		},
 		K8sPersistentvolumeclaimStatusPhase: K8sPersistentvolumeclaimStatusPhaseMetricConfig{
 			Enabled: false,
@@ -1337,7 +1679,13 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sReplicasetAvailable: K8sReplicasetAvailableMetricConfig{
 			Enabled: true,
 		},
+		K8sReplicasetCurrent: K8sReplicasetCurrentMetricConfig{
+			Enabled: true,
+		},
 		K8sReplicasetDesired: K8sReplicasetDesiredMetricConfig{
+			Enabled: true,
+		},
+		K8sReplicasetReady: K8sReplicasetReadyMetricConfig{
 			Enabled: true,
 		},
 		K8sReplicationControllerAvailable: K8sReplicationControllerAvailableMetricConfig{
@@ -1352,6 +1700,12 @@ func DefaultMetricsConfig() MetricsConfig {
 		K8sResourceQuotaUsed: K8sResourceQuotaUsedMetricConfig{
 			Enabled: true,
 		},
+		K8sRoleRuleCount: K8sRoleRuleCountMetricConfig{
+			Enabled: true,
+		},
+		K8sRolebindingSubjectCount: K8sRolebindingSubjectCountMetricConfig{
+			Enabled: true,
+		},
 		K8sServiceEndpointCount: K8sServiceEndpointCountMetricConfig{
 			Enabled:             false,
 			AggregationStrategy: AggregationStrategyAvg,
@@ -1359,6 +1713,12 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		K8sServiceLoadBalancerIngressCount: K8sServiceLoadBalancerIngressCountMetricConfig{
 			Enabled: false,
+		},
+		K8sServicePortCount: K8sServicePortCountMetricConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountSecretCount: K8sServiceaccountSecretCountMetricConfig{
+			Enabled: true,
 		},
 		K8sStatefulsetCurrentPods: K8sStatefulsetCurrentPodsMetricConfig{
 			Enabled: true,
@@ -1419,57 +1779,152 @@ func (rac *ResourceAttributeConfig) Unmarshal(parser *confmap.Conf) error {
 
 // ResourceAttributesConfig provides config for k8s_cluster resource attributes.
 type ResourceAttributesConfig struct {
-	ContainerID                            ResourceAttributeConfig `mapstructure:"container.id"`
-	ContainerImageName                     ResourceAttributeConfig `mapstructure:"container.image.name"`
-	ContainerImageTag                      ResourceAttributeConfig `mapstructure:"container.image.tag"`
-	ContainerRuntime                       ResourceAttributeConfig `mapstructure:"container.runtime"`
-	ContainerRuntimeVersion                ResourceAttributeConfig `mapstructure:"container.runtime.version"`
-	K8sContainerName                       ResourceAttributeConfig `mapstructure:"k8s.container.name"`
-	K8sContainerStatusLastTerminatedReason ResourceAttributeConfig `mapstructure:"k8s.container.status.last_terminated_reason"`
-	K8sCronjobName                         ResourceAttributeConfig `mapstructure:"k8s.cronjob.name"`
-	K8sCronjobUID                          ResourceAttributeConfig `mapstructure:"k8s.cronjob.uid"`
-	K8sDaemonsetName                       ResourceAttributeConfig `mapstructure:"k8s.daemonset.name"`
-	K8sDaemonsetUID                        ResourceAttributeConfig `mapstructure:"k8s.daemonset.uid"`
-	K8sDeploymentName                      ResourceAttributeConfig `mapstructure:"k8s.deployment.name"`
-	K8sDeploymentUID                       ResourceAttributeConfig `mapstructure:"k8s.deployment.uid"`
-	K8sHpaName                             ResourceAttributeConfig `mapstructure:"k8s.hpa.name"`
-	K8sHpaScaletargetrefApiversion         ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.apiversion"`
-	K8sHpaScaletargetrefKind               ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.kind"`
-	K8sHpaScaletargetrefName               ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.name"`
-	K8sHpaUID                              ResourceAttributeConfig `mapstructure:"k8s.hpa.uid"`
-	K8sJobName                             ResourceAttributeConfig `mapstructure:"k8s.job.name"`
-	K8sJobUID                              ResourceAttributeConfig `mapstructure:"k8s.job.uid"`
-	K8sKubeletVersion                      ResourceAttributeConfig `mapstructure:"k8s.kubelet.version"`
-	K8sNamespaceName                       ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
-	K8sNamespaceUID                        ResourceAttributeConfig `mapstructure:"k8s.namespace.uid"`
-	K8sNodeName                            ResourceAttributeConfig `mapstructure:"k8s.node.name"`
-	K8sNodeUID                             ResourceAttributeConfig `mapstructure:"k8s.node.uid"`
-	K8sPersistentvolumeName                ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.name"`
-	K8sPersistentvolumeReclaimPolicy       ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.reclaim_policy"`
-	K8sPersistentvolumeUID                 ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.uid"`
-	K8sPersistentvolumeclaimName           ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.name"`
-	K8sPersistentvolumeclaimUID            ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.uid"`
-	K8sPodName                             ResourceAttributeConfig `mapstructure:"k8s.pod.name"`
-	K8sPodQosClass                         ResourceAttributeConfig `mapstructure:"k8s.pod.qos_class"`
-	K8sPodUID                              ResourceAttributeConfig `mapstructure:"k8s.pod.uid"`
-	K8sReplicasetName                      ResourceAttributeConfig `mapstructure:"k8s.replicaset.name"`
-	K8sReplicasetUID                       ResourceAttributeConfig `mapstructure:"k8s.replicaset.uid"`
-	K8sReplicationcontrollerName           ResourceAttributeConfig `mapstructure:"k8s.replicationcontroller.name"`
-	K8sReplicationcontrollerUID            ResourceAttributeConfig `mapstructure:"k8s.replicationcontroller.uid"`
-	K8sResourcequotaName                   ResourceAttributeConfig `mapstructure:"k8s.resourcequota.name"`
-	K8sResourcequotaUID                    ResourceAttributeConfig `mapstructure:"k8s.resourcequota.uid"`
-	K8sServiceName                         ResourceAttributeConfig `mapstructure:"k8s.service.name"`
-	K8sServicePublishNotReadyAddresses     ResourceAttributeConfig `mapstructure:"k8s.service.publish_not_ready_addresses"`
-	K8sServiceTrafficDistribution          ResourceAttributeConfig `mapstructure:"k8s.service.traffic_distribution"`
-	K8sServiceType                         ResourceAttributeConfig `mapstructure:"k8s.service.type"`
-	K8sServiceUID                          ResourceAttributeConfig `mapstructure:"k8s.service.uid"`
-	K8sStatefulsetName                     ResourceAttributeConfig `mapstructure:"k8s.statefulset.name"`
-	K8sStatefulsetUID                      ResourceAttributeConfig `mapstructure:"k8s.statefulset.uid"`
-	K8sStorageclassName                    ResourceAttributeConfig `mapstructure:"k8s.storageclass.name"`
-	OpenshiftClusterquotaName              ResourceAttributeConfig `mapstructure:"openshift.clusterquota.name"`
-	OpenshiftClusterquotaUID               ResourceAttributeConfig `mapstructure:"openshift.clusterquota.uid"`
-	OsDescription                          ResourceAttributeConfig `mapstructure:"os.description"`
-	OsType                                 ResourceAttributeConfig `mapstructure:"os.type"`
+	ContainerID                                   ResourceAttributeConfig `mapstructure:"container.id"`
+	ContainerImageName                            ResourceAttributeConfig `mapstructure:"container.image.name"`
+	ContainerImageTag                             ResourceAttributeConfig `mapstructure:"container.image.tag"`
+	ContainerRuntime                              ResourceAttributeConfig `mapstructure:"container.runtime"`
+	ContainerRuntimeVersion                       ResourceAttributeConfig `mapstructure:"container.runtime.version"`
+	K8sClusterName                                ResourceAttributeConfig `mapstructure:"k8s.cluster.name"`
+	K8sClusterroleAnnotations                     ResourceAttributeConfig `mapstructure:"k8s.clusterrole.annotations"`
+	K8sClusterroleLabels                          ResourceAttributeConfig `mapstructure:"k8s.clusterrole.labels"`
+	K8sClusterroleName                            ResourceAttributeConfig `mapstructure:"k8s.clusterrole.name"`
+	K8sClusterroleRules                           ResourceAttributeConfig `mapstructure:"k8s.clusterrole.rules"`
+	K8sClusterroleStartTime                       ResourceAttributeConfig `mapstructure:"k8s.clusterrole.start_time"`
+	K8sClusterroleType                            ResourceAttributeConfig `mapstructure:"k8s.clusterrole.type"`
+	K8sClusterroleUID                             ResourceAttributeConfig `mapstructure:"k8s.clusterrole.uid"`
+	K8sClusterrolebindingAnnotations              ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.annotations"`
+	K8sClusterrolebindingLabels                   ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.labels"`
+	K8sClusterrolebindingName                     ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.name"`
+	K8sClusterrolebindingRoleRef                  ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.role_ref"`
+	K8sClusterrolebindingStartTime                ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.start_time"`
+	K8sClusterrolebindingSubjects                 ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.subjects"`
+	K8sClusterrolebindingType                     ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.type"`
+	K8sClusterrolebindingUID                      ResourceAttributeConfig `mapstructure:"k8s.clusterrolebinding.uid"`
+	K8sContainerName                              ResourceAttributeConfig `mapstructure:"k8s.container.name"`
+	K8sContainerStatusCurrentWaitingReason        ResourceAttributeConfig `mapstructure:"k8s.container.status.current_waiting_reason"`
+	K8sContainerStatusLastTerminatedReason        ResourceAttributeConfig `mapstructure:"k8s.container.status.last_terminated_reason"`
+	K8sCronjobConcurrencyPolicy                   ResourceAttributeConfig `mapstructure:"k8s.cronjob.concurrency_policy"`
+	K8sCronjobLastScheduleTime                    ResourceAttributeConfig `mapstructure:"k8s.cronjob.last_schedule_time"`
+	K8sCronjobLastSuccessfulTime                  ResourceAttributeConfig `mapstructure:"k8s.cronjob.last_successful_time"`
+	K8sCronjobName                                ResourceAttributeConfig `mapstructure:"k8s.cronjob.name"`
+	K8sCronjobSchedule                            ResourceAttributeConfig `mapstructure:"k8s.cronjob.schedule"`
+	K8sCronjobStartTime                           ResourceAttributeConfig `mapstructure:"k8s.cronjob.start_time"`
+	K8sCronjobSuspend                             ResourceAttributeConfig `mapstructure:"k8s.cronjob.suspend"`
+	K8sCronjobUID                                 ResourceAttributeConfig `mapstructure:"k8s.cronjob.uid"`
+	K8sDaemonsetName                              ResourceAttributeConfig `mapstructure:"k8s.daemonset.name"`
+	K8sDaemonsetSelectors                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.selectors"`
+	K8sDaemonsetStartTime                         ResourceAttributeConfig `mapstructure:"k8s.daemonset.start_time"`
+	K8sDaemonsetStrategy                          ResourceAttributeConfig `mapstructure:"k8s.daemonset.strategy"`
+	K8sDaemonsetUID                               ResourceAttributeConfig `mapstructure:"k8s.daemonset.uid"`
+	K8sDeploymentName                             ResourceAttributeConfig `mapstructure:"k8s.deployment.name"`
+	K8sDeploymentStartTime                        ResourceAttributeConfig `mapstructure:"k8s.deployment.start_time"`
+	K8sDeploymentUID                              ResourceAttributeConfig `mapstructure:"k8s.deployment.uid"`
+	K8sHpaName                                    ResourceAttributeConfig `mapstructure:"k8s.hpa.name"`
+	K8sHpaScaletargetrefApiversion                ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.apiversion"`
+	K8sHpaScaletargetrefKind                      ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.kind"`
+	K8sHpaScaletargetrefName                      ResourceAttributeConfig `mapstructure:"k8s.hpa.scaletargetref.name"`
+	K8sHpaUID                                     ResourceAttributeConfig `mapstructure:"k8s.hpa.uid"`
+	K8sIngressAnnotations                         ResourceAttributeConfig `mapstructure:"k8s.ingress.annotations"`
+	K8sIngressLabels                              ResourceAttributeConfig `mapstructure:"k8s.ingress.labels"`
+	K8sIngressName                                ResourceAttributeConfig `mapstructure:"k8s.ingress.name"`
+	K8sIngressNamespace                           ResourceAttributeConfig `mapstructure:"k8s.ingress.namespace"`
+	K8sIngressRules                               ResourceAttributeConfig `mapstructure:"k8s.ingress.rules"`
+	K8sIngressStartTime                           ResourceAttributeConfig `mapstructure:"k8s.ingress.start_time"`
+	K8sIngressType                                ResourceAttributeConfig `mapstructure:"k8s.ingress.type"`
+	K8sIngressUID                                 ResourceAttributeConfig `mapstructure:"k8s.ingress.uid"`
+	K8sJobEndTime                                 ResourceAttributeConfig `mapstructure:"k8s.job.end_time"`
+	K8sJobName                                    ResourceAttributeConfig `mapstructure:"k8s.job.name"`
+	K8sJobStartTime                               ResourceAttributeConfig `mapstructure:"k8s.job.start_time"`
+	K8sJobUID                                     ResourceAttributeConfig `mapstructure:"k8s.job.uid"`
+	K8sKubeletVersion                             ResourceAttributeConfig `mapstructure:"k8s.kubelet.version"`
+	K8sNamespaceName                              ResourceAttributeConfig `mapstructure:"k8s.namespace.name"`
+	K8sNamespaceStartTime                         ResourceAttributeConfig `mapstructure:"k8s.namespace.start_time"`
+	K8sNamespaceUID                               ResourceAttributeConfig `mapstructure:"k8s.namespace.uid"`
+	K8sNodeName                                   ResourceAttributeConfig `mapstructure:"k8s.node.name"`
+	K8sNodeStartTime                              ResourceAttributeConfig `mapstructure:"k8s.node.start_time"`
+	K8sNodeUID                                    ResourceAttributeConfig `mapstructure:"k8s.node.uid"`
+	K8sPersistentvolumeAccessModes                ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.access_modes"`
+	K8sPersistentvolumeAnnotations                ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.annotations"`
+	K8sPersistentvolumeFinalizers                 ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.finalizers"`
+	K8sPersistentvolumeLabels                     ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.labels"`
+	K8sPersistentvolumeName                       ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.name"`
+	K8sPersistentvolumeNamespace                  ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.namespace"`
+	K8sPersistentvolumePhase                      ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.phase"`
+	K8sPersistentvolumeReclaimPolicy              ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.reclaim_policy"`
+	K8sPersistentvolumeStartTime                  ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.start_time"`
+	K8sPersistentvolumeStorageClass               ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.storage_class"`
+	K8sPersistentvolumeType                       ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.type"`
+	K8sPersistentvolumeUID                        ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.uid"`
+	K8sPersistentvolumeVolumeMode                 ResourceAttributeConfig `mapstructure:"k8s.persistentvolume.volume_mode"`
+	K8sPersistentvolumeclaimAccessModes           ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.access_modes"`
+	K8sPersistentvolumeclaimAnnotations           ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.annotations"`
+	K8sPersistentvolumeclaimFinalizers            ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.finalizers"`
+	K8sPersistentvolumeclaimLabels                ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.labels"`
+	K8sPersistentvolumeclaimName                  ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.name"`
+	K8sPersistentvolumeclaimNamespace             ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.namespace"`
+	K8sPersistentvolumeclaimPhase                 ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.phase"`
+	K8sPersistentvolumeclaimSelector              ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.selector"`
+	K8sPersistentvolumeclaimStartTime             ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.start_time"`
+	K8sPersistentvolumeclaimStorageClass          ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.storage_class"`
+	K8sPersistentvolumeclaimType                  ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.type"`
+	K8sPersistentvolumeclaimUID                   ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.uid"`
+	K8sPersistentvolumeclaimVolumeMode            ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.volume_mode"`
+	K8sPersistentvolumeclaimVolumeName            ResourceAttributeConfig `mapstructure:"k8s.persistentvolumeclaim.volume_name"`
+	K8sPodName                                    ResourceAttributeConfig `mapstructure:"k8s.pod.name"`
+	K8sPodQosClass                                ResourceAttributeConfig `mapstructure:"k8s.pod.qos_class"`
+	K8sPodStartTime                               ResourceAttributeConfig `mapstructure:"k8s.pod.start_time"`
+	K8sPodUID                                     ResourceAttributeConfig `mapstructure:"k8s.pod.uid"`
+	K8sReplicasetName                             ResourceAttributeConfig `mapstructure:"k8s.replicaset.name"`
+	K8sReplicasetStartTime                        ResourceAttributeConfig `mapstructure:"k8s.replicaset.start_time"`
+	K8sReplicasetUID                              ResourceAttributeConfig `mapstructure:"k8s.replicaset.uid"`
+	K8sReplicationcontrollerName                  ResourceAttributeConfig `mapstructure:"k8s.replicationcontroller.name"`
+	K8sReplicationcontrollerUID                   ResourceAttributeConfig `mapstructure:"k8s.replicationcontroller.uid"`
+	K8sResourcequotaName                          ResourceAttributeConfig `mapstructure:"k8s.resourcequota.name"`
+	K8sResourcequotaUID                           ResourceAttributeConfig `mapstructure:"k8s.resourcequota.uid"`
+	K8sRoleAnnotations                            ResourceAttributeConfig `mapstructure:"k8s.role.annotations"`
+	K8sRoleLabels                                 ResourceAttributeConfig `mapstructure:"k8s.role.labels"`
+	K8sRoleName                                   ResourceAttributeConfig `mapstructure:"k8s.role.name"`
+	K8sRoleNamespace                              ResourceAttributeConfig `mapstructure:"k8s.role.namespace"`
+	K8sRoleRules                                  ResourceAttributeConfig `mapstructure:"k8s.role.rules"`
+	K8sRoleStartTime                              ResourceAttributeConfig `mapstructure:"k8s.role.start_time"`
+	K8sRoleType                                   ResourceAttributeConfig `mapstructure:"k8s.role.type"`
+	K8sRoleUID                                    ResourceAttributeConfig `mapstructure:"k8s.role.uid"`
+	K8sRolebindingAnnotations                     ResourceAttributeConfig `mapstructure:"k8s.rolebinding.annotations"`
+	K8sRolebindingLabels                          ResourceAttributeConfig `mapstructure:"k8s.rolebinding.labels"`
+	K8sRolebindingName                            ResourceAttributeConfig `mapstructure:"k8s.rolebinding.name"`
+	K8sRolebindingNamespace                       ResourceAttributeConfig `mapstructure:"k8s.rolebinding.namespace"`
+	K8sRolebindingRoleRef                         ResourceAttributeConfig `mapstructure:"k8s.rolebinding.role_ref"`
+	K8sRolebindingStartTime                       ResourceAttributeConfig `mapstructure:"k8s.rolebinding.start_time"`
+	K8sRolebindingSubjects                        ResourceAttributeConfig `mapstructure:"k8s.rolebinding.subjects"`
+	K8sRolebindingType                            ResourceAttributeConfig `mapstructure:"k8s.rolebinding.type"`
+	K8sRolebindingUID                             ResourceAttributeConfig `mapstructure:"k8s.rolebinding.uid"`
+	K8sServiceClusterIP                           ResourceAttributeConfig `mapstructure:"k8s.service.cluster_ip"`
+	K8sServiceName                                ResourceAttributeConfig `mapstructure:"k8s.service.name"`
+	K8sServiceNamespace                           ResourceAttributeConfig `mapstructure:"k8s.service.namespace"`
+	K8sServicePublishNotReadyAddresses            ResourceAttributeConfig `mapstructure:"k8s.service.publish_not_ready_addresses"`
+	K8sServiceTrafficDistribution                 ResourceAttributeConfig `mapstructure:"k8s.service.traffic_distribution"`
+	K8sServiceType                                ResourceAttributeConfig `mapstructure:"k8s.service.type"`
+	K8sServiceUID                                 ResourceAttributeConfig `mapstructure:"k8s.service.uid"`
+	K8sServiceaccountAnnotations                  ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.annotations"`
+	K8sServiceaccountAutomountServiceaccountToken ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.automount_serviceaccount_token"`
+	K8sServiceaccountImagePullSecrets             ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.image_pull_secrets"`
+	K8sServiceaccountLabels                       ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.labels"`
+	K8sServiceaccountName                         ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.name"`
+	K8sServiceaccountNamespace                    ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.namespace"`
+	K8sServiceaccountSecrets                      ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.secrets"`
+	K8sServiceaccountStartTime                    ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.start_time"`
+	K8sServiceaccountType                         ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.type"`
+	K8sServiceaccountUID                          ResourceAttributeConfig `mapstructure:"k8s.serviceaccount.uid"`
+	K8sStatefulsetName                            ResourceAttributeConfig `mapstructure:"k8s.statefulset.name"`
+	K8sStatefulsetPodManagementPolicy             ResourceAttributeConfig `mapstructure:"k8s.statefulset.pod_management_policy"`
+	K8sStatefulsetServiceName                     ResourceAttributeConfig `mapstructure:"k8s.statefulset.service_name"`
+	K8sStatefulsetStartTime                       ResourceAttributeConfig `mapstructure:"k8s.statefulset.start_time"`
+	K8sStatefulsetUID                             ResourceAttributeConfig `mapstructure:"k8s.statefulset.uid"`
+	K8sStorageclassName                           ResourceAttributeConfig `mapstructure:"k8s.storageclass.name"`
+	OpenshiftClusterquotaName                     ResourceAttributeConfig `mapstructure:"openshift.clusterquota.name"`
+	OpenshiftClusterquotaUID                      ResourceAttributeConfig `mapstructure:"openshift.clusterquota.uid"`
+	OsDescription                                 ResourceAttributeConfig `mapstructure:"os.description"`
+	OsType                                        ResourceAttributeConfig `mapstructure:"os.type"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -1489,13 +1944,82 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		ContainerRuntimeVersion: ResourceAttributeConfig{
 			Enabled: false,
 		},
+		K8sClusterName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleLabels: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleRules: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleType: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterroleUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingLabels: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingRoleRef: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingSubjects: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingType: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sClusterrolebindingUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sContainerName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sContainerStatusCurrentWaitingReason: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sContainerStatusLastTerminatedReason: ResourceAttributeConfig{
 			Enabled: false,
 		},
+		K8sCronjobConcurrencyPolicy: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobLastScheduleTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobLastSuccessfulTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sCronjobName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobSchedule: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sCronjobSuspend: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sCronjobUID: ResourceAttributeConfig{
@@ -1504,10 +2028,22 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sDaemonsetName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sDaemonsetSelectors: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sDaemonsetStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sDaemonsetStrategy: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sDaemonsetUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sDeploymentName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sDeploymentStartTime: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sDeploymentUID: ResourceAttributeConfig{
@@ -1528,7 +2064,37 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sHpaUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sIngressAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressLabels: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressNamespace: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressRules: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressType: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sIngressUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sJobEndTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sJobName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sJobStartTime: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sJobUID: ResourceAttributeConfig{
@@ -1540,28 +2106,100 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sNamespaceName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sNamespaceStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sNamespaceUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sNodeName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sNodeStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sNodeUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeAccessModes: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeFinalizers: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeLabels: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sPersistentvolumeName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sPersistentvolumeNamespace: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumePhase: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sPersistentvolumeReclaimPolicy: ResourceAttributeConfig{
 			Enabled: false,
 		},
+		K8sPersistentvolumeStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeStorageClass: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeType: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sPersistentvolumeUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeVolumeMode: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimAccessModes: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimFinalizers: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimLabels: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sPersistentvolumeclaimName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sPersistentvolumeclaimNamespace: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimPhase: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimSelector: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimStorageClass: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimType: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sPersistentvolumeclaimUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimVolumeMode: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sPersistentvolumeclaimVolumeName: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sPodName: ResourceAttributeConfig{
@@ -1570,10 +2208,16 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sPodQosClass: ResourceAttributeConfig{
 			Enabled: false,
 		},
+		K8sPodStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sPodUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sReplicasetName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sReplicasetStartTime: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sReplicasetUID: ResourceAttributeConfig{
@@ -1591,7 +2235,64 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sResourcequotaUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sRoleAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleLabels: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleNamespace: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleRules: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleType: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRoleUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingLabels: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingNamespace: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingRoleRef: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingSubjects: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingType: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sRolebindingUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceClusterIP: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sServiceName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceNamespace: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sServicePublishNotReadyAddresses: ResourceAttributeConfig{
@@ -1606,7 +2307,46 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		K8sServiceUID: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		K8sServiceaccountAnnotations: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountAutomountServiceaccountToken: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountImagePullSecrets: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountLabels: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountNamespace: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountSecrets: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountStartTime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountType: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sServiceaccountUID: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		K8sStatefulsetName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetPodManagementPolicy: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetServiceName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		K8sStatefulsetStartTime: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		K8sStatefulsetUID: ResourceAttributeConfig{

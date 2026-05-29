@@ -9,9 +9,9 @@ import (
 )
 
 func TestResourceBuilder(t *testing.T) {
-	for _, test := range []string{"default", "all_set", "none_set"} {
-		t.Run(test, func(t *testing.T) {
-			cfg := loadResourceAttributesConfig(t, test)
+	for _, tt := range []string{"default", "all_set", "none_set"} {
+		t.Run(tt, func(t *testing.T) {
+			cfg := loadResourceAttributesConfig(t, tt)
 			rb := NewResourceBuilder(cfg)
 			rb.SetAwsVolumeID("aws.volume.id-val")
 			rb.SetContainerID("container.id-val")
@@ -19,13 +19,21 @@ func TestResourceBuilder(t *testing.T) {
 			rb.SetGcePdName("gce.pd.name-val")
 			rb.SetGlusterfsEndpointsName("glusterfs.endpoints.name-val")
 			rb.SetGlusterfsPath("glusterfs.path-val")
+			rb.SetK8sClusterName("k8s.cluster.name-val")
 			rb.SetK8sContainerName("k8s.container.name-val")
+			rb.SetK8sJobName("k8s.job.name-val")
+			rb.SetK8sJobUID("k8s.job.uid-val")
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
 			rb.SetK8sNodeName("k8s.node.name-val")
+			rb.SetK8sNodeStartTime("k8s.node.start_time-val")
 			rb.SetK8sNodeSystemContainerName("k8s.node.system_container.name-val")
+			rb.SetK8sNodeUID("k8s.node.uid-val")
 			rb.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
 			rb.SetK8sPodName("k8s.pod.name-val")
+			rb.SetK8sPodStartTime("k8s.pod.start_time-val")
 			rb.SetK8sPodUID("k8s.pod.uid-val")
+			rb.SetK8sServiceName("k8s.service.name-val")
+			rb.SetK8sServiceAccountName("k8s.service_account.name-val")
 			rb.SetK8sVolumeName("k8s.volume.name-val")
 			rb.SetK8sVolumeType("k8s.volume.type-val")
 			rb.SetPartition("partition-val")
@@ -33,16 +41,16 @@ func TestResourceBuilder(t *testing.T) {
 			res := rb.Emit()
 			assert.Equal(t, 0, rb.Emit().Attributes().Len()) // Second call should return empty Resource
 
-			switch test {
+			switch tt {
 			case "default":
 				assert.Equal(t, 18, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 16, res.Attributes().Len())
+				assert.Equal(t, 24, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
 			default:
-				assert.Failf(t, "unexpected test case: %s", test)
+				assert.Failf(t, "unexpected test case: %s", tt)
 			}
 			awsVolumeIDAttrVal, ok := res.Attributes().Get("aws.volume.id")
 			assert.Equal(t, tt == "all_set", ok)
@@ -69,17 +77,30 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.Equal(t, "glusterfs.endpoints.name-val", glusterfsEndpointsNameAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.cluster.name")
-			assert.True(t, ok)
 			glusterfsPathAttrVal, ok := res.Attributes().Get("glusterfs.path")
 			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "glusterfs.path-val", glusterfsPathAttrVal.Str())
 			}
+			k8sClusterNameAttrVal, ok := res.Attributes().Get("k8s.cluster.name")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "k8s.cluster.name-val", k8sClusterNameAttrVal.Str())
+			}
 			k8sContainerNameAttrVal, ok := res.Attributes().Get("k8s.container.name")
 			assert.True(t, ok)
 			if ok {
 				assert.Equal(t, "k8s.container.name-val", k8sContainerNameAttrVal.Str())
+			}
+			k8sJobNameAttrVal, ok := res.Attributes().Get("k8s.job.name")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "k8s.job.name-val", k8sJobNameAttrVal.Str())
+			}
+			k8sJobUIDAttrVal, ok := res.Attributes().Get("k8s.job.uid")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "k8s.job.uid-val", k8sJobUIDAttrVal.Str())
 			}
 			k8sNamespaceNameAttrVal, ok := res.Attributes().Get("k8s.namespace.name")
 			assert.True(t, ok)
@@ -91,10 +112,20 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.Equal(t, "k8s.node.name-val", k8sNodeNameAttrVal.Str())
 			}
+			k8sNodeStartTimeAttrVal, ok := res.Attributes().Get("k8s.node.start_time")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "k8s.node.start_time-val", k8sNodeStartTimeAttrVal.Str())
+			}
 			k8sNodeSystemContainerNameAttrVal, ok := res.Attributes().Get("k8s.node.system_container.name")
 			assert.True(t, ok)
 			if ok {
 				assert.Equal(t, "k8s.node.system_container.name-val", k8sNodeSystemContainerNameAttrVal.Str())
+			}
+			k8sNodeUIDAttrVal, ok := res.Attributes().Get("k8s.node.uid")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "k8s.node.uid-val", k8sNodeUIDAttrVal.Str())
 			}
 			k8sPersistentvolumeclaimNameAttrVal, ok := res.Attributes().Get("k8s.persistentvolumeclaim.name")
 			assert.True(t, ok)
@@ -106,22 +137,27 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.Equal(t, "k8s.pod.name-val", k8sPodNameAttrVal.Str())
 			}
+			k8sPodStartTimeAttrVal, ok := res.Attributes().Get("k8s.pod.start_time")
+			assert.True(t, ok)
+			if ok {
+				assert.Equal(t, "k8s.pod.start_time-val", k8sPodStartTimeAttrVal.Str())
+			}
 			k8sPodUIDAttrVal, ok := res.Attributes().Get("k8s.pod.uid")
 			assert.True(t, ok)
 			if ok {
-				assert.Equal(t, "k8s.pod.uid-val", val.Str())
+				assert.Equal(t, "k8s.pod.uid-val", k8sPodUIDAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.service.name")
+			k8sServiceNameAttrVal, ok := res.Attributes().Get("k8s.service.name")
 			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "k8s.service.name-val", val.Str())
+				assert.Equal(t, "k8s.service.name-val", k8sServiceNameAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.service_account.name")
+			k8sServiceAccountNameAttrVal, ok := res.Attributes().Get("k8s.service_account.name")
 			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "k8s.service_account.name-val", val.Str())
+				assert.Equal(t, "k8s.service_account.name-val", k8sServiceAccountNameAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("k8s.volume.name")
+			k8sVolumeNameAttrVal, ok := res.Attributes().Get("k8s.volume.name")
 			assert.True(t, ok)
 			if ok {
 				assert.Equal(t, "k8s.volume.name-val", k8sVolumeNameAttrVal.Str())

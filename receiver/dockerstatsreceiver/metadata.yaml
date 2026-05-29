@@ -798,8 +798,7 @@ metrics:
   # Base
   container.status:
     enabled: true
-    stability:
-      level: development
+    stability: development
     description: "Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead"
     unit: ""
     gauge:

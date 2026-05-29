@@ -4,8 +4,6 @@
 package persistentvolume
 
 import (
-	"testing"
-
 	"path/filepath"
 	"testing"
 	"time"
@@ -48,7 +46,6 @@ func TestTransform(t *testing.T) {
 			Capacity: corev1.ResourceList{
 				corev1.ResourceStorage: *resource.NewQuantity(100*1024*1024*1024, resource.BinarySI),
 			},
-			StorageClassName:              "standard-rwo",
 			PersistentVolumeReclaimPolicy: corev1.PersistentVolumeReclaimDelete,
 			AccessModes:                   []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce},
 			ClaimRef: &corev1.ObjectReference{
@@ -64,7 +61,6 @@ func TestTransform(t *testing.T) {
 					VolumeHandle: "projects/my-project/zones/us-central1-a/disks/pv-data-01",
 				},
 			},
-			MountOptions: []string{"hard", "nfsvers=4.1"},
 		},
 		Status: corev1.PersistentVolumeStatus{
 			Phase:   corev1.VolumeBound,

@@ -25,26 +25,27 @@ func RecordMetrics(mb *metadata.MetricsBuilder, cj *batchv1.CronJob, ts pcommon.
 	e.SetK8sCronjobName(cj.Name)
 	e.SetK8sNamespaceName(cj.Namespace)
 	if cj.Spec.ConcurrencyPolicy != "" {
-        e.SetK8sCronjobConcurrencyPolicy(string(cj.Spec.ConcurrencyPolicy))
-    }
-    if cj.Spec.Suspend != nil {
-        e.SetK8sCronjobSuspend(strconv.FormatBool(*cj.Spec.Suspend))
-    }
-    if cj.Spec.Schedule != "" {
-        e.SetK8sCronjobSchedule(cj.Spec.Schedule)
-    }
+		e.SetK8sCronjobConcurrencyPolicy(string(cj.Spec.ConcurrencyPolicy))
+	}
+	if cj.Spec.Suspend != nil {
+		e.SetK8sCronjobSuspend(strconv.FormatBool(*cj.Spec.Suspend))
+	}
+	if cj.Spec.Schedule != "" {
+		e.SetK8sCronjobSchedule(cj.Spec.Schedule)
+	}
 
-    if cj.Status.LastScheduleTime != nil {
-        e.SetK8sCronjobLastScheduleTime(cj.Status.LastScheduleTime.String())
-    }
-    if cj.Status.LastSuccessfulTime != nil {
-        e.SetK8sCronjobLastSuccessfulTime(cj.Status.LastSuccessfulTime.String())
+	if cj.Status.LastScheduleTime != nil {
+		e.SetK8sCronjobLastScheduleTime(cj.Status.LastScheduleTime.String())
+	}
+	if cj.Status.LastSuccessfulTime != nil {
+		e.SetK8sCronjobLastSuccessfulTime(cj.Status.LastSuccessfulTime.String())
 	}
 
 	e.SetK8sCronjobStartTime(cj.GetCreationTimestamp().String())
-    e.SetK8sClusterName("unknown"
+	e.SetK8sClusterName("unknown")
 	eb := mb.ForK8sCronjob(e)
-	eb.RecordK8sCronjobActiveJobsDataPoint(ts, int64(len(cj.Status.Active)))eb.Emit()
+	eb.RecordK8sCronjobActiveJobsDataPoint(ts, int64(len(cj.Status.Active)))
+	eb.Emit()
 }
 
 func GetMetadata(cj *batchv1.CronJob) map[experimentalmetricmetadata.ResourceID]*metadata.KubernetesMetadata {

@@ -76,11 +76,10 @@ func (config Config) Validate() error {
 // a docker client
 func NewConfig(endpoint string, timeout time.Duration, excludedImages []string, apiVersion string, autodetect bool) *Config {
 	cfg := &Config{
-		Endpoint:             endpoint,
-		Timeout:              timeout,
-		ExcludedImages:       excludedImages,
-		DockerAPIVersion:     apiVersion,
-		AutodetectAPIVersion: autodetect,
+		Endpoint:         endpoint,
+		Timeout:          timeout,
+		ExcludedImages:   excludedImages,
+		DockerAPIVersion: apiVersion,
 	}
 	return cfg
 }

@@ -92,8 +92,6 @@ all_set:
       attributes: ["kind"]
     mysql.statement_event.count:
       enabled: true
-    mysql.statement_event.count_stars:
-      enabled: true
       attributes: ["schema","digest","digest_text","kind"]
     mysql.statement_event.wait.time:
       enabled: true
@@ -379,8 +377,6 @@ none_set:
       enabled: false
       attributes: ["kind"]
     mysql.statement_event.count:
-      enabled: false
-    mysql.statement_event.count_stars:
       enabled: false
       attributes: ["schema","digest","digest_text","kind"]
     mysql.statement_event.wait.time:

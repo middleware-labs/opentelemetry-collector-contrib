@@ -71,32 +71,28 @@ metrics:
   nginx.load_timestamp:
     enabled: true
     description: Time of the last reload of configuration (time since Epoch).
-    stability:
-      level: development
+    stability: development
     gauge:
       value_type: int
     unit: ms
   nginx.net.reading:
     enabled: true
     description: Current number of connections where NGINX is reading the request header
-    stability:
-      level: development
+    stability: development
     gauge:
       value_type: int
     unit: connections
   nginx.net.waiting:
     enabled: true
     description: Current number of connections where NGINX is waiting the response back to the client
-    stability:
-      level: development
+    stability: development
     gauge:
       value_type: int
     unit: connections
   nginx.net.writing:
     enabled: true
     description: Current number of connections where NGINX is writing the response back to the client
-    stability:
-      level: development
+    stability: development
     gauge:
       value_type: int
     unit: connections
@@ -112,8 +108,7 @@ metrics:
     attributes: []
   nginx.server_zone.received:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: Bytes received by server zones
@@ -124,8 +119,7 @@ metrics:
     unit: By
   nginx.server_zone.responses.1xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: The number of responses with 1xx status code.
@@ -136,8 +130,7 @@ metrics:
     unit: response
   nginx.server_zone.responses.2xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: The number of responses with 2xx status code.
@@ -148,8 +141,7 @@ metrics:
     unit: response
   nginx.server_zone.responses.3xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: The number of responses with 3xx status code.
@@ -160,8 +152,7 @@ metrics:
     unit: response
   nginx.server_zone.responses.4xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: The number of responses with 4xx status code.
@@ -172,8 +163,7 @@ metrics:
     unit: response
   nginx.server_zone.responses.5xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: The number of responses with 5xx status code.
@@ -184,8 +174,7 @@ metrics:
     unit: response
   nginx.server_zone.sent:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - serverzone_name
     description: Bytes sent by server zones
@@ -196,8 +185,7 @@ metrics:
     unit: By
   nginx.upstream.peers.backup:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -207,8 +195,7 @@ metrics:
     unit: "{state}"
   nginx.upstream.peers.health_checks.last_passed:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -218,8 +205,7 @@ metrics:
     unit: "{status}"
   nginx.upstream.peers.received:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -231,8 +217,7 @@ metrics:
     unit: By
   nginx.upstream.peers.requests:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -243,8 +228,7 @@ metrics:
       aggregation_temporality: cumulative
     unit: requests
   nginx.upstream.peers.response_time:
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -255,8 +239,7 @@ metrics:
     unit: ms
   nginx.upstream.peers.responses.1xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -268,8 +251,7 @@ metrics:
     unit: responses
   nginx.upstream.peers.responses.2xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -281,8 +263,7 @@ metrics:
     unit: responses
   nginx.upstream.peers.responses.3xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -294,8 +275,7 @@ metrics:
     unit: responses
   nginx.upstream.peers.responses.4xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -307,8 +287,7 @@ metrics:
     unit: responses
   nginx.upstream.peers.responses.5xx:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -320,8 +299,7 @@ metrics:
     unit: responses
   nginx.upstream.peers.sent:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address
@@ -333,8 +311,7 @@ metrics:
     unit: By
   nginx.upstream.peers.weight:
     enabled: true
-    stability:
-      level: development
+    stability: development
     attributes:
       - upstream_block_name
       - upstream_peer_address

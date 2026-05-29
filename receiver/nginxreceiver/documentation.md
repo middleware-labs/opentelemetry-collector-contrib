@@ -92,9 +92,9 @@ Bytes received by server zones
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.server_zone.responses.1xx
 
@@ -106,9 +106,9 @@ The number of responses with 1xx status code.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.server_zone.responses.2xx
 
@@ -120,9 +120,9 @@ The number of responses with 2xx status code.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.server_zone.responses.3xx
 
@@ -134,9 +134,9 @@ The number of responses with 3xx status code.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.server_zone.responses.4xx
 
@@ -148,9 +148,9 @@ The number of responses with 4xx status code.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.server_zone.responses.5xx
 
@@ -162,9 +162,9 @@ The number of responses with 5xx status code.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.server_zone.sent
 
@@ -176,9 +176,9 @@ Bytes sent by server zones
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| serverzone_name | The name of serverzone | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| serverzone_name | The name of serverzone | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.backup
 
@@ -190,10 +190,10 @@ Whether upstream server is a backup server
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.health_checks.last_passed
 
@@ -205,10 +205,10 @@ Boolean indicating if the last health check request was successful and passed te
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.received
 
@@ -220,10 +220,10 @@ Bytes received from upstream servers
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.requests
 
@@ -235,10 +235,10 @@ Number of requests made to upstream servers
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.response_time
 
@@ -250,10 +250,10 @@ The average time to receive the last byte of data from this server.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.responses.1xx
 
@@ -265,10 +265,10 @@ Number of responses from upstream with 1xx status codes
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.responses.2xx
 
@@ -280,10 +280,10 @@ Number of responses from upstream with 2xx status codes
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.responses.3xx
 
@@ -295,10 +295,10 @@ Number of responses from upstream with 3xx status codes
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.responses.4xx
 
@@ -310,10 +310,10 @@ Number of responses from upstream with 4xx status codes
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.responses.5xx
 
@@ -325,10 +325,10 @@ Number of responses from upstream with 5xx status codes
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.sent
 
@@ -340,10 +340,10 @@ Bytes sent from upstream servers
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |
 
 ### nginx.upstream.peers.weight
 
@@ -355,7 +355,7 @@ Weight of upstream server
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level |
-| ---- | ----------- | ------ | -------- |
-| upstream_block_name | The name of the upstream block | Any Str | Recommended |
-| upstream_peer_address | The address f the upstream server | Any Str | Recommended |
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| upstream_block_name | The name of the upstream block | Any Str | Recommended | - |
+| upstream_peer_address | The address f the upstream server | Any Str | Recommended | - |

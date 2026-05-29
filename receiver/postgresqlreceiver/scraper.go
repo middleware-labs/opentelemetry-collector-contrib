@@ -171,8 +171,6 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectDatabaseLocks(ctx, now, listClient, &errs)
 
-	p.collectActiveConnections(ctx, now, listClient, &errs)
-
 	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
 }
@@ -615,20 +613,6 @@ func (p *postgreSQLScraper) collectMaxConnections(
 		return
 	}
 	p.mb.RecordPostgresqlConnectionMaxDataPoint(now, mc)
-}
-
-func (p *postgreSQLScraper) collectActiveConnections(
-	ctx context.Context,
-	now pcommon.Timestamp,
-	client client,
-	errs *errsMux,
-) {
-	ac, err := client.getActiveConnections(ctx)
-	if err != nil {
-		errs.addPartial(err)
-		return
-	}
-	p.mb.RecordPostgresqlConnectionCountDataPoint(now, ac)
 }
 
 func (p *postgreSQLScraper) collectReplicationStats(

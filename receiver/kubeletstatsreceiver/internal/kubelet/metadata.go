@@ -10,14 +10,13 @@ import (
 	"regexp"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/labels"
-	k8s "k8s.io/client-go/kubernetes"
-
 	conventions "go.opentelemetry.io/otel/semconv/v1.40.0"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	v_one "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
+	k8s "k8s.io/client-go/kubernetes"
 	stats "k8s.io/kubelet/pkg/apis/stats/v1alpha1"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver/internal/metadata"

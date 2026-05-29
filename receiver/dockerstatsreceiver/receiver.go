@@ -165,7 +165,7 @@ func (r *metricsReceiver) recordContainerStats(now pcommon.Timestamp, containerS
 		"exited":     5,
 		"dead":       6,
 	}
-	r.mb.RecordContainerStatusDataPoint(now, statusMap[container.State.Status])
+	r.mb.RecordContainerStatusDataPoint(now, statusMap[string(container.State.Status)])
 	if err := r.recordBaseMetrics(now, container.InspectResponse); err != nil {
 		errs = multierr.Append(errs, err)
 	}

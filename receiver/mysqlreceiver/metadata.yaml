@@ -19,11 +19,6 @@ resource_attributes:
     description: Endpoint of the MySQL instance.
     enabled: true
     type: string
-  mysql.db.version:
-    description: version of the mysql database
-    enabled: true
-    type: string
-
 
 attributes:
   buffer_pool_data:
@@ -327,9 +322,6 @@ events:
       - mysql.events_statements_summary_by_digest.digest
       - mysql.events_statements_summary_by_digest.count_star
       - mysql.events_statements_summary_by_digest.sum_timer_wait
-  dbname:
-    description: The name of the database
-    type: string
 
 metrics:
   mysql.buffer_pool.data_pages:
@@ -406,7 +398,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [direction]
   mysql.commands:
-    enabled: true
+    enabled: false
     description: The number of times each type of command has been executed.
     stability: development
     unit: "1"
@@ -417,7 +409,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [command]
   mysql.connection.count:
-    enabled: true
+    enabled: false
     description: The number of connection attempts (successful or not) to the MySQL server.
     stability: development
     unit: "1"
@@ -612,7 +604,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   mysql.query.count:
-    enabled: true
+    enabled: false
     description: The number of statements executed by the server.
     stability: development
     unit: "1"
@@ -622,7 +614,7 @@ metrics:
       monotonic: true
       aggregation_temporality: cumulative
   mysql.query.slow.count:
-    enabled: true
+    enabled: false
     description: The number of slow queries.
     stability: development
     unit: "1"
@@ -651,14 +643,6 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: []
-
-  mysql.connection.active.count:
-    enabled: true
-    description: The numner of active connections to the MySQL server
-    unit: 1
-    gauge:
-      value_type: int
-
   mysql.row_locks:
     enabled: true
     description: The number of InnoDB row locks.
@@ -693,7 +677,7 @@ metrics:
       aggregation_temporality: cumulative
     attributes: [sorts]
   mysql.statement_event.count:
-    enabled: true
+    enabled: false
     description: Summary of current and recent statement events.
     stability: development
     unit: "1"
@@ -702,17 +686,8 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [schema, digest, digest_text, event_state]
-  mysql.statement_event.count_stars:
-    enabled: true
-    description: The total count of executed queries per normalized query and schema.
-    unit: 1
-    sum:
-      value_type: int
-      monotonic: false
-      aggregation_temporality: cumulative
-    attributes: [schema, digest, digest_text]
   mysql.statement_event.wait.time:
-    enabled: true
+    enabled: false
     description: The total wait time of the summarized timed events.
     stability: development
     unit: ns
@@ -867,114 +842,3 @@ tests:
     ignore:
       any:
         - "github.com/cihub/seelog.(*asyncLoopLogger).processQueue" # see https://github.com/cihub/seelog/issues/182
-
-
-  #DBM metrics
-  mysql.innodb.rows_deleted:
-    enabled: true
-    description: Rate at which rows are being deleted in InnoDB.
-    unit: '{row}/s'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: false
-      aggregation_temporality: cumulative
-
-  mysql.innodb.rows_inserted:
-    enabled: true
-    description: Rate at which rows are being inserted in InnoDB.
-    unit: '{row}/s'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: false
-      aggregation_temporality: cumulative
-
-  mysql.innodb.rows_read:
-    enabled: true
-    description: Rate at which rows are being read in InnoDB.
-    unit: '{row}/s'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: false
-      aggregation_temporality: cumulative
-
-  mysql.innodb.rows_updated:
-    enabled: true
-    description: Rate at which rows are being updated in InnoDB.
-    unit: '{row}/s'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: false
-      aggregation_temporality: cumulative
-
-  # Row opertation metrics from performance schema, as innodb stats are proved to be unreliable
-  mysql.performance.rows_inserted:
-    enabled: true
-    description: The number of rows inserted in the database as per the performance schema.
-    unit: '{row}'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: true 
-      aggregation_temporality: cumulative
-
-  mysql.performance.rows_read:
-    enabled: true
-    description: The number of rows read in the database as per the performance schema.
-    unit: '{row}'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: true
-      aggregation_temporality: cumulative
-
-  mysql.performance.rows_updated:
-    enabled: true
-    description: The number of rows updated in the database as per the performance schema.
-    unit: '{row}'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: true
-      aggregation_temporality: cumulative
-
-  mysql.performance.rows_deleted:
-    enabled: true
-    description: The number of rows deleted in the database as per the performance schema.
-    unit: '{row}'
-    sum:
-      value_type: int
-      input_type: string
-      monotonic: true 
-      aggregation_temporality: cumulative
-
-  mysql.total_rows:
-    enabled: true
-    description: Total rows in the mysql db
-    unit: 1
-    gauge:
-      value_type: int
-    attributes: [dbname]
-
-  mysql.statement_event.errors:
-    enabled: true 
-    description: the error count of the summarized events
-    unit: 1
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative
-    attributes: [schema, digest, digest_text]
-
-  #DBM CARD Metrics
-  mysql.query.total_errors:
-    enabled: true
-    description: The total number of errors while performing queries in the database
-    unit: 1
-    sum:
-      value_type: int
-      monotonic: true
-      aggregation_temporality: cumulative

@@ -84,22 +84,6 @@ The number of bytes in the InnoDB buffer pool.
 | ---- | ----------- | ------ | ----------------- | ------------------- |
 | status | The status of buffer pool data. | Str: ``dirty``, ``clean`` | Recommended | - |
 
-### mysql.connection.active.count
-
-The numner of active connections to the MySQL server
-
-| Unit | Metric Type | Value Type |
-| ---- | ----------- | ---------- |
-| 1 | Gauge | Int |
-
-### mysql.connection.count
-
-The number of connection attempts (successful or not) to the MySQL server.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | true |
-
 ### mysql.double_writes
 
 The number of writes to the InnoDB doublewrite buffer.
@@ -248,38 +232,6 @@ The number of InnoDB page operations.
 | ---- | ----------- | ------ | ----------------- | ------------------- |
 | operation | The page operation types. | Str: ``created``, ``read``, ``written`` | Recommended | - |
 
-### mysql.performance.rows_deleted
-
-The number of rows deleted in the database as per the performance schema.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
-
-### mysql.performance.rows_inserted
-
-The number of rows inserted in the database as per the performance schema.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
-
-### mysql.performance.rows_read
-
-The number of rows read in the database as per the performance schema.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
-
-### mysql.performance.rows_updated
-
-The number of rows updated in the database as per the performance schema.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| {row} | Sum | Int | Cumulative | true |
-
 ### mysql.prepared_statements
 
 The number of times each type of prepared statement command has been issued.
@@ -335,55 +287,6 @@ The number of MySQL sorts.
 | Name | Description | Values | Requirement Level | Semantic Convention |
 | ---- | ----------- | ------ | ----------------- | ------------------- |
 | kind | The sort count type. | Str: ``merge_passes``, ``range``, ``rows``, ``scan`` | Recommended | - |
-
-### mysql.statement_event.count
-
-Summary of current and recent statement events.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
-| kind | Possible event states. | Str: ``errors``, ``warnings``, ``rows_affected``, ``rows_sent``, ``rows_examined``, ``created_tmp_disk_tables``, ``created_tmp_tables``, ``sort_merge_passes``, ``sort_rows``, ``no_index_used`` |
-
-### mysql.statement_event.count_stars
-
-The total count of executed queries per normalized query and schema.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| 1 | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
-
-### mysql.statement_event.wait.time
-
-The total wait time of the summarized timed events.
-
-| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic |
-| ---- | ----------- | ---------- | ----------------------- | --------- |
-| ns | Sum | Int | Cumulative | false |
-
-#### Attributes
-
-| Name | Description | Values |
-| ---- | ----------- | ------ |
-| schema | The schema of the object. | Any Str |
-| digest | Digest. | Any Str |
-| digest_text | Text before digestion. | Any Str |
 
 ### mysql.table.io.wait.count
 

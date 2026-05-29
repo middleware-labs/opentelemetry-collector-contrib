@@ -71,10 +71,10 @@ func TestResourceBuilder(t *testing.T) {
 			if ok {
 				assert.Equal(t, "container.runtime-val", containerRuntimeAttrVal.Str())
 			}
-			val, ok = res.Attributes().Get("container.started_on")
+			containerStartedOnAttrVal, ok := res.Attributes().Get("container.started_on")
 			assert.True(t, ok)
 			if ok {
-				assert.EqualValues(t, "container.started_on-val", val.Str())
+				assert.Equal(t, "container.started_on-val", containerStartedOnAttrVal.Str())
 			}
 		})
 	}

@@ -7,11 +7,121 @@ import (
 	"go.opentelemetry.io/collector/pdata/xpdata/entity"
 )
 
+// K8sIngressEntity represents a k8s.ingress entity.
+// Create one with NewK8sIngressEntity and pass it to EmitForEntity.
+type K8sIngressEntity struct {
+	k8sIngressUID       string
+	k8sIngressName      string
+	k8sIngressNamespace string
+}
+
+// NewK8sIngressEntity creates a new K8sIngressEntity.
+// Identity attributes are required and must be provided at construction time.
+func NewK8sIngressEntity(k8sIngressUID string) *K8sIngressEntity {
+	return &K8sIngressEntity{
+		k8sIngressUID: k8sIngressUID,
+	}
+}
+
+// Description attribute setters for k8s.ingress.
+
+// SetK8sIngressName sets the k8s.ingress.name description attribute.
+func (e *K8sIngressEntity) SetK8sIngressName(val string) {
+	e.k8sIngressName = val
+}
+
+// SetK8sIngressNamespace sets the k8s.ingress.namespace description attribute.
+func (e *K8sIngressEntity) SetK8sIngressNamespace(val string) {
+	e.k8sIngressNamespace = val
+}
+
+// copyToResource populates res with the entity's attributes according to cfg.
+// If all identity attributes are enabled, an entity ref is produced; otherwise
+// the enabled attributes are written directly as plain resource attributes.
+func (e *K8sIngressEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.Resource) {
+	if cfg.K8sIngressUID.Enabled {
+		ent := entity.ResourceEntities(res).PutEmpty("k8s.ingress")
+		ent.IdentifyingAttributes().PutStr("k8s.ingress.uid", e.k8sIngressUID)
+		if cfg.K8sIngressName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.ingress.name", e.k8sIngressName)
+		}
+		if cfg.K8sIngressNamespace.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.ingress.namespace", e.k8sIngressNamespace)
+		}
+	} else {
+		if cfg.K8sIngressUID.Enabled {
+			res.Attributes().PutStr("k8s.ingress.uid", e.k8sIngressUID)
+		}
+		if cfg.K8sIngressName.Enabled {
+			res.Attributes().PutStr("k8s.ingress.name", e.k8sIngressName)
+		}
+		if cfg.K8sIngressNamespace.Enabled {
+			res.Attributes().PutStr("k8s.ingress.namespace", e.k8sIngressNamespace)
+		}
+	}
+}
+
+// K8sServiceaccountEntity represents a k8s.serviceaccount entity.
+// Create one with NewK8sServiceaccountEntity and pass it to EmitForEntity.
+type K8sServiceaccountEntity struct {
+	k8sServiceaccountUID       string
+	k8sServiceaccountName      string
+	k8sServiceaccountNamespace string
+}
+
+// NewK8sServiceaccountEntity creates a new K8sServiceaccountEntity.
+// Identity attributes are required and must be provided at construction time.
+func NewK8sServiceaccountEntity(k8sServiceaccountUID string) *K8sServiceaccountEntity {
+	return &K8sServiceaccountEntity{
+		k8sServiceaccountUID: k8sServiceaccountUID,
+	}
+}
+
+// Description attribute setters for k8s.serviceaccount.
+
+// SetK8sServiceaccountName sets the k8s.serviceaccount.name description attribute.
+func (e *K8sServiceaccountEntity) SetK8sServiceaccountName(val string) {
+	e.k8sServiceaccountName = val
+}
+
+// SetK8sServiceaccountNamespace sets the k8s.serviceaccount.namespace description attribute.
+func (e *K8sServiceaccountEntity) SetK8sServiceaccountNamespace(val string) {
+	e.k8sServiceaccountNamespace = val
+}
+
+// copyToResource populates res with the entity's attributes according to cfg.
+// If all identity attributes are enabled, an entity ref is produced; otherwise
+// the enabled attributes are written directly as plain resource attributes.
+func (e *K8sServiceaccountEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.Resource) {
+	if cfg.K8sServiceaccountUID.Enabled {
+		ent := entity.ResourceEntities(res).PutEmpty("k8s.serviceaccount")
+		ent.IdentifyingAttributes().PutStr("k8s.serviceaccount.uid", e.k8sServiceaccountUID)
+		if cfg.K8sServiceaccountName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.serviceaccount.name", e.k8sServiceaccountName)
+		}
+		if cfg.K8sServiceaccountNamespace.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.serviceaccount.namespace", e.k8sServiceaccountNamespace)
+		}
+	} else {
+		if cfg.K8sServiceaccountUID.Enabled {
+			res.Attributes().PutStr("k8s.serviceaccount.uid", e.k8sServiceaccountUID)
+		}
+		if cfg.K8sServiceaccountName.Enabled {
+			res.Attributes().PutStr("k8s.serviceaccount.name", e.k8sServiceaccountName)
+		}
+		if cfg.K8sServiceaccountNamespace.Enabled {
+			res.Attributes().PutStr("k8s.serviceaccount.namespace", e.k8sServiceaccountNamespace)
+		}
+	}
+}
+
 // K8sNamespaceEntity represents a k8s.namespace entity.
 // Create one with NewK8sNamespaceEntity and pass it to EmitForEntity.
 type K8sNamespaceEntity struct {
-	k8sNamespaceUID  string
-	k8sNamespaceName string
+	k8sNamespaceUID       string
+	k8sNamespaceName      string
+	k8sClusterName        string
+	k8sNamespaceStartTime string
 }
 
 // NewK8sNamespaceEntity creates a new K8sNamespaceEntity.
@@ -29,6 +139,16 @@ func (e *K8sNamespaceEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sClusterName sets the k8s.cluster.name description attribute.
+func (e *K8sNamespaceEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
+// SetK8sNamespaceStartTime sets the k8s.namespace.start_time description attribute.
+func (e *K8sNamespaceEntity) SetK8sNamespaceStartTime(val string) {
+	e.k8sNamespaceStartTime = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -39,12 +159,24 @@ func (e *K8sNamespaceEntity) copyToResource(cfg ResourceAttributesConfig, res pc
 		if cfg.K8sNamespaceName.Enabled {
 			ent.DescriptiveAttributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sClusterName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sNamespaceStartTime.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.namespace.start_time", e.k8sNamespaceStartTime)
+		}
 	} else {
 		if cfg.K8sNamespaceUID.Enabled {
 			res.Attributes().PutStr("k8s.namespace.uid", e.k8sNamespaceUID)
 		}
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sNamespaceStartTime.Enabled {
+			res.Attributes().PutStr("k8s.namespace.start_time", e.k8sNamespaceStartTime)
 		}
 	}
 }
@@ -59,6 +191,8 @@ type K8sNodeEntity struct {
 	containerRuntimeVersion string
 	osDescription           string
 	osType                  string
+	k8sNodeStartTime        string
+	k8sClusterName          string
 }
 
 // NewK8sNodeEntity creates a new K8sNodeEntity.
@@ -101,6 +235,19 @@ func (e *K8sNodeEntity) SetOsType(val string) {
 	e.osType = val
 }
 
+// Extra attribute setters for k8s.node.
+// These attributes are contextually relevant but are not part of the entity's identity or description.
+
+// SetK8sNodeStartTime sets the k8s.node.start_time extra attribute on the resource.
+func (e *K8sNodeEntity) SetK8sNodeStartTime(val string) {
+	e.k8sNodeStartTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sNodeEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -126,6 +273,12 @@ func (e *K8sNodeEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon
 		if cfg.OsType.Enabled {
 			ent.DescriptiveAttributes().PutStr("os.type", e.osType)
 		}
+		if cfg.K8sNodeStartTime.Enabled {
+			res.Attributes().PutStr("k8s.node.start_time", e.k8sNodeStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	} else {
 		if cfg.K8sNodeUID.Enabled {
 			res.Attributes().PutStr("k8s.node.uid", e.k8sNodeUID)
@@ -148,15 +301,221 @@ func (e *K8sNodeEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon
 		if cfg.OsType.Enabled {
 			res.Attributes().PutStr("os.type", e.osType)
 		}
+		if cfg.K8sNodeStartTime.Enabled {
+			res.Attributes().PutStr("k8s.node.start_time", e.k8sNodeStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+	}
+}
+
+// K8sRoleEntity represents a k8s.role entity.
+// Create one with NewK8sRoleEntity and pass it to EmitForEntity.
+type K8sRoleEntity struct {
+	k8sRoleUID       string
+	k8sRoleName      string
+	k8sNamespaceName string
+}
+
+// NewK8sRoleEntity creates a new K8sRoleEntity.
+// Identity attributes are required and must be provided at construction time.
+func NewK8sRoleEntity(k8sRoleUID string) *K8sRoleEntity {
+	return &K8sRoleEntity{
+		k8sRoleUID: k8sRoleUID,
+	}
+}
+
+// Description attribute setters for k8s.role.
+
+// SetK8sRoleName sets the k8s.role.name description attribute.
+func (e *K8sRoleEntity) SetK8sRoleName(val string) {
+	e.k8sRoleName = val
+}
+
+// Extra attribute setters for k8s.role.
+// These attributes are contextually relevant but are not part of the entity's identity or description.
+
+// SetK8sNamespaceName sets the k8s.namespace.name extra attribute on the resource.
+func (e *K8sRoleEntity) SetK8sNamespaceName(val string) {
+	e.k8sNamespaceName = val
+}
+
+// copyToResource populates res with the entity's attributes according to cfg.
+// If all identity attributes are enabled, an entity ref is produced; otherwise
+// the enabled attributes are written directly as plain resource attributes.
+func (e *K8sRoleEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.Resource) {
+	if cfg.K8sRoleUID.Enabled {
+		ent := entity.ResourceEntities(res).PutEmpty("k8s.role")
+		ent.IdentifyingAttributes().PutStr("k8s.role.uid", e.k8sRoleUID)
+		if cfg.K8sRoleName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.role.name", e.k8sRoleName)
+		}
+		if cfg.K8sNamespaceName.Enabled {
+			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
+		}
+	} else {
+		if cfg.K8sRoleUID.Enabled {
+			res.Attributes().PutStr("k8s.role.uid", e.k8sRoleUID)
+		}
+		if cfg.K8sRoleName.Enabled {
+			res.Attributes().PutStr("k8s.role.name", e.k8sRoleName)
+		}
+		if cfg.K8sNamespaceName.Enabled {
+			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
+		}
+	}
+}
+
+// K8sRolebindingEntity represents a k8s.rolebinding entity.
+// Create one with NewK8sRolebindingEntity and pass it to EmitForEntity.
+type K8sRolebindingEntity struct {
+	k8sRolebindingUID  string
+	k8sRolebindingName string
+	k8sNamespaceName   string
+}
+
+// NewK8sRolebindingEntity creates a new K8sRolebindingEntity.
+// Identity attributes are required and must be provided at construction time.
+func NewK8sRolebindingEntity(k8sRolebindingUID string) *K8sRolebindingEntity {
+	return &K8sRolebindingEntity{
+		k8sRolebindingUID: k8sRolebindingUID,
+	}
+}
+
+// Description attribute setters for k8s.rolebinding.
+
+// SetK8sRolebindingName sets the k8s.rolebinding.name description attribute.
+func (e *K8sRolebindingEntity) SetK8sRolebindingName(val string) {
+	e.k8sRolebindingName = val
+}
+
+// Extra attribute setters for k8s.rolebinding.
+// These attributes are contextually relevant but are not part of the entity's identity or description.
+
+// SetK8sNamespaceName sets the k8s.namespace.name extra attribute on the resource.
+func (e *K8sRolebindingEntity) SetK8sNamespaceName(val string) {
+	e.k8sNamespaceName = val
+}
+
+// copyToResource populates res with the entity's attributes according to cfg.
+// If all identity attributes are enabled, an entity ref is produced; otherwise
+// the enabled attributes are written directly as plain resource attributes.
+func (e *K8sRolebindingEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.Resource) {
+	if cfg.K8sRolebindingUID.Enabled {
+		ent := entity.ResourceEntities(res).PutEmpty("k8s.rolebinding")
+		ent.IdentifyingAttributes().PutStr("k8s.rolebinding.uid", e.k8sRolebindingUID)
+		if cfg.K8sRolebindingName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.rolebinding.name", e.k8sRolebindingName)
+		}
+		if cfg.K8sNamespaceName.Enabled {
+			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
+		}
+	} else {
+		if cfg.K8sRolebindingUID.Enabled {
+			res.Attributes().PutStr("k8s.rolebinding.uid", e.k8sRolebindingUID)
+		}
+		if cfg.K8sRolebindingName.Enabled {
+			res.Attributes().PutStr("k8s.rolebinding.name", e.k8sRolebindingName)
+		}
+		if cfg.K8sNamespaceName.Enabled {
+			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
+		}
+	}
+}
+
+// K8sClusterroleEntity represents a k8s.clusterrole entity.
+// Create one with NewK8sClusterroleEntity and pass it to EmitForEntity.
+type K8sClusterroleEntity struct {
+	k8sClusterroleUID  string
+	k8sClusterroleName string
+}
+
+// NewK8sClusterroleEntity creates a new K8sClusterroleEntity.
+// Identity attributes are required and must be provided at construction time.
+func NewK8sClusterroleEntity(k8sClusterroleUID string) *K8sClusterroleEntity {
+	return &K8sClusterroleEntity{
+		k8sClusterroleUID: k8sClusterroleUID,
+	}
+}
+
+// Description attribute setters for k8s.clusterrole.
+
+// SetK8sClusterroleName sets the k8s.clusterrole.name description attribute.
+func (e *K8sClusterroleEntity) SetK8sClusterroleName(val string) {
+	e.k8sClusterroleName = val
+}
+
+// copyToResource populates res with the entity's attributes according to cfg.
+// If all identity attributes are enabled, an entity ref is produced; otherwise
+// the enabled attributes are written directly as plain resource attributes.
+func (e *K8sClusterroleEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.Resource) {
+	if cfg.K8sClusterroleUID.Enabled {
+		ent := entity.ResourceEntities(res).PutEmpty("k8s.clusterrole")
+		ent.IdentifyingAttributes().PutStr("k8s.clusterrole.uid", e.k8sClusterroleUID)
+		if cfg.K8sClusterroleName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.clusterrole.name", e.k8sClusterroleName)
+		}
+	} else {
+		if cfg.K8sClusterroleUID.Enabled {
+			res.Attributes().PutStr("k8s.clusterrole.uid", e.k8sClusterroleUID)
+		}
+		if cfg.K8sClusterroleName.Enabled {
+			res.Attributes().PutStr("k8s.clusterrole.name", e.k8sClusterroleName)
+		}
+	}
+}
+
+// K8sClusterrolebindingEntity represents a k8s.clusterrolebinding entity.
+// Create one with NewK8sClusterrolebindingEntity and pass it to EmitForEntity.
+type K8sClusterrolebindingEntity struct {
+	k8sClusterrolebindingUID  string
+	k8sClusterrolebindingName string
+}
+
+// NewK8sClusterrolebindingEntity creates a new K8sClusterrolebindingEntity.
+// Identity attributes are required and must be provided at construction time.
+func NewK8sClusterrolebindingEntity(k8sClusterrolebindingUID string) *K8sClusterrolebindingEntity {
+	return &K8sClusterrolebindingEntity{
+		k8sClusterrolebindingUID: k8sClusterrolebindingUID,
+	}
+}
+
+// Description attribute setters for k8s.clusterrolebinding.
+
+// SetK8sClusterrolebindingName sets the k8s.clusterrolebinding.name description attribute.
+func (e *K8sClusterrolebindingEntity) SetK8sClusterrolebindingName(val string) {
+	e.k8sClusterrolebindingName = val
+}
+
+// copyToResource populates res with the entity's attributes according to cfg.
+// If all identity attributes are enabled, an entity ref is produced; otherwise
+// the enabled attributes are written directly as plain resource attributes.
+func (e *K8sClusterrolebindingEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.Resource) {
+	if cfg.K8sClusterrolebindingUID.Enabled {
+		ent := entity.ResourceEntities(res).PutEmpty("k8s.clusterrolebinding")
+		ent.IdentifyingAttributes().PutStr("k8s.clusterrolebinding.uid", e.k8sClusterrolebindingUID)
+		if cfg.K8sClusterrolebindingName.Enabled {
+			ent.DescriptiveAttributes().PutStr("k8s.clusterrolebinding.name", e.k8sClusterrolebindingName)
+		}
+	} else {
+		if cfg.K8sClusterrolebindingUID.Enabled {
+			res.Attributes().PutStr("k8s.clusterrolebinding.uid", e.k8sClusterrolebindingUID)
+		}
+		if cfg.K8sClusterrolebindingName.Enabled {
+			res.Attributes().PutStr("k8s.clusterrolebinding.name", e.k8sClusterrolebindingName)
+		}
 	}
 }
 
 // K8sDeploymentEntity represents a k8s.deployment entity.
 // Create one with NewK8sDeploymentEntity and pass it to EmitForEntity.
 type K8sDeploymentEntity struct {
-	k8sDeploymentUID  string
-	k8sDeploymentName string
-	k8sNamespaceName  string
+	k8sDeploymentUID       string
+	k8sDeploymentName      string
+	k8sNamespaceName       string
+	k8sDeploymentStartTime string
+	k8sClusterName         string
 }
 
 // NewK8sDeploymentEntity creates a new K8sDeploymentEntity.
@@ -182,6 +541,16 @@ func (e *K8sDeploymentEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sDeploymentStartTime sets the k8s.deployment.start_time extra attribute on the resource.
+func (e *K8sDeploymentEntity) SetK8sDeploymentStartTime(val string) {
+	e.k8sDeploymentStartTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sDeploymentEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -195,6 +564,12 @@ func (e *K8sDeploymentEntity) copyToResource(cfg ResourceAttributesConfig, res p
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sDeploymentStartTime.Enabled {
+			res.Attributes().PutStr("k8s.deployment.start_time", e.k8sDeploymentStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	} else {
 		if cfg.K8sDeploymentUID.Enabled {
 			res.Attributes().PutStr("k8s.deployment.uid", e.k8sDeploymentUID)
@@ -205,15 +580,23 @@ func (e *K8sDeploymentEntity) copyToResource(cfg ResourceAttributesConfig, res p
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sDeploymentStartTime.Enabled {
+			res.Attributes().PutStr("k8s.deployment.start_time", e.k8sDeploymentStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	}
 }
 
 // K8sReplicasetEntity represents a k8s.replicaset entity.
 // Create one with NewK8sReplicasetEntity and pass it to EmitForEntity.
 type K8sReplicasetEntity struct {
-	k8sReplicasetUID  string
-	k8sReplicasetName string
-	k8sNamespaceName  string
+	k8sReplicasetUID       string
+	k8sReplicasetName      string
+	k8sNamespaceName       string
+	k8sReplicasetStartTime string
+	k8sClusterName         string
 }
 
 // NewK8sReplicasetEntity creates a new K8sReplicasetEntity.
@@ -239,6 +622,16 @@ func (e *K8sReplicasetEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sReplicasetStartTime sets the k8s.replicaset.start_time extra attribute on the resource.
+func (e *K8sReplicasetEntity) SetK8sReplicasetStartTime(val string) {
+	e.k8sReplicasetStartTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sReplicasetEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -252,6 +645,12 @@ func (e *K8sReplicasetEntity) copyToResource(cfg ResourceAttributesConfig, res p
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sReplicasetStartTime.Enabled {
+			res.Attributes().PutStr("k8s.replicaset.start_time", e.k8sReplicasetStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	} else {
 		if cfg.K8sReplicasetUID.Enabled {
 			res.Attributes().PutStr("k8s.replicaset.uid", e.k8sReplicasetUID)
@@ -262,15 +661,25 @@ func (e *K8sReplicasetEntity) copyToResource(cfg ResourceAttributesConfig, res p
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sReplicasetStartTime.Enabled {
+			res.Attributes().PutStr("k8s.replicaset.start_time", e.k8sReplicasetStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	}
 }
 
 // K8sStatefulsetEntity represents a k8s.statefulset entity.
 // Create one with NewK8sStatefulsetEntity and pass it to EmitForEntity.
 type K8sStatefulsetEntity struct {
-	k8sStatefulsetUID  string
-	k8sStatefulsetName string
-	k8sNamespaceName   string
+	k8sStatefulsetUID                 string
+	k8sStatefulsetName                string
+	k8sNamespaceName                  string
+	k8sStatefulsetPodManagementPolicy string
+	k8sStatefulsetServiceName         string
+	k8sStatefulsetStartTime           string
+	k8sClusterName                    string
 }
 
 // NewK8sStatefulsetEntity creates a new K8sStatefulsetEntity.
@@ -296,6 +705,26 @@ func (e *K8sStatefulsetEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sStatefulsetPodManagementPolicy sets the k8s.statefulset.pod_management_policy extra attribute on the resource.
+func (e *K8sStatefulsetEntity) SetK8sStatefulsetPodManagementPolicy(val string) {
+	e.k8sStatefulsetPodManagementPolicy = val
+}
+
+// SetK8sStatefulsetServiceName sets the k8s.statefulset.service_name extra attribute on the resource.
+func (e *K8sStatefulsetEntity) SetK8sStatefulsetServiceName(val string) {
+	e.k8sStatefulsetServiceName = val
+}
+
+// SetK8sStatefulsetStartTime sets the k8s.statefulset.start_time extra attribute on the resource.
+func (e *K8sStatefulsetEntity) SetK8sStatefulsetStartTime(val string) {
+	e.k8sStatefulsetStartTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sStatefulsetEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -309,6 +738,18 @@ func (e *K8sStatefulsetEntity) copyToResource(cfg ResourceAttributesConfig, res 
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sStatefulsetPodManagementPolicy.Enabled {
+			res.Attributes().PutStr("k8s.statefulset.pod_management_policy", e.k8sStatefulsetPodManagementPolicy)
+		}
+		if cfg.K8sStatefulsetServiceName.Enabled {
+			res.Attributes().PutStr("k8s.statefulset.service_name", e.k8sStatefulsetServiceName)
+		}
+		if cfg.K8sStatefulsetStartTime.Enabled {
+			res.Attributes().PutStr("k8s.statefulset.start_time", e.k8sStatefulsetStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	} else {
 		if cfg.K8sStatefulsetUID.Enabled {
 			res.Attributes().PutStr("k8s.statefulset.uid", e.k8sStatefulsetUID)
@@ -319,15 +760,31 @@ func (e *K8sStatefulsetEntity) copyToResource(cfg ResourceAttributesConfig, res 
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sStatefulsetPodManagementPolicy.Enabled {
+			res.Attributes().PutStr("k8s.statefulset.pod_management_policy", e.k8sStatefulsetPodManagementPolicy)
+		}
+		if cfg.K8sStatefulsetServiceName.Enabled {
+			res.Attributes().PutStr("k8s.statefulset.service_name", e.k8sStatefulsetServiceName)
+		}
+		if cfg.K8sStatefulsetStartTime.Enabled {
+			res.Attributes().PutStr("k8s.statefulset.start_time", e.k8sStatefulsetStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	}
 }
 
 // K8sDaemonsetEntity represents a k8s.daemonset entity.
 // Create one with NewK8sDaemonsetEntity and pass it to EmitForEntity.
 type K8sDaemonsetEntity struct {
-	k8sDaemonsetUID  string
-	k8sDaemonsetName string
-	k8sNamespaceName string
+	k8sDaemonsetUID       string
+	k8sDaemonsetName      string
+	k8sNamespaceName      string
+	k8sClusterName        string
+	k8sDaemonsetStartTime string
+	k8sDaemonsetSelectors string
+	k8sDaemonsetStrategy  string
 }
 
 // NewK8sDaemonsetEntity creates a new K8sDaemonsetEntity.
@@ -353,6 +810,26 @@ func (e *K8sDaemonsetEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sDaemonsetEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
+// SetK8sDaemonsetStartTime sets the k8s.daemonset.start_time extra attribute on the resource.
+func (e *K8sDaemonsetEntity) SetK8sDaemonsetStartTime(val string) {
+	e.k8sDaemonsetStartTime = val
+}
+
+// SetK8sDaemonsetSelectors sets the k8s.daemonset.selectors extra attribute on the resource.
+func (e *K8sDaemonsetEntity) SetK8sDaemonsetSelectors(val string) {
+	e.k8sDaemonsetSelectors = val
+}
+
+// SetK8sDaemonsetStrategy sets the k8s.daemonset.strategy extra attribute on the resource.
+func (e *K8sDaemonsetEntity) SetK8sDaemonsetStrategy(val string) {
+	e.k8sDaemonsetStrategy = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -366,6 +843,18 @@ func (e *K8sDaemonsetEntity) copyToResource(cfg ResourceAttributesConfig, res pc
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sDaemonsetStartTime.Enabled {
+			res.Attributes().PutStr("k8s.daemonset.start_time", e.k8sDaemonsetStartTime)
+		}
+		if cfg.K8sDaemonsetSelectors.Enabled {
+			res.Attributes().PutStr("k8s.daemonset.selectors", e.k8sDaemonsetSelectors)
+		}
+		if cfg.K8sDaemonsetStrategy.Enabled {
+			res.Attributes().PutStr("k8s.daemonset.strategy", e.k8sDaemonsetStrategy)
+		}
 	} else {
 		if cfg.K8sDaemonsetUID.Enabled {
 			res.Attributes().PutStr("k8s.daemonset.uid", e.k8sDaemonsetUID)
@@ -376,15 +865,34 @@ func (e *K8sDaemonsetEntity) copyToResource(cfg ResourceAttributesConfig, res pc
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sDaemonsetStartTime.Enabled {
+			res.Attributes().PutStr("k8s.daemonset.start_time", e.k8sDaemonsetStartTime)
+		}
+		if cfg.K8sDaemonsetSelectors.Enabled {
+			res.Attributes().PutStr("k8s.daemonset.selectors", e.k8sDaemonsetSelectors)
+		}
+		if cfg.K8sDaemonsetStrategy.Enabled {
+			res.Attributes().PutStr("k8s.daemonset.strategy", e.k8sDaemonsetStrategy)
+		}
 	}
 }
 
 // K8sCronjobEntity represents a k8s.cronjob entity.
 // Create one with NewK8sCronjobEntity and pass it to EmitForEntity.
 type K8sCronjobEntity struct {
-	k8sCronjobUID    string
-	k8sCronjobName   string
-	k8sNamespaceName string
+	k8sCronjobUID                string
+	k8sCronjobName               string
+	k8sNamespaceName             string
+	k8sCronjobConcurrencyPolicy  string
+	k8sCronjobSuspend            string
+	k8sCronjobSchedule           string
+	k8sCronjobLastScheduleTime   string
+	k8sCronjobLastSuccessfulTime string
+	k8sCronjobStartTime          string
+	k8sClusterName               string
 }
 
 // NewK8sCronjobEntity creates a new K8sCronjobEntity.
@@ -410,6 +918,41 @@ func (e *K8sCronjobEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sCronjobConcurrencyPolicy sets the k8s.cronjob.concurrency_policy extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sCronjobConcurrencyPolicy(val string) {
+	e.k8sCronjobConcurrencyPolicy = val
+}
+
+// SetK8sCronjobSuspend sets the k8s.cronjob.suspend extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sCronjobSuspend(val string) {
+	e.k8sCronjobSuspend = val
+}
+
+// SetK8sCronjobSchedule sets the k8s.cronjob.schedule extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sCronjobSchedule(val string) {
+	e.k8sCronjobSchedule = val
+}
+
+// SetK8sCronjobLastScheduleTime sets the k8s.cronjob.last_schedule_time extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sCronjobLastScheduleTime(val string) {
+	e.k8sCronjobLastScheduleTime = val
+}
+
+// SetK8sCronjobLastSuccessfulTime sets the k8s.cronjob.last_successful_time extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sCronjobLastSuccessfulTime(val string) {
+	e.k8sCronjobLastSuccessfulTime = val
+}
+
+// SetK8sCronjobStartTime sets the k8s.cronjob.start_time extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sCronjobStartTime(val string) {
+	e.k8sCronjobStartTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sCronjobEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -423,6 +966,27 @@ func (e *K8sCronjobEntity) copyToResource(cfg ResourceAttributesConfig, res pcom
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sCronjobConcurrencyPolicy.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.concurrency_policy", e.k8sCronjobConcurrencyPolicy)
+		}
+		if cfg.K8sCronjobSuspend.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.suspend", e.k8sCronjobSuspend)
+		}
+		if cfg.K8sCronjobSchedule.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.schedule", e.k8sCronjobSchedule)
+		}
+		if cfg.K8sCronjobLastScheduleTime.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.last_schedule_time", e.k8sCronjobLastScheduleTime)
+		}
+		if cfg.K8sCronjobLastSuccessfulTime.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.last_successful_time", e.k8sCronjobLastSuccessfulTime)
+		}
+		if cfg.K8sCronjobStartTime.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.start_time", e.k8sCronjobStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	} else {
 		if cfg.K8sCronjobUID.Enabled {
 			res.Attributes().PutStr("k8s.cronjob.uid", e.k8sCronjobUID)
@@ -433,6 +997,27 @@ func (e *K8sCronjobEntity) copyToResource(cfg ResourceAttributesConfig, res pcom
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sCronjobConcurrencyPolicy.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.concurrency_policy", e.k8sCronjobConcurrencyPolicy)
+		}
+		if cfg.K8sCronjobSuspend.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.suspend", e.k8sCronjobSuspend)
+		}
+		if cfg.K8sCronjobSchedule.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.schedule", e.k8sCronjobSchedule)
+		}
+		if cfg.K8sCronjobLastScheduleTime.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.last_schedule_time", e.k8sCronjobLastScheduleTime)
+		}
+		if cfg.K8sCronjobLastSuccessfulTime.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.last_successful_time", e.k8sCronjobLastSuccessfulTime)
+		}
+		if cfg.K8sCronjobStartTime.Enabled {
+			res.Attributes().PutStr("k8s.cronjob.start_time", e.k8sCronjobStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	}
 }
 
@@ -442,6 +1027,9 @@ type K8sJobEntity struct {
 	k8sJobUID        string
 	k8sJobName       string
 	k8sNamespaceName string
+	k8sJobStartTime  string
+	k8sJobEndTime    string
+	k8sClusterName   string
 }
 
 // NewK8sJobEntity creates a new K8sJobEntity.
@@ -467,6 +1055,21 @@ func (e *K8sJobEntity) SetK8sNamespaceName(val string) {
 	e.k8sNamespaceName = val
 }
 
+// SetK8sJobStartTime sets the k8s.job.start_time extra attribute on the resource.
+func (e *K8sJobEntity) SetK8sJobStartTime(val string) {
+	e.k8sJobStartTime = val
+}
+
+// SetK8sJobEndTime sets the k8s.job.end_time extra attribute on the resource.
+func (e *K8sJobEntity) SetK8sJobEndTime(val string) {
+	e.k8sJobEndTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sJobEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -480,6 +1083,15 @@ func (e *K8sJobEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sJobStartTime.Enabled {
+			res.Attributes().PutStr("k8s.job.start_time", e.k8sJobStartTime)
+		}
+		if cfg.K8sJobEndTime.Enabled {
+			res.Attributes().PutStr("k8s.job.end_time", e.k8sJobEndTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	} else {
 		if cfg.K8sJobUID.Enabled {
 			res.Attributes().PutStr("k8s.job.uid", e.k8sJobUID)
@@ -490,17 +1102,32 @@ func (e *K8sJobEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.
 		if cfg.K8sNamespaceName.Enabled {
 			res.Attributes().PutStr("k8s.namespace.name", e.k8sNamespaceName)
 		}
+		if cfg.K8sJobStartTime.Enabled {
+			res.Attributes().PutStr("k8s.job.start_time", e.k8sJobStartTime)
+		}
+		if cfg.K8sJobEndTime.Enabled {
+			res.Attributes().PutStr("k8s.job.end_time", e.k8sJobEndTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
 	}
 }
 
 // K8sPodEntity represents a k8s.pod entity.
 // Create one with NewK8sPodEntity and pass it to EmitForEntity.
 type K8sPodEntity struct {
-	k8sPodUID        string
-	k8sPodName       string
-	k8sPodQosClass   string
-	k8sNamespaceName string
-	k8sNodeName      string
+	k8sPodUID             string
+	k8sPodName            string
+	k8sPodQosClass        string
+	k8sNamespaceName      string
+	k8sNodeName           string
+	k8sPodStartTime       string
+	k8sClusterName        string
+	k8sJobName            string
+	k8sJobUID             string
+	k8sServiceaccountName string
+	k8sServiceName        string
 }
 
 // NewK8sPodEntity creates a new K8sPodEntity.
@@ -536,6 +1163,36 @@ func (e *K8sPodEntity) SetK8sNodeName(val string) {
 	e.k8sNodeName = val
 }
 
+// SetK8sPodStartTime sets the k8s.pod.start_time extra attribute on the resource.
+func (e *K8sPodEntity) SetK8sPodStartTime(val string) {
+	e.k8sPodStartTime = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sPodEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
+// SetK8sJobName sets the k8s.job.name extra attribute on the resource.
+func (e *K8sPodEntity) SetK8sJobName(val string) {
+	e.k8sJobName = val
+}
+
+// SetK8sJobUID sets the k8s.job.uid extra attribute on the resource.
+func (e *K8sPodEntity) SetK8sJobUID(val string) {
+	e.k8sJobUID = val
+}
+
+// SetK8sServiceaccountName sets the k8s.serviceaccount.name extra attribute on the resource.
+func (e *K8sPodEntity) SetK8sServiceaccountName(val string) {
+	e.k8sServiceaccountName = val
+}
+
+// SetK8sServiceName sets the k8s.service.name extra attribute on the resource.
+func (e *K8sPodEntity) SetK8sServiceName(val string) {
+	e.k8sServiceName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -555,6 +1212,24 @@ func (e *K8sPodEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.
 		if cfg.K8sNodeName.Enabled {
 			res.Attributes().PutStr("k8s.node.name", e.k8sNodeName)
 		}
+		if cfg.K8sPodStartTime.Enabled {
+			res.Attributes().PutStr("k8s.pod.start_time", e.k8sPodStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sJobName.Enabled {
+			res.Attributes().PutStr("k8s.job.name", e.k8sJobName)
+		}
+		if cfg.K8sJobUID.Enabled {
+			res.Attributes().PutStr("k8s.job.uid", e.k8sJobUID)
+		}
+		if cfg.K8sServiceaccountName.Enabled {
+			res.Attributes().PutStr("k8s.serviceaccount.name", e.k8sServiceaccountName)
+		}
+		if cfg.K8sServiceName.Enabled {
+			res.Attributes().PutStr("k8s.service.name", e.k8sServiceName)
+		}
 	} else {
 		if cfg.K8sPodUID.Enabled {
 			res.Attributes().PutStr("k8s.pod.uid", e.k8sPodUID)
@@ -570,6 +1245,24 @@ func (e *K8sPodEntity) copyToResource(cfg ResourceAttributesConfig, res pcommon.
 		}
 		if cfg.K8sNodeName.Enabled {
 			res.Attributes().PutStr("k8s.node.name", e.k8sNodeName)
+		}
+		if cfg.K8sPodStartTime.Enabled {
+			res.Attributes().PutStr("k8s.pod.start_time", e.k8sPodStartTime)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sJobName.Enabled {
+			res.Attributes().PutStr("k8s.job.name", e.k8sJobName)
+		}
+		if cfg.K8sJobUID.Enabled {
+			res.Attributes().PutStr("k8s.job.uid", e.k8sJobUID)
+		}
+		if cfg.K8sServiceaccountName.Enabled {
+			res.Attributes().PutStr("k8s.serviceaccount.name", e.k8sServiceaccountName)
+		}
+		if cfg.K8sServiceName.Enabled {
+			res.Attributes().PutStr("k8s.service.name", e.k8sServiceName)
 		}
 	}
 }
@@ -917,6 +1610,18 @@ type K8sPersistentvolumeEntity struct {
 	k8sPersistentvolumeName          string
 	k8sStorageclassName              string
 	k8sPersistentvolumeReclaimPolicy string
+	k8sClusterName                   string
+	k8sPersistentvolumeAccessModes   string
+	k8sPersistentvolumeAnnotations   string
+	k8sPersistentvolumeFinalizers    string
+	k8sPersistentvolumeLabels        string
+	k8sPersistentvolumeNamespace     string
+	k8sPersistentvolumePhase         string
+	k8sPersistentvolumeStartTime     string
+	k8sPersistentvolumeStorageClass  string
+	k8sPersistentvolumeVolumeMode    string
+	k8sPersistentvolumeclaimUID      string
+	k8sPersistentvolumeclaimName     string
 }
 
 // NewK8sPersistentvolumeEntity creates a new K8sPersistentvolumeEntity.
@@ -944,6 +1649,69 @@ func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeReclaimPolicy(val stri
 	e.k8sPersistentvolumeReclaimPolicy = val
 }
 
+// Extra attribute setters for k8s.persistentvolume.
+// These attributes are contextually relevant but are not part of the entity's identity or description.
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
+// SetK8sPersistentvolumeAccessModes sets the k8s.persistentvolume.access_modes extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeAccessModes(val string) {
+	e.k8sPersistentvolumeAccessModes = val
+}
+
+// SetK8sPersistentvolumeAnnotations sets the k8s.persistentvolume.annotations extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeAnnotations(val string) {
+	e.k8sPersistentvolumeAnnotations = val
+}
+
+// SetK8sPersistentvolumeFinalizers sets the k8s.persistentvolume.finalizers extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeFinalizers(val string) {
+	e.k8sPersistentvolumeFinalizers = val
+}
+
+// SetK8sPersistentvolumeLabels sets the k8s.persistentvolume.labels extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeLabels(val string) {
+	e.k8sPersistentvolumeLabels = val
+}
+
+// SetK8sPersistentvolumeNamespace sets the k8s.persistentvolume.namespace extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeNamespace(val string) {
+	e.k8sPersistentvolumeNamespace = val
+}
+
+// SetK8sPersistentvolumePhase sets the k8s.persistentvolume.phase extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumePhase(val string) {
+	e.k8sPersistentvolumePhase = val
+}
+
+// SetK8sPersistentvolumeStartTime sets the k8s.persistentvolume.start_time extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeStartTime(val string) {
+	e.k8sPersistentvolumeStartTime = val
+}
+
+// SetK8sPersistentvolumeStorageClass sets the k8s.persistentvolume.storage_class extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeStorageClass(val string) {
+	e.k8sPersistentvolumeStorageClass = val
+}
+
+// SetK8sPersistentvolumeVolumeMode sets the k8s.persistentvolume.volume_mode extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeVolumeMode(val string) {
+	e.k8sPersistentvolumeVolumeMode = val
+}
+
+// SetK8sPersistentvolumeclaimUID sets the k8s.persistentvolumeclaim.uid extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeclaimUID(val string) {
+	e.k8sPersistentvolumeclaimUID = val
+}
+
+// SetK8sPersistentvolumeclaimName sets the k8s.persistentvolumeclaim.name extra attribute on the resource.
+func (e *K8sPersistentvolumeEntity) SetK8sPersistentvolumeclaimName(val string) {
+	e.k8sPersistentvolumeclaimName = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -960,6 +1728,42 @@ func (e *K8sPersistentvolumeEntity) copyToResource(cfg ResourceAttributesConfig,
 		if cfg.K8sPersistentvolumeReclaimPolicy.Enabled {
 			ent.DescriptiveAttributes().PutStr("k8s.persistentvolume.reclaim_policy", e.k8sPersistentvolumeReclaimPolicy)
 		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sPersistentvolumeAccessModes.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.access_modes", e.k8sPersistentvolumeAccessModes)
+		}
+		if cfg.K8sPersistentvolumeAnnotations.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.annotations", e.k8sPersistentvolumeAnnotations)
+		}
+		if cfg.K8sPersistentvolumeFinalizers.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.finalizers", e.k8sPersistentvolumeFinalizers)
+		}
+		if cfg.K8sPersistentvolumeLabels.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.labels", e.k8sPersistentvolumeLabels)
+		}
+		if cfg.K8sPersistentvolumeNamespace.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.namespace", e.k8sPersistentvolumeNamespace)
+		}
+		if cfg.K8sPersistentvolumePhase.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.phase", e.k8sPersistentvolumePhase)
+		}
+		if cfg.K8sPersistentvolumeStartTime.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.start_time", e.k8sPersistentvolumeStartTime)
+		}
+		if cfg.K8sPersistentvolumeStorageClass.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.storage_class", e.k8sPersistentvolumeStorageClass)
+		}
+		if cfg.K8sPersistentvolumeVolumeMode.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.volume_mode", e.k8sPersistentvolumeVolumeMode)
+		}
+		if cfg.K8sPersistentvolumeclaimUID.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.uid", e.k8sPersistentvolumeclaimUID)
+		}
+		if cfg.K8sPersistentvolumeclaimName.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.name", e.k8sPersistentvolumeclaimName)
+		}
 	} else {
 		if cfg.K8sPersistentvolumeUID.Enabled {
 			res.Attributes().PutStr("k8s.persistentvolume.uid", e.k8sPersistentvolumeUID)
@@ -973,16 +1777,61 @@ func (e *K8sPersistentvolumeEntity) copyToResource(cfg ResourceAttributesConfig,
 		if cfg.K8sPersistentvolumeReclaimPolicy.Enabled {
 			res.Attributes().PutStr("k8s.persistentvolume.reclaim_policy", e.k8sPersistentvolumeReclaimPolicy)
 		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sPersistentvolumeAccessModes.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.access_modes", e.k8sPersistentvolumeAccessModes)
+		}
+		if cfg.K8sPersistentvolumeAnnotations.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.annotations", e.k8sPersistentvolumeAnnotations)
+		}
+		if cfg.K8sPersistentvolumeFinalizers.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.finalizers", e.k8sPersistentvolumeFinalizers)
+		}
+		if cfg.K8sPersistentvolumeLabels.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.labels", e.k8sPersistentvolumeLabels)
+		}
+		if cfg.K8sPersistentvolumeNamespace.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.namespace", e.k8sPersistentvolumeNamespace)
+		}
+		if cfg.K8sPersistentvolumePhase.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.phase", e.k8sPersistentvolumePhase)
+		}
+		if cfg.K8sPersistentvolumeStartTime.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.start_time", e.k8sPersistentvolumeStartTime)
+		}
+		if cfg.K8sPersistentvolumeStorageClass.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.storage_class", e.k8sPersistentvolumeStorageClass)
+		}
+		if cfg.K8sPersistentvolumeVolumeMode.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolume.volume_mode", e.k8sPersistentvolumeVolumeMode)
+		}
+		if cfg.K8sPersistentvolumeclaimUID.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.uid", e.k8sPersistentvolumeclaimUID)
+		}
+		if cfg.K8sPersistentvolumeclaimName.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.name", e.k8sPersistentvolumeclaimName)
+		}
 	}
 }
 
 // K8sPersistentvolumeclaimEntity represents a k8s.persistentvolumeclaim entity.
 // Create one with NewK8sPersistentvolumeclaimEntity and pass it to EmitForEntity.
 type K8sPersistentvolumeclaimEntity struct {
-	k8sPersistentvolumeclaimUID  string
-	k8sPersistentvolumeclaimName string
-	k8sNamespaceName             string
-	k8sStorageclassName          string
+	k8sPersistentvolumeclaimUID          string
+	k8sPersistentvolumeclaimName         string
+	k8sNamespaceName                     string
+	k8sStorageclassName                  string
+	k8sPersistentvolumeclaimAnnotations  string
+	k8sPersistentvolumeclaimVolumeName   string
+	k8sPersistentvolumeclaimType         string
+	k8sPersistentvolumeclaimStartTime    string
+	k8sPersistentvolumeclaimFinalizers   string
+	k8sClusterName                       string
+	k8sPersistentvolumeclaimVolumeMode   string
+	k8sPersistentvolumeclaimAccessModes  string
+	k8sPersistentvolumeclaimStorageClass string
 }
 
 // NewK8sPersistentvolumeclaimEntity creates a new K8sPersistentvolumeclaimEntity.
@@ -1013,6 +1862,51 @@ func (e *K8sPersistentvolumeclaimEntity) SetK8sStorageclassName(val string) {
 	e.k8sStorageclassName = val
 }
 
+// SetK8sPersistentvolumeclaimAnnotations sets the k8s.persistentvolumeclaim.annotations extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimAnnotations(val string) {
+	e.k8sPersistentvolumeclaimAnnotations = val
+}
+
+// SetK8sPersistentvolumeclaimVolumeName sets the k8s.persistentvolumeclaim.volume_name extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimVolumeName(val string) {
+	e.k8sPersistentvolumeclaimVolumeName = val
+}
+
+// SetK8sPersistentvolumeclaimType sets the k8s.persistentvolumeclaim.type extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimType(val string) {
+	e.k8sPersistentvolumeclaimType = val
+}
+
+// SetK8sPersistentvolumeclaimStartTime sets the k8s.persistentvolumeclaim.start_time extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimStartTime(val string) {
+	e.k8sPersistentvolumeclaimStartTime = val
+}
+
+// SetK8sPersistentvolumeclaimFinalizers sets the k8s.persistentvolumeclaim.finalizers extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimFinalizers(val string) {
+	e.k8sPersistentvolumeclaimFinalizers = val
+}
+
+// SetK8sClusterName sets the k8s.cluster.name extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sClusterName(val string) {
+	e.k8sClusterName = val
+}
+
+// SetK8sPersistentvolumeclaimVolumeMode sets the k8s.persistentvolumeclaim.volume_mode extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimVolumeMode(val string) {
+	e.k8sPersistentvolumeclaimVolumeMode = val
+}
+
+// SetK8sPersistentvolumeclaimAccessModes sets the k8s.persistentvolumeclaim.access_modes extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimAccessModes(val string) {
+	e.k8sPersistentvolumeclaimAccessModes = val
+}
+
+// SetK8sPersistentvolumeclaimStorageClass sets the k8s.persistentvolumeclaim.storage_class extra attribute on the resource.
+func (e *K8sPersistentvolumeclaimEntity) SetK8sPersistentvolumeclaimStorageClass(val string) {
+	e.k8sPersistentvolumeclaimStorageClass = val
+}
+
 // copyToResource populates res with the entity's attributes according to cfg.
 // If all identity attributes are enabled, an entity ref is produced; otherwise
 // the enabled attributes are written directly as plain resource attributes.
@@ -1029,6 +1923,33 @@ func (e *K8sPersistentvolumeclaimEntity) copyToResource(cfg ResourceAttributesCo
 		if cfg.K8sStorageclassName.Enabled {
 			res.Attributes().PutStr("k8s.storageclass.name", e.k8sStorageclassName)
 		}
+		if cfg.K8sPersistentvolumeclaimAnnotations.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.annotations", e.k8sPersistentvolumeclaimAnnotations)
+		}
+		if cfg.K8sPersistentvolumeclaimVolumeName.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.volume_name", e.k8sPersistentvolumeclaimVolumeName)
+		}
+		if cfg.K8sPersistentvolumeclaimType.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.type", e.k8sPersistentvolumeclaimType)
+		}
+		if cfg.K8sPersistentvolumeclaimStartTime.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.start_time", e.k8sPersistentvolumeclaimStartTime)
+		}
+		if cfg.K8sPersistentvolumeclaimFinalizers.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.finalizers", e.k8sPersistentvolumeclaimFinalizers)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sPersistentvolumeclaimVolumeMode.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.volume_mode", e.k8sPersistentvolumeclaimVolumeMode)
+		}
+		if cfg.K8sPersistentvolumeclaimAccessModes.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.access_modes", e.k8sPersistentvolumeclaimAccessModes)
+		}
+		if cfg.K8sPersistentvolumeclaimStorageClass.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.storage_class", e.k8sPersistentvolumeclaimStorageClass)
+		}
 	} else {
 		if cfg.K8sPersistentvolumeclaimUID.Enabled {
 			res.Attributes().PutStr("k8s.persistentvolumeclaim.uid", e.k8sPersistentvolumeclaimUID)
@@ -1041,6 +1962,33 @@ func (e *K8sPersistentvolumeclaimEntity) copyToResource(cfg ResourceAttributesCo
 		}
 		if cfg.K8sStorageclassName.Enabled {
 			res.Attributes().PutStr("k8s.storageclass.name", e.k8sStorageclassName)
+		}
+		if cfg.K8sPersistentvolumeclaimAnnotations.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.annotations", e.k8sPersistentvolumeclaimAnnotations)
+		}
+		if cfg.K8sPersistentvolumeclaimVolumeName.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.volume_name", e.k8sPersistentvolumeclaimVolumeName)
+		}
+		if cfg.K8sPersistentvolumeclaimType.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.type", e.k8sPersistentvolumeclaimType)
+		}
+		if cfg.K8sPersistentvolumeclaimStartTime.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.start_time", e.k8sPersistentvolumeclaimStartTime)
+		}
+		if cfg.K8sPersistentvolumeclaimFinalizers.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.finalizers", e.k8sPersistentvolumeclaimFinalizers)
+		}
+		if cfg.K8sClusterName.Enabled {
+			res.Attributes().PutStr("k8s.cluster.name", e.k8sClusterName)
+		}
+		if cfg.K8sPersistentvolumeclaimVolumeMode.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.volume_mode", e.k8sPersistentvolumeclaimVolumeMode)
+		}
+		if cfg.K8sPersistentvolumeclaimAccessModes.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.access_modes", e.k8sPersistentvolumeclaimAccessModes)
+		}
+		if cfg.K8sPersistentvolumeclaimStorageClass.Enabled {
+			res.Attributes().PutStr("k8s.persistentvolumeclaim.storage_class", e.k8sPersistentvolumeclaimStorageClass)
 		}
 	}
 }
@@ -1180,6 +2128,50 @@ func (e *OpenshiftClusterquotaEntity) copyToResource(cfg ResourceAttributesConfi
 	}
 }
 
+// K8sIngressMetricsBuilder records metrics for the k8s.ingress entity.
+// Obtain one via MetricsBuilder.ForK8sIngress().
+type K8sIngressMetricsBuilder struct {
+	mb     *MetricsBuilder
+	entity *K8sIngressEntity
+}
+
+// RecordK8sIngressRuleCountDataPoint records a data point for the k8s.ingress.rule_count metric.
+func (eb *K8sIngressMetricsBuilder) RecordK8sIngressRuleCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sIngressRuleCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
+// disabled identity attributes suppress the entity (other enabled attributes are added directly
+// to the resource); disabled descriptive/extra attributes are omitted entirely.
+func (eb *K8sIngressMetricsBuilder) Emit() {
+	res := pcommon.NewResource()
+	cfg := eb.mb.config.ResourceAttributes
+	eb.entity.copyToResource(cfg, res)
+	eb.mb.EmitForResource(withResourceMoved(res))
+}
+
+// K8sServiceaccountMetricsBuilder records metrics for the k8s.serviceaccount entity.
+// Obtain one via MetricsBuilder.ForK8sServiceaccount().
+type K8sServiceaccountMetricsBuilder struct {
+	mb     *MetricsBuilder
+	entity *K8sServiceaccountEntity
+}
+
+// RecordK8sServiceaccountSecretCountDataPoint records a data point for the k8s.serviceaccount.secret_count metric.
+func (eb *K8sServiceaccountMetricsBuilder) RecordK8sServiceaccountSecretCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sServiceaccountSecretCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
+// disabled identity attributes suppress the entity (other enabled attributes are added directly
+// to the resource); disabled descriptive/extra attributes are omitted entirely.
+func (eb *K8sServiceaccountMetricsBuilder) Emit() {
+	res := pcommon.NewResource()
+	cfg := eb.mb.config.ResourceAttributes
+	eb.entity.copyToResource(cfg, res)
+	eb.mb.EmitForResource(withResourceMoved(res))
+}
+
 // K8sNamespaceMetricsBuilder records metrics for the k8s.namespace entity.
 // Obtain one via MetricsBuilder.ForK8sNamespace().
 type K8sNamespaceMetricsBuilder struct {
@@ -1224,6 +2216,94 @@ func (eb *K8sNodeMetricsBuilder) Emit() {
 	eb.mb.EmitForResource(withResourceMoved(res))
 }
 
+// K8sRoleMetricsBuilder records metrics for the k8s.role entity.
+// Obtain one via MetricsBuilder.ForK8sRole().
+type K8sRoleMetricsBuilder struct {
+	mb     *MetricsBuilder
+	entity *K8sRoleEntity
+}
+
+// RecordK8sRoleRuleCountDataPoint records a data point for the k8s.role.rule_count metric.
+func (eb *K8sRoleMetricsBuilder) RecordK8sRoleRuleCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sRoleRuleCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
+// disabled identity attributes suppress the entity (other enabled attributes are added directly
+// to the resource); disabled descriptive/extra attributes are omitted entirely.
+func (eb *K8sRoleMetricsBuilder) Emit() {
+	res := pcommon.NewResource()
+	cfg := eb.mb.config.ResourceAttributes
+	eb.entity.copyToResource(cfg, res)
+	eb.mb.EmitForResource(withResourceMoved(res))
+}
+
+// K8sRolebindingMetricsBuilder records metrics for the k8s.rolebinding entity.
+// Obtain one via MetricsBuilder.ForK8sRolebinding().
+type K8sRolebindingMetricsBuilder struct {
+	mb     *MetricsBuilder
+	entity *K8sRolebindingEntity
+}
+
+// RecordK8sRolebindingSubjectCountDataPoint records a data point for the k8s.rolebinding.subject_count metric.
+func (eb *K8sRolebindingMetricsBuilder) RecordK8sRolebindingSubjectCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sRolebindingSubjectCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
+// disabled identity attributes suppress the entity (other enabled attributes are added directly
+// to the resource); disabled descriptive/extra attributes are omitted entirely.
+func (eb *K8sRolebindingMetricsBuilder) Emit() {
+	res := pcommon.NewResource()
+	cfg := eb.mb.config.ResourceAttributes
+	eb.entity.copyToResource(cfg, res)
+	eb.mb.EmitForResource(withResourceMoved(res))
+}
+
+// K8sClusterroleMetricsBuilder records metrics for the k8s.clusterrole entity.
+// Obtain one via MetricsBuilder.ForK8sClusterrole().
+type K8sClusterroleMetricsBuilder struct {
+	mb     *MetricsBuilder
+	entity *K8sClusterroleEntity
+}
+
+// RecordK8sClusterroleRuleCountDataPoint records a data point for the k8s.clusterrole.rule_count metric.
+func (eb *K8sClusterroleMetricsBuilder) RecordK8sClusterroleRuleCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sClusterroleRuleCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
+// disabled identity attributes suppress the entity (other enabled attributes are added directly
+// to the resource); disabled descriptive/extra attributes are omitted entirely.
+func (eb *K8sClusterroleMetricsBuilder) Emit() {
+	res := pcommon.NewResource()
+	cfg := eb.mb.config.ResourceAttributes
+	eb.entity.copyToResource(cfg, res)
+	eb.mb.EmitForResource(withResourceMoved(res))
+}
+
+// K8sClusterrolebindingMetricsBuilder records metrics for the k8s.clusterrolebinding entity.
+// Obtain one via MetricsBuilder.ForK8sClusterrolebinding().
+type K8sClusterrolebindingMetricsBuilder struct {
+	mb     *MetricsBuilder
+	entity *K8sClusterrolebindingEntity
+}
+
+// RecordK8sClusterrolebindingSubjectCountDataPoint records a data point for the k8s.clusterrolebinding.subject_count metric.
+func (eb *K8sClusterrolebindingMetricsBuilder) RecordK8sClusterrolebindingSubjectCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sClusterrolebindingSubjectCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
+// disabled identity attributes suppress the entity (other enabled attributes are added directly
+// to the resource); disabled descriptive/extra attributes are omitted entirely.
+func (eb *K8sClusterrolebindingMetricsBuilder) Emit() {
+	res := pcommon.NewResource()
+	cfg := eb.mb.config.ResourceAttributes
+	eb.entity.copyToResource(cfg, res)
+	eb.mb.EmitForResource(withResourceMoved(res))
+}
+
 // K8sDeploymentMetricsBuilder records metrics for the k8s.deployment entity.
 // Obtain one via MetricsBuilder.ForK8sDeployment().
 type K8sDeploymentMetricsBuilder struct {
@@ -1236,9 +2316,19 @@ func (eb *K8sDeploymentMetricsBuilder) RecordK8sDeploymentAvailableDataPoint(ts 
 	eb.mb.metricK8sDeploymentAvailable.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
+// RecordK8sDeploymentCurrentDataPoint records a data point for the k8s.deployment.current metric.
+func (eb *K8sDeploymentMetricsBuilder) RecordK8sDeploymentCurrentDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sDeploymentCurrent.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
 // RecordK8sDeploymentDesiredDataPoint records a data point for the k8s.deployment.desired metric.
 func (eb *K8sDeploymentMetricsBuilder) RecordK8sDeploymentDesiredDataPoint(ts pcommon.Timestamp, val int64) {
 	eb.mb.metricK8sDeploymentDesired.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// RecordK8sDeploymentUpdatedDataPoint records a data point for the k8s.deployment.updated metric.
+func (eb *K8sDeploymentMetricsBuilder) RecordK8sDeploymentUpdatedDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sDeploymentUpdated.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
 // Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
@@ -1263,9 +2353,19 @@ func (eb *K8sReplicasetMetricsBuilder) RecordK8sReplicasetAvailableDataPoint(ts 
 	eb.mb.metricK8sReplicasetAvailable.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
+// RecordK8sReplicasetCurrentDataPoint records a data point for the k8s.replicaset.current metric.
+func (eb *K8sReplicasetMetricsBuilder) RecordK8sReplicasetCurrentDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sReplicasetCurrent.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
 // RecordK8sReplicasetDesiredDataPoint records a data point for the k8s.replicaset.desired metric.
 func (eb *K8sReplicasetMetricsBuilder) RecordK8sReplicasetDesiredDataPoint(ts pcommon.Timestamp, val int64) {
 	eb.mb.metricK8sReplicasetDesired.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// RecordK8sReplicasetReadyDataPoint records a data point for the k8s.replicaset.ready metric.
+func (eb *K8sReplicasetMetricsBuilder) RecordK8sReplicasetReadyDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sReplicasetReady.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
 // Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
@@ -1384,6 +2484,11 @@ type K8sJobMetricsBuilder struct {
 // RecordK8sJobActivePodsDataPoint records a data point for the k8s.job.active_pods metric.
 func (eb *K8sJobMetricsBuilder) RecordK8sJobActivePodsDataPoint(ts pcommon.Timestamp, val int64) {
 	eb.mb.metricK8sJobActivePods.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// RecordK8sJobBackoffLimitDataPoint records a data point for the k8s.job.backoff_limit metric.
+func (eb *K8sJobMetricsBuilder) RecordK8sJobBackoffLimitDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sJobBackoffLimit.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
 // RecordK8sJobDesiredSuccessfulPodsDataPoint records a data point for the k8s.job.desired_successful_pods metric.
@@ -1591,6 +2696,11 @@ func (eb *K8sServiceMetricsBuilder) RecordK8sServiceLoadBalancerIngressCountData
 	eb.mb.metricK8sServiceLoadBalancerIngressCount.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
+// RecordK8sServicePortCountDataPoint records a data point for the k8s.service.port_count metric.
+func (eb *K8sServiceMetricsBuilder) RecordK8sServicePortCountDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sServicePortCount.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
 // Emit emits all pending metrics for the entity. Resource attributes are filtered by config:
 // disabled identity attributes suppress the entity (other enabled attributes are added directly
 // to the resource); disabled descriptive/extra attributes are omitted entirely.
@@ -1606,6 +2716,11 @@ func (eb *K8sServiceMetricsBuilder) Emit() {
 type K8sPersistentvolumeMetricsBuilder struct {
 	mb     *MetricsBuilder
 	entity *K8sPersistentvolumeEntity
+}
+
+// RecordK8sPersistentvolumeCapacityDataPoint records a data point for the k8s.persistentvolume.capacity metric.
+func (eb *K8sPersistentvolumeMetricsBuilder) RecordK8sPersistentvolumeCapacityDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sPersistentvolumeCapacity.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
 // RecordK8sPersistentvolumeStatusPhaseDataPoint records a data point for the k8s.persistentvolume.status.phase metric.
@@ -1633,6 +2748,16 @@ func (eb *K8sPersistentvolumeMetricsBuilder) Emit() {
 type K8sPersistentvolumeclaimMetricsBuilder struct {
 	mb     *MetricsBuilder
 	entity *K8sPersistentvolumeclaimEntity
+}
+
+// RecordK8sPersistentvolumeclaimAllocatedDataPoint records a data point for the k8s.persistentvolumeclaim.allocated metric.
+func (eb *K8sPersistentvolumeclaimMetricsBuilder) RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sPersistentvolumeclaimAllocated.recordDataPoint(eb.mb.startTime, ts, val)
+}
+
+// RecordK8sPersistentvolumeclaimCapacityDataPoint records a data point for the k8s.persistentvolumeclaim.capacity metric.
+func (eb *K8sPersistentvolumeclaimMetricsBuilder) RecordK8sPersistentvolumeclaimCapacityDataPoint(ts pcommon.Timestamp, val int64) {
+	eb.mb.metricK8sPersistentvolumeclaimCapacity.recordDataPoint(eb.mb.startTime, ts, val)
 }
 
 // RecordK8sPersistentvolumeclaimStatusPhaseDataPoint records a data point for the k8s.persistentvolumeclaim.status.phase metric.

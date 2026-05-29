@@ -6,16 +6,14 @@ package kubelet // import "github.com/open-telemetry/opentelemetry-collector-con
 import (
 	"time"
 
-	k8s "k8s.io/client-go/kubernetes"
-
-	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
-
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.uber.org/zap"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	k8s "k8s.io/client-go/kubernetes"
 	stats "k8s.io/kubelet/pkg/apis/stats/v1alpha1"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver/internal/metadata"
 )
 

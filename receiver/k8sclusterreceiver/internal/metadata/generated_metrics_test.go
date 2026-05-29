@@ -78,8 +78,14 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount := 0
 			allMetricsCount := 0
+			ebK8sIngress := mb.ForK8sIngress(NewK8sIngressEntity("k8s.ingress.uid-val"))
+			ebK8sServiceaccount := mb.ForK8sServiceaccount(NewK8sServiceaccountEntity("k8s.serviceaccount.uid-val"))
 			ebK8sNamespace := mb.ForK8sNamespace(NewK8sNamespaceEntity("k8s.namespace.uid-val"))
 			ebK8sNode := mb.ForK8sNode(NewK8sNodeEntity("k8s.node.uid-val"))
+			ebK8sRole := mb.ForK8sRole(NewK8sRoleEntity("k8s.role.uid-val"))
+			ebK8sRolebinding := mb.ForK8sRolebinding(NewK8sRolebindingEntity("k8s.rolebinding.uid-val"))
+			ebK8sClusterrole := mb.ForK8sClusterrole(NewK8sClusterroleEntity("k8s.clusterrole.uid-val"))
+			ebK8sClusterrolebinding := mb.ForK8sClusterrolebinding(NewK8sClusterrolebindingEntity("k8s.clusterrolebinding.uid-val"))
 			ebK8sDeployment := mb.ForK8sDeployment(NewK8sDeploymentEntity("k8s.deployment.uid-val"))
 			ebK8sReplicaset := mb.ForK8sReplicaset(NewK8sReplicasetEntity("k8s.replicaset.uid-val"))
 			ebK8sStatefulset := mb.ForK8sStatefulset(NewK8sStatefulsetEntity("k8s.statefulset.uid-val"))
@@ -95,6 +101,14 @@ func TestMetricsBuilder(t *testing.T) {
 			ebK8sPersistentvolumeclaim := mb.ForK8sPersistentvolumeclaim(NewK8sPersistentvolumeclaimEntity("k8s.persistentvolumeclaim.uid-val"))
 			ebK8sHpa := mb.ForK8sHpa(NewK8sHpaEntity("k8s.hpa.uid-val"))
 			ebOpenshiftClusterquota := mb.ForOpenshiftClusterquota(NewOpenshiftClusterquotaEntity("openshift.clusterquota.uid-val"))
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sClusterrole.RecordK8sClusterroleRuleCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sClusterrolebinding.RecordK8sClusterrolebindingSubjectCountDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -168,7 +182,15 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			ebK8sDeployment.RecordK8sDeploymentCurrentDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			ebK8sDeployment.RecordK8sDeploymentDesiredDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sDeployment.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -188,7 +210,15 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			ebK8sIngress.RecordK8sIngressRuleCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			ebK8sJob.RecordK8sJobActivePodsDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sJob.RecordK8sJobBackoffLimitDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -213,11 +243,23 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			ebK8sNode.RecordK8sNodeConditionDataPoint(ts, 1, "condition-val")
 
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sPersistentvolume.RecordK8sPersistentvolumeCapacityDataPoint(ts, 1)
+
 			allMetricsCount++
 			ebK8sPersistentvolume.RecordK8sPersistentvolumeStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeStatusPhasePending)
 
 			allMetricsCount++
 			ebK8sPersistentvolume.RecordK8sPersistentvolumeStorageCapacityDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sPersistentvolumeclaim.RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sPersistentvolumeclaim.RecordK8sPersistentvolumeclaimCapacityDataPoint(ts, 1)
 
 			allMetricsCount++
 			ebK8sPersistentvolumeclaim.RecordK8sPersistentvolumeclaimStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeclaimStatusPhasePending)
@@ -241,7 +283,15 @@ func TestMetricsBuilder(t *testing.T) {
 
 			defaultMetricsCount++
 			allMetricsCount++
+			ebK8sReplicaset.RecordK8sReplicasetCurrentDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
 			ebK8sReplicaset.RecordK8sReplicasetDesiredDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sReplicaset.RecordK8sReplicasetReadyDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -259,6 +309,14 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			ebK8sResourcequota.RecordK8sResourceQuotaUsedDataPoint(ts, 1, "resource-val")
 
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sRole.RecordK8sRoleRuleCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sRolebinding.RecordK8sRolebindingSubjectCountDataPoint(ts, 1)
+
 			allMetricsCount++
 			ebK8sService.RecordK8sServiceEndpointCountDataPoint(ts, 1, AttributeK8sServiceEndpointAddressTypeIPv4, AttributeK8sServiceEndpointConditionReady, "k8s.service.endpoint.zone-val")
 			if tt.name == "reaggregate_set" {
@@ -267,6 +325,14 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			ebK8sService.RecordK8sServiceLoadBalancerIngressCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sService.RecordK8sServicePortCountDataPoint(ts, 1)
+
+			defaultMetricsCount++
+			allMetricsCount++
+			ebK8sServiceaccount.RecordK8sServiceaccountSecretCountDataPoint(ts, 1)
 
 			defaultMetricsCount++
 			allMetricsCount++
@@ -305,8 +371,14 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebOpenshiftClusterquota.RecordOpenshiftClusterquotaUsedDataPoint(ts, 1, "resource-val")
+			ebK8sIngress.Emit()
+			ebK8sServiceaccount.Emit()
 			ebK8sNamespace.Emit()
 			ebK8sNode.Emit()
+			ebK8sRole.Emit()
+			ebK8sRolebinding.Emit()
+			ebK8sClusterrole.Emit()
+			ebK8sClusterrolebinding.Emit()
 			ebK8sDeployment.Emit()
 			ebK8sReplicaset.Emit()
 			ebK8sStatefulset.Emit()
@@ -329,48 +401,141 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetContainerImageTag("container.image.tag-val")
 			rb.SetContainerRuntime("container.runtime-val")
 			rb.SetContainerRuntimeVersion("container.runtime.version-val")
+			rb.SetK8sClusterName("k8s.cluster.name-val")
+			rb.SetK8sClusterroleAnnotations("k8s.clusterrole.annotations-val")
+			rb.SetK8sClusterroleLabels("k8s.clusterrole.labels-val")
+			rb.SetK8sClusterroleName("k8s.clusterrole.name-val")
+			rb.SetK8sClusterroleRules("k8s.clusterrole.rules-val")
+			rb.SetK8sClusterroleStartTime("k8s.clusterrole.start_time-val")
+			rb.SetK8sClusterroleType("k8s.clusterrole.type-val")
+			rb.SetK8sClusterroleUID("k8s.clusterrole.uid-val")
+			rb.SetK8sClusterrolebindingAnnotations("k8s.clusterrolebinding.annotations-val")
+			rb.SetK8sClusterrolebindingLabels("k8s.clusterrolebinding.labels-val")
+			rb.SetK8sClusterrolebindingName("k8s.clusterrolebinding.name-val")
+			rb.SetK8sClusterrolebindingRoleRef("k8s.clusterrolebinding.role_ref-val")
+			rb.SetK8sClusterrolebindingStartTime("k8s.clusterrolebinding.start_time-val")
+			rb.SetK8sClusterrolebindingSubjects("k8s.clusterrolebinding.subjects-val")
+			rb.SetK8sClusterrolebindingType("k8s.clusterrolebinding.type-val")
+			rb.SetK8sClusterrolebindingUID("k8s.clusterrolebinding.uid-val")
 			rb.SetK8sContainerName("k8s.container.name-val")
 			rb.SetK8sContainerStatusCurrentWaitingReason("k8s.container.status.current_waiting_reason-val")
 			rb.SetK8sContainerStatusLastTerminatedReason("k8s.container.status.last_terminated_reason-val")
+			rb.SetK8sCronjobConcurrencyPolicy("k8s.cronjob.concurrency_policy-val")
+			rb.SetK8sCronjobLastScheduleTime("k8s.cronjob.last_schedule_time-val")
+			rb.SetK8sCronjobLastSuccessfulTime("k8s.cronjob.last_successful_time-val")
 			rb.SetK8sCronjobName("k8s.cronjob.name-val")
+			rb.SetK8sCronjobSchedule("k8s.cronjob.schedule-val")
+			rb.SetK8sCronjobStartTime("k8s.cronjob.start_time-val")
+			rb.SetK8sCronjobSuspend("k8s.cronjob.suspend-val")
 			rb.SetK8sCronjobUID("k8s.cronjob.uid-val")
 			rb.SetK8sDaemonsetName("k8s.daemonset.name-val")
+			rb.SetK8sDaemonsetSelectors("k8s.daemonset.selectors-val")
+			rb.SetK8sDaemonsetStartTime("k8s.daemonset.start_time-val")
+			rb.SetK8sDaemonsetStrategy("k8s.daemonset.strategy-val")
 			rb.SetK8sDaemonsetUID("k8s.daemonset.uid-val")
 			rb.SetK8sDeploymentName("k8s.deployment.name-val")
+			rb.SetK8sDeploymentStartTime("k8s.deployment.start_time-val")
 			rb.SetK8sDeploymentUID("k8s.deployment.uid-val")
 			rb.SetK8sHpaName("k8s.hpa.name-val")
 			rb.SetK8sHpaScaletargetrefApiversion("k8s.hpa.scaletargetref.apiversion-val")
 			rb.SetK8sHpaScaletargetrefKind("k8s.hpa.scaletargetref.kind-val")
 			rb.SetK8sHpaScaletargetrefName("k8s.hpa.scaletargetref.name-val")
 			rb.SetK8sHpaUID("k8s.hpa.uid-val")
+			rb.SetK8sIngressAnnotations("k8s.ingress.annotations-val")
+			rb.SetK8sIngressLabels("k8s.ingress.labels-val")
+			rb.SetK8sIngressName("k8s.ingress.name-val")
+			rb.SetK8sIngressNamespace("k8s.ingress.namespace-val")
+			rb.SetK8sIngressRules("k8s.ingress.rules-val")
+			rb.SetK8sIngressStartTime("k8s.ingress.start_time-val")
+			rb.SetK8sIngressType("k8s.ingress.type-val")
+			rb.SetK8sIngressUID("k8s.ingress.uid-val")
+			rb.SetK8sJobEndTime("k8s.job.end_time-val")
 			rb.SetK8sJobName("k8s.job.name-val")
+			rb.SetK8sJobStartTime("k8s.job.start_time-val")
 			rb.SetK8sJobUID("k8s.job.uid-val")
 			rb.SetK8sKubeletVersion("k8s.kubelet.version-val")
 			rb.SetK8sNamespaceName("k8s.namespace.name-val")
+			rb.SetK8sNamespaceStartTime("k8s.namespace.start_time-val")
 			rb.SetK8sNamespaceUID("k8s.namespace.uid-val")
 			rb.SetK8sNodeName("k8s.node.name-val")
 			rb.SetK8sNodeStartTime("k8s.node.start_time-val")
 			rb.SetK8sNodeUID("k8s.node.uid-val")
+			rb.SetK8sPersistentvolumeAccessModes("k8s.persistentvolume.access_modes-val")
+			rb.SetK8sPersistentvolumeAnnotations("k8s.persistentvolume.annotations-val")
+			rb.SetK8sPersistentvolumeFinalizers("k8s.persistentvolume.finalizers-val")
+			rb.SetK8sPersistentvolumeLabels("k8s.persistentvolume.labels-val")
 			rb.SetK8sPersistentvolumeName("k8s.persistentvolume.name-val")
+			rb.SetK8sPersistentvolumeNamespace("k8s.persistentvolume.namespace-val")
+			rb.SetK8sPersistentvolumePhase("k8s.persistentvolume.phase-val")
 			rb.SetK8sPersistentvolumeReclaimPolicyDelete()
+			rb.SetK8sPersistentvolumeStartTime("k8s.persistentvolume.start_time-val")
+			rb.SetK8sPersistentvolumeStorageClass("k8s.persistentvolume.storage_class-val")
+			rb.SetK8sPersistentvolumeType("k8s.persistentvolume.type-val")
 			rb.SetK8sPersistentvolumeUID("k8s.persistentvolume.uid-val")
+			rb.SetK8sPersistentvolumeVolumeMode("k8s.persistentvolume.volume_mode-val")
+			rb.SetK8sPersistentvolumeclaimAccessModes("k8s.persistentvolumeclaim.access_modes-val")
+			rb.SetK8sPersistentvolumeclaimAnnotations("k8s.persistentvolumeclaim.annotations-val")
+			rb.SetK8sPersistentvolumeclaimFinalizers("k8s.persistentvolumeclaim.finalizers-val")
+			rb.SetK8sPersistentvolumeclaimLabels("k8s.persistentvolumeclaim.labels-val")
 			rb.SetK8sPersistentvolumeclaimName("k8s.persistentvolumeclaim.name-val")
+			rb.SetK8sPersistentvolumeclaimNamespace("k8s.persistentvolumeclaim.namespace-val")
+			rb.SetK8sPersistentvolumeclaimPhase("k8s.persistentvolumeclaim.phase-val")
+			rb.SetK8sPersistentvolumeclaimSelector("k8s.persistentvolumeclaim.selector-val")
+			rb.SetK8sPersistentvolumeclaimStartTime("k8s.persistentvolumeclaim.start_time-val")
+			rb.SetK8sPersistentvolumeclaimStorageClass("k8s.persistentvolumeclaim.storage_class-val")
+			rb.SetK8sPersistentvolumeclaimType("k8s.persistentvolumeclaim.type-val")
 			rb.SetK8sPersistentvolumeclaimUID("k8s.persistentvolumeclaim.uid-val")
+			rb.SetK8sPersistentvolumeclaimVolumeMode("k8s.persistentvolumeclaim.volume_mode-val")
+			rb.SetK8sPersistentvolumeclaimVolumeName("k8s.persistentvolumeclaim.volume_name-val")
 			rb.SetK8sPodName("k8s.pod.name-val")
 			rb.SetK8sPodQosClass("k8s.pod.qos_class-val")
+			rb.SetK8sPodStartTime("k8s.pod.start_time-val")
 			rb.SetK8sPodUID("k8s.pod.uid-val")
 			rb.SetK8sReplicasetName("k8s.replicaset.name-val")
+			rb.SetK8sReplicasetStartTime("k8s.replicaset.start_time-val")
 			rb.SetK8sReplicasetUID("k8s.replicaset.uid-val")
 			rb.SetK8sReplicationcontrollerName("k8s.replicationcontroller.name-val")
 			rb.SetK8sReplicationcontrollerUID("k8s.replicationcontroller.uid-val")
 			rb.SetK8sResourcequotaName("k8s.resourcequota.name-val")
 			rb.SetK8sResourcequotaUID("k8s.resourcequota.uid-val")
+			rb.SetK8sRoleAnnotations("k8s.role.annotations-val")
+			rb.SetK8sRoleLabels("k8s.role.labels-val")
+			rb.SetK8sRoleName("k8s.role.name-val")
+			rb.SetK8sRoleNamespace("k8s.role.namespace-val")
+			rb.SetK8sRoleRules("k8s.role.rules-val")
+			rb.SetK8sRoleStartTime("k8s.role.start_time-val")
+			rb.SetK8sRoleType("k8s.role.type-val")
+			rb.SetK8sRoleUID("k8s.role.uid-val")
+			rb.SetK8sRolebindingAnnotations("k8s.rolebinding.annotations-val")
+			rb.SetK8sRolebindingLabels("k8s.rolebinding.labels-val")
+			rb.SetK8sRolebindingName("k8s.rolebinding.name-val")
+			rb.SetK8sRolebindingNamespace("k8s.rolebinding.namespace-val")
+			rb.SetK8sRolebindingRoleRef("k8s.rolebinding.role_ref-val")
+			rb.SetK8sRolebindingStartTime("k8s.rolebinding.start_time-val")
+			rb.SetK8sRolebindingSubjects("k8s.rolebinding.subjects-val")
+			rb.SetK8sRolebindingType("k8s.rolebinding.type-val")
+			rb.SetK8sRolebindingUID("k8s.rolebinding.uid-val")
+			rb.SetK8sServiceClusterIP("k8s.service.cluster_ip-val")
 			rb.SetK8sServiceName("k8s.service.name-val")
+			rb.SetK8sServiceNamespace("k8s.service.namespace-val")
 			rb.SetK8sServicePublishNotReadyAddresses(false)
 			rb.SetK8sServiceTrafficDistribution("k8s.service.traffic_distribution-val")
 			rb.SetK8sServiceType("k8s.service.type-val")
 			rb.SetK8sServiceUID("k8s.service.uid-val")
+			rb.SetK8sServiceaccountAnnotations("k8s.serviceaccount.annotations-val")
+			rb.SetK8sServiceaccountAutomountServiceaccountToken("k8s.serviceaccount.automount_serviceaccount_token-val")
+			rb.SetK8sServiceaccountImagePullSecrets("k8s.serviceaccount.image_pull_secrets-val")
+			rb.SetK8sServiceaccountLabels("k8s.serviceaccount.labels-val")
+			rb.SetK8sServiceaccountName("k8s.serviceaccount.name-val")
+			rb.SetK8sServiceaccountNamespace("k8s.serviceaccount.namespace-val")
+			rb.SetK8sServiceaccountSecrets("k8s.serviceaccount.secrets-val")
+			rb.SetK8sServiceaccountStartTime("k8s.serviceaccount.start_time-val")
+			rb.SetK8sServiceaccountType("k8s.serviceaccount.type-val")
+			rb.SetK8sServiceaccountUID("k8s.serviceaccount.uid-val")
 			rb.SetK8sStatefulsetName("k8s.statefulset.name-val")
+			rb.SetK8sStatefulsetPodManagementPolicy("k8s.statefulset.pod_management_policy-val")
+			rb.SetK8sStatefulsetServiceName("k8s.statefulset.service_name-val")
+			rb.SetK8sStatefulsetStartTime("k8s.statefulset.start_time-val")
 			rb.SetK8sStatefulsetUID("k8s.statefulset.uid-val")
 			rb.SetK8sStorageclassName("k8s.storageclass.name-val")
 			rb.SetOpenshiftClusterquotaName("openshift.clusterquota.name-val")
@@ -410,6 +575,30 @@ func TestMetricsBuilder(t *testing.T) {
 			validatedMetrics := make(map[string]bool)
 			for _, mi := range allMetricsList {
 				switch mi.Name() {
+				case "k8s.clusterrole.rule_count":
+					assert.False(t, validatedMetrics["k8s.clusterrole.rule_count"], "Found a duplicate in the metrics slice: k8s.clusterrole.rule_count")
+					validatedMetrics["k8s.clusterrole.rule_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The count of cluster roles.", mi.Description())
+					assert.Equal(t, "1", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.clusterrolebinding.subject_count":
+					assert.False(t, validatedMetrics["k8s.clusterrolebinding.subject_count"], "Found a duplicate in the metrics slice: k8s.clusterrolebinding.subject_count")
+					validatedMetrics["k8s.clusterrolebinding.subject_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The subject count of cluster role bindings.", mi.Description())
+					assert.Equal(t, "1", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.container.cpu_limit":
 					assert.False(t, validatedMetrics["k8s.container.cpu_limit"], "Found a duplicate in the metrics slice: k8s.container.cpu_limit")
 					validatedMetrics["k8s.container.cpu_limit"] = true
@@ -636,12 +825,36 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.deployment.current":
+					assert.False(t, validatedMetrics["k8s.deployment.current"], "Found a duplicate in the metrics slice: k8s.deployment.current")
+					validatedMetrics["k8s.deployment.current"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of current non-terminated pods targeted by this deployment", mi.Description())
+					assert.Equal(t, "{pod}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.deployment.desired":
 					assert.False(t, validatedMetrics["k8s.deployment.desired"], "Found a duplicate in the metrics slice: k8s.deployment.desired")
 					validatedMetrics["k8s.deployment.desired"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "Number of desired pods in this deployment", mi.Description())
+					assert.Equal(t, "{pod}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.deployment.updated":
+					assert.False(t, validatedMetrics["k8s.deployment.updated"], "Found a duplicate in the metrics slice: k8s.deployment.updated")
+					validatedMetrics["k8s.deployment.updated"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of non-terminated pods targeted by this deployment that have the updated version specified in the deployment spec", mi.Description())
 					assert.Equal(t, "{pod}", mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -696,6 +909,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.ingress.rule_count":
+					assert.False(t, validatedMetrics["k8s.ingress.rule_count"], "Found a duplicate in the metrics slice: k8s.ingress.rule_count")
+					validatedMetrics["k8s.ingress.rule_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The rule count of ingress.", mi.Description())
+					assert.Equal(t, "1", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.job.active_pods":
 					assert.False(t, validatedMetrics["k8s.job.active_pods"], "Found a duplicate in the metrics slice: k8s.job.active_pods")
 					validatedMetrics["k8s.job.active_pods"] = true
@@ -703,6 +928,18 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "The number of actively running pods for a job", mi.Description())
 					assert.Equal(t, "{pod}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.job.backoff_limit":
+					assert.False(t, validatedMetrics["k8s.job.backoff_limit"], "Found a duplicate in the metrics slice: k8s.job.backoff_limit")
+					validatedMetrics["k8s.job.backoff_limit"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Specifies the number of retries before marking a job failed", mi.Description())
+					assert.Empty(t, mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
@@ -783,6 +1020,18 @@ func TestMetricsBuilder(t *testing.T) {
 					conditionAttrVal, ok := dp.Attributes().Get("condition")
 					assert.True(t, ok)
 					assert.Equal(t, "condition-val", conditionAttrVal.Str())
+				case "k8s.persistentvolume.capacity":
+					assert.False(t, validatedMetrics["k8s.persistentvolume.capacity"], "Found a duplicate in the metrics slice: k8s.persistentvolume.capacity")
+					validatedMetrics["k8s.persistentvolume.capacity"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The capacity of persistent volume.", mi.Description())
+					assert.Equal(t, "By", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.persistentvolume.status.phase":
 					assert.False(t, validatedMetrics["k8s.persistentvolume.status.phase"], "Found a duplicate in the metrics slice: k8s.persistentvolume.status.phase")
 					validatedMetrics["k8s.persistentvolume.status.phase"] = true
@@ -810,6 +1059,30 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.False(t, mi.Sum().IsMonotonic())
 					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 					dp := mi.Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.persistentvolumeclaim.allocated":
+					assert.False(t, validatedMetrics["k8s.persistentvolumeclaim.allocated"], "Found a duplicate in the metrics slice: k8s.persistentvolumeclaim.allocated")
+					validatedMetrics["k8s.persistentvolumeclaim.allocated"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The allocated capacity of persistent volume.", mi.Description())
+					assert.Equal(t, "By", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.persistentvolumeclaim.capacity":
+					assert.False(t, validatedMetrics["k8s.persistentvolumeclaim.capacity"], "Found a duplicate in the metrics slice: k8s.persistentvolumeclaim.capacity")
+					validatedMetrics["k8s.persistentvolumeclaim.capacity"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The capacity of persistent volume claim.", mi.Description())
+					assert.Equal(t, "By", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
@@ -895,12 +1168,36 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, ts, dp.Timestamp())
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.replicaset.current":
+					assert.False(t, validatedMetrics["k8s.replicaset.current"], "Found a duplicate in the metrics slice: k8s.replicaset.current")
+					validatedMetrics["k8s.replicaset.current"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of current pods targeted by this replicaset", mi.Description())
+					assert.Equal(t, "{pod}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.replicaset.desired":
 					assert.False(t, validatedMetrics["k8s.replicaset.desired"], "Found a duplicate in the metrics slice: k8s.replicaset.desired")
 					validatedMetrics["k8s.replicaset.desired"] = true
 					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "Number of desired pods in this replicaset", mi.Description())
+					assert.Equal(t, "{pod}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.replicaset.ready":
+					assert.False(t, validatedMetrics["k8s.replicaset.ready"], "Found a duplicate in the metrics slice: k8s.replicaset.ready")
+					validatedMetrics["k8s.replicaset.ready"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "Total number of ready pods (pods that have passed readiness checks) targeted by this replicaset", mi.Description())
 					assert.Equal(t, "{pod}", mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
@@ -961,6 +1258,30 @@ func TestMetricsBuilder(t *testing.T) {
 					resourceAttrVal, ok := dp.Attributes().Get("resource")
 					assert.True(t, ok)
 					assert.Equal(t, "resource-val", resourceAttrVal.Str())
+				case "k8s.role.rule_count":
+					assert.False(t, validatedMetrics["k8s.role.rule_count"], "Found a duplicate in the metrics slice: k8s.role.rule_count")
+					validatedMetrics["k8s.role.rule_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The count of roles.", mi.Description())
+					assert.Equal(t, "1", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.rolebinding.subject_count":
+					assert.False(t, validatedMetrics["k8s.rolebinding.subject_count"], "Found a duplicate in the metrics slice: k8s.rolebinding.subject_count")
+					validatedMetrics["k8s.rolebinding.subject_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The subject count of role bindings.", mi.Description())
+					assert.Equal(t, "1", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "k8s.service.endpoint.count":
 					if tt.name != "reaggregate_set" {
 						assert.False(t, validatedMetrics["k8s.service.endpoint.count"], "Found a duplicate in the metrics slice: k8s.service.endpoint.count")
@@ -1018,6 +1339,30 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "The number of load balancer ingress points (external IPs/hostnames) assigned to the service.", mi.Description())
 					assert.Equal(t, "{ingress}", mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.service.port_count":
+					assert.False(t, validatedMetrics["k8s.service.port_count"], "Found a duplicate in the metrics slice: k8s.service.port_count")
+					validatedMetrics["k8s.service.port_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The number of ports in the service", mi.Description())
+					assert.Empty(t, mi.Unit())
+					dp := mi.Gauge().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
+				case "k8s.serviceaccount.secret_count":
+					assert.False(t, validatedMetrics["k8s.serviceaccount.secret_count"], "Found a duplicate in the metrics slice: k8s.serviceaccount.secret_count")
+					validatedMetrics["k8s.serviceaccount.secret_count"] = true
+					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+					assert.Equal(t, "The count of secrets in Service Account.", mi.Description())
+					assert.Equal(t, "1", mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())

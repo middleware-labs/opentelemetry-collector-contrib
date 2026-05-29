@@ -14,9 +14,9 @@ import (
 	autoscalingv2 "k8s.io/api/autoscaling/v2"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	discoveryv1 "k8s.io/api/discovery/v1"
 	netv1 "k8s.io/api/networking/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	discoveryv1 "k8s.io/api/discovery/v1"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/clusterresourcequota"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/clusterrole"
@@ -41,7 +41,6 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/rolebinding"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/serviceaccount"
-	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/service"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver/internal/statefulset"
 )
 
@@ -117,9 +116,6 @@ func (dc *DataCollector) CollectMetricData(currentTime time.Time) pmetric.Metric
 	})
 	dc.metadataStore.ForEach(gvk.ResourceQuota, func(o any) {
 		resourcequota.RecordMetrics(dc.metricsBuilder, o.(*corev1.ResourceQuota), ts)
-	})
-	dc.metadataStore.ForEach(gvk.Service, func(o any) {
-		service.RecordMetrics(dc.metricsBuilder, o.(*corev1.Service), ts)
 	})
 	dc.metadataStore.ForEach(gvk.ServiceAccount, func(o any) {
 		serviceaccount.RecordMetrics(dc.metricsBuilder, o.(*corev1.ServiceAccount), ts)

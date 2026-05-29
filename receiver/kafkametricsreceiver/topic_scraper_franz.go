@@ -209,6 +209,7 @@ func (s *topicScraperFranz) scrape(ctx context.Context) (pmetric.Metrics, error)
 
 	rb := s.mb.NewResourceBuilder()
 	rb.SetKafkaClusterAlias(s.config.ClusterAlias)
+	rb.SetRuntimeMetricsKafka("true")
 	return s.mb.Emit(metadata.WithResource(rb.Emit())), scrapeErrs.Combine()
 }
 

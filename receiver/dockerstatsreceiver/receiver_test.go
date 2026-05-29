@@ -369,14 +369,15 @@ func TestScrapeV2(t *testing.T) {
 					pmetrictest.IgnoreStartTimestamp(),
 					pmetrictest.IgnoreTimestamp(),
 					pmetrictest.IgnoreResourceAttributeValue(
-					"container.started_on",
-				),
-				pmetrictest.IgnoreResourceMetricsOrder(),
-				pmetrictest.IgnoreMetricValues(
-					"container.uptime", // value depends on time.Now(), making it unpredictable as far as tests go
-				),
-			))
-		})}
+						"container.started_on",
+					),
+					pmetrictest.IgnoreResourceMetricsOrder(),
+					pmetrictest.IgnoreMetricValues(
+						"container.uptime", // value depends on time.Now(), making it unpredictable as far as tests go
+					),
+				))
+			})
+		}
 	}
 }
 

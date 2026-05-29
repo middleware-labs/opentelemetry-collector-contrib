@@ -20,6 +20,14 @@ Total cumulative CPU time (sum of all cores) spent by the container/pod/node sin
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | s | Sum | Double | Cumulative | true | Development |
 
+### container.cpu.usage
+
+Total CPU usage (sum of all cores per second) averaged over the sample window
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cpu} | Gauge | Double | Development |
+
 ### container.cpu.utilization
 
 Container CPU utilization
@@ -115,6 +123,14 @@ Total cumulative CPU time (sum of all cores) spent by the container/pod/node sin
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | s | Sum | Double | Cumulative | true | Development |
+
+### k8s.node.cpu.usage
+
+Total CPU usage (sum of all cores per second) averaged over the sample window
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cpu} | Gauge | Double | Development |
 
 ### k8s.node.cpu.utilization
 
@@ -241,6 +257,14 @@ Total cumulative CPU time (sum of all cores) spent by the container/pod/node sin
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
 | s | Sum | Double | Cumulative | true | Development |
+
+### k8s.pod.cpu.usage
+
+Total CPU usage (sum of all cores per second) averaged over the sample window
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+| {cpu} | Gauge | Double | Development |
 
 ### k8s.pod.cpu.utilization
 
@@ -410,14 +434,6 @@ metrics:
     enabled: true
 ```
 
-### container.cpu.usage
-
-Total CPU usage (sum of all cores per second) averaged over the sample window
-
-| Unit | Metric Type | Value Type | Stability |
-| ---- | ----------- | ---------- | --------- |
-| {cpu} | Gauge | Double | Development |
-
 ### container.uptime
 
 The time since the container started
@@ -449,6 +465,20 @@ Container cpu utilization as a ratio of the container's requests
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | 1 | Gauge | Double | Development |
+
+### k8s.container.ephemeral_storage.usage
+
+Ephemeral storage used by the container.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| By | Sum | Int | Cumulative | false | Development |
+
+#### Attributes
+
+| Name | Description | Values | Requirement Level | Semantic Convention |
+| ---- | ----------- | ------ | ----------------- | ------------------- |
+| fs.type | The type of filesystem component. | Str: ``rootfs``, ``logs`` | Recommended | - |
 
 ### k8s.container.memory.node.utilization
 
@@ -506,14 +536,6 @@ System container memory working_set
 | ---- | ----------- | ---------- | --------- |
 | By | Gauge | Int | Development |
 
-### k8s.node.cpu.usage
-
-Total CPU usage (sum of all cores per second) averaged over the sample window
-
-| Unit | Metric Type | Value Type | Stability |
-| ---- | ----------- | ---------- | --------- |
-| {cpu} | Gauge | Double | Development |
-
 ### k8s.node.uptime
 
 The time since the node started
@@ -529,14 +551,6 @@ Pod cpu utilization as a ratio of the node's capacity
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | 1 | Gauge | Double | Development |
-
-### k8s.pod.cpu.usage
-
-Total CPU usage (sum of all cores per second) averaged over the sample window
-
-| Unit | Metric Type | Value Type | Stability |
-| ---- | ----------- | ---------- | --------- |
-| {cpu} | Gauge | Double | Development |
 
 ### k8s.pod.cpu_limit_utilization
 
@@ -597,28 +611,28 @@ The number of used bytes in the pod volume.
 ## Resource Attributes
 
 | Name | Description | Values | Enabled | Semantic Convention |
-| ---- | ----------- | ------ | ------- |---------------------|
-| aws.volume.id | [DEPRECATED] The id of the AWS Volume | Any Str | false | -                   |
-| container.id | Container id used to identify container | Any Str | true | -                   |
-| fs.type | [DEPRECATED] The filesystem type of the Volume | Any Str | false | -                   |
-| gce.pd.name | [DEPRECATED] The name of the persistent disk in GCE | Any Str | false | -                   |
-| glusterfs.endpoints.name | [DEPRECATED] The endpoint name that details Glusterfs topology | Any Str | false | -                   |
-| glusterfs.path | [DEPRECATED] Glusterfs volume path | Any Str | false | -                   |
-| k8s.cluster.name | The name of the Cluster | Any Str | true |
-| k8s.container.name | Container name used by container runtime | Any Str | true | -                   |
-| k8s.job.name | The name of the Job | Any Str | true |
-| k8s.job.uid | The UID of the Job | Any Str | true |
-| k8s.namespace.name | The name of the namespace that the pod is running in | Any Str | true | -                   |
-| k8s.node.name | The name of the Node | Any Str | true | -                   |
-| k8s.node.start_time | The start time of the Node. | Any Str | true | - |                  |
-| k8s.node.system_container.name | The name of the system container | Any Str | true | -                   |
-| k8s.node.uid | The UID of the Node | Any Str | false |
-| k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str | true | -                   |
-| k8s.pod.name | The name of the Pod | Any Str | true |
-| k8s.pod.start_time | The start time of the Pod. | Any Str | true | -                   |
-| k8s.pod.uid | The UID of the Pod | Any Str | true | -                   |
-| k8s.service.name | The name of the Service | Any Str | true |
-| k8s.service_account.name | The name of the Service-account | Any Str | true |
-| k8s.volume.name | The name of the Volume | Any Str | true | -                   |
-| k8s.volume.type | The type of the Volume | Any Str | true | -                   |
-| partition | [DEPRECATED] The partition in the Volume | Any Str | false | -                   |
+| ---- | ----------- | ------ | ------- | ------------------- |
+| aws.volume.id | [DEPRECATED] The id of the AWS Volume | Any Str | false | - |
+| container.id | Container id used to identify container | Any Str | true | - |
+| fs.type | [DEPRECATED] The filesystem type of the Volume | Any Str | false | - |
+| gce.pd.name | [DEPRECATED] The name of the persistent disk in GCE | Any Str | false | - |
+| glusterfs.endpoints.name | [DEPRECATED] The endpoint name that details Glusterfs topology | Any Str | false | - |
+| glusterfs.path | [DEPRECATED] Glusterfs volume path | Any Str | false | - |
+| k8s.cluster.name | The name of the Cluster | Any Str | true | - |
+| k8s.container.name | Container name used by container runtime | Any Str | true | - |
+| k8s.job.name | The name of the Job | Any Str | true | - |
+| k8s.job.uid | The UID of the Job | Any Str | true | - |
+| k8s.namespace.name | The name of the namespace that the pod is running in | Any Str | true | - |
+| k8s.node.name | The name of the Node | Any Str | true | - |
+| k8s.node.start_time | The start time of the Node. | Any Str | true | - |
+| k8s.node.system_container.name | The name of the system container | Any Str | true | - |
+| k8s.node.uid | The UID of the Node | Any Str | true | - |
+| k8s.persistentvolumeclaim.name | The name of the Persistent Volume Claim | Any Str | true | - |
+| k8s.pod.name | The name of the Pod | Any Str | true | - |
+| k8s.pod.start_time | The start time of the Pod. | Any Str | true | - |
+| k8s.pod.uid | The UID of the Pod | Any Str | true | - |
+| k8s.service.name | The name of the Service | Any Str | true | - |
+| k8s.service_account.name | The name of the Service-account | Any Str | true | - |
+| k8s.volume.name | The name of the Volume | Any Str | true | - |
+| k8s.volume.type | The type of the Volume | Any Str | true | - |
+| partition | [DEPRECATED] The partition in the Volume | Any Str | false | - |

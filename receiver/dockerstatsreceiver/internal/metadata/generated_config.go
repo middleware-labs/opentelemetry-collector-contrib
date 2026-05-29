@@ -1901,6 +1901,26 @@ func (ms *ContainerRestartsMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+// ContainerStatusMetricConfig provides config for the container.status metric.
+type ContainerStatusMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *ContainerStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // ContainerUptimeMetricConfig provides config for the container.uptime metric.
 type ContainerUptimeMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -1993,6 +2013,7 @@ type MetricsConfig struct {
 	ContainerPidsCount                         ContainerPidsCountMetricConfig                         `mapstructure:"container.pids.count"`
 	ContainerPidsLimit                         ContainerPidsLimitMetricConfig                         `mapstructure:"container.pids.limit"`
 	ContainerRestarts                          ContainerRestartsMetricConfig                          `mapstructure:"container.restarts"`
+	ContainerStatus                            ContainerStatusMetricConfig                            `mapstructure:"container.status"`
 	ContainerUptime                            ContainerUptimeMetricConfig                            `mapstructure:"container.uptime"`
 }
 
@@ -2242,6 +2263,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		ContainerRestarts: ContainerRestartsMetricConfig{
 			Enabled: false,
 		},
+		ContainerStatus: ContainerStatusMetricConfig{
+			Enabled: true,
+		},
 		ContainerUptime: ContainerUptimeMetricConfig{
 			Enabled: false,
 		},
@@ -2283,6 +2307,7 @@ type ResourceAttributesConfig struct {
 	ContainerImageName   ResourceAttributeConfig `mapstructure:"container.image.name"`
 	ContainerName        ResourceAttributeConfig `mapstructure:"container.name"`
 	ContainerRuntime     ResourceAttributeConfig `mapstructure:"container.runtime"`
+	ContainerStartedOn   ResourceAttributeConfig `mapstructure:"container.started_on"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -2306,6 +2331,9 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 			Enabled: true,
 		},
 		ContainerRuntime: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		ContainerStartedOn: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}

@@ -2232,12 +2232,12 @@ func DefaultMetricsConfig() MetricsConfig {
 			EnabledAttributes:   []MysqlSortsMetricAttributeKey{MysqlSortsMetricAttributeKeySorts},
 		},
 		MysqlStatementEventCount: MysqlStatementEventCountMetricConfig{
-			Enabled:             true,
+			Enabled:             false,
 			AggregationStrategy: AggregationStrategySum,
 			EnabledAttributes:   []MysqlStatementEventCountMetricAttributeKey{MysqlStatementEventCountMetricAttributeKeySchema, MysqlStatementEventCountMetricAttributeKeyDigest, MysqlStatementEventCountMetricAttributeKeyDigestText, MysqlStatementEventCountMetricAttributeKeyEventState},
 		},
 		MysqlStatementEventWaitTime: MysqlStatementEventWaitTimeMetricConfig{
-			Enabled:             true,
+			Enabled:             false,
 			AggregationStrategy: AggregationStrategySum,
 			EnabledAttributes:   []MysqlStatementEventWaitTimeMetricAttributeKey{MysqlStatementEventWaitTimeMetricAttributeKeySchema, MysqlStatementEventWaitTimeMetricAttributeKeyDigest, MysqlStatementEventWaitTimeMetricAttributeKeyDigestText},
 		},
