@@ -1,0 +1,361 @@
+default:
+all_set:
+  metrics:
+    postgresql.analyzed:
+      enabled: true
+    postgresql.autoanalyzed:
+      enabled: true
+    postgresql.autovacuumed:
+      enabled: true
+    postgresql.backends:
+      enabled: true
+    postgresql.bgwriter.buffers.allocated:
+      enabled: true
+    postgresql.bgwriter.buffers.writes:
+      enabled: true
+    postgresql.bgwriter.checkpoint.count:
+      enabled: true
+    postgresql.bgwriter.duration:
+      enabled: true
+    postgresql.bgwriter.maxwritten:
+      enabled: true
+    postgresql.blk_read_time:
+      enabled: true
+    postgresql.blk_write_time:
+      enabled: true
+    postgresql.blks_hit:
+      enabled: true
+    postgresql.blks_read:
+      enabled: true
+    postgresql.blocks_read:
+      enabled: true
+    postgresql.buffer_hit:
+      enabled: true
+    postgresql.commits:
+      enabled: true
+    postgresql.connection.count:
+      enabled: true
+    postgresql.connection.max:
+      enabled: true
+    postgresql.database.count:
+      enabled: true
+    postgresql.database.locks:
+      enabled: true
+    postgresql.db_size:
+      enabled: true
+    postgresql.deadlocks:
+      enabled: true
+    postgresql.function.calls:
+      enabled: true
+    postgresql.index.blocks_read:
+      enabled: true
+    postgresql.index.rows_read:
+      enabled: true
+    postgresql.index.scans:
+      enabled: true
+    postgresql.index.size:
+      enabled: true
+    postgresql.index_bloat:
+      enabled: true
+    postgresql.live_rows:
+      enabled: true
+    postgresql.operations:
+      enabled: true
+    postgresql.query.count:
+      enabled: true
+    postgresql.query.total_exec_time:
+      enabled: true
+    postgresql.replication.data_delay:
+      enabled: true
+    postgresql.rollbacks:
+      enabled: true
+    postgresql.rows:
+      enabled: true
+    postgresql.rows_deleted:
+      enabled: true
+    postgresql.rows_fetched:
+      enabled: true
+    postgresql.rows_inserted:
+      enabled: true
+    postgresql.rows_updated:
+      enabled: true
+    postgresql.sequential_scans:
+      enabled: true
+    postgresql.table.count:
+      enabled: true
+    postgresql.table.size:
+      enabled: true
+    postgresql.table.vacuum.count:
+      enabled: true
+    postgresql.table_bloat:
+      enabled: true
+    postgresql.temp.io:
+      enabled: true
+    postgresql.temp_files:
+      enabled: true
+    postgresql.toast.blocks_hit:
+      enabled: true
+    postgresql.toast.index.blocks_read:
+      enabled: true
+    postgresql.toast.size:
+      enabled: true
+    postgresql.transactions.duration.max:
+      enabled: true
+    postgresql.transactions.duration.sum:
+      enabled: true
+    postgresql.tup_deleted:
+      enabled: true
+    postgresql.tup_fetched:
+      enabled: true
+    postgresql.tup_inserted:
+      enabled: true
+    postgresql.tup_returned:
+      enabled: true
+    postgresql.tup_updated:
+      enabled: true
+    postgresql.wal.age:
+      enabled: true
+    postgresql.wal.count:
+      enabled: true
+    postgresql.wal.delay:
+      enabled: true
+    postgresql.wal.lag:
+      enabled: true
+    postgresql.wal.size:
+      enabled: true
+  events:
+    db.server.query_sample:
+      enabled: true
+    db.server.top_query:
+      enabled: true
+  resource_attributes:
+    postgresql.database.name:
+      enabled: true
+    postgresql.db.version:
+      enabled: true
+    postgresql.index.name:
+      enabled: true
+    postgresql.schema.name:
+      enabled: true
+    postgresql.table.name:
+      enabled: true
+    service.instance.id:
+      enabled: true
+none_set:
+  metrics:
+    postgresql.analyzed:
+      enabled: false
+    postgresql.autoanalyzed:
+      enabled: false
+    postgresql.autovacuumed:
+      enabled: false
+    postgresql.backends:
+      enabled: false
+    postgresql.bgwriter.buffers.allocated:
+      enabled: false
+    postgresql.bgwriter.buffers.writes:
+      enabled: false
+    postgresql.bgwriter.checkpoint.count:
+      enabled: false
+    postgresql.bgwriter.duration:
+      enabled: false
+    postgresql.bgwriter.maxwritten:
+      enabled: false
+    postgresql.blk_read_time:
+      enabled: false
+    postgresql.blk_write_time:
+      enabled: false
+    postgresql.blks_hit:
+      enabled: false
+    postgresql.blks_read:
+      enabled: false
+    postgresql.blocks_read:
+      enabled: false
+    postgresql.buffer_hit:
+      enabled: false
+    postgresql.commits:
+      enabled: false
+    postgresql.connection.count:
+      enabled: false
+    postgresql.connection.max:
+      enabled: false
+    postgresql.database.count:
+      enabled: false
+    postgresql.database.locks:
+      enabled: false
+    postgresql.db_size:
+      enabled: false
+    postgresql.deadlocks:
+      enabled: false
+    postgresql.function.calls:
+      enabled: false
+    postgresql.index.blocks_read:
+      enabled: false
+    postgresql.index.rows_read:
+      enabled: false
+    postgresql.index.scans:
+      enabled: false
+    postgresql.index.size:
+      enabled: false
+    postgresql.index_bloat:
+      enabled: false
+    postgresql.live_rows:
+      enabled: false
+    postgresql.operations:
+      enabled: false
+    postgresql.query.count:
+      enabled: false
+    postgresql.query.total_exec_time:
+      enabled: false
+    postgresql.replication.data_delay:
+      enabled: false
+    postgresql.rollbacks:
+      enabled: false
+    postgresql.rows:
+      enabled: false
+    postgresql.rows_deleted:
+      enabled: false
+    postgresql.rows_fetched:
+      enabled: false
+    postgresql.rows_inserted:
+      enabled: false
+    postgresql.rows_updated:
+      enabled: false
+    postgresql.sequential_scans:
+      enabled: false
+    postgresql.table.count:
+      enabled: false
+    postgresql.table.size:
+      enabled: false
+    postgresql.table.vacuum.count:
+      enabled: false
+    postgresql.table_bloat:
+      enabled: false
+    postgresql.temp.io:
+      enabled: false
+    postgresql.temp_files:
+      enabled: false
+    postgresql.toast.blocks_hit:
+      enabled: false
+    postgresql.toast.index.blocks_read:
+      enabled: false
+    postgresql.toast.size:
+      enabled: false
+    postgresql.transactions.duration.max:
+      enabled: false
+    postgresql.transactions.duration.sum:
+      enabled: false
+    postgresql.tup_deleted:
+      enabled: false
+    postgresql.tup_fetched:
+      enabled: false
+    postgresql.tup_inserted:
+      enabled: false
+    postgresql.tup_returned:
+      enabled: false
+    postgresql.tup_updated:
+      enabled: false
+    postgresql.wal.age:
+      enabled: false
+    postgresql.wal.count:
+      enabled: false
+    postgresql.wal.delay:
+      enabled: false
+    postgresql.wal.lag:
+      enabled: false
+    postgresql.wal.size:
+      enabled: false
+  events:
+    db.server.query_sample:
+      enabled: false
+    db.server.top_query:
+      enabled: false
+  resource_attributes:
+    postgresql.database.name:
+      enabled: false
+    postgresql.db.version:
+      enabled: false
+    postgresql.index.name:
+      enabled: false
+    postgresql.schema.name:
+      enabled: false
+    postgresql.table.name:
+      enabled: false
+    service.instance.id:
+      enabled: false
+filter_set_include:
+  resource_attributes:
+    postgresql.database.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+      events_include:
+        - regexp: ".*"
+    postgresql.db.version:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+      events_include:
+        - regexp: ".*"
+    postgresql.index.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+      events_include:
+        - regexp: ".*"
+    postgresql.schema.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+      events_include:
+        - regexp: ".*"
+    postgresql.table.name:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+      events_include:
+        - regexp: ".*"
+    service.instance.id:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+      events_include:
+        - regexp: ".*"
+filter_set_exclude:
+  resource_attributes:
+    postgresql.database.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "postgresql.database.name-val"
+      events_exclude:
+        - strict: "postgresql.database.name-val"
+    postgresql.db.version:
+      enabled: true
+      metrics_exclude:
+        - strict: "postgresql.db.version-val"
+      events_exclude:
+        - strict: "postgresql.db.version-val"
+    postgresql.index.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "postgresql.index.name-val"
+      events_exclude:
+        - strict: "postgresql.index.name-val"
+    postgresql.schema.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "postgresql.schema.name-val"
+      events_exclude:
+        - strict: "postgresql.schema.name-val"
+    postgresql.table.name:
+      enabled: true
+      metrics_exclude:
+        - strict: "postgresql.table.name-val"
+      events_exclude:
+        - strict: "postgresql.table.name-val"
+    service.instance.id:
+      enabled: true
+      metrics_exclude:
+        - strict: "service.instance.id-val"
+      events_exclude:
+        - strict: "service.instance.id-val"
