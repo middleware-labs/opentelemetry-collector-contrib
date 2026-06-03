@@ -1,0 +1,67 @@
+resourceMetrics:
+  - resource:
+      attributes:
+        - key: mysql.instance.endpoint
+          value:
+            stringValue: localhost:3306
+        - key: mysql.db.version
+          value:
+            stringValue: "8.0.27"
+    scopeMetrics:
+      - metrics:
+          - description: The number of pages in the InnoDB buffer pool.
+            name: mysql.buffer_pool.pages
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "233"
+                  attributes:
+                    - key: kind
+                      value:
+                        stringValue: free
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            unit: "1"
+          - description: The number of rows inserted in the database as per the performance schema. 
+            name: mysql.performance.rows_inserted
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true 
+            unit: '{row}'
+          - description: The number of rows read in the database as per the performance schema. 
+            name: mysql.performance.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true
+            unit: '{row}'
+          - description: The number of rows updated in the database as per the performance schema. 
+            name: mysql.performance.rows_updated
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true
+            unit: '{row}'
+          - description: The number of rows deleted in the database as per the performance schema. 
+            name: mysql.performance.rows_deleted
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000" 
+              isMonotonic: true 
+            unit: '{row}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mysqlreceiver
+          version: latest
