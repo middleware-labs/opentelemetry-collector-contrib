@@ -1,4 +1,4 @@
-type: mwmongodb
+type: mongodb
 
 status:
   class: receiver
