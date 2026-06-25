@@ -27,14 +27,17 @@ type Config struct {
 	// MetricsBuilderConfig defines which metrics/attributes to enable for the scraper
 	metadata.MetricsBuilderConfig `mapstructure:",squash"`
 	// Deprecated - Transport option will be removed in v0.102.0
-	Hosts            []confignet.TCPAddrConfig `mapstructure:"hosts"`
-	Username         string                    `mapstructure:"username"`
-	Password         configopaque.String       `mapstructure:"password"`
-	ReplicaSet       string                    `mapstructure:"replica_set,omitempty"`
-	Timeout          time.Duration             `mapstructure:"timeout"`
-	DirectConnection bool                      `mapstructure:"direct_connection"`
-	ProfilingLevel   int32                     `mapstructure:"profiling_level"`
-	SlowMs           int32                     `mapstructure:"slow_ms"`
+	Hosts                   []confignet.TCPAddrConfig `mapstructure:"hosts"`
+	Username                string                    `mapstructure:"username"`
+	Password                configopaque.String       `mapstructure:"password"`
+	AuthMechanism           string                    `mapstructure:"auth_mechanism,omitempty"`
+	AuthSource              string                    `mapstructure:"auth_source,omitempty"`
+	AuthMechanismProperties map[string]string         `mapstructure:"auth_mechanism_properties,omitempty"`
+	ReplicaSet              string                    `mapstructure:"replica_set,omitempty"`
+	Timeout                 time.Duration             `mapstructure:"timeout"`
+	DirectConnection        bool                      `mapstructure:"direct_connection"`
+	ProfilingLevel          int32                     `mapstructure:"profiling_level"`
+	SlowMs                  int32                     `mapstructure:"slow_ms"`
 }
 
 func (c *Config) Validate() error {
@@ -49,10 +52,12 @@ func (c *Config) Validate() error {
 		}
 	}
 
-	if c.Username != "" && c.Password == "" {
-		err = multierr.Append(err, errors.New("username provided without password"))
-	} else if c.Username == "" && c.Password != "" {
-		err = multierr.Append(err, errors.New("password provided without user"))
+	if c.AuthMechanism == "" {
+		if c.Username != "" && c.Password == "" {
+			err = multierr.Append(err, errors.New("username provided without password"))
+		} else if c.Username == "" && c.Password != "" {
+			err = multierr.Append(err, errors.New("password provided without user"))
+		}
 	}
 
 	if _, tlsErr := c.LoadTLSConfig(context.Background()); tlsErr != nil {
@@ -74,11 +79,9 @@ func (c *Config) ClientOptions(secondary bool) *options.ClientOptions {
 			clientOptions.SetConnectTimeout(c.Timeout)
 		}
 
-		if c.Username != "" && c.Password != "" {
-			clientOptions.SetAuth(options.Credential{
-				Username: c.Username,
-				Password: string(c.Password),
-			})
+		if c.Username != "" && c.Password != "" || c.AuthMechanism != "" {
+			credential := c.buildCredential()
+			clientOptions.SetAuth(credential)
 		}
 
 		return clientOptions
@@ -104,16 +107,33 @@ func (c *Config) ClientOptions(secondary bool) *options.ClientOptions {
 		clientOptions.SetDirect(c.DirectConnection)
 	}
 
-	if c.Username != "" && c.Password != "" {
-		clientOptions.SetAuth(options.Credential{
-			AuthMechanism: "SCRAM-SHA-1",
-			Username:      c.Username,
-			Password:      string(c.Password),
-			AuthSource:    "admin",
-		})
+	if c.Username != "" && c.Password != "" || c.AuthMechanism != "" {
+		credential := c.buildCredential()
+		clientOptions.SetAuth(credential)
 	}
 
 	return clientOptions
+}
+
+func (c *Config) buildCredential() options.Credential {
+	credential := options.Credential{}
+	if c.Username != "" {
+		credential.Username = c.Username
+	}
+	if c.Password != "" {
+		credential.Password = string(c.Password)
+		credential.PasswordSet = true
+	}
+	if c.AuthMechanism != "" {
+		credential.AuthMechanism = c.AuthMechanism
+	}
+	if c.AuthSource != "" {
+		credential.AuthSource = c.AuthSource
+	}
+	if len(c.AuthMechanismProperties) > 0 {
+		credential.AuthMechanismProperties = c.AuthMechanismProperties
+	}
+	return credential
 }
 
 func (c *Config) hostlist() []string {
