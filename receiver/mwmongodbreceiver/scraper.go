@@ -212,9 +212,13 @@ func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.
 		s.collectJumboStats(ctx, now, dbName, errs)
 		collectionNames, err := s.client.ListCollectionNames(ctx, dbName)
 		if err != nil {
-			s.logger.Error("failed to fetch collection names", zap.String("database", dbName), zap.Error(err))
-			errs.AddPartial(1, fmt.Errorf("failed to fetch collection names: %w", err))
-			return
+			// A single database we can't list collections on (e.g. missing listCollections
+			// privilege on a system/restricted DB) must not abort collection for the remaining
+			// databases. Skip this DB's collection metrics and continue with the rest.
+			s.logger.Warn("skipping collection metrics for database: failed to fetch collection names",
+				zap.String("database", dbName), zap.Error(err))
+			errs.AddPartial(1, fmt.Errorf("failed to fetch collection names for %s: %w", dbName, err))
+			continue
 		}
 		s.logger.Info("collecting per-collection metrics",
 			zap.String("database", dbName), zap.Int("collection_count", len(collectionNames)))
@@ -297,6 +301,17 @@ func (s *mongodbScraper) collectAdminDatabase(ctx context.Context, now pcommon.T
 func (s *mongodbScraper) collectTopStats(ctx context.Context, now pcommon.Timestamp, errs *scrapererror.ScrapeErrors) {
 	topStats, err := s.client.TopStats(ctx)
 	if err != nil {
+		// The `top` admin command returns per-collection usage for every namespace in a
+		// single BSON document. On servers with a very large number of collections this
+		// response exceeds MongoDB's hard 16MB document limit (BSONObjectTooLarge) and there
+		// is no server-side way to filter or page it. Skip top stats in that case instead of
+		// reporting a scrape error every cycle; all other metrics are unaffected.
+		if strings.Contains(err.Error(), "BSONObjectTooLarge") {
+			s.logger.Warn("skipping top stats: response exceeds MongoDB 16MB document limit (too many collections)",
+				zap.Error(err))
+			return
+		}
+		s.logger.Error("failed to fetch top stats metrics", zap.Error(err))
 		errs.AddPartial(1, fmt.Errorf("failed to fetch top stats metrics: %w", err))
 		return
 	}

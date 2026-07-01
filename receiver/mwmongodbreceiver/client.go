@@ -174,6 +174,14 @@ func (c *mongodbClient) CollectionStats(ctx context.Context, database, collectio
 			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
 		return nil, err
 	}
+	if len(collectionStats) == 0 {
+		// A $collStats aggregation can legitimately return no documents (e.g. a view or a
+		// collection that disappeared mid-scrape). Guard against indexing an empty slice,
+		// which would panic and crash the whole scrape.
+		c.logger.Warn("$collStats returned no documents",
+			zap.String("database", database), zap.String("collection", collectionName))
+		return nil, fmt.Errorf("no collStats returned for %s.%s", database, collectionName)
+	}
 	c.logger.Info("$collStats aggregation succeeded",
 		zap.String("database", database), zap.String("collection", collectionName))
 	return collectionStats[0], nil
