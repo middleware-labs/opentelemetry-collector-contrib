@@ -132,7 +132,9 @@ func (c *mongodbClient) IndexStats(ctx context.Context, database, collectionName
 		zap.String("database", database), zap.String("collection", collectionName))
 	db := c.Database(database)
 	collection := db.Collection(collectionName)
-	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{bson.D{bson.E{Key: "$indexStats", Value: bson.M{}}}})
+	// Use the scrape ctx (not context.Background) so the operation honors the receiver's
+	// timeout/cancellation instead of hanging indefinitely on a locked/slow collection.
+	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{bson.D{bson.E{Key: "$indexStats", Value: bson.M{}}}})
 	if err != nil {
 		c.logger.Error("$indexStats aggregation failed",
 			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
@@ -141,7 +143,7 @@ func (c *mongodbClient) IndexStats(ctx context.Context, database, collectionName
 	defer cursor.Close(ctx)
 
 	var indexStats []bson.M
-	err = cursor.All(context.Background(), &indexStats)
+	err = cursor.All(ctx, &indexStats)
 	if err != nil {
 		c.logger.Error("failed to decode $indexStats result",
 			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
@@ -159,7 +161,9 @@ func (c *mongodbClient) CollectionStats(ctx context.Context, database, collectio
 		zap.String("database", database), zap.String("collection", collectionName))
 	db := c.Client.Database(database)
 	collection := db.Collection(collectionName)
-	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{
+	// Use the scrape ctx (not context.Background) so the operation honors the receiver's
+	// timeout/cancellation instead of hanging indefinitely on a locked/slow collection.
+	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{
 		{{"$collStats", bson.D{{"storageStats", bson.D{}}}}},
 	})
 	if err != nil {
@@ -169,7 +173,7 @@ func (c *mongodbClient) CollectionStats(ctx context.Context, database, collectio
 	}
 	defer cursor.Close(ctx)
 	var collectionStats []bson.M
-	if err = cursor.All(context.Background(), &collectionStats); err != nil {
+	if err = cursor.All(ctx, &collectionStats); err != nil {
 		c.logger.Error("failed to decode $collStats result",
 			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
 		return nil, err

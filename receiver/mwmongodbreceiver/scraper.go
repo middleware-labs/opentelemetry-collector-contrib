@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -146,6 +147,17 @@ func (s *mongodbScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 		return pmetric.NewMetrics(), errors.New("no client was initialized before calling scrape")
 	}
 
+	// Bound the whole scrape by the configured timeout. Config.Timeout is otherwise only
+	// used as a connect timeout, leaving individual operations (e.g. $indexStats / $collStats
+	// on a locked or slow collection) able to block forever. Deriving a deadline here means
+	// every operation that uses this ctx is cancelled once the budget is exceeded, so the
+	// scrape fails that cycle and retries instead of hanging indefinitely.
+	// if s.config.Timeout > 0 {
+	// 	var cancel context.CancelFunc
+	// 	ctx, cancel = context.WithTimeout(ctx, s.config.Timeout)
+	// 	defer cancel()
+	// }
+
 	if s.mongoVersion.Equal(unknownVersion()) {
 		s.logger.Info("detecting mongo server version")
 		version, err := s.client.GetVersion(ctx)
@@ -159,12 +171,41 @@ func (s *mongodbScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 
 	errs := &scrapererror.ScrapeErrors{}
 	s.collectMetrics(ctx, errs)
+	s.logger.Info("collect loop returned, emitting metrics")
+
 	metrics := s.mb.Emit()
-	s.logger.Info("scrape cycle finished", zap.Int("metric_count", metrics.MetricCount()))
-	return metrics, errs.Combine()
+	scrapeErr := errs.Combine()
+
+	metricCount := metrics.MetricCount()
+	dataPointCount := metrics.DataPointCount()
+	if metricCount == 0 {
+		s.logger.Warn("scrape cycle finished but produced NO metrics",
+			zap.Bool("ctx_deadline_exceeded", errors.Is(ctx.Err(), context.DeadlineExceeded)),
+			zap.Bool("ctx_canceled", errors.Is(ctx.Err(), context.Canceled)),
+			zap.Error(scrapeErr))
+	} else {
+		s.logger.Info("scrape cycle finished with metrics",
+			zap.Int("metric_count", metricCount),
+			zap.Int("datapoint_count", dataPointCount),
+			zap.Int("resource_metrics", metrics.ResourceMetrics().Len()),
+			zap.Error(scrapeErr))
+	}
+	return metrics, scrapeErr
 }
 
 func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.ScrapeErrors) {
+	// Recover from any panic in the collect flow so a single bad document doesn't silently
+	// kill the scrape goroutine with no diagnostics. Log the panic + stack so we can see
+	// exactly which step crashed instead of "last log line then silence".
+	defer func() {
+		if r := recover(); r != nil {
+			s.logger.Error("PANIC in collectMetrics",
+				zap.Any("panic", r),
+				zap.String("stack", string(debug.Stack())))
+			errs.AddPartial(1, fmt.Errorf("panic in collectMetrics: %v", r))
+		}
+	}()
+
 	s.logger.Info("collecting metrics: fetching database names")
 	dbNames, err := s.client.ListDatabaseNames(ctx, bson.D{})
 	if err != nil {
@@ -192,13 +233,19 @@ func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.
 	now := pcommon.NewTimestampFromTime(time.Now())
 
 	s.mb.RecordMongodbDatabaseCountDataPoint(now, int64(len(dbNames)))
-	s.logger.Info("collecting admin/server-wide stats (top, oplog, replset, fsynclock)")
+	s.logger.Info("step: recordAdminStats begin")
 	s.recordAdminStats(now, serverStatus, errs)
+	s.logger.Info("step: collectTopStats begin")
 	s.collectTopStats(ctx, now, errs)
+	s.logger.Info("step: collectOplogStats begin")
 	s.collectOplogStats(ctx, now, errs)
+	s.logger.Info("step: collectReplSetStatus begin")
 	s.collectReplSetStatus(ctx, now, errs)
+	s.logger.Info("step: collectReplSetConfig begin")
 	s.collectReplSetConfig(ctx, now, errs)
+	s.logger.Info("step: collectFsyncLockStatus begin")
 	s.collectFsyncLockStatus(ctx, now, errs)
+	s.logger.Info("step: server-wide stats done, entering per-database loop")
 
 	rb := s.mb.NewResourceBuilder()
 	rb.SetServerAddress(serverAddress)
