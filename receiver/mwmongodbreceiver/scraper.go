@@ -70,22 +70,32 @@ func newMongodbScraper(settings receiver.Settings, config *Config) *mongodbScrap
 }
 
 func (s *mongodbScraper) start(ctx context.Context, _ component.Host) error {
+	s.logger.Info("starting mongodb receiver: connecting to primary",
+		zap.Strings("hosts", s.config.hostlist()),
+		zap.Bool("auth_enabled", s.config.Username != "" || s.config.AuthMechanism != ""),
+		zap.String("auth_mechanism", s.config.AuthMechanism))
+
 	c, err := newClient(ctx, s.config, s.logger, false)
 	if err != nil {
+		s.logger.Error("failed to create mongo client for primary", zap.Error(err))
 		return fmt.Errorf("create mongo client: %w", err)
 	}
 	s.client = c
+	s.logger.Info("mongodb primary client created (connection/auth will be verified on first command)")
 
 	// Skip secondary host discovery if direct connection is enabled
 	if s.config.DirectConnection {
+		s.logger.Info("direct_connection enabled, skipping secondary host discovery")
 		return nil
 	}
 
+	s.logger.Info("discovering secondary hosts from replica set status")
 	secondaries, err := s.findSecondaryHosts(ctx)
 	if err != nil {
 		s.logger.Warn("failed to find secondary hosts", zap.Error(err))
 		return nil
 	}
+	s.logger.Info("secondary host discovery complete", zap.Int("secondary_count", len(secondaries)))
 
 	for _, secondary := range secondaries {
 		secondaryConfig := *s.config
@@ -101,8 +111,10 @@ func (s *mongodbScraper) start(ctx context.Context, _ component.Host) error {
 			continue
 		}
 		s.secondaryClients = append(s.secondaryClients, client)
+		s.logger.Info("connected to secondary", zap.String("host", secondary))
 	}
 
+	s.logger.Info("mongodb receiver start complete", zap.Int("secondary_clients", len(s.secondaryClients)))
 	return nil
 }
 
@@ -128,14 +140,18 @@ func (s *mongodbScraper) shutdown(ctx context.Context) error {
 }
 
 func (s *mongodbScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
+	s.logger.Info("scrape cycle started")
 	if s.client == nil {
+		s.logger.Error("scrape called before client was initialized")
 		return pmetric.NewMetrics(), errors.New("no client was initialized before calling scrape")
 	}
 
 	if s.mongoVersion.Equal(unknownVersion()) {
+		s.logger.Info("detecting mongo server version")
 		version, err := s.client.GetVersion(ctx)
 		if err == nil {
 			s.mongoVersion = version
+			s.logger.Info("mongo server version detected", zap.String("version", version.String()))
 		} else {
 			s.logger.Warn("determine mongo version", zap.Error(err))
 		}
@@ -143,30 +159,40 @@ func (s *mongodbScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
 
 	errs := &scrapererror.ScrapeErrors{}
 	s.collectMetrics(ctx, errs)
-	return s.mb.Emit(), errs.Combine()
+	metrics := s.mb.Emit()
+	s.logger.Info("scrape cycle finished", zap.Int("metric_count", metrics.MetricCount()))
+	return metrics, errs.Combine()
 }
 
 func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.ScrapeErrors) {
+	s.logger.Info("collecting metrics: fetching database names")
 	dbNames, err := s.client.ListDatabaseNames(ctx, bson.D{})
 	if err != nil {
+		s.logger.Error("failed to fetch database names", zap.Error(err))
 		errs.AddPartial(1, fmt.Errorf("failed to fetch database names: %w", err))
 		return
 	}
+	s.logger.Info("fetched database names", zap.Int("database_count", len(dbNames)), zap.Strings("databases", dbNames))
 
+	s.logger.Info("fetching admin server status")
 	serverStatus, sErr := s.client.ServerStatus(ctx, "admin")
 	if sErr != nil {
+		s.logger.Error("failed to fetch server status", zap.Error(sErr))
 		errs.Add(fmt.Errorf("failed to fetch server status: %w", sErr))
 		return
 	}
 	serverAddress, serverPort, aErr := serverAddressAndPort(serverStatus)
 	if aErr != nil {
+		s.logger.Error("failed to fetch server address and port", zap.Error(aErr))
 		errs.Add(fmt.Errorf("failed to fetch server address and port: %w", aErr))
 		return
 	}
+	s.logger.Info("resolved server address", zap.String("address", serverAddress), zap.Int64("port", serverPort))
 
 	now := pcommon.NewTimestampFromTime(time.Now())
 
 	s.mb.RecordMongodbDatabaseCountDataPoint(now, int64(len(dbNames)))
+	s.logger.Info("collecting admin/server-wide stats (top, oplog, replset, fsynclock)")
 	s.recordAdminStats(now, serverStatus, errs)
 	s.collectTopStats(ctx, now, errs)
 	s.collectOplogStats(ctx, now, errs)
@@ -181,13 +207,17 @@ func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.
 
 	// Collect metrics for each database
 	for _, dbName := range dbNames {
+		s.logger.Info("collecting per-database metrics", zap.String("database", dbName))
 		s.collectDatabase(ctx, now, dbName, errs)
 		s.collectJumboStats(ctx, now, dbName, errs)
 		collectionNames, err := s.client.ListCollectionNames(ctx, dbName)
 		if err != nil {
+			s.logger.Error("failed to fetch collection names", zap.String("database", dbName), zap.Error(err))
 			errs.AddPartial(1, fmt.Errorf("failed to fetch collection names: %w", err))
 			return
 		}
+		s.logger.Info("collecting per-collection metrics",
+			zap.String("database", dbName), zap.Int("collection_count", len(collectionNames)))
 
 		for _, collectionName := range collectionNames {
 			s.collectIndexStats(ctx, now, dbName, collectionName, errs)
@@ -199,6 +229,7 @@ func (s *mongodbScraper) collectMetrics(ctx context.Context, errs *scrapererror.
 		rb.SetDatabase(dbName)
 		s.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
+	s.logger.Info("collectMetrics finished for all databases")
 }
 
 func (s *mongodbScraper) collectDatabase(ctx context.Context, now pcommon.Timestamp, databaseName string, errs *scrapererror.ScrapeErrors) {

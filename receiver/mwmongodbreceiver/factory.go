@@ -15,6 +15,7 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 	"go.opentelemetry.io/collector/scraper"
 	"go.opentelemetry.io/collector/scraper/scraperhelper"
+	"go.uber.org/zap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongodbreceiver/internal/metadata"
 )
@@ -52,6 +53,10 @@ func createMetricsReceiver(
 	consumer consumer.Metrics,
 ) (receiver.Metrics, error) {
 	cfg := rConf.(*Config)
+	params.Logger.Info("creating mongodb metrics receiver",
+		zap.Int("hosts", len(cfg.Hosts)),
+		zap.Bool("direct_connection", cfg.DirectConnection),
+		zap.Bool("tls_enabled", !cfg.ClientConfig.Insecure))
 	ms := newMongodbScraper(params, cfg)
 
 	s, err := scraper.NewMetrics(

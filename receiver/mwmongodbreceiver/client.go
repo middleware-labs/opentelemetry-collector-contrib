@@ -49,10 +49,19 @@ type mongodbClient struct {
 // newClient creates a new client to connect and query mongo for the
 // mongodbreceiver
 var newClient = func(_ context.Context, config *Config, logger *zap.Logger, secondary bool) (client, error) {
+	logger.Info("creating mongo client",
+		zap.Strings("hosts", config.hostlist()),
+		zap.Bool("secondary", secondary),
+		zap.Bool("auth_enabled", config.Username != "" || config.AuthMechanism != ""),
+		zap.String("auth_mechanism", config.AuthMechanism),
+		zap.String("auth_source", config.AuthSource))
+
 	driver, err := mongo.Connect(config.ClientOptions(secondary))
 	if err != nil {
+		logger.Error("mongo.Connect failed", zap.Error(err))
 		return nil, err
 	}
+	logger.Info("mongo client created (credentials not verified until first command runs)")
 	return &mongodbClient{
 		cfg:    config,
 		logger: logger,
@@ -62,11 +71,24 @@ var newClient = func(_ context.Context, config *Config, logger *zap.Logger, seco
 
 // RunCommand executes a query against a database. Relies on connection to be established via `Connect()`
 func (c *mongodbClient) RunCommand(ctx context.Context, database string, command bson.M) (bson.M, error) {
+	cmdName := ""
+	for k := range command {
+		cmdName = k
+		break
+	}
+	c.logger.Info("running command", zap.String("database", database), zap.String("command", cmdName))
+
 	db := c.Database(database)
 	result := db.RunCommand(ctx, command)
 
 	var document bson.M
 	err := result.Decode(&document)
+	if err != nil {
+		c.logger.Error("command failed",
+			zap.String("database", database), zap.String("command", cmdName), zap.Error(err))
+		return document, err
+	}
+	c.logger.Info("command succeeded", zap.String("database", database), zap.String("command", cmdName))
 	return document, err
 }
 
@@ -92,17 +114,28 @@ func (c *mongodbClient) TopStats(ctx context.Context) (bson.M, error) {
 // SetAuthorizedCollections allows a user without the required privilege to run the command ListCollections.
 // more information can be found here: https://pkg.go.dev/go.mongodb.org/mongo-driver@v1.9.0/mongo#Database.ListCollectionNames
 func (c *mongodbClient) ListCollectionNames(ctx context.Context, database string) ([]string, error) {
+	c.logger.Info("listing collection names", zap.String("database", database))
 	lcOpts := options.ListCollections().SetAuthorizedCollections(true)
-	return c.Database(database).ListCollectionNames(ctx, bson.D{}, lcOpts)
+	names, err := c.Database(database).ListCollectionNames(ctx, bson.D{}, lcOpts)
+	if err != nil {
+		c.logger.Error("failed to list collection names", zap.String("database", database), zap.Error(err))
+		return nil, err
+	}
+	c.logger.Info("listed collection names", zap.String("database", database), zap.Int("count", len(names)))
+	return names, nil
 }
 
 // IndexStats returns the index stats per collection for a given database
 // more information can be found here: https://www.mongodb.com/docs/manual/reference/operator/aggregation/indexStats/
 func (c *mongodbClient) IndexStats(ctx context.Context, database, collectionName string) ([]bson.M, error) {
+	c.logger.Info("running $indexStats aggregation",
+		zap.String("database", database), zap.String("collection", collectionName))
 	db := c.Database(database)
 	collection := db.Collection(collectionName)
 	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{bson.D{bson.E{Key: "$indexStats", Value: bson.M{}}}})
 	if err != nil {
+		c.logger.Error("$indexStats aggregation failed",
+			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -110,27 +143,39 @@ func (c *mongodbClient) IndexStats(ctx context.Context, database, collectionName
 	var indexStats []bson.M
 	err = cursor.All(context.Background(), &indexStats)
 	if err != nil {
+		c.logger.Error("failed to decode $indexStats result",
+			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
 		return nil, err
 	}
+	c.logger.Info("$indexStats aggregation succeeded",
+		zap.String("database", database), zap.String("collection", collectionName), zap.Int("count", len(indexStats)))
 	return indexStats, nil
 }
 
 // CollectionStats returns the collection stats per collection for a given database
 // more information can be found here: https://www.mongodb.com/docs/manual/reference/operator/aggregation/collStats/
 func (c *mongodbClient) CollectionStats(ctx context.Context, database, collectionName string) (bson.M, error) {
+	c.logger.Info("running $collStats aggregation",
+		zap.String("database", database), zap.String("collection", collectionName))
 	db := c.Client.Database(database)
 	collection := db.Collection(collectionName)
 	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{
 		{{"$collStats", bson.D{{"storageStats", bson.D{}}}}},
 	})
 	if err != nil {
+		c.logger.Error("$collStats aggregation failed",
+			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 	var collectionStats []bson.M
 	if err = cursor.All(context.Background(), &collectionStats); err != nil {
+		c.logger.Error("failed to decode $collStats result",
+			zap.String("database", database), zap.String("collection", collectionName), zap.Error(err))
 		return nil, err
 	}
+	c.logger.Info("$collStats aggregation succeeded",
+		zap.String("database", database), zap.String("collection", collectionName))
 	return collectionStats[0], nil
 }
 
