@@ -11,8 +11,13 @@ SELECT
   queryid::TEXT,
   rolname,
   rows::TEXT,
+{{- if .hasPG13Columns }}
   total_exec_time,
   total_plan_time,
+{{- else }}
+  total_time AS total_exec_time,
+  0::float8 AS total_plan_time,
+{{- end }}
   blk_read_time,
   blk_write_time
 FROM
@@ -22,5 +27,5 @@ FROM
 WHERE
   query != '<insufficient privilege>'
   AND query NOT LIKE '/* otel-collector-ignore */%'
-ORDER BY calls DESC
+ORDER BY {{ .orderByExecTimeCol }} DESC
 LIMIT {{ .limit }};

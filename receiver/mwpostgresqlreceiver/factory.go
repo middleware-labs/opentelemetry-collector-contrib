@@ -159,6 +159,24 @@ func createLogsReceiver(
 		opts = append(opts, opt)
 	}
 
+	if cfg.SchemaCollection.Enabled {
+		// schema collection does not need cache, but we do not want to make it
+		// nil, so create one size 1 cache as a placeholder.
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
+			return ns.scrapeSchemaCollection(ctx)
+		}, scraper.WithShutdown(ns.shutdown))
+		if err != nil {
+			return nil, err
+		}
+		opt := scraperhelper.AddFactoryWithConfig(
+			scraper.NewFactory(metadata.Type, nil,
+				scraper.WithLogs(func(context.Context, scraper.Settings, component.Config) (scraper.Logs, error) {
+					return s, nil
+				}, component.StabilityLevelAlpha)), nil)
+		opts = append(opts, opt)
+	}
+
 	return scraperhelper.NewLogsController(
 		&cfg.ControllerConfig, params, logsConsumer, opts...,
 	)
