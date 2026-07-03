@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -51,11 +52,17 @@ type postgreSQLScraper struct {
 	lb            *metadata.LogsBuilder
 	excludes      map[string]struct{}
 	cache         *lru.Cache[string, float64]
+	changeTracker *XminChangeTracker
 	// if enabled, uses a separated attribute for the schema
 	separateSchemaAttr   bool
 	queryPlanCache       *expirable.LRU[string, string]
 	newestQueryTimestamp float64
-	serviceInstanceID    string
+	topQueryDisabled     bool
+	// seenQuerySamples tracks (pid:query_start) keys for queries already
+	// emitted, so the same execution is never sent twice across scrapes.
+	seenQuerySamples  map[string]struct{}
+	serviceInstanceID string
+	lastSchemaCheck   time.Time
 }
 
 type errsMux struct {
@@ -108,8 +115,10 @@ func newPostgreSQLScraper(
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
 		excludes:           excludes,
 		cache:              cache,
+		changeTracker:      NewXminChangeTracker(1000), // Maintain state across scrapes
 		queryPlanCache:     queryPlanCache,
 		separateSchemaAttr: separateSchemaAttr,
+		seenQuerySamples:   make(map[string]struct{}),
 		serviceInstanceID:  getInstanceID(config.Endpoint, settings.Logger),
 	}
 }
@@ -205,7 +214,9 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 	defer dbClient.Close()
 
 	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder(), "", "", "", "")
-	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
+	logs := p.lb.Emit(metadata.WithLogsResource(rb.Emit()))
+	stripEmptyLogAttrs(logs)
+	return logs, nil
 }
 
 func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (plog.Logs, error) {
@@ -214,7 +225,9 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 	p.collectTopQuery(ctx, p.clientFactory, maxRowsPerQuery, topNQuery, maxExplainEachInterval, &errs, p.logger)
 
 	rb := p.setupResourceBuilder(p.lb.NewResourceBuilder(), "", "", "", "")
-	return p.lb.Emit(metadata.WithLogsResource(rb.Emit())), nil
+	logs := p.lb.Emit(metadata.WithLogsResource(rb.Emit()))
+	stripEmptyLogAttrs(logs)
+	return logs, nil
 }
 
 func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient client, limit int64, mux *errsMux, logger *zap.Logger) {
@@ -226,7 +239,26 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 		mux.addPartial(err)
 		return
 	}
+
+	// Build a set of (pid:query_start:sorted_blocking_pids) keys visible in this
+	// scrape. Any key already in seenQuerySamples was emitted before and is
+	// skipped. Including the sorted blocking-pid set in the key means a query
+	// re-emits whenever its blocking-pid set changes (becomes blocked, blocking
+	// changes, or unblocks), even though pid+query_start are unchanged.
+	currentSeen := make(map[string]struct{}, len(attributes))
+
 	for _, atts := range attributes {
+		state := atts[dbAttributePrefix+querySampleColumnState].(string)
+		pid := atts[dbAttributePrefix+querySampleColumnPID].(int64)
+		queryStart := atts[dbAttributePrefix+querySampleColumnQueryStart].(string)
+		blockingPids, _ := atts[dbAttributePrefix+querySampleColumnBlockingPids].([]any)
+
+		key := fmt.Sprintf("%d:%s:%s", pid, queryStart, blockingPidsToKey(blockingPids))
+		currentSeen[key] = struct{}{}
+		if _, alreadySeen := p.seenQuerySamples[key]; alreadySeen {
+			continue
+		}
+
 		// Use a background context so query-sample logs are not automatically linked to the scrape context.
 		logCtx := context.Background()
 		if ctxFromQuery, ok := atts[querySampleTraceContextKey]; ok {
@@ -234,43 +266,102 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 				logCtx = ctx
 			}
 		}
+		comment, _ := atts["db.query.comment"].(string)
 		p.lb.RecordDbServerQuerySampleEvent(logCtx,
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
 			atts[string(semconv.DBNamespaceKey)].(string),
+			atts["event.type"].(string),
 			atts[string(semconv.DBQueryTextKey)].(string),
+			comment,
+			atts["db.query.tables"].(string),
 			atts[string(semconv.UserNameKey)].(string),
-			atts[dbAttributePrefix+querySampleColumnState].(string),
-			atts[dbAttributePrefix+querySampleColumnPID].(int64),
+			state,
+			pid,
 			atts[dbAttributePrefix+querySampleColumnApplicationName].(string),
 			atts[string(semconv.NetworkPeerAddressKey)].(string),
 			atts[string(semconv.NetworkPeerPortKey)].(int64),
 			atts[dbAttributePrefix+querySampleColumnClientHostname].(string),
-			atts[dbAttributePrefix+querySampleColumnQueryStart].(string),
+			atts[dbAttributePrefix+querySampleColumnBackendType].(string),
+			atts[dbAttributePrefix+querySampleColumnXactStart].(string),
+			queryStart,
+			atts[dbAttributePrefix+querySampleColumnStateChange].(string),
 			atts[dbAttributePrefix+querySampleColumnWaitEvent].(string),
 			atts[dbAttributePrefix+querySampleColumnWaitEventType].(string),
+			blockingPids,
+			atts[dbAttributePrefix+querySampleColumnBackendXid].(int64),
 			atts[dbAttributePrefix+querySampleColumnQueryID].(string),
 			atts[postgresqlTotalExecTimeAttributeName].(float64),
 		)
 	}
+
+	// Swap in the current set. Rows that disappeared from pg_stat_activity
+	// (connection closed or new query started on that PID) are automatically
+	// removed, so a re-execution with a fresh query_start will be emitted.
+	p.seenQuerySamples = currentSeen
 }
 
 func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory postgreSQLClientFactory, limit, topNQuery, maxExplainEachInterval int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 
-	defaultDbClient, err := clientFactory.getClient(defaultPostgreSQLDatabase)
-	if err != nil {
-		logger.Error("failed to create db client for default postgresql database")
-		mux.addPartial(err)
+	if p.topQueryDisabled {
 		return
 	}
 
-	defer defaultDbClient.Close()
+	candidateDatabases := make([]string, 0, len(p.config.Databases)+1)
+	seen := make(map[string]struct{}, len(p.config.Databases)+1)
+	for _, db := range p.config.Databases {
+		if _, excluded := p.excludes[db]; excluded {
+			continue
+		}
+		if _, ok := seen[db]; ok {
+			continue
+		}
+		seen[db] = struct{}{}
+		candidateDatabases = append(candidateDatabases, db)
+	}
+	if _, ok := seen[defaultPostgreSQLDatabase]; !ok {
+		candidateDatabases = append(candidateDatabases, defaultPostgreSQLDatabase)
+	}
 
-	rows, err := defaultDbClient.getTopQuery(ctx, limit, logger)
-	if err != nil {
-		logger.Error("failed to get top query", zap.Error(err))
+	var rows []map[string]any
+	extensionMissing := false
+	var lastErr error
+	scrapedTopQuery := false
+	for _, database := range candidateDatabases {
+		dbClient, err := clientFactory.getClient(database)
+		if err != nil {
+			lastErr = err
+			logger.Warn("failed to create db client while scraping top query", zap.String("database", database), zap.Error(err))
+			continue
+		}
+
+		rows, err = dbClient.getTopQuery(ctx, limit, logger)
+		closeErr := dbClient.Close()
+		if closeErr != nil {
+			logger.Error("failed to close", zap.Error(closeErr))
+		}
+		if err == nil {
+			scrapedTopQuery = true
+			break
+		}
+		lastErr = err
+		if strings.Contains(err.Error(), `relation "pg_stat_statements" does not exist`) {
+			extensionMissing = true
+			logger.Warn("pg_stat_statements is unavailable on database while scraping top query", zap.String("database", database))
+			continue
+		}
+		logger.Error("failed to get top query", zap.String("database", database), zap.Error(err))
 		mux.addPartial(err)
+		return
+	}
+	if !scrapedTopQuery && extensionMissing && lastErr != nil {
+		p.topQueryDisabled = true
+		logger.Warn("disabling top query collection for this receiver instance because pg_stat_statements is unavailable in all candidate databases")
+		return
+	}
+	if !scrapedTopQuery && lastErr != nil {
+		mux.addPartial(lastErr)
 		return
 	}
 
@@ -357,28 +448,51 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		if !ok && explained < maxExplainEachInterval {
 			database := item.Value[string(semconv.DBNamespaceKey)].(string)
 			dbClient, err := clientFactory.getClient(database)
-			if err == nil {
+			if err != nil {
+				logger.Warn("skipping explain: failed to get db client",
+					zap.String("queryID", queryID),
+					zap.String("database", database),
+					zap.Error(err))
+			} else {
 				plan, err = dbClient.explainQuery(rawQuery, queryID, logger)
 				if err != nil {
-					logger.Error("failed to explain query", zap.String("query", rawQuery), zap.Error(err))
+					logger.Warn("explain failed for query, caching empty plan",
+						zap.String("queryID", queryID),
+						zap.Error(err))
 				}
-				// to avoid flood the error message. there are some internal queries meant to not be
-				// explained. we wait for the cache to expire and report the error again.
+				// Cache the plan (empty or not) to avoid flooding errors on every scrape.
+				// The plan cache TTL controls when a re-attempt is made.
 				p.queryPlanCache.Add(queryID+"-plan", plan)
-				err = dbClient.Close()
-				if err != nil {
-					logger.Error("failed to close", zap.Error(err))
+				if closeErr := dbClient.Close(); closeErr != nil {
+					logger.Error("failed to close db client after explain", zap.Error(closeErr))
 				}
+				explained++
 			}
-			explained++
 		}
 
+		// Extract table names from raw query for db.query.tables enrichment
+		tables := strings.Join(extractTablesFromQuery(rawQuery), ",")
+		// user.name is aliased from rolname
+		rolname, _ := item.Value[dbAttributePrefix+"rolname"].(string)
+
+		logCtx := context.Background()
+		if ctxFromQuery, ok := item.Value[querySampleTraceContextKey]; ok {
+			if c, ok := ctxFromQuery.(context.Context); ok {
+				logCtx = c
+			}
+		}
+
+		topComment, _ := item.Value["db.query.comment"].(string)
 		p.lb.RecordDbServerTopQueryEvent(
-			context.Background(),
+			logCtx,
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
 			item.Value[string(semconv.DBNamespaceKey)].(string),
+			"top_query",
 			query,
+			topComment,
+			tables,
+			rolname,
 			item.Value[dbAttributePrefix+callsColumnName].(int64),
 			item.Value[dbAttributePrefix+rowsColumnName].(int64),
 			item.Value[dbAttributePrefix+sharedBlksDirtiedColumnName].(int64),
@@ -388,7 +502,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			item.Value[dbAttributePrefix+tempBlksReadColumnName].(int64),
 			item.Value[dbAttributePrefix+tempBlksWrittenColumnName].(int64),
 			queryID,
-			item.Value[dbAttributePrefix+"rolname"].(string),
+			rolname,
 			item.Value[dbAttributePrefix+totalExecTimeColumnName].(float64),
 			item.Value[dbAttributePrefix+totalPlanTimeColumnName].(float64),
 			plan,
@@ -942,4 +1056,28 @@ func getInstanceID(instanceString string, logger *zap.Logger) string {
 		}
 	}
 	return host + ":" + port
+}
+
+// blockingPidsToKey renders a (presumed already-sorted) []any of int64 PIDs as a
+// comma-joined string suitable for inclusion in the seenQuerySamples dedup key.
+// The empty slice yields "".
+func blockingPidsToKey(pids []any) string {
+	if len(pids) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	for i, v := range pids {
+		if i > 0 {
+			b.WriteByte(',')
+		}
+		switch n := v.(type) {
+		case int64:
+			b.WriteString(strconv.FormatInt(n, 10))
+		case int:
+			b.WriteString(strconv.Itoa(n))
+		default:
+			fmt.Fprintf(&b, "%v", v)
+		}
+	}
+	return b.String()
 }
