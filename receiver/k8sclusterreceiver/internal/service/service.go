@@ -154,10 +154,17 @@ func GetMetadata(svc *corev1.Service) map[experimentalmetricmetadata.ResourceID]
 func GetPodServiceTags(pod *corev1.Pod, services map[string]cache.Store) map[string]string {
 	properties := map[string]string{}
 
+	if pod == nil || services == nil {
+		return properties
+	}
+
 	for _, storeKey := range [2]string{metadata.ClusterWideInformerKey, pod.Namespace} {
-		if servicesStore, ok := services[storeKey]; ok {
+		if servicesStore, ok := services[storeKey]; ok && servicesStore != nil {
 			for _, ser := range servicesStore.List() {
-				serObj := ser.(*corev1.Service)
+				serObj, ok := ser.(*corev1.Service)
+				if !ok || serObj == nil {
+					continue
+				}
 				if serObj.Namespace == pod.Namespace &&
 					labels.Set(serObj.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
 					properties[fmt.Sprintf("%s%s", constants.K8sServicePrefix, serObj.Name)] = ""
@@ -167,4 +174,37 @@ func GetPodServiceTags(pod *corev1.Pod, services map[string]cache.Store) map[str
 		}
 	}
 	return properties
+}
+
+// GetPodServiceName resolves the name of the first service whose selector matches
+// the pod, reading only from the service stores. It is the read-only equivalent of
+// the label decoration that was previously done on cached objects in the watcher's
+// event handlers, and must not mutate the pod or any service object.
+//
+// It is defensive against a nil pod, a nil services map, and any store entry that is
+// not a *corev1.Service (e.g. a cache tombstone), so it never panics.
+func GetPodServiceName(pod *corev1.Pod, services map[string]cache.Store) (string, bool) {
+	if pod == nil || services == nil {
+		return "", false
+	}
+	for _, storeKey := range [2]string{metadata.ClusterWideInformerKey, pod.Namespace} {
+		servicesStore, ok := services[storeKey]
+		if !ok || servicesStore == nil {
+			continue
+		}
+		for _, ser := range servicesStore.List() {
+			serObj, ok := ser.(*corev1.Service)
+			if !ok || serObj == nil {
+				continue
+			}
+			if len(serObj.Spec.Selector) == 0 {
+				continue
+			}
+			if serObj.Namespace == pod.Namespace &&
+				labels.Set(serObj.Spec.Selector).AsSelectorPreValidated().Matches(labels.Set(pod.Labels)) {
+				return serObj.Name, true
+			}
+		}
+	}
+	return "", false
 }
