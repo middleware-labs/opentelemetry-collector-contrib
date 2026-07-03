@@ -77,7 +77,7 @@ func (dc *DataCollector) CollectMetricData(currentTime time.Time) pmetric.Metric
 	customRMs := pmetric.NewResourceMetricsSlice()
 
 	dc.metadataStore.ForEach(gvk.Pod, func(o any) {
-		pod.RecordMetrics(dc.settings.Logger, dc.metricsBuilder, o.(*corev1.Pod), ts)
+		pod.RecordMetrics(dc.settings.Logger, dc.metricsBuilder, o.(*corev1.Pod), dc.metadataStore, ts)
 	})
 	dc.metadataStore.ForEach(gvk.Node, func(o any) {
 		crm := node.CustomMetrics(dc.settings, dc.metricsBuilder.NewResourceBuilder(), o.(*corev1.Node),
