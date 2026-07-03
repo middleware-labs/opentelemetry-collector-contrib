@@ -74,7 +74,7 @@ func Transform(pod *corev1.Pod) *corev1.Pod {
 	return newPod
 }
 
-func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, ts pcommon.Timestamp) {
+func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.Pod, mc *metadata.Store, ts pcommon.Timestamp) {
 	var jobName, jobUID string
 	ownerReference := findOwnerWithKind(pod.OwnerReferences, constants.K8sKindJob)
 	if ownerReference != nil && ownerReference.Kind == constants.K8sKindJob {
@@ -91,9 +91,12 @@ func RecordMetrics(logger *zap.Logger, mb *metadata.MetricsBuilder, pod *corev1.
 	e.SetK8sNamespaceName(pod.Namespace)
 	e.SetK8sNodeName(pod.Spec.NodeName)
 	e.SetK8sPodStartTime(pod.GetCreationTimestamp().String())
-	svcName, ok := pod.Labels[constants.MWK8sServiceName]
-	if ok {
-		e.SetK8sServiceName(svcName)
+	// Resolve the owning service read-only from the service store instead of from a
+	// label stamped onto the (shared, cache-owned) pod object, which used to race.
+	if mc != nil {
+		if svcName, ok := service.GetPodServiceName(pod, mc.Get(gvk.Service)); ok {
+			e.SetK8sServiceName(svcName)
+		}
 	}
 	e.SetK8sServiceaccountName(pod.Spec.ServiceAccountName)
 	eb := mb.ForK8sPod(e)
