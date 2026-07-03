@@ -23,6 +23,9 @@ const (
 
 const (
 	querySampleColumnApplicationName      = "application_name"
+	querySampleColumnBackendType          = "backend_type"
+	querySampleColumnBackendXid           = "backend_xid"
+	querySampleColumnBlockingPids         = "blocking_pids"
 	querySampleColumnClientAddr           = "client_addr"
 	querySampleColumnClientHostname       = "client_hostname"
 	querySampleColumnClientPort           = "client_port"
@@ -34,9 +37,11 @@ const (
 	querySampleColumnQueryStart           = "query_start"
 	querySampleColumnQueryStartTimestamp  = "_query_start_timestamp"
 	querySampleColumnState                = "state"
+	querySampleColumnStateChange          = "state_change"
 	querySampleColumnUsename              = "usename"
 	querySampleColumnWaitEvent            = "wait_event"
 	querySampleColumnWaitEventType        = "wait_event_type"
+	querySampleColumnXactStart            = "xact_start"
 )
 
 const (

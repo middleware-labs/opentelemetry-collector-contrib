@@ -7,20 +7,30 @@ SELECT
     COALESCE(query_start::TEXT, '') AS query_start,
     COALESCE(wait_event_type, '') AS wait_event_type,
     COALESCE(wait_event, '') AS wait_event,
+    COALESCE(backend_type, '') AS backend_type,
+    COALESCE(xact_start::TEXT, '') AS xact_start,
+    COALESCE(state_change::TEXT, '') AS state_change,
+    COALESCE(backend_xid::TEXT, '') AS backend_xid,
     COALESCE(query_id::TEXT, '') AS query_id,
     COALESCE(pid::TEXT, '') AS pid,
     COALESCE(application_name::TEXT, '') AS application_name,
+    COALESCE(
+      CASE WHEN COALESCE(wait_event_type, '') = 'Lock'
+           THEN pg_blocking_pids(pid)::TEXT
+      END,
+      ''
+    ) AS blocking_pids,
     EXTRACT(EPOCH FROM query_start) AS _query_start_timestamp,
     state,
     query,
     CASE
     WHEN state = 'active' THEN
-        EXTRACT(EPOCH FROM (clock_timestamp() - query_start)) * 1e3
+      EXTRACT(EPOCH FROM (clock_timestamp() - query_start)) * 1e3
     WHEN state IN ('idle','idle in transaction','idle in transaction (aborted)')
-        AND state_change IS NOT NULL THEN
-        EXTRACT(EPOCH FROM (state_change - query_start)) * 1e3
+         AND state_change IS NOT NULL THEN
+      EXTRACT(EPOCH FROM (state_change - query_start)) * 1e3
     ELSE
-        NULL
+      NULL
     END AS duration_ms
 FROM pg_stat_activity
 WHERE     
@@ -28,10 +38,12 @@ WHERE
       TRIM(query), 
       ''
     ) != ''
-    AND NOT (
+    AND query != '<insufficient privilege>'
+    AND query NOT LIKE '/* otel-collector-ignore */%'
+    AND NOT COALESCE(
 
       query_start < TO_TIMESTAMP(123440.111)
-      AND state = 'idle'
-    )   
+      AND state = 'idle',
+      false
+    )
 LIMIT 30;
-

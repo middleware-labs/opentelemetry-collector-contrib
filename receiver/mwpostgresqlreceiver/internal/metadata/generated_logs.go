@@ -4,7 +4,6 @@ package metadata
 
 import (
 	"context"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/filter"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -13,12 +12,59 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+type eventDbServerExtensionsCollection struct {
+	data   plog.LogRecordSlice // data buffer for generated log records.
+	config EventConfig         // event config provided by user.
+}
+
+func (e *eventDbServerExtensionsCollection) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbOidAttributeValue int64, dbPostgresqlVersionNumAttributeValue int64, dbPostgresqlVersionStringAttributeValue string, cloudProviderAttributeValue string, eventTypeAttributeValue string, collectionTypeAttributeValue string, collectionSchemaVersionAttributeValue int64, collectionExtensionCountAttributeValue int64, collectionExtensionsAttributeValue string, collectionCollectedAtAttributeValue int64) {
+	if !e.config.Enabled {
+		return
+	}
+	dp := e.data.AppendEmpty()
+	dp.SetEventName("db.server.extensions_collection")
+	dp.SetTimestamp(timestamp)
+
+	if span := trace.SpanContextFromContext(ctx); span.IsValid() {
+		dp.SetTraceID(pcommon.TraceID(span.TraceID()))
+		dp.SetSpanID(pcommon.SpanID(span.SpanID()))
+	}
+	dp.Attributes().PutStr("db.system.name", dbSystemNameAttributeValue)
+	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	dp.Attributes().PutInt("db.oid", dbOidAttributeValue)
+	dp.Attributes().PutInt("db.postgresql.version_num", dbPostgresqlVersionNumAttributeValue)
+	dp.Attributes().PutStr("db.postgresql.version_string", dbPostgresqlVersionStringAttributeValue)
+	dp.Attributes().PutStr("cloud.provider", cloudProviderAttributeValue)
+	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
+	dp.Attributes().PutStr("collection.type", collectionTypeAttributeValue)
+	dp.Attributes().PutInt("collection.schema_version", collectionSchemaVersionAttributeValue)
+	dp.Attributes().PutInt("collection.extension_count", collectionExtensionCountAttributeValue)
+	dp.Attributes().PutStr("collection.extensions", collectionExtensionsAttributeValue)
+	dp.Attributes().PutInt("collection.collected_at", collectionCollectedAtAttributeValue)
+
+}
+
+// emit appends recorded event data to a events slice and prepares it for recording another set of log records.
+func (e *eventDbServerExtensionsCollection) emit(lrs plog.LogRecordSlice) {
+	if e.config.Enabled && e.data.Len() > 0 {
+		e.data.MoveAndAppendTo(lrs)
+	}
+}
+
+func newEventDbServerExtensionsCollection(cfg EventConfig) eventDbServerExtensionsCollection {
+	e := eventDbServerExtensionsCollection{config: cfg}
+	if cfg.Enabled {
+		e.data = plog.NewLogRecordSlice()
+	}
+	return e
+}
+
 type eventDbServerQuerySample struct {
 	data   plog.LogRecordSlice // data buffer for generated log records.
 	config EventConfig         // event config provided by user.
 }
 
-func (e *eventDbServerQuerySample) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, userNameAttributeValue string, postgresqlStateAttributeValue string, postgresqlPidAttributeValue int64, postgresqlApplicationNameAttributeValue string, networkPeerAddressAttributeValue string, networkPeerPortAttributeValue int64, postgresqlClientHostnameAttributeValue string, postgresqlQueryStartAttributeValue string, postgresqlWaitEventAttributeValue string, postgresqlWaitEventTypeAttributeValue string, postgresqlQueryIDAttributeValue string, postgresqlTotalExecTimeAttributeValue float64) {
+func (e *eventDbServerQuerySample) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, eventTypeAttributeValue string, dbQueryTextAttributeValue string, dbQueryCommentAttributeValue string, dbQueryTablesAttributeValue string, userNameAttributeValue string, postgresqlStateAttributeValue string, postgresqlPidAttributeValue int64, postgresqlApplicationNameAttributeValue string, networkPeerAddressAttributeValue string, networkPeerPortAttributeValue int64, postgresqlClientHostnameAttributeValue string, postgresqlBackendTypeAttributeValue string, postgresqlXactStartAttributeValue string, postgresqlQueryStartAttributeValue string, postgresqlStateChangeAttributeValue string, postgresqlWaitEventAttributeValue string, postgresqlWaitEventTypeAttributeValue string, postgresqlBlockingPidsAttributeValue []any, postgresqlBackendXidAttributeValue int64, postgresqlQueryIDAttributeValue string, postgresqlTotalExecTimeAttributeValue float64) {
 	if !e.config.Enabled {
 		return
 	}
@@ -32,7 +78,11 @@ func (e *eventDbServerQuerySample) recordEvent(ctx context.Context, timestamp pc
 	}
 	dp.Attributes().PutStr("db.system.name", dbSystemNameAttributeValue)
 	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
 	dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	dp.Body().SetStr(dbQueryTextAttributeValue)
+	dp.Attributes().PutStr("db.query.comment", dbQueryCommentAttributeValue)
+	dp.Attributes().PutStr("db.query.tables", dbQueryTablesAttributeValue)
 	dp.Attributes().PutStr("user.name", userNameAttributeValue)
 	dp.Attributes().PutStr("postgresql.state", postgresqlStateAttributeValue)
 	dp.Attributes().PutInt("postgresql.pid", postgresqlPidAttributeValue)
@@ -40,9 +90,14 @@ func (e *eventDbServerQuerySample) recordEvent(ctx context.Context, timestamp pc
 	dp.Attributes().PutStr("network.peer.address", networkPeerAddressAttributeValue)
 	dp.Attributes().PutInt("network.peer.port", networkPeerPortAttributeValue)
 	dp.Attributes().PutStr("postgresql.client_hostname", postgresqlClientHostnameAttributeValue)
+	dp.Attributes().PutStr("postgresql.backend_type", postgresqlBackendTypeAttributeValue)
+	dp.Attributes().PutStr("postgresql.xact_start", postgresqlXactStartAttributeValue)
 	dp.Attributes().PutStr("postgresql.query_start", postgresqlQueryStartAttributeValue)
+	dp.Attributes().PutStr("postgresql.state_change", postgresqlStateChangeAttributeValue)
 	dp.Attributes().PutStr("postgresql.wait_event", postgresqlWaitEventAttributeValue)
 	dp.Attributes().PutStr("postgresql.wait_event_type", postgresqlWaitEventTypeAttributeValue)
+	dp.Attributes().PutEmptySlice("postgresql.blocking_pids").FromRaw(postgresqlBlockingPidsAttributeValue)
+	dp.Attributes().PutInt("postgresql.backend_xid", postgresqlBackendXidAttributeValue)
 	dp.Attributes().PutStr("postgresql.query_id", postgresqlQueryIDAttributeValue)
 	dp.Attributes().PutDouble("postgresql.total_exec_time", postgresqlTotalExecTimeAttributeValue)
 
@@ -63,12 +118,151 @@ func newEventDbServerQuerySample(cfg EventConfig) eventDbServerQuerySample {
 	return e
 }
 
+type eventDbServerSchemaCollection struct {
+	data   plog.LogRecordSlice // data buffer for generated log records.
+	config EventConfig         // event config provided by user.
+}
+
+func (e *eventDbServerSchemaCollection) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbOidAttributeValue int64, dbPostgresqlVersionNumAttributeValue int64, dbPostgresqlVersionStringAttributeValue string, cloudProviderAttributeValue string, eventTypeAttributeValue string, collectionTypeAttributeValue string, collectionTableCountAttributeValue int64, collectionTotalRowCountAttributeValue int64, collectionColumnCountAttributeValue int64, collectionIndexCountAttributeValue int64, collectionConstraintCountAttributeValue int64, collectionExtensionCountAttributeValue int64, collectionTotalSizeBytesAttributeValue int64, collectionDurationMsAttributeValue int64, collectionHasErrorsAttributeValue bool, collectionErrorCountAttributeValue int64, collectionCompletionRatioAttributeValue float64, collectionCollectedAtAttributeValue int64, collectionSchemaVersionAttributeValue int64, collectionExtensionsAttributeValue string, collectionSettingsAttributeValue string, collectionSettingCountAttributeValue int64, collectionErrorsAttributeValue string, tableOidAttributeValue int64, tableSchemaNameAttributeValue string, tableNameAttributeValue string, tableTypeAttributeValue string, tableOwnerAttributeValue string, tableXminAttributeValue int64, tableTablespaceAttributeValue int64, tableHasOidsAttributeValue bool, tableDescriptionAttributeValue string, tableLiveTuplesAttributeValue int64, tableDeadTuplesAttributeValue int64, tableModSinceAnalyzeAttributeValue int64, tableSeqScansAttributeValue int64, tableSeqTupReadAttributeValue int64, tableIndexScansAttributeValue int64, tableIndexTupFetchAttributeValue int64, tableSizeBytesAttributeValue int64, tableTotalSizeBytesAttributeValue int64, tableLastVacuumAttributeValue string, tableLastAutovacuumAttributeValue string, tableLastAnalyzeAttributeValue string, tableLastAutoanalyzeAttributeValue string, tableViewDefinitionAttributeValue string, tableIsPartitionedAttributeValue bool, tableParentOidAttributeValue int64, tablePartitionExprAttributeValue string, tableColumnCountAttributeValue int64, tableIndexCountAttributeValue int64, tableConstraintCountAttributeValue int64, tableColumnsAttributeValue string, tableIndexesAttributeValue string, tableConstraintsAttributeValue string) {
+	if !e.config.Enabled {
+		return
+	}
+	dp := e.data.AppendEmpty()
+	dp.SetEventName("db.server.schema_collection")
+	dp.SetTimestamp(timestamp)
+
+	if span := trace.SpanContextFromContext(ctx); span.IsValid() {
+		dp.SetTraceID(pcommon.TraceID(span.TraceID()))
+		dp.SetSpanID(pcommon.SpanID(span.SpanID()))
+	}
+	dp.Attributes().PutStr("db.system.name", dbSystemNameAttributeValue)
+	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	dp.Attributes().PutInt("db.oid", dbOidAttributeValue)
+	dp.Attributes().PutInt("db.postgresql.version_num", dbPostgresqlVersionNumAttributeValue)
+	dp.Attributes().PutStr("db.postgresql.version_string", dbPostgresqlVersionStringAttributeValue)
+	dp.Attributes().PutStr("cloud.provider", cloudProviderAttributeValue)
+	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
+	dp.Attributes().PutStr("collection.type", collectionTypeAttributeValue)
+	dp.Attributes().PutInt("collection.table_count", collectionTableCountAttributeValue)
+	dp.Attributes().PutInt("collection.total_row_count", collectionTotalRowCountAttributeValue)
+	dp.Attributes().PutInt("collection.column_count", collectionColumnCountAttributeValue)
+	dp.Attributes().PutInt("collection.index_count", collectionIndexCountAttributeValue)
+	dp.Attributes().PutInt("collection.constraint_count", collectionConstraintCountAttributeValue)
+	dp.Attributes().PutInt("collection.extension_count", collectionExtensionCountAttributeValue)
+	dp.Attributes().PutInt("collection.total_size_bytes", collectionTotalSizeBytesAttributeValue)
+	dp.Attributes().PutInt("collection.duration_ms", collectionDurationMsAttributeValue)
+	dp.Attributes().PutBool("collection.has_errors", collectionHasErrorsAttributeValue)
+	dp.Attributes().PutInt("collection.error_count", collectionErrorCountAttributeValue)
+	dp.Attributes().PutDouble("collection.completion_ratio", collectionCompletionRatioAttributeValue)
+	dp.Attributes().PutInt("collection.collected_at", collectionCollectedAtAttributeValue)
+	dp.Attributes().PutInt("collection.schema_version", collectionSchemaVersionAttributeValue)
+	dp.Attributes().PutStr("collection.extensions", collectionExtensionsAttributeValue)
+	dp.Attributes().PutStr("collection.settings", collectionSettingsAttributeValue)
+	dp.Attributes().PutInt("collection.setting_count", collectionSettingCountAttributeValue)
+	dp.Attributes().PutStr("collection.errors", collectionErrorsAttributeValue)
+	dp.Attributes().PutInt("table.oid", tableOidAttributeValue)
+	dp.Attributes().PutStr("table.schema_name", tableSchemaNameAttributeValue)
+	dp.Attributes().PutStr("table.name", tableNameAttributeValue)
+	dp.Attributes().PutStr("table.type", tableTypeAttributeValue)
+	dp.Attributes().PutStr("table.owner", tableOwnerAttributeValue)
+	dp.Attributes().PutInt("table.xmin", tableXminAttributeValue)
+	dp.Attributes().PutInt("table.tablespace", tableTablespaceAttributeValue)
+	dp.Attributes().PutBool("table.has_oids", tableHasOidsAttributeValue)
+	dp.Attributes().PutStr("table.description", tableDescriptionAttributeValue)
+	dp.Attributes().PutInt("table.live_tuples", tableLiveTuplesAttributeValue)
+	dp.Attributes().PutInt("table.dead_tuples", tableDeadTuplesAttributeValue)
+	dp.Attributes().PutInt("table.mod_since_analyze", tableModSinceAnalyzeAttributeValue)
+	dp.Attributes().PutInt("table.seq_scans", tableSeqScansAttributeValue)
+	dp.Attributes().PutInt("table.seq_tup_read", tableSeqTupReadAttributeValue)
+	dp.Attributes().PutInt("table.index_scans", tableIndexScansAttributeValue)
+	dp.Attributes().PutInt("table.index_tup_fetch", tableIndexTupFetchAttributeValue)
+	dp.Attributes().PutInt("table.size_bytes", tableSizeBytesAttributeValue)
+	dp.Attributes().PutInt("table.total_size_bytes", tableTotalSizeBytesAttributeValue)
+	dp.Attributes().PutStr("table.last_vacuum", tableLastVacuumAttributeValue)
+	dp.Attributes().PutStr("table.last_autovacuum", tableLastAutovacuumAttributeValue)
+	dp.Attributes().PutStr("table.last_analyze", tableLastAnalyzeAttributeValue)
+	dp.Attributes().PutStr("table.last_autoanalyze", tableLastAutoanalyzeAttributeValue)
+	dp.Attributes().PutStr("table.view_definition", tableViewDefinitionAttributeValue)
+	dp.Attributes().PutBool("table.is_partitioned", tableIsPartitionedAttributeValue)
+	dp.Attributes().PutInt("table.parent_oid", tableParentOidAttributeValue)
+	dp.Attributes().PutStr("table.partition_expr", tablePartitionExprAttributeValue)
+	dp.Attributes().PutInt("table.column_count", tableColumnCountAttributeValue)
+	dp.Attributes().PutInt("table.index_count", tableIndexCountAttributeValue)
+	dp.Attributes().PutInt("table.constraint_count", tableConstraintCountAttributeValue)
+	dp.Attributes().PutStr("table.columns", tableColumnsAttributeValue)
+	dp.Attributes().PutStr("table.indexes", tableIndexesAttributeValue)
+	dp.Attributes().PutStr("table.constraints", tableConstraintsAttributeValue)
+
+}
+
+// emit appends recorded event data to a events slice and prepares it for recording another set of log records.
+func (e *eventDbServerSchemaCollection) emit(lrs plog.LogRecordSlice) {
+	if e.config.Enabled && e.data.Len() > 0 {
+		e.data.MoveAndAppendTo(lrs)
+	}
+}
+
+func newEventDbServerSchemaCollection(cfg EventConfig) eventDbServerSchemaCollection {
+	e := eventDbServerSchemaCollection{config: cfg}
+	if cfg.Enabled {
+		e.data = plog.NewLogRecordSlice()
+	}
+	return e
+}
+
+type eventDbServerSettingsCollection struct {
+	data   plog.LogRecordSlice // data buffer for generated log records.
+	config EventConfig         // event config provided by user.
+}
+
+func (e *eventDbServerSettingsCollection) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbOidAttributeValue int64, dbPostgresqlVersionNumAttributeValue int64, dbPostgresqlVersionStringAttributeValue string, cloudProviderAttributeValue string, eventTypeAttributeValue string, collectionTypeAttributeValue string, collectionSchemaVersionAttributeValue int64, collectionSettingCountAttributeValue int64, collectionSettingsAttributeValue string, collectionCollectedAtAttributeValue int64) {
+	if !e.config.Enabled {
+		return
+	}
+	dp := e.data.AppendEmpty()
+	dp.SetEventName("db.server.settings_collection")
+	dp.SetTimestamp(timestamp)
+
+	if span := trace.SpanContextFromContext(ctx); span.IsValid() {
+		dp.SetTraceID(pcommon.TraceID(span.TraceID()))
+		dp.SetSpanID(pcommon.SpanID(span.SpanID()))
+	}
+	dp.Attributes().PutStr("db.system.name", dbSystemNameAttributeValue)
+	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	dp.Attributes().PutInt("db.oid", dbOidAttributeValue)
+	dp.Attributes().PutInt("db.postgresql.version_num", dbPostgresqlVersionNumAttributeValue)
+	dp.Attributes().PutStr("db.postgresql.version_string", dbPostgresqlVersionStringAttributeValue)
+	dp.Attributes().PutStr("cloud.provider", cloudProviderAttributeValue)
+	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
+	dp.Attributes().PutStr("collection.type", collectionTypeAttributeValue)
+	dp.Attributes().PutInt("collection.schema_version", collectionSchemaVersionAttributeValue)
+	dp.Attributes().PutInt("collection.setting_count", collectionSettingCountAttributeValue)
+	dp.Attributes().PutStr("collection.settings", collectionSettingsAttributeValue)
+	dp.Attributes().PutInt("collection.collected_at", collectionCollectedAtAttributeValue)
+
+}
+
+// emit appends recorded event data to a events slice and prepares it for recording another set of log records.
+func (e *eventDbServerSettingsCollection) emit(lrs plog.LogRecordSlice) {
+	if e.config.Enabled && e.data.Len() > 0 {
+		e.data.MoveAndAppendTo(lrs)
+	}
+}
+
+func newEventDbServerSettingsCollection(cfg EventConfig) eventDbServerSettingsCollection {
+	e := eventDbServerSettingsCollection{config: cfg}
+	if cfg.Enabled {
+		e.data = plog.NewLogRecordSlice()
+	}
+	return e
+}
+
 type eventDbServerTopQuery struct {
 	data   plog.LogRecordSlice // data buffer for generated log records.
 	config EventConfig         // event config provided by user.
 }
 
-func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string, postgresqlBlkReadTimeAttributeValue float64, postgresqlBlkWriteTimeAttributeValue float64) {
+func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue string, dbNamespaceAttributeValue string, eventTypeAttributeValue string, dbQueryTextAttributeValue string, dbQueryCommentAttributeValue string, dbQueryTablesAttributeValue string, userNameAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string, postgresqlBlkReadTimeAttributeValue float64, postgresqlBlkWriteTimeAttributeValue float64) {
 	if !e.config.Enabled {
 		return
 	}
@@ -82,7 +276,12 @@ func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcomm
 	}
 	dp.Attributes().PutStr("db.system.name", dbSystemNameAttributeValue)
 	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
+	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
 	dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
+	dp.Body().SetStr(dbQueryTextAttributeValue)
+	dp.Attributes().PutStr("db.query.comment", dbQueryCommentAttributeValue)
+	dp.Attributes().PutStr("db.query.tables", dbQueryTablesAttributeValue)
+	dp.Attributes().PutStr("user.name", userNameAttributeValue)
 	dp.Attributes().PutInt("postgresql.calls", postgresqlCallsAttributeValue)
 	dp.Attributes().PutInt("postgresql.rows", postgresqlRowsAttributeValue)
 	dp.Attributes().PutInt("postgresql.shared_blks_dirtied", postgresqlSharedBlksDirtiedAttributeValue)
@@ -119,14 +318,17 @@ func newEventDbServerTopQuery(cfg EventConfig) eventDbServerTopQuery {
 // LogsBuilder provides an interface for scrapers to report logs while taking care of all the transformations
 // required to produce log representation defined in metadata and user config.
 type LogsBuilder struct {
-	config                         LogsBuilderConfig // config of the logs builder.
-	logsBuffer                     plog.Logs
-	logRecordsBuffer               plog.LogRecordSlice
-	buildInfo                      component.BuildInfo // contains version information.
-	resourceAttributeIncludeFilter map[string]filter.Filter
-	resourceAttributeExcludeFilter map[string]filter.Filter
-	eventDbServerQuerySample       eventDbServerQuerySample
-	eventDbServerTopQuery          eventDbServerTopQuery
+	config                            LogsBuilderConfig // config of the logs builder.
+	logsBuffer                        plog.Logs
+	logRecordsBuffer                  plog.LogRecordSlice
+	buildInfo                         component.BuildInfo // contains version information.
+	resourceAttributeIncludeFilter    map[string]filter.Filter
+	resourceAttributeExcludeFilter    map[string]filter.Filter
+	eventDbServerExtensionsCollection eventDbServerExtensionsCollection
+	eventDbServerQuerySample          eventDbServerQuerySample
+	eventDbServerSchemaCollection     eventDbServerSchemaCollection
+	eventDbServerSettingsCollection   eventDbServerSettingsCollection
+	eventDbServerTopQuery             eventDbServerTopQuery
 }
 
 // LogBuilderOption applies changes to default logs builder.
@@ -136,14 +338,17 @@ type LogBuilderOption interface {
 
 func NewLogsBuilder(lbc LogsBuilderConfig, settings receiver.Settings) *LogsBuilder {
 	lb := &LogsBuilder{
-		config:                         lbc,
-		logsBuffer:                     plog.NewLogs(),
-		logRecordsBuffer:               plog.NewLogRecordSlice(),
-		buildInfo:                      settings.BuildInfo,
-		eventDbServerQuerySample:       newEventDbServerQuerySample(lbc.Events.DbServerQuerySample),
-		eventDbServerTopQuery:          newEventDbServerTopQuery(lbc.Events.DbServerTopQuery),
-		resourceAttributeIncludeFilter: make(map[string]filter.Filter),
-		resourceAttributeExcludeFilter: make(map[string]filter.Filter),
+		config:                            lbc,
+		logsBuffer:                        plog.NewLogs(),
+		logRecordsBuffer:                  plog.NewLogRecordSlice(),
+		buildInfo:                         settings.BuildInfo,
+		eventDbServerExtensionsCollection: newEventDbServerExtensionsCollection(lbc.Events.DbServerExtensionsCollection),
+		eventDbServerQuerySample:          newEventDbServerQuerySample(lbc.Events.DbServerQuerySample),
+		eventDbServerSchemaCollection:     newEventDbServerSchemaCollection(lbc.Events.DbServerSchemaCollection),
+		eventDbServerSettingsCollection:   newEventDbServerSettingsCollection(lbc.Events.DbServerSettingsCollection),
+		eventDbServerTopQuery:             newEventDbServerTopQuery(lbc.Events.DbServerTopQuery),
+		resourceAttributeIncludeFilter:    make(map[string]filter.Filter),
+		resourceAttributeExcludeFilter:    make(map[string]filter.Filter),
 	}
 	if lbc.ResourceAttributes.PostgresqlDatabaseName.EventsInclude != nil {
 		lb.resourceAttributeIncludeFilter["postgresql.database.name"] = filter.CreateFilter(lbc.ResourceAttributes.PostgresqlDatabaseName.EventsInclude)
@@ -224,7 +429,10 @@ func (lb *LogsBuilder) EmitForResource(options ...ResourceLogsOption) {
 	ils := rl.ScopeLogs().AppendEmpty()
 	ils.Scope().SetName(ScopeName)
 	ils.Scope().SetVersion(lb.buildInfo.Version)
+	lb.eventDbServerExtensionsCollection.emit(ils.LogRecords())
 	lb.eventDbServerQuerySample.emit(ils.LogRecords())
+	lb.eventDbServerSchemaCollection.emit(ils.LogRecords())
+	lb.eventDbServerSettingsCollection.emit(ils.LogRecords())
 	lb.eventDbServerTopQuery.emit(ils.LogRecords())
 
 	for _, op := range options {
@@ -262,12 +470,27 @@ func (lb *LogsBuilder) Emit(options ...ResourceLogsOption) plog.Logs {
 	return logs
 }
 
+// RecordDbServerExtensionsCollectionEvent adds a log record of db.server.extensions_collection event.
+func (lb *LogsBuilder) RecordDbServerExtensionsCollectionEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbOidAttributeValue int64, dbPostgresqlVersionNumAttributeValue int64, dbPostgresqlVersionStringAttributeValue string, cloudProviderAttributeValue string, eventTypeAttributeValue string, collectionTypeAttributeValue AttributeCollectionType, collectionSchemaVersionAttributeValue int64, collectionExtensionCountAttributeValue int64, collectionExtensionsAttributeValue string, collectionCollectedAtAttributeValue int64) {
+	lb.eventDbServerExtensionsCollection.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbOidAttributeValue, dbPostgresqlVersionNumAttributeValue, dbPostgresqlVersionStringAttributeValue, cloudProviderAttributeValue, eventTypeAttributeValue, collectionTypeAttributeValue.String(), collectionSchemaVersionAttributeValue, collectionExtensionCountAttributeValue, collectionExtensionsAttributeValue, collectionCollectedAtAttributeValue)
+}
+
 // RecordDbServerQuerySampleEvent adds a log record of db.server.query_sample event.
-func (lb *LogsBuilder) RecordDbServerQuerySampleEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, userNameAttributeValue string, postgresqlStateAttributeValue string, postgresqlPidAttributeValue int64, postgresqlApplicationNameAttributeValue string, networkPeerAddressAttributeValue string, networkPeerPortAttributeValue int64, postgresqlClientHostnameAttributeValue string, postgresqlQueryStartAttributeValue string, postgresqlWaitEventAttributeValue string, postgresqlWaitEventTypeAttributeValue string, postgresqlQueryIDAttributeValue string, postgresqlTotalExecTimeAttributeValue float64) {
-	lb.eventDbServerQuerySample.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbQueryTextAttributeValue, userNameAttributeValue, postgresqlStateAttributeValue, postgresqlPidAttributeValue, postgresqlApplicationNameAttributeValue, networkPeerAddressAttributeValue, networkPeerPortAttributeValue, postgresqlClientHostnameAttributeValue, postgresqlQueryStartAttributeValue, postgresqlWaitEventAttributeValue, postgresqlWaitEventTypeAttributeValue, postgresqlQueryIDAttributeValue, postgresqlTotalExecTimeAttributeValue)
+func (lb *LogsBuilder) RecordDbServerQuerySampleEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, eventTypeAttributeValue string, dbQueryTextAttributeValue string, dbQueryCommentAttributeValue string, dbQueryTablesAttributeValue string, userNameAttributeValue string, postgresqlStateAttributeValue string, postgresqlPidAttributeValue int64, postgresqlApplicationNameAttributeValue string, networkPeerAddressAttributeValue string, networkPeerPortAttributeValue int64, postgresqlClientHostnameAttributeValue string, postgresqlBackendTypeAttributeValue string, postgresqlXactStartAttributeValue string, postgresqlQueryStartAttributeValue string, postgresqlStateChangeAttributeValue string, postgresqlWaitEventAttributeValue string, postgresqlWaitEventTypeAttributeValue string, postgresqlBlockingPidsAttributeValue []any, postgresqlBackendXidAttributeValue int64, postgresqlQueryIDAttributeValue string, postgresqlTotalExecTimeAttributeValue float64) {
+	lb.eventDbServerQuerySample.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, eventTypeAttributeValue, dbQueryTextAttributeValue, dbQueryCommentAttributeValue, dbQueryTablesAttributeValue, userNameAttributeValue, postgresqlStateAttributeValue, postgresqlPidAttributeValue, postgresqlApplicationNameAttributeValue, networkPeerAddressAttributeValue, networkPeerPortAttributeValue, postgresqlClientHostnameAttributeValue, postgresqlBackendTypeAttributeValue, postgresqlXactStartAttributeValue, postgresqlQueryStartAttributeValue, postgresqlStateChangeAttributeValue, postgresqlWaitEventAttributeValue, postgresqlWaitEventTypeAttributeValue, postgresqlBlockingPidsAttributeValue, postgresqlBackendXidAttributeValue, postgresqlQueryIDAttributeValue, postgresqlTotalExecTimeAttributeValue)
+}
+
+// RecordDbServerSchemaCollectionEvent adds a log record of db.server.schema_collection event.
+func (lb *LogsBuilder) RecordDbServerSchemaCollectionEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbOidAttributeValue int64, dbPostgresqlVersionNumAttributeValue int64, dbPostgresqlVersionStringAttributeValue string, cloudProviderAttributeValue string, eventTypeAttributeValue string, collectionTypeAttributeValue AttributeCollectionType, collectionTableCountAttributeValue int64, collectionTotalRowCountAttributeValue int64, collectionColumnCountAttributeValue int64, collectionIndexCountAttributeValue int64, collectionConstraintCountAttributeValue int64, collectionExtensionCountAttributeValue int64, collectionTotalSizeBytesAttributeValue int64, collectionDurationMsAttributeValue int64, collectionHasErrorsAttributeValue bool, collectionErrorCountAttributeValue int64, collectionCompletionRatioAttributeValue float64, collectionCollectedAtAttributeValue int64, collectionSchemaVersionAttributeValue int64, collectionExtensionsAttributeValue string, collectionSettingsAttributeValue string, collectionSettingCountAttributeValue int64, collectionErrorsAttributeValue string, tableOidAttributeValue int64, tableSchemaNameAttributeValue string, tableNameAttributeValue string, tableTypeAttributeValue string, tableOwnerAttributeValue string, tableXminAttributeValue int64, tableTablespaceAttributeValue int64, tableHasOidsAttributeValue bool, tableDescriptionAttributeValue string, tableLiveTuplesAttributeValue int64, tableDeadTuplesAttributeValue int64, tableModSinceAnalyzeAttributeValue int64, tableSeqScansAttributeValue int64, tableSeqTupReadAttributeValue int64, tableIndexScansAttributeValue int64, tableIndexTupFetchAttributeValue int64, tableSizeBytesAttributeValue int64, tableTotalSizeBytesAttributeValue int64, tableLastVacuumAttributeValue string, tableLastAutovacuumAttributeValue string, tableLastAnalyzeAttributeValue string, tableLastAutoanalyzeAttributeValue string, tableViewDefinitionAttributeValue string, tableIsPartitionedAttributeValue bool, tableParentOidAttributeValue int64, tablePartitionExprAttributeValue string, tableColumnCountAttributeValue int64, tableIndexCountAttributeValue int64, tableConstraintCountAttributeValue int64, tableColumnsAttributeValue string, tableIndexesAttributeValue string, tableConstraintsAttributeValue string) {
+	lb.eventDbServerSchemaCollection.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbOidAttributeValue, dbPostgresqlVersionNumAttributeValue, dbPostgresqlVersionStringAttributeValue, cloudProviderAttributeValue, eventTypeAttributeValue, collectionTypeAttributeValue.String(), collectionTableCountAttributeValue, collectionTotalRowCountAttributeValue, collectionColumnCountAttributeValue, collectionIndexCountAttributeValue, collectionConstraintCountAttributeValue, collectionExtensionCountAttributeValue, collectionTotalSizeBytesAttributeValue, collectionDurationMsAttributeValue, collectionHasErrorsAttributeValue, collectionErrorCountAttributeValue, collectionCompletionRatioAttributeValue, collectionCollectedAtAttributeValue, collectionSchemaVersionAttributeValue, collectionExtensionsAttributeValue, collectionSettingsAttributeValue, collectionSettingCountAttributeValue, collectionErrorsAttributeValue, tableOidAttributeValue, tableSchemaNameAttributeValue, tableNameAttributeValue, tableTypeAttributeValue, tableOwnerAttributeValue, tableXminAttributeValue, tableTablespaceAttributeValue, tableHasOidsAttributeValue, tableDescriptionAttributeValue, tableLiveTuplesAttributeValue, tableDeadTuplesAttributeValue, tableModSinceAnalyzeAttributeValue, tableSeqScansAttributeValue, tableSeqTupReadAttributeValue, tableIndexScansAttributeValue, tableIndexTupFetchAttributeValue, tableSizeBytesAttributeValue, tableTotalSizeBytesAttributeValue, tableLastVacuumAttributeValue, tableLastAutovacuumAttributeValue, tableLastAnalyzeAttributeValue, tableLastAutoanalyzeAttributeValue, tableViewDefinitionAttributeValue, tableIsPartitionedAttributeValue, tableParentOidAttributeValue, tablePartitionExprAttributeValue, tableColumnCountAttributeValue, tableIndexCountAttributeValue, tableConstraintCountAttributeValue, tableColumnsAttributeValue, tableIndexesAttributeValue, tableConstraintsAttributeValue)
+}
+
+// RecordDbServerSettingsCollectionEvent adds a log record of db.server.settings_collection event.
+func (lb *LogsBuilder) RecordDbServerSettingsCollectionEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbOidAttributeValue int64, dbPostgresqlVersionNumAttributeValue int64, dbPostgresqlVersionStringAttributeValue string, cloudProviderAttributeValue string, eventTypeAttributeValue string, collectionTypeAttributeValue AttributeCollectionType, collectionSchemaVersionAttributeValue int64, collectionSettingCountAttributeValue int64, collectionSettingsAttributeValue string, collectionCollectedAtAttributeValue int64) {
+	lb.eventDbServerSettingsCollection.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbOidAttributeValue, dbPostgresqlVersionNumAttributeValue, dbPostgresqlVersionStringAttributeValue, cloudProviderAttributeValue, eventTypeAttributeValue, collectionTypeAttributeValue.String(), collectionSchemaVersionAttributeValue, collectionSettingCountAttributeValue, collectionSettingsAttributeValue, collectionCollectedAtAttributeValue)
 }
 
 // RecordDbServerTopQueryEvent adds a log record of db.server.top_query event.
-func (lb *LogsBuilder) RecordDbServerTopQueryEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, dbQueryTextAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string, postgresqlBlkReadTimeAttributeValue float64, postgresqlBlkWriteTimeAttributeValue float64) {
-	lb.eventDbServerTopQuery.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, dbQueryTextAttributeValue, postgresqlCallsAttributeValue, postgresqlRowsAttributeValue, postgresqlSharedBlksDirtiedAttributeValue, postgresqlSharedBlksHitAttributeValue, postgresqlSharedBlksReadAttributeValue, postgresqlSharedBlksWrittenAttributeValue, postgresqlTempBlksReadAttributeValue, postgresqlTempBlksWrittenAttributeValue, postgresqlQueryidAttributeValue, postgresqlRolnameAttributeValue, postgresqlTotalExecTimeAttributeValue, postgresqlTotalPlanTimeAttributeValue, postgresqlQueryPlanAttributeValue, postgresqlBlkReadTimeAttributeValue, postgresqlBlkWriteTimeAttributeValue)
+func (lb *LogsBuilder) RecordDbServerTopQueryEvent(ctx context.Context, timestamp pcommon.Timestamp, dbSystemNameAttributeValue AttributeDbSystemName, dbNamespaceAttributeValue string, eventTypeAttributeValue string, dbQueryTextAttributeValue string, dbQueryCommentAttributeValue string, dbQueryTablesAttributeValue string, userNameAttributeValue string, postgresqlCallsAttributeValue int64, postgresqlRowsAttributeValue int64, postgresqlSharedBlksDirtiedAttributeValue int64, postgresqlSharedBlksHitAttributeValue int64, postgresqlSharedBlksReadAttributeValue int64, postgresqlSharedBlksWrittenAttributeValue int64, postgresqlTempBlksReadAttributeValue int64, postgresqlTempBlksWrittenAttributeValue int64, postgresqlQueryidAttributeValue string, postgresqlRolnameAttributeValue string, postgresqlTotalExecTimeAttributeValue float64, postgresqlTotalPlanTimeAttributeValue float64, postgresqlQueryPlanAttributeValue string, postgresqlBlkReadTimeAttributeValue float64, postgresqlBlkWriteTimeAttributeValue float64) {
+	lb.eventDbServerTopQuery.recordEvent(ctx, timestamp, dbSystemNameAttributeValue.String(), dbNamespaceAttributeValue, eventTypeAttributeValue, dbQueryTextAttributeValue, dbQueryCommentAttributeValue, dbQueryTablesAttributeValue, userNameAttributeValue, postgresqlCallsAttributeValue, postgresqlRowsAttributeValue, postgresqlSharedBlksDirtiedAttributeValue, postgresqlSharedBlksHitAttributeValue, postgresqlSharedBlksReadAttributeValue, postgresqlSharedBlksWrittenAttributeValue, postgresqlTempBlksReadAttributeValue, postgresqlTempBlksWrittenAttributeValue, postgresqlQueryidAttributeValue, postgresqlRolnameAttributeValue, postgresqlTotalExecTimeAttributeValue, postgresqlTotalPlanTimeAttributeValue, postgresqlQueryPlanAttributeValue, postgresqlBlkReadTimeAttributeValue, postgresqlBlkWriteTimeAttributeValue)
 }

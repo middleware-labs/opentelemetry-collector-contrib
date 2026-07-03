@@ -62,9 +62,9 @@ Number of buffers written.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| source | The source of a buffer write. | Str: ``backend``, ``backend_fsync``, ``checkpoints``, ``bgwriter`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| source | The source of a buffer write. | Str: ``backend``, ``backend_fsync``, ``checkpoints``, ``bgwriter`` | Recommended |
 
 ### postgresql.bgwriter.checkpoint.count
 
@@ -76,9 +76,9 @@ The number of checkpoints performed.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| type | The type of checkpoint state. | Str: ``requested``, ``scheduled`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| type | The type of checkpoint state. | Str: ``requested``, ``scheduled`` | Recommended |
 
 ### postgresql.bgwriter.duration
 
@@ -90,9 +90,9 @@ Total time spent writing and syncing files to disk by checkpoints.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| type | The type of time spent during the checkpoint. | Str: ``sync``, ``write`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| type | The type of time spent during the checkpoint. | Str: ``sync``, ``write`` | Recommended |
 
 ### postgresql.bgwriter.maxwritten
 
@@ -112,9 +112,9 @@ The number of blocks read.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` | Recommended |
 
 ### postgresql.buffer_hit
 
@@ -126,9 +126,9 @@ The number of disk block hits in the buffer cache, thereby avoiding database rea
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| dbname | name of the database | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| dbname | name of the database | Any Str | Recommended |
 
 ### postgresql.commits
 
@@ -148,11 +148,11 @@ The number of active connections to this database. If DBM is enabled, this metri
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| postgresql.state | Current overall state of this backend | Any Str | Recommended | - |
-| postgresql.application_name | Name of the application that is connected to this backend. | Any Str | Recommended | - |
-| user.name | Name of the user logged into this backend. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| postgresql.state | Current overall state of this backend | Any Str | Recommended |
+| postgresql.application_name | Name of the application that is connected to this backend. | Any Str | Recommended |
+| user.name | Name of the user logged into this backend. | Any Str | Recommended |
 
 ### postgresql.connection.max
 
@@ -188,9 +188,9 @@ The number of disk blocks read by this index.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| source | The block read source type. | Str: ``heap_read``, ``heap_hit``, ``idx_read``, ``idx_hit``, ``toast_read``, ``toast_hit``, ``tidx_read``, ``tidx_hit`` | Recommended |
 
 ### postgresql.index.rows_read
 
@@ -238,9 +238,9 @@ The approximate number of live rows, tagged with relation name.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| relation_name | name of the relation | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.operations
 
@@ -252,9 +252,9 @@ The number of db row operations.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| operation | The database operation. | Str: ``ins``, ``upd``, ``del``, ``hot_upd`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| operation | The database operation. | Str: ``ins``, ``upd``, ``del``, ``hot_upd`` | Recommended |
 
 ### postgresql.query.count
 
@@ -266,10 +266,10 @@ Number of times the statement was executed.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| query_text | Text of a representative statement | Any Str | Recommended | - |
-| query_id | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_text | Text of a representative statement | Any Str | Recommended |
+| query_id | Hash code to identify identical normalized queries. | Any Str | Recommended |
 
 ### postgresql.query.total_exec_time
 
@@ -281,10 +281,10 @@ Total wait time of the normalised timed events in nanaoseconds.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| query_text | Text of a representative statement | Any Str | Recommended | - |
-| query_id | Hash code to identify identical normalized queries. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| query_text | Text of a representative statement | Any Str | Recommended |
+| query_id | Hash code to identify identical normalized queries. | Any Str | Recommended |
 
 ### postgresql.replication.data_delay
 
@@ -296,9 +296,9 @@ The amount of data delayed in replication.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended |
 
 ### postgresql.rollbacks
 
@@ -318,9 +318,9 @@ The number of rows in the database.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| state | The tuple (row) state. | Str: ``dead``, ``live`` | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| state | The tuple (row) state. | Str: ``dead``, ``live`` | Recommended |
 
 ### postgresql.rows_deleted
 
@@ -332,9 +332,9 @@ Rows deleted by queries in this db, tagged with relation name.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| relation_name | name of the relation | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.rows_fetched
 
@@ -346,9 +346,9 @@ Rows fetched by queries in this db, tagged with relation name.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| relation_name | name of the relation | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.rows_inserted
 
@@ -360,9 +360,9 @@ Rows inserted by queries in the db, tagged with relation name.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| relation_name | name of the relation | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.rows_updated
 
@@ -374,9 +374,9 @@ Rows updated by queries in the db, tagged with relation name.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| relation_name | name of the relation | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation_name | name of the relation | Any Str | Recommended |
 
 ### postgresql.table.count
 
@@ -486,10 +486,10 @@ This metric requires WAL to be enabled with at least one replica.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` | Recommended | - |
-| replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` | Recommended |
+| replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended |
 
 ### postgresql.wal.size
 
@@ -551,11 +551,11 @@ The number of database locks.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| relation | OID of the relation targeted by the lock, or null if the target is not a relation or part of a relation. | Any Str | Recommended | - |
-| mode | Name of the lock mode held or desired by the process. | Any Str | Recommended | - |
-| lock_type | Type of the lockable object. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| relation | OID of the relation targeted by the lock, or null if the target is not a relation or part of a relation. | Any Str | Recommended |
+| mode | Name of the lock mode held or desired by the process. | Any Str | Recommended |
+| lock_type | Type of the lockable object. | Any Str | Recommended |
 
 ### postgresql.deadlocks
 
@@ -575,9 +575,9 @@ The number of calls made to a function. Requires `track_functions=pl|all` in Pos
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| function | The name of the function. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| function | The name of the function. | Any Str | Recommended |
 
 ### postgresql.sequential_scans
 
@@ -656,10 +656,10 @@ This metric requires WAL to be enabled with at least one replica.
 
 #### Attributes
 
-| Name | Description | Values | Requirement Level | Semantic Convention |
-| ---- | ----------- | ------ | ----------------- | ------------------- |
-| operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` | Recommended | - |
-| replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended | - |
+| Name | Description | Values | Requirement Level |
+| ---- | ----------- | ------ | -------- |
+| operation | The operation which is responsible for the lag. | Str: ``flush``, ``replay``, ``write`` | Recommended |
+| replication_client | The IP address of the client connected to this backend. If this field is "unix", it indicates either that the client is connected via a Unix socket. | Any Str | Recommended |
 
 ## Default Events
 
@@ -671,29 +671,145 @@ events:
     enabled: false
 ```
 
+### db.server.extensions_collection
+
+PostgreSQL extensions collection event — one record per scrape, lists all installed extensions with version and schema.
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` |
+| db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
+| db.oid | The OID of the database. | Any Int |
+| db.postgresql.version_num | The PostgreSQL version number (e.g. 150000 for 15.0). | Any Int |
+| db.postgresql.version_string | The PostgreSQL version string (e.g. "PostgreSQL 15.0"). | Any Str |
+| cloud.provider | The cloud provider hosting PostgreSQL. | Any Str |
+| event.type | The type of schema collection event. | Any Str |
+| collection.type | The type of schema collection performed. | Str: ``full_snapshot``, ``selective_refresh`` |
+| collection.schema_version | Monotonically increasing version number for the schema snapshot. | Any Int |
+| collection.extension_count | The number of extensions installed. | Any Int |
+| collection.extensions | JSON-encoded list of installed extensions. | Any Str |
+| collection.collected_at | Unix timestamp in milliseconds when data was collected. | Any Int |
+
 ### db.server.query_sample
 
 query sample
 
 #### Attributes
 
-| Name | Description | Values | Semantic Convention |
-| ---- | ----------- | ------ | ------------------- |
-| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` | - |
-| db.namespace | The namespace or schema of the database where the query is executed. | Any Str | - |
-| db.query.text | The text of the database query being executed. | Any Str | - |
-| user.name | Name of the user logged into this backend. | Any Str | - |
-| postgresql.state | Current overall state of this backend | Any Str | - |
-| postgresql.pid | Process ID of this backend. | Any Int | - |
-| postgresql.application_name | Name of the application that is connected to this backend. | Any Str | - |
-| network.peer.address | IP address of the client connected to this backend. | Any Str | - |
-| network.peer.port | TCP port number that the client is using for communication with this backend. | Any Int | - |
-| postgresql.client_hostname | Host name of the connected client, as reported by a reverse DNS lookup of client_addr. | Any Str | - |
-| postgresql.query_start | Time when the currently active query was started, or if state is not active, when the last query was started. | Any Str | - |
-| postgresql.wait_event | Wait event name if backend is currently waiting, otherwise NULL. | Any Str | - |
-| postgresql.wait_event_type | The type of event for which the backend is waiting, if any; otherwise NULL. | Any Str | - |
-| postgresql.query_id | Identifier of this backend's most recent query. If state is active this field shows the identifier of the currently executing query. In all other states, it shows the identifier of last query that was executed. | Any Str | - |
-| postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double | - |
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` |
+| db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
+| event.type | The type of schema collection event. | Any Str |
+| db.query.text | The text of the database query being executed. | Any Str |
+| db.query.comment | SQL comments extracted from the raw query before obfuscation. | Any Str |
+| db.query.tables | Comma-separated list of tables referenced in the query. | Any Str |
+| user.name | Name of the user logged into this backend. | Any Str |
+| postgresql.state | Current overall state of this backend | Any Str |
+| postgresql.pid | Process ID of this backend. | Any Int |
+| postgresql.application_name | Name of the application that is connected to this backend. | Any Str |
+| network.peer.address | IP address of the client connected to this backend. | Any Str |
+| network.peer.port | TCP port number that the client is using for communication with this backend. | Any Int |
+| postgresql.client_hostname | Host name of the connected client, as reported by a reverse DNS lookup of client_addr. | Any Str |
+| postgresql.backend_type | Type of current backend. Possible types are autovacuum launcher, autovacuum worker, logical replication launcher, logical replication worker, parallel worker, background writer, client backend, checkpointer, startup, walreceiver, walsender, and walwriter. | Any Str |
+| postgresql.xact_start | Time when this process's current transaction was started, or null if no transaction is active. If the current query is the first of its transaction, this column is equal to the query_start column. | Any Str |
+| postgresql.query_start | Time when the currently active query was started, or if state is not active, when the last query was started. | Any Str |
+| postgresql.state_change | Time when the state was last changed. | Any Str |
+| postgresql.wait_event | Wait event name if backend is currently waiting, otherwise NULL. | Any Str |
+| postgresql.wait_event_type | The type of event for which the backend is waiting, if any; otherwise NULL. | Any Str |
+| postgresql.blocking_pids | List of PIDs of sessions that are blocking this backend. Populated when wait_event_type = 'Lock'; empty otherwise. | Any Slice |
+| postgresql.backend_xid | Top-level transaction identifier of this backend, if any. | Any Int |
+| postgresql.query_id | Identifier of this backend's most recent query. If state is active this field shows the identifier of the currently executing query. In all other states, it shows the identifier of last query that was executed. | Any Str |
+| postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double |
+
+### db.server.schema_collection
+
+PostgreSQL schema collection event with table, column, index, and constraint definitions
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` |
+| db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
+| db.oid | The OID of the database. | Any Int |
+| db.postgresql.version_num | The PostgreSQL version number (e.g. 150000 for 15.0). | Any Int |
+| db.postgresql.version_string | The PostgreSQL version string (e.g. "PostgreSQL 15.0"). | Any Str |
+| cloud.provider | The cloud provider hosting PostgreSQL. | Any Str |
+| event.type | The type of schema collection event. | Any Str |
+| collection.type | The type of schema collection performed. | Str: ``full_snapshot``, ``selective_refresh`` |
+| collection.table_count | The total number of tables in the database. | Any Int |
+| collection.total_row_count | Sum of row counts (live_tuples) across all tables in the snapshot; estimate from pg_stat_user_tables or pg_class.reltuples. | Any Int |
+| collection.column_count | Total number of columns across all collected tables. | Any Int |
+| collection.index_count | Total number of indexes across all collected tables. | Any Int |
+| collection.constraint_count | Total number of constraints across all collected tables. | Any Int |
+| collection.extension_count | The number of extensions installed. | Any Int |
+| collection.total_size_bytes | Total size of all collected tables in bytes. | Any Int |
+| collection.duration_ms | The duration of schema collection in milliseconds. | Any Int |
+| collection.has_errors | Whether any errors occurred during collection. | Any Bool |
+| collection.error_count | Number of errors encountered during collection. | Any Int |
+| collection.completion_ratio | Ratio of successfully collected tables to total tables. | Any Double |
+| collection.collected_at | Unix timestamp in milliseconds when data was collected. | Any Int |
+| collection.schema_version | Monotonically increasing version number for the schema snapshot. | Any Int |
+| collection.extensions | JSON-encoded list of installed extensions. | Any Str |
+| collection.settings | JSON-encoded PostgreSQL settings collected. | Any Str |
+| collection.setting_count | The number of PostgreSQL settings collected. | Any Int |
+| collection.errors | JSON-encoded list of errors encountered during collection. | Any Str |
+| table.oid | The OID of the table. | Any Int |
+| table.schema_name | The schema name of the table. | Any Str |
+| table.name | The name of the table. | Any Str |
+| table.type | The relation kind (r=table, v=view, m=materialized view, p=partitioned). | Any Str |
+| table.owner | The owner of the table. | Any Str |
+| table.xmin | The xmin transaction ID for change tracking. | Any Int |
+| table.tablespace | The tablespace OID of the table. | Any Int |
+| table.has_oids | Whether the table has OIDs (PG10-11 only). | Any Bool |
+| table.description | Comment/description on the table. | Any Str |
+| table.live_tuples | Estimated number of live rows in the table. | Any Int |
+| table.dead_tuples | Estimated number of dead rows in the table. | Any Int |
+| table.mod_since_analyze | Estimated number of rows modified since last analyze. | Any Int |
+| table.seq_scans | Number of sequential scans on the table. | Any Int |
+| table.seq_tup_read | Number of live rows fetched by sequential scans. | Any Int |
+| table.index_scans | Number of index scans on the table. | Any Int |
+| table.index_tup_fetch | Number of live rows fetched by index scans. | Any Int |
+| table.size_bytes | The data size of the table in bytes (excluding indexes and TOAST). | Any Int |
+| table.total_size_bytes | The total size of the table in bytes (including indexes and TOAST). | Any Int |
+| table.last_vacuum | Timestamp of last manual vacuum. | Any Str |
+| table.last_autovacuum | Timestamp of last automatic vacuum. | Any Str |
+| table.last_analyze | Timestamp of last manual analyze. | Any Str |
+| table.last_autoanalyze | Timestamp of last automatic analyze. | Any Str |
+| table.view_definition | The view definition SQL for views and materialized views. | Any Str |
+| table.is_partitioned | Whether the table is partitioned. | Any Bool |
+| table.parent_oid | OID of the parent table for partitioned tables. | Any Int |
+| table.partition_expr | Partition expression for partitioned tables. | Any Str |
+| table.column_count | Number of columns in the table. | Any Int |
+| table.index_count | Number of indexes on the table. | Any Int |
+| table.constraint_count | Number of constraints on the table. | Any Int |
+| table.columns | JSON-encoded column definitions for the table. | Any Str |
+| table.indexes | JSON-encoded index definitions for the table. | Any Str |
+| table.constraints | JSON-encoded constraint definitions for the table. | Any Str |
+
+### db.server.settings_collection
+
+PostgreSQL settings collection event — one record per scrape, captures critical pg_settings values (connections, memory, WAL, replication).
+
+#### Attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` |
+| db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
+| db.oid | The OID of the database. | Any Int |
+| db.postgresql.version_num | The PostgreSQL version number (e.g. 150000 for 15.0). | Any Int |
+| db.postgresql.version_string | The PostgreSQL version string (e.g. "PostgreSQL 15.0"). | Any Str |
+| cloud.provider | The cloud provider hosting PostgreSQL. | Any Str |
+| event.type | The type of schema collection event. | Any Str |
+| collection.type | The type of schema collection performed. | Str: ``full_snapshot``, ``selective_refresh`` |
+| collection.schema_version | Monotonically increasing version number for the schema snapshot. | Any Int |
+| collection.setting_count | The number of PostgreSQL settings collected. | Any Int |
+| collection.settings | JSON-encoded PostgreSQL settings collected. | Any Str |
+| collection.collected_at | Unix timestamp in milliseconds when data was collected. | Any Int |
 
 ### db.server.top_query
 
@@ -701,34 +817,38 @@ top query
 
 #### Attributes
 
-| Name | Description | Values | Semantic Convention |
-| ---- | ----------- | ------ | ------------------- |
-| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` | - |
-| db.namespace | The namespace or schema of the database where the query is executed. | Any Str | - |
-| db.query.text | The text of the database query being executed. | Any Str | - |
-| postgresql.calls | Number of times the statement was executed, reported in delta value. | Any Int | - |
-| postgresql.rows | Total number of rows retrieved or affected by the statement, reported in delta value. | Any Int | - |
-| postgresql.shared_blks_dirtied | Total number of shared blocks dirtied by the statement, reported in delta value. | Any Int | - |
-| postgresql.shared_blks_hit | Total number of shared block cache hits by the statement, reported in delta value. | Any Int | - |
-| postgresql.shared_blks_read | Total number of shared blocks read by the statement, reported in delta value. | Any Int | - |
-| postgresql.shared_blks_written | Total number of shared blocks written by the statement, reported in delta value. | Any Int | - |
-| postgresql.temp_blks_read | Total number of temp blocks read by the statement, reported in delta value. | Any Int | - |
-| postgresql.temp_blks_written | Total number of temp blocks written by the statement, reported in delta value. | Any Int | - |
-| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | - |
-| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | - |
-| postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double | - |
-| postgresql.total_plan_time | Total time spent planning the statement, in delta milliseconds. | Any Double | - |
-| postgresql.query_plan | The execution plan used by PostgreSQL for the query. | Any Str | - |
-| postgresql.blk_read_time | Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double | - |
-| postgresql.blk_write_time | Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double | - |
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| db.system.name | The database management system (DBMS) product as identified by the client instrumentation. | Str: ``postgresql`` |
+| db.namespace | The namespace or schema of the database where the query is executed. | Any Str |
+| event.type | The type of schema collection event. | Any Str |
+| db.query.text | The text of the database query being executed. | Any Str |
+| db.query.comment | SQL comments extracted from the raw query before obfuscation. | Any Str |
+| db.query.tables | Comma-separated list of tables referenced in the query. | Any Str |
+| user.name | Name of the user logged into this backend. | Any Str |
+| postgresql.calls | Number of times the statement was executed, reported in delta value. | Any Int |
+| postgresql.rows | Total number of rows retrieved or affected by the statement, reported in delta value. | Any Int |
+| postgresql.shared_blks_dirtied | Total number of shared blocks dirtied by the statement, reported in delta value. | Any Int |
+| postgresql.shared_blks_hit | Total number of shared block cache hits by the statement, reported in delta value. | Any Int |
+| postgresql.shared_blks_read | Total number of shared blocks read by the statement, reported in delta value. | Any Int |
+| postgresql.shared_blks_written | Total number of shared blocks written by the statement, reported in delta value. | Any Int |
+| postgresql.temp_blks_read | Total number of temp blocks read by the statement, reported in delta value. | Any Int |
+| postgresql.temp_blks_written | Total number of temp blocks written by the statement, reported in delta value. | Any Int |
+| postgresql.queryid | Hash code to identify identical normalized queries. | Any Str |
+| postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str |
+| postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double |
+| postgresql.total_plan_time | Total time spent planning the statement, in delta milliseconds. | Any Double |
+| postgresql.query_plan | The execution plan used by PostgreSQL for the query. | Any Str |
+| postgresql.blk_read_time | Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double |
+| postgresql.blk_write_time | Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double |
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled | Semantic Convention |
-| ---- | ----------- | ------ | ------- | ------------------- |
-| postgresql.database.name | The name of the database. | Any Str | true | - |
-| postgresql.db.version | The version of postgresql databse | Any Str | true | - |
-| postgresql.index.name | The name of the index on a table. | Any Str | true | - |
-| postgresql.schema.name | The schema name. | Any Str | true | - |
-| postgresql.table.name | The table name. | Any Str | true | - |
-| service.instance.id | A unique identifier of the PostgreSQL instance in the format host:port (defaults to 'unknown:5432' in case of error in generating this value). | Any Str | true | - |
+| Name | Description | Values | Enabled |
+| ---- | ----------- | ------ | ------- |
+| postgresql.database.name | The name of the database. | Any Str | true |
+| postgresql.db.version | The version of postgresql databse | Any Str | true |
+| postgresql.index.name | The name of the index on a table. | Any Str | true |
+| postgresql.schema.name | The schema name. | Any Str | true |
+| postgresql.table.name | The table name. | Any Str | true |
+| service.instance.id | A unique identifier of the PostgreSQL instance in the format host:port (defaults to 'unknown:5432' in case of error in generating this value). | Any Str | true |

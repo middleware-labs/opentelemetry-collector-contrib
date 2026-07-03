@@ -9,7 +9,8 @@ import (
 
 // MetricConfig provides common config for a particular metric.
 type MetricConfig struct {
-	Enabled          bool `mapstructure:"enabled"`
+	Enabled bool `mapstructure:"enabled"`
+
 	enabledSetByUser bool
 }
 
@@ -17,12 +18,10 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
-
 	err := parser.Unmarshal(ms)
 	if err != nil {
 		return err
 	}
-
 	ms.enabledSetByUser = parser.IsSet("enabled")
 	return nil
 }
@@ -301,13 +300,25 @@ func (ec *EventConfig) Unmarshal(parser *confmap.Conf) error {
 
 // EventsConfig provides config for postgresql events.
 type EventsConfig struct {
-	DbServerQuerySample EventConfig `mapstructure:"db.server.query_sample"`
-	DbServerTopQuery    EventConfig `mapstructure:"db.server.top_query"`
+	DbServerExtensionsCollection EventConfig `mapstructure:"db.server.extensions_collection"`
+	DbServerQuerySample          EventConfig `mapstructure:"db.server.query_sample"`
+	DbServerSchemaCollection     EventConfig `mapstructure:"db.server.schema_collection"`
+	DbServerSettingsCollection   EventConfig `mapstructure:"db.server.settings_collection"`
+	DbServerTopQuery             EventConfig `mapstructure:"db.server.top_query"`
 }
 
 func DefaultEventsConfig() EventsConfig {
 	return EventsConfig{
+		DbServerExtensionsCollection: EventConfig{
+			Enabled: true,
+		},
 		DbServerQuerySample: EventConfig{
+			Enabled: true,
+		},
+		DbServerSchemaCollection: EventConfig{
+			Enabled: true,
+		},
+		DbServerSettingsCollection: EventConfig{
 			Enabled: true,
 		},
 		DbServerTopQuery: EventConfig{
@@ -388,16 +399,11 @@ type MetricsBuilderConfig struct {
 	ResourceAttributes ResourceAttributesConfig `mapstructure:"resource_attributes"`
 }
 
-func NewDefaultMetricsBuilderConfig() MetricsBuilderConfig {
+func DefaultMetricsBuilderConfig() MetricsBuilderConfig {
 	return MetricsBuilderConfig{
 		Metrics:            DefaultMetricsConfig(),
 		ResourceAttributes: DefaultResourceAttributesConfig(),
 	}
-}
-
-// Deprecated: Use NewDefaultMetricsBuilderConfig.
-func DefaultMetricsBuilderConfig() MetricsBuilderConfig {
-	return NewDefaultMetricsBuilderConfig()
 }
 
 // LogsBuilderConfig is a configuration for postgresql logs builder.
