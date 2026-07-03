@@ -8,9 +8,9 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/lib/pq v1.10.9
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.139.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.139.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sqlquery v0.139.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.152.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.152.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/sqlquery v0.152.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/golden v0.152.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.152.0
 	github.com/stretchr/testify v1.11.1
@@ -22,11 +22,11 @@ require (
 	go.opentelemetry.io/collector/config/configopaque v1.58.0
 	go.opentelemetry.io/collector/config/configtls v1.45.0
 	go.opentelemetry.io/collector/confmap v1.58.0
-	go.opentelemetry.io/collector/confmap/xconfmap v0.139.0
+	go.opentelemetry.io/collector/confmap/xconfmap v0.152.0
 	go.opentelemetry.io/collector/consumer v1.58.0
 	go.opentelemetry.io/collector/consumer/consumertest v0.152.0
 	go.opentelemetry.io/collector/featuregate v1.58.0
-	go.opentelemetry.io/collector/filter v0.139.0
+	go.opentelemetry.io/collector/filter v0.152.0
 	go.opentelemetry.io/collector/pdata v1.58.0
 	go.opentelemetry.io/collector/receiver v1.58.0
 	go.opentelemetry.io/collector/receiver/receivertest v0.152.0
