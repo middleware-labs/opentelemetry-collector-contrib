@@ -101,6 +101,7 @@ var (
 		ContainerNetworkIoUsageTxPackets:           metricEnabled,
 		ContainerPidsCount:                         metricEnabled,
 		ContainerPidsLimit:                         metricEnabled,
+		ContainerHealthStatus:                      metricEnabled,
 		ContainerUptime:                            metricEnabled,
 		ContainerRestarts:                          metricEnabled,
 		ContainerMemoryAnon:                        metricEnabled,

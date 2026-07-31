@@ -97,6 +97,7 @@ type MetricsConfig struct {
 	ContainerNetworkIoUsageTxPackets           MetricConfig `mapstructure:"container.network.io.usage.tx_packets"`
 	ContainerPidsCount                         MetricConfig `mapstructure:"container.pids.count"`
 	ContainerPidsLimit                         MetricConfig `mapstructure:"container.pids.limit"`
+	ContainerHealthStatus                      MetricConfig `mapstructure:"container.health.status"`
 	ContainerRestarts                          MetricConfig `mapstructure:"container.restarts"`
 	ContainerStatus                            MetricConfig `mapstructure:"container.status"`
 	ContainerUptime                            MetricConfig `mapstructure:"container.uptime"`
@@ -313,6 +314,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		ContainerRestarts: MetricConfig{
 			Enabled: false,
+		},
+		ContainerHealthStatus: MetricConfig{
+			Enabled: true,
 		},
 		ContainerStatus: MetricConfig{
 			Enabled: true,

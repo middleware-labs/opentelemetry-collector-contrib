@@ -100,6 +100,12 @@ func (r *metricsReceiver) scrapeV2(ctx context.Context) (pmetric.Metrics, error)
 				return
 			}
 
+			if c.State.Health != nil {
+				if updated, ok := r.client.InspectAndPersistContainer(ctx, c.ID); ok {
+					c.ContainerJSON = updated
+				}
+			}
+
 			results <- resultV2{
 				stats:     statsJSON,
 				container: &c,
@@ -146,6 +152,14 @@ func (r *metricsReceiver) recordContainerStats(now pcommon.Timestamp, containerS
 		"dead":       6,
 	}
 	r.mb.RecordContainerStatusDataPoint(now, statusMap[container.State.Status])
+	if container.State.Health != nil {
+		healthMap := map[string]int64{
+			"starting":  0,
+			"healthy":   1,
+			"unhealthy": 2,
+		}
+		r.mb.RecordContainerHealthStatusDataPoint(now, healthMap[container.State.Health.Status])
+	}
 	if err := r.recordBaseMetrics(now, container.ContainerJSONBase); err != nil {
 		errs = multierr.Append(errs, err)
 	}
