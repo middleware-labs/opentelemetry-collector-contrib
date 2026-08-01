@@ -1921,6 +1921,26 @@ func (ms *ContainerStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
+// ContainerHealthStatusMetricConfig provides config for the container.health.status metric.
+type ContainerHealthStatusMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *ContainerHealthStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // ContainerUptimeMetricConfig provides config for the container.uptime metric.
 type ContainerUptimeMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -2012,6 +2032,7 @@ type MetricsConfig struct {
 	ContainerNetworkIoUsageTxPackets           ContainerNetworkIoUsageTxPacketsMetricConfig           `mapstructure:"container.network.io.usage.tx_packets"`
 	ContainerPidsCount                         ContainerPidsCountMetricConfig                         `mapstructure:"container.pids.count"`
 	ContainerPidsLimit                         ContainerPidsLimitMetricConfig                         `mapstructure:"container.pids.limit"`
+	ContainerHealthStatus                      ContainerHealthStatusMetricConfig                      `mapstructure:"container.health.status"`
 	ContainerRestarts                          ContainerRestartsMetricConfig                          `mapstructure:"container.restarts"`
 	ContainerStatus                            ContainerStatusMetricConfig                            `mapstructure:"container.status"`
 	ContainerUptime                            ContainerUptimeMetricConfig                            `mapstructure:"container.uptime"`
@@ -2259,6 +2280,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		ContainerPidsLimit: ContainerPidsLimitMetricConfig{
 			Enabled: false,
+		},
+		ContainerHealthStatus: ContainerHealthStatusMetricConfig{
+			Enabled: true,
 		},
 		ContainerRestarts: ContainerRestartsMetricConfig{
 			Enabled: false,

@@ -229,6 +229,9 @@ var MetricsInfo = metricsInfo{
 	ContainerPidsLimit: metricInfo{
 		Name: "container.pids.limit",
 	},
+	ContainerHealthStatus: metricInfo{
+		Name: "container.health.status",
+	},
 	ContainerRestarts: metricInfo{
 		Name: "container.restarts",
 	},
@@ -310,6 +313,7 @@ type metricsInfo struct {
 	ContainerNetworkIoUsageTxPackets           metricInfo
 	ContainerPidsCount                         metricInfo
 	ContainerPidsLimit                         metricInfo
+	ContainerHealthStatus                      metricInfo
 	ContainerRestarts                          metricInfo
 	ContainerStatus                            metricInfo
 	ContainerUptime                            metricInfo
@@ -4660,6 +4664,52 @@ func newMetricContainerRestarts(cfg ContainerRestartsMetricConfig) metricContain
 	return m
 }
 
+type metricContainerHealthStatus struct {
+	data     pmetric.Metric                    // data buffer for generated metric.
+	config   ContainerHealthStatusMetricConfig // metric config provided by user.
+	capacity int                               // max observed number of data points added to the metric.
+}
+
+func (m *metricContainerHealthStatus) init() {
+	m.data.SetName("container.health.status")
+	m.data.SetDescription("Container health check status => 0-starting 1-healthy 2-unhealthy. Only emitted when a health check is configured.")
+	m.data.SetUnit("")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricContainerHealthStatus) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+func (m *metricContainerHealthStatus) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+func (m *metricContainerHealthStatus) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricContainerHealthStatus(cfg ContainerHealthStatusMetricConfig) metricContainerHealthStatus {
+	m := metricContainerHealthStatus{config: cfg}
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricContainerStatus struct {
 	data     pmetric.Metric              // data buffer for generated metric.
 	config   ContainerStatusMetricConfig // metric config provided by user.
@@ -4839,6 +4889,7 @@ type MetricsBuilder struct {
 	metricContainerNetworkIoUsageTxPackets           metricContainerNetworkIoUsageTxPackets
 	metricContainerPidsCount                         metricContainerPidsCount
 	metricContainerPidsLimit                         metricContainerPidsLimit
+	metricContainerHealthStatus                      metricContainerHealthStatus
 	metricContainerRestarts                          metricContainerRestarts
 	metricContainerStatus                            metricContainerStatus
 	metricContainerUptime                            metricContainerUptime
@@ -4936,6 +4987,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricContainerNetworkIoUsageTxPackets:           newMetricContainerNetworkIoUsageTxPackets(mbc.Metrics.ContainerNetworkIoUsageTxPackets),
 		metricContainerPidsCount:                         newMetricContainerPidsCount(mbc.Metrics.ContainerPidsCount),
 		metricContainerPidsLimit:                         newMetricContainerPidsLimit(mbc.Metrics.ContainerPidsLimit),
+		metricContainerHealthStatus:                      newMetricContainerHealthStatus(mbc.Metrics.ContainerHealthStatus),
 		metricContainerRestarts:                          newMetricContainerRestarts(mbc.Metrics.ContainerRestarts),
 		metricContainerStatus:                            newMetricContainerStatus(mbc.Metrics.ContainerStatus),
 		metricContainerUptime:                            newMetricContainerUptime(mbc.Metrics.ContainerUptime),
@@ -5129,6 +5181,7 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricContainerNetworkIoUsageTxPackets.emit(ils.Metrics())
 	mb.metricContainerPidsCount.emit(ils.Metrics())
 	mb.metricContainerPidsLimit.emit(ils.Metrics())
+	mb.metricContainerHealthStatus.emit(ils.Metrics())
 	mb.metricContainerRestarts.emit(ils.Metrics())
 	mb.metricContainerStatus.emit(ils.Metrics())
 	mb.metricContainerUptime.emit(ils.Metrics())
@@ -5511,6 +5564,11 @@ func (mb *MetricsBuilder) RecordContainerPidsLimitDataPoint(ts pcommon.Timestamp
 // RecordContainerRestartsDataPoint adds a data point to container.restarts metric.
 func (mb *MetricsBuilder) RecordContainerRestartsDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricContainerRestarts.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordContainerHealthStatusDataPoint adds a data point to container.health.status metric.
+func (mb *MetricsBuilder) RecordContainerHealthStatusDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricContainerHealthStatus.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordContainerStatusDataPoint adds a data point to container.status metric.

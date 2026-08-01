@@ -156,6 +156,8 @@ all_set:
       enabled: true
     container.pids.limit:
       enabled: true
+    container.health.status:
+      enabled: true
     container.restarts:
       enabled: true
     container.status:
@@ -336,6 +338,8 @@ reaggregate_set:
       enabled: true
     container.pids.limit:
       enabled: true
+    container.health.status:
+      enabled: true
     container.restarts:
       enabled: true
     container.status:
@@ -515,6 +519,8 @@ none_set:
     container.pids.count:
       enabled: false
     container.pids.limit:
+      enabled: false
+    container.health.status:
       enabled: false
     container.restarts:
       enabled: false
