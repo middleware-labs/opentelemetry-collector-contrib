@@ -82,6 +82,9 @@ var MetricsInfo = metricsInfo{
 	ContainerCPUUtilization: metricInfo{
 		Name: "container.cpu.utilization",
 	},
+	ContainerHealthStatus: metricInfo{
+		Name: "container.health.status",
+	},
 	ContainerMemoryActiveAnon: metricInfo{
 		Name: "container.memory.active_anon",
 	},
@@ -229,9 +232,6 @@ var MetricsInfo = metricsInfo{
 	ContainerPidsLimit: metricInfo{
 		Name: "container.pids.limit",
 	},
-	ContainerHealthStatus: metricInfo{
-		Name: "container.health.status",
-	},
 	ContainerRestarts: metricInfo{
 		Name: "container.restarts",
 	},
@@ -264,6 +264,7 @@ type metricsInfo struct {
 	ContainerCPUUsageTotal                     metricInfo
 	ContainerCPUUsageUsermode                  metricInfo
 	ContainerCPUUtilization                    metricInfo
+	ContainerHealthStatus                      metricInfo
 	ContainerMemoryActiveAnon                  metricInfo
 	ContainerMemoryActiveFile                  metricInfo
 	ContainerMemoryAnon                        metricInfo
@@ -313,7 +314,6 @@ type metricsInfo struct {
 	ContainerNetworkIoUsageTxPackets           metricInfo
 	ContainerPidsCount                         metricInfo
 	ContainerPidsLimit                         metricInfo
-	ContainerHealthStatus                      metricInfo
 	ContainerRestarts                          metricInfo
 	ContainerStatus                            metricInfo
 	ContainerUptime                            metricInfo
@@ -1746,6 +1746,56 @@ func (m *metricContainerCPUUtilization) emit(metrics pmetric.MetricSlice) {
 
 func newMetricContainerCPUUtilization(cfg ContainerCPUUtilizationMetricConfig) metricContainerCPUUtilization {
 	m := metricContainerCPUUtilization{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricContainerHealthStatus struct {
+	data     pmetric.Metric                    // data buffer for generated metric.
+	config   ContainerHealthStatusMetricConfig // metric config provided by user.
+	capacity int                               // max observed number of data points added to the metric.
+}
+
+// init fills container.health.status metric with initial data.
+func (m *metricContainerHealthStatus) init() {
+	m.data.SetName("container.health.status")
+	m.data.SetDescription("Container health check status => 0-starting 1-healthy 2-unhealthy. Only emitted when a health check is configured.")
+	m.data.SetUnit("")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricContainerHealthStatus) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricContainerHealthStatus) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricContainerHealthStatus) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricContainerHealthStatus(cfg ContainerHealthStatusMetricConfig) metricContainerHealthStatus {
+	m := metricContainerHealthStatus{config: cfg}
 
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
@@ -4664,52 +4714,6 @@ func newMetricContainerRestarts(cfg ContainerRestartsMetricConfig) metricContain
 	return m
 }
 
-type metricContainerHealthStatus struct {
-	data     pmetric.Metric                    // data buffer for generated metric.
-	config   ContainerHealthStatusMetricConfig // metric config provided by user.
-	capacity int                               // max observed number of data points added to the metric.
-}
-
-func (m *metricContainerHealthStatus) init() {
-	m.data.SetName("container.health.status")
-	m.data.SetDescription("Container health check status => 0-starting 1-healthy 2-unhealthy. Only emitted when a health check is configured.")
-	m.data.SetUnit("")
-	m.data.SetEmptyGauge()
-}
-
-func (m *metricContainerHealthStatus) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
-	if !m.config.Enabled {
-		return
-	}
-	dp := m.data.Gauge().DataPoints().AppendEmpty()
-	dp.SetStartTimestamp(start)
-	dp.SetTimestamp(ts)
-	dp.SetIntValue(val)
-}
-
-func (m *metricContainerHealthStatus) updateCapacity() {
-	if m.data.Gauge().DataPoints().Len() > m.capacity {
-		m.capacity = m.data.Gauge().DataPoints().Len()
-	}
-}
-
-func (m *metricContainerHealthStatus) emit(metrics pmetric.MetricSlice) {
-	if m.config.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
-		m.updateCapacity()
-		m.data.MoveTo(metrics.AppendEmpty())
-		m.init()
-	}
-}
-
-func newMetricContainerHealthStatus(cfg ContainerHealthStatusMetricConfig) metricContainerHealthStatus {
-	m := metricContainerHealthStatus{config: cfg}
-	if cfg.Enabled {
-		m.data = pmetric.NewMetric()
-		m.init()
-	}
-	return m
-}
-
 type metricContainerStatus struct {
 	data     pmetric.Metric              // data buffer for generated metric.
 	config   ContainerStatusMetricConfig // metric config provided by user.
@@ -4840,6 +4844,7 @@ type MetricsBuilder struct {
 	metricContainerCPUUsageTotal                     metricContainerCPUUsageTotal
 	metricContainerCPUUsageUsermode                  metricContainerCPUUsageUsermode
 	metricContainerCPUUtilization                    metricContainerCPUUtilization
+	metricContainerHealthStatus                      metricContainerHealthStatus
 	metricContainerMemoryActiveAnon                  metricContainerMemoryActiveAnon
 	metricContainerMemoryActiveFile                  metricContainerMemoryActiveFile
 	metricContainerMemoryAnon                        metricContainerMemoryAnon
@@ -4889,7 +4894,6 @@ type MetricsBuilder struct {
 	metricContainerNetworkIoUsageTxPackets           metricContainerNetworkIoUsageTxPackets
 	metricContainerPidsCount                         metricContainerPidsCount
 	metricContainerPidsLimit                         metricContainerPidsLimit
-	metricContainerHealthStatus                      metricContainerHealthStatus
 	metricContainerRestarts                          metricContainerRestarts
 	metricContainerStatus                            metricContainerStatus
 	metricContainerUptime                            metricContainerUptime
@@ -4938,6 +4942,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricContainerCPUUsageTotal:                     newMetricContainerCPUUsageTotal(mbc.Metrics.ContainerCPUUsageTotal),
 		metricContainerCPUUsageUsermode:                  newMetricContainerCPUUsageUsermode(mbc.Metrics.ContainerCPUUsageUsermode),
 		metricContainerCPUUtilization:                    newMetricContainerCPUUtilization(mbc.Metrics.ContainerCPUUtilization),
+		metricContainerHealthStatus:                      newMetricContainerHealthStatus(mbc.Metrics.ContainerHealthStatus),
 		metricContainerMemoryActiveAnon:                  newMetricContainerMemoryActiveAnon(mbc.Metrics.ContainerMemoryActiveAnon),
 		metricContainerMemoryActiveFile:                  newMetricContainerMemoryActiveFile(mbc.Metrics.ContainerMemoryActiveFile),
 		metricContainerMemoryAnon:                        newMetricContainerMemoryAnon(mbc.Metrics.ContainerMemoryAnon),
@@ -4987,7 +4992,6 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricContainerNetworkIoUsageTxPackets:           newMetricContainerNetworkIoUsageTxPackets(mbc.Metrics.ContainerNetworkIoUsageTxPackets),
 		metricContainerPidsCount:                         newMetricContainerPidsCount(mbc.Metrics.ContainerPidsCount),
 		metricContainerPidsLimit:                         newMetricContainerPidsLimit(mbc.Metrics.ContainerPidsLimit),
-		metricContainerHealthStatus:                      newMetricContainerHealthStatus(mbc.Metrics.ContainerHealthStatus),
 		metricContainerRestarts:                          newMetricContainerRestarts(mbc.Metrics.ContainerRestarts),
 		metricContainerStatus:                            newMetricContainerStatus(mbc.Metrics.ContainerStatus),
 		metricContainerUptime:                            newMetricContainerUptime(mbc.Metrics.ContainerUptime),
@@ -5132,6 +5136,7 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricContainerCPUUsageTotal.emit(ils.Metrics())
 	mb.metricContainerCPUUsageUsermode.emit(ils.Metrics())
 	mb.metricContainerCPUUtilization.emit(ils.Metrics())
+	mb.metricContainerHealthStatus.emit(ils.Metrics())
 	mb.metricContainerMemoryActiveAnon.emit(ils.Metrics())
 	mb.metricContainerMemoryActiveFile.emit(ils.Metrics())
 	mb.metricContainerMemoryAnon.emit(ils.Metrics())
@@ -5181,7 +5186,6 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricContainerNetworkIoUsageTxPackets.emit(ils.Metrics())
 	mb.metricContainerPidsCount.emit(ils.Metrics())
 	mb.metricContainerPidsLimit.emit(ils.Metrics())
-	mb.metricContainerHealthStatus.emit(ils.Metrics())
 	mb.metricContainerRestarts.emit(ils.Metrics())
 	mb.metricContainerStatus.emit(ils.Metrics())
 	mb.metricContainerUptime.emit(ils.Metrics())
@@ -5314,6 +5318,11 @@ func (mb *MetricsBuilder) RecordContainerCPUUsageUsermodeDataPoint(ts pcommon.Ti
 // RecordContainerCPUUtilizationDataPoint adds a data point to container.cpu.utilization metric.
 func (mb *MetricsBuilder) RecordContainerCPUUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
 	mb.metricContainerCPUUtilization.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordContainerHealthStatusDataPoint adds a data point to container.health.status metric.
+func (mb *MetricsBuilder) RecordContainerHealthStatusDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricContainerHealthStatus.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordContainerMemoryActiveAnonDataPoint adds a data point to container.memory.active_anon metric.
@@ -5564,11 +5573,6 @@ func (mb *MetricsBuilder) RecordContainerPidsLimitDataPoint(ts pcommon.Timestamp
 // RecordContainerRestartsDataPoint adds a data point to container.restarts metric.
 func (mb *MetricsBuilder) RecordContainerRestartsDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricContainerRestarts.recordDataPoint(mb.startTime, ts, val)
-}
-
-// RecordContainerHealthStatusDataPoint adds a data point to container.health.status metric.
-func (mb *MetricsBuilder) RecordContainerHealthStatusDataPoint(ts pcommon.Timestamp, val int64) {
-	mb.metricContainerHealthStatus.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordContainerStatusDataPoint adds a data point to container.status metric.

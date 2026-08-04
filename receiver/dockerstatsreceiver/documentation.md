@@ -62,6 +62,14 @@ Percent of CPU used by the container.
 | ---- | ----------- | ---------- | --------- |
 | 1 | Gauge | Double | Development |
 
+### container.health.status
+
+Container health check status => 0-starting 1-healthy 2-unhealthy. Only emitted when a health check is configured.
+
+| Unit | Metric Type | Value Type | Stability |
+| ---- | ----------- | ---------- | --------- |
+|  | Gauge | Int | Development |
+
 ### container.memory.file
 
 Amount of memory used to cache filesystem data, including tmpfs and shared memory (Only available with cgroups v2).

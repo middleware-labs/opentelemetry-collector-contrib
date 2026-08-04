@@ -677,6 +677,26 @@ func (ms *ContainerCPUUtilizationMetricConfig) Unmarshal(parser *confmap.Conf) e
 	return nil
 }
 
+// ContainerHealthStatusMetricConfig provides config for the container.health.status metric.
+type ContainerHealthStatusMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *ContainerHealthStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // ContainerMemoryActiveAnonMetricConfig provides config for the container.memory.active_anon metric.
 type ContainerMemoryActiveAnonMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -1921,26 +1941,6 @@ func (ms *ContainerStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
 	return nil
 }
 
-// ContainerHealthStatusMetricConfig provides config for the container.health.status metric.
-type ContainerHealthStatusMetricConfig struct {
-	Enabled          bool `mapstructure:"enabled"`
-	enabledSetByUser bool
-}
-
-func (ms *ContainerHealthStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
-	if parser == nil {
-		return nil
-	}
-
-	err := parser.Unmarshal(ms)
-	if err != nil {
-		return err
-	}
-
-	ms.enabledSetByUser = parser.IsSet("enabled")
-	return nil
-}
-
 // ContainerUptimeMetricConfig provides config for the container.uptime metric.
 type ContainerUptimeMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -1983,6 +1983,7 @@ type MetricsConfig struct {
 	ContainerCPUUsageTotal                     ContainerCPUUsageTotalMetricConfig                     `mapstructure:"container.cpu.usage.total"`
 	ContainerCPUUsageUsermode                  ContainerCPUUsageUsermodeMetricConfig                  `mapstructure:"container.cpu.usage.usermode"`
 	ContainerCPUUtilization                    ContainerCPUUtilizationMetricConfig                    `mapstructure:"container.cpu.utilization"`
+	ContainerHealthStatus                      ContainerHealthStatusMetricConfig                      `mapstructure:"container.health.status"`
 	ContainerMemoryActiveAnon                  ContainerMemoryActiveAnonMetricConfig                  `mapstructure:"container.memory.active_anon"`
 	ContainerMemoryActiveFile                  ContainerMemoryActiveFileMetricConfig                  `mapstructure:"container.memory.active_file"`
 	ContainerMemoryAnon                        ContainerMemoryAnonMetricConfig                        `mapstructure:"container.memory.anon"`
@@ -2032,7 +2033,6 @@ type MetricsConfig struct {
 	ContainerNetworkIoUsageTxPackets           ContainerNetworkIoUsageTxPacketsMetricConfig           `mapstructure:"container.network.io.usage.tx_packets"`
 	ContainerPidsCount                         ContainerPidsCountMetricConfig                         `mapstructure:"container.pids.count"`
 	ContainerPidsLimit                         ContainerPidsLimitMetricConfig                         `mapstructure:"container.pids.limit"`
-	ContainerHealthStatus                      ContainerHealthStatusMetricConfig                      `mapstructure:"container.health.status"`
 	ContainerRestarts                          ContainerRestartsMetricConfig                          `mapstructure:"container.restarts"`
 	ContainerStatus                            ContainerStatusMetricConfig                            `mapstructure:"container.status"`
 	ContainerUptime                            ContainerUptimeMetricConfig                            `mapstructure:"container.uptime"`
@@ -2116,6 +2116,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		ContainerCPUUtilization: ContainerCPUUtilizationMetricConfig{
+			Enabled: true,
+		},
+		ContainerHealthStatus: ContainerHealthStatusMetricConfig{
 			Enabled: true,
 		},
 		ContainerMemoryActiveAnon: ContainerMemoryActiveAnonMetricConfig{
@@ -2280,9 +2283,6 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		ContainerPidsLimit: ContainerPidsLimitMetricConfig{
 			Enabled: false,
-		},
-		ContainerHealthStatus: ContainerHealthStatusMetricConfig{
-			Enabled: true,
 		},
 		ContainerRestarts: ContainerRestartsMetricConfig{
 			Enabled: false,
