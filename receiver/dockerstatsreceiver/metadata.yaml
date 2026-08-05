@@ -312,6 +312,16 @@ metrics:
     unit: "1"
     gauge:
       value_type: double
+  
+  # Health
+  container.health.status:
+    enabled: true
+    stability: development
+    description: "Container health check status => 0-starting 1-healthy 2-unhealthy. Only emitted when a health check is configured."
+    unit: ""
+    gauge:
+      value_type: int
+
   container.memory.active_anon:
     enabled: false
     stability: development

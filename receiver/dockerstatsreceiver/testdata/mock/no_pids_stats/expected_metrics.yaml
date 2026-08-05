@@ -19,6 +19,9 @@ resourceMetrics:
         - key: container.runtime
           value:
             stringValue: docker
+        - key: container.started_on
+          value:
+            stringValue: "1657081050257"
         - key: env-var-metric-label
           value:
             stringValue: env-var
@@ -195,14 +198,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{operations}'
-          - description: 'Number of cores available to the container.'
+          - description: Number of cores available to the container.
             gauge:
               dataPoints:
-                - asInt: 8
-                  startTimeUnixNano: "1687762436124732000"
-                  timeUnixNano: "1687762436137493000"
+                - asInt: "8"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
             name: container.cpu.logical.count
-            unit: "{cpus}"
+            unit: '{cpus}'
           - description: CPU shares set for the container.
             gauge:
               dataPoints:
@@ -388,16 +391,16 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By
-          - description: 'Number of times the memory limit was hit.'
+          - description: Number of times the memory limit was hit.
             name: container.memory.fails
             sum:
-              isMonotonic: true
               aggregationTemporality: 2
               dataPoints:
                 - asInt: "4"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-            unit: "{fails}"
+              isMonotonic: true
+            unit: '{fails}'
           - description: The maximum amount of physical memory that can be used by the processes of this control group (Only available with cgroups v1).
             name: container.memory.hierarchical_memory_limit
             sum:
@@ -815,10 +818,17 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{restarts}'
+          - description: Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: container.status
           - description: Time elapsed since container start time.
             gauge:
               dataPoints:
-                - asDouble: 4.03649084666988e+07
+                - asDouble: 1.2876467379244424e+08
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.uptime

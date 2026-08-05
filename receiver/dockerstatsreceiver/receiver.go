@@ -102,6 +102,11 @@ func (r *metricsReceiver) scrapeV2(ctx context.Context) (pmetric.Metrics, error)
 					fmt.Errorf("no stats available yet for container %s", container.ID), 0))
 				continue
 			}
+			if container.State.Health != nil {
+				if updated, ok := r.client.InspectAndPersistContainer(ctx, container.ID); ok {
+					container.InspectResponse = updated
+				}
+			}
 			if err := r.recordContainerStats(now, stats, &container); err != nil {
 				errs = multierr.Append(errs, err)
 			}
@@ -121,6 +126,12 @@ func (r *metricsReceiver) scrapeV2(ctx context.Context) (pmetric.Metrics, error)
 			if err != nil {
 				results <- resultV2{nil, &c, err}
 				return
+			}
+
+			if c.State.Health != nil {
+				if updated, ok := r.client.InspectAndPersistContainer(ctx, c.ID); ok {
+					c.InspectResponse = updated
+				}
 			}
 
 			results <- resultV2{
@@ -166,6 +177,14 @@ func (r *metricsReceiver) recordContainerStats(now pcommon.Timestamp, containerS
 		"dead":       6,
 	}
 	r.mb.RecordContainerStatusDataPoint(now, statusMap[string(container.State.Status)])
+	if container.State.Health != nil {
+		healthMap := map[string]int64{
+			"starting":  0,
+			"healthy":   1,
+			"unhealthy": 2,
+		}
+		r.mb.RecordContainerHealthStatusDataPoint(now, healthMap[string(container.State.Health.Status)])
+	}
 	if err := r.recordBaseMetrics(now, container.InspectResponse); err != nil {
 		errs = multierr.Append(errs, err)
 	}
