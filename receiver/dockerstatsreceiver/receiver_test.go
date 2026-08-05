@@ -104,10 +104,9 @@ var (
 		cfg.ContainerNetworkIoUsageTxPackets.Enabled = true
 		cfg.ContainerPidsCount.Enabled = true
 		cfg.ContainerPidsLimit.Enabled = true
-		cfg.ContainerStateHealthStatus.Enabled = true
+		cfg.ContainerHealthStatus.Enabled = true
 		cfg.ContainerRestarts.Enabled = true
 		cfg.ContainerUptime.Enabled = true
-		cfg.ContainerStateStatus.Enabled = true
 		return cfg
 	}()
 
@@ -189,11 +188,11 @@ func TestErrorsInStart(t *testing.T) {
 	recv := newMetricsReceiver(receivertest.NewNopSettings(metadata.Type), cfg)
 	assert.NotNil(t, recv)
 
-	cfg.Config.Endpoint = "..not/a/valid/endpoint"
+	cfg.Endpoint = "..not/a/valid/endpoint"
 	err := recv.start(t.Context(), componenttest.NewNopHost())
 	assert.ErrorContains(t, err, "unable to parse docker host")
 
-	cfg.Config.Endpoint = unreachable
+	cfg.Endpoint = unreachable
 	err = recv.start(t.Context(), componenttest.NewNopHost())
 	assert.ErrorContains(t, err, "context deadline exceeded")
 }
@@ -351,8 +350,7 @@ func TestScrapeV2(t *testing.T) {
 				defer mockDockerEngine.Close()
 
 				receiver := newMetricsReceiver(
-					receivertest.NewNopSettings(metadata.Type), tc.cfgBuilder.withEndpoint(mockDockerEngine.URL).build(),
-				)
+					receivertest.NewNopSettings(metadata.Type), tc.cfgBuilder.withEndpoint(mockDockerEngine.URL).build())
 				err := receiver.start(t.Context(), componenttest.NewNopHost())
 				require.NoError(t, err)
 				defer func() { require.NoError(t, receiver.shutdown(t.Context())) }()
@@ -404,8 +402,7 @@ func TestScrapeV2Streaming(t *testing.T) {
 			withMetrics(allMetricsEnabled).
 			withAPIVersion(dockerAPIVersion).
 			withStreamStats(true).
-			withEndpoint(mockDockerEngine.URL).build(),
-	)
+			withEndpoint(mockDockerEngine.URL).build())
 
 	err = receiver.start(t.Context(), componenttest.NewNopHost())
 	require.NoError(t, err)
@@ -434,7 +431,7 @@ func TestRecordBaseMetrics(t *testing.T) {
 	cfg := createDefaultConfig().(*Config)
 	metricsConfig := metadata.DefaultMetricsConfig()
 	metricsConfig.ContainerUptime.Enabled = true
-	cfg.MetricsBuilderConfig.Metrics = metricsConfig
+	cfg.Metrics = metricsConfig
 	r := newMetricsReceiver(receivertest.NewNopSettings(metadata.Type), cfg)
 	now := time.Now()
 	started := now.Add(-2 * time.Second).Format(time.RFC3339)
@@ -505,27 +502,27 @@ func newTestConfigBuilder() *testConfigBuilder {
 }
 
 func (cb *testConfigBuilder) withEndpoint(endpoint string) *testConfigBuilder {
-	cb.config.Config.Endpoint = endpoint
+	cb.config.Endpoint = endpoint
 	return cb
 }
 
 func (cb *testConfigBuilder) withAPIVersion(v string) *testConfigBuilder {
-	cb.config.Config.DockerAPIVersion = v
+	cb.config.DockerAPIVersion = v
 	return cb
 }
 
 func (cb *testConfigBuilder) withMetrics(ms metadata.MetricsConfig) *testConfigBuilder {
-	cb.config.MetricsBuilderConfig.Metrics = ms
+	cb.config.Metrics = ms
 	return cb
 }
 
 func (cb *testConfigBuilder) withResourceAttributes(ras metadata.ResourceAttributesConfig) *testConfigBuilder {
-	cb.config.MetricsBuilderConfig.ResourceAttributes = ras
+	cb.config.ResourceAttributes = ras
 	return cb
 }
 
 func (cb *testConfigBuilder) withStreamStats(enabled bool) *testConfigBuilder {
-	cb.config.Config.StreamStats = enabled
+	cb.config.StreamStats = enabled
 	return cb
 }
 

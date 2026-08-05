@@ -677,6 +677,26 @@ func (ms *ContainerCPUUtilizationMetricConfig) Unmarshal(parser *confmap.Conf) e
 	return nil
 }
 
+// ContainerHealthStatusMetricConfig provides config for the container.health.status metric.
+type ContainerHealthStatusMetricConfig struct {
+	Enabled          bool `mapstructure:"enabled"`
+	enabledSetByUser bool
+}
+
+func (ms *ContainerHealthStatusMetricConfig) Unmarshal(parser *confmap.Conf) error {
+	if parser == nil {
+		return nil
+	}
+
+	err := parser.Unmarshal(ms)
+	if err != nil {
+		return err
+	}
+
+	ms.enabledSetByUser = parser.IsSet("enabled")
+	return nil
+}
+
 // ContainerMemoryActiveAnonMetricConfig provides config for the container.memory.active_anon metric.
 type ContainerMemoryActiveAnonMetricConfig struct {
 	Enabled          bool `mapstructure:"enabled"`
@@ -1963,6 +1983,7 @@ type MetricsConfig struct {
 	ContainerCPUUsageTotal                     ContainerCPUUsageTotalMetricConfig                     `mapstructure:"container.cpu.usage.total"`
 	ContainerCPUUsageUsermode                  ContainerCPUUsageUsermodeMetricConfig                  `mapstructure:"container.cpu.usage.usermode"`
 	ContainerCPUUtilization                    ContainerCPUUtilizationMetricConfig                    `mapstructure:"container.cpu.utilization"`
+	ContainerHealthStatus                      ContainerHealthStatusMetricConfig                      `mapstructure:"container.health.status"`
 	ContainerMemoryActiveAnon                  ContainerMemoryActiveAnonMetricConfig                  `mapstructure:"container.memory.active_anon"`
 	ContainerMemoryActiveFile                  ContainerMemoryActiveFileMetricConfig                  `mapstructure:"container.memory.active_file"`
 	ContainerMemoryAnon                        ContainerMemoryAnonMetricConfig                        `mapstructure:"container.memory.anon"`
@@ -2095,6 +2116,9 @@ func DefaultMetricsConfig() MetricsConfig {
 			Enabled: true,
 		},
 		ContainerCPUUtilization: ContainerCPUUtilizationMetricConfig{
+			Enabled: true,
+		},
+		ContainerHealthStatus: ContainerHealthStatusMetricConfig{
 			Enabled: true,
 		},
 		ContainerMemoryActiveAnon: ContainerMemoryActiveAnonMetricConfig{

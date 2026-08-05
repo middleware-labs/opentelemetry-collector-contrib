@@ -1,24 +1,4 @@
 resourceMetrics:
-  - resource: {}
-    schemaUrl: https://opentelemetry.io/schemas/1.40.0
-    scopeMetrics:
-      - metrics:
-          - description: Number of containers in a given state. State is one of - created, running, paused, restarting, removing, exited and dead
-            name: container.state.status
-            sum:
-              aggregationTemporality: 2
-              dataPoints:
-                - asInt: "1"
-                  attributes:
-                    - key: container.state.status
-                      value:
-                        stringValue: running
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            unit: '{status}'
-        scope:
-          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/dockerstatsreceiver
-          version: latest
   - resource:
       attributes:
         - key: container.hostname
@@ -36,6 +16,9 @@ resourceMetrics:
         - key: container.runtime
           value:
             stringValue: docker
+        - key: container.started_on
+          value:
+            stringValue: "1682419163758"
     schemaUrl: https://opentelemetry.io/schemas/1.40.0
     scopeMetrics:
       - metrics:
@@ -434,10 +417,17 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{restarts}'
+          - description: Container Status => 0-created 1-running 2-paused 3-restarting 4-removing 5-exited 6-dead
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: container.status
           - description: Time elapsed since container start time.
             gauge:
               dataPoints:
-                - asDouble: 1.0453227284680101e+08
+                - asDouble: 1.0342656030624782e+08
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: container.uptime
