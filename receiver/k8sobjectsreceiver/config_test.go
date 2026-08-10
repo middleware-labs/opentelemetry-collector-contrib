@@ -39,6 +39,7 @@ func TestLoadConfig(t *testing.T) {
 						Name:          "pods",
 						Mode:          k8sinventory.PullMode,
 						Interval:      time.Hour,
+						InitialDelay:  10 * time.Minute,
 						FieldSelector: "status.phase=Running",
 						LabelSelector: "environment in (production),tier in (frontend)",
 					},
@@ -66,6 +67,7 @@ func TestLoadConfig(t *testing.T) {
 						Mode:            k8sinventory.PullMode,
 						ResourceVersion: "1",
 						Interval:        time.Hour,
+						InitialDelay:    5 * time.Minute,
 					},
 					{
 						Name:     "events",
@@ -219,6 +221,7 @@ func TestDeepCopy(t *testing.T) {
 				FieldSelector:    "status.phase=Running",
 				LabelSelector:    "environment in (production),tier in (frontend)",
 				Interval:         time.Hour,
+				InitialDelay:     10 * time.Minute,
 				ResourceVersion:  "1",
 				ExcludeWatchType: []apiWatch.EventType{apiWatch.Added},
 				exclude:          map[apiWatch.EventType]bool{apiWatch.Added: true},
@@ -244,6 +247,7 @@ func TestDeepCopy(t *testing.T) {
 			actual.FieldSelector = "changed"
 			actual.LabelSelector = "changed"
 			actual.Interval = time.Minute
+			actual.InitialDelay = time.Second
 			actual.ResourceVersion = "changed"
 			actual.ExcludeWatchType[0] = apiWatch.Deleted
 			actual.exclude[apiWatch.Bookmark] = true
