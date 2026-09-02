@@ -47,6 +47,13 @@ const (
 const (
 	insufficientPrivilegeQuerySampleText = "<insufficient privilege>"
 	traceparentCarrierKey                = "traceparent"
+
+	// unknownDatabaseName stands in for db.namespace when a pg_stat_statements
+	// row cannot be resolved to a database. This happens when the row's dbid
+	// refers to a dropped database, so the join to pg_database yields NULL.
+	// Emitting the row with a placeholder keeps the query visible; dropping it
+	// would silently lose top queries for whichever database is churning most.
+	unknownDatabaseName = "unknown"
 )
 
 const (

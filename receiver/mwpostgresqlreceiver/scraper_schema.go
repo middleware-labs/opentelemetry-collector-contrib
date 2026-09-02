@@ -40,7 +40,9 @@ func (z *zapAdapter) Error(msg string, fields ...interface{}) {
 // internally throttles to schema_collection.collection_interval (e.g. 1h).
 // On each run at collection_interval, xmin change detection is used to decide if a full snapshot is needed
 // (e.g. 30s) and triggers a full snapshot when changes are found.
-func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (plog.Logs, error) {
+func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (retLogs plog.Logs, retErr error) {
+	defer recoverScrape(p.logger, "schema_collection", &retErr)
+
 	// Throttle: the OTel scraper framework calls us at the global
 	// collection_interval (e.g. 1s), but we only want to check for changes
 	// at schema_collection.collection_interval (default 60s).
@@ -280,15 +282,10 @@ func (p *postgreSQLScraper) collectSchemaForDatabase(
 		return plog.NewLogs(), fmt.Errorf("failed to collect schema for %s: %w", dbName, collectErr)
 	}
 
-	tableNames := make([]string, 0, len(event.Tables))
-	for _, t := range event.Tables {
-		tableNames = append(tableNames, t.SchemaName+"."+t.Name)
-	}
 	p.logger.Info("Schema snapshot collected",
 		zap.String("database", event.DatabaseName),
 		zap.String("trigger", reason),
 		zap.Int("table_count", len(event.Tables)),
-		zap.Strings("tables", tableNames),
 		zap.Int64("duration_ms", event.Statistics.CollectionDurationMs))
 
 	events, emitErr := eventEmitter.EmitSchemaCollectionEvent(ctx, event)

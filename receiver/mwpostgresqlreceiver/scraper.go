@@ -131,7 +131,9 @@ type dbRetrieval struct {
 }
 
 // scrape scrapes the metric stats, transforms them and attributes them into a metric slices.
-func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
+func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metrics, retErr error) {
+	defer recoverScrape(p.logger, "metrics", &retErr)
+
 	databases := p.config.Databases
 	listClient, err := p.clientFactory.getClient(defaultPostgreSQLDatabase)
 	if err != nil {
@@ -167,20 +169,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	p.retrieveDBMetrics(ctx, listClient, databases, r, &errs)
 
 	for _, database := range databases {
-		dbClient, dbErr := p.clientFactory.getClient(database)
-		if dbErr != nil {
-			errs.add(dbErr)
-			p.logger.Error("Failed to initialize connection to postgres", zap.String("database", database), zap.Error(dbErr))
-			continue
-		}
-		defer dbClient.Close()
-		numTables := p.collectTables(ctx, now, dbClient, database, &errs)
-
-		p.recordDatabase(now, database, r, numTables)
-		p.collectIndexes(ctx, now, dbClient, database, &errs)
-		p.collectFunctions(ctx, now, dbClient, database, &errs)
-		p.collectTableBloat(ctx, now, dbClient, database, &errs)
-		p.collectIndexBloat(ctx, now, dbClient, database, &errs)
+		p.collectDatabaseMetrics(ctx, now, database, r, &errs)
 	}
 
 	p.mb.RecordPostgresqlDatabaseCountDataPoint(now, int64(len(databases)))
@@ -200,7 +189,57 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
 }
 
-func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQuery int64) (plog.Logs, error) {
+// collectDatabaseMetrics collects the per-database metrics for a single
+// database.
+//
+// This is a separate function so that the client is closed when the database is
+// finished with, rather than when the whole scrape returns. A deferred Close
+// inside the scrape loop would be function-scoped, holding one connection open
+// per database for the duration of the scrape — with enough databases that
+// exhausts the role's connection limit and the server starts refusing new
+// connections mid-scrape.
+func (p *postgreSQLScraper) collectDatabaseMetrics(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	database string,
+	r *dbRetrieval,
+	errs *errsMux,
+) {
+	dbClient, dbErr := p.clientFactory.getClient(database)
+	if dbErr != nil {
+		errs.add(dbErr)
+		p.logger.Error("Failed to initialize connection to postgres", zap.String("database", database), zap.Error(dbErr))
+		return
+	}
+	defer dbClient.Close()
+
+	numTables := p.collectTables(ctx, now, dbClient, database, errs)
+
+	p.recordDatabase(now, database, r, numTables)
+	p.collectIndexes(ctx, now, dbClient, database, errs)
+	p.collectFunctions(ctx, now, dbClient, database, errs)
+	p.collectTableBloat(ctx, now, dbClient, database, errs)
+	p.collectIndexBloat(ctx, now, dbClient, database, errs)
+}
+
+// recoverScrape converts a panic on a scrape goroutine into an error. The
+// collector runs each scraper on its own goroutine with no recover of its own,
+// so an unexpected panic here terminates the entire agent process — taking down
+// host metrics, logs and every other integration along with this receiver. A
+// malformed row in one receiver should not have that blast radius.
+func recoverScrape(logger *zap.Logger, path string, err *error) {
+	if r := recover(); r != nil {
+		logger.Error("recovered from panic during scrape",
+			zap.String("path", path),
+			zap.Any("panic", r),
+			zap.Stack("stack"))
+		*err = fmt.Errorf("panic during %s scrape: %v", path, r)
+	}
+}
+
+func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQuery int64) (retLogs plog.Logs, retErr error) {
+	defer recoverScrape(p.logger, "query_samples", &retErr)
+
 	dbClient, err := p.clientFactory.getClient(defaultPostgreSQLDatabase)
 	if err != nil {
 		p.logger.Error("Failed to initialize connection to postgres", zap.Error(err))
@@ -219,7 +258,9 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 	return logs, nil
 }
 
-func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (plog.Logs, error) {
+func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (retLogs plog.Logs, retErr error) {
+	defer recoverScrape(p.logger, "top_query", &retErr)
+
 	var errs errsMux
 
 	p.collectTopQuery(ctx, p.clientFactory, maxRowsPerQuery, topNQuery, maxExplainEachInterval, &errs, p.logger)
@@ -248,9 +289,9 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 	currentSeen := make(map[string]struct{}, len(attributes))
 
 	for _, atts := range attributes {
-		state := atts[dbAttributePrefix+querySampleColumnState].(string)
-		pid := atts[dbAttributePrefix+querySampleColumnPID].(int64)
-		queryStart := atts[dbAttributePrefix+querySampleColumnQueryStart].(string)
+		state := attrString(atts, dbAttributePrefix+querySampleColumnState)
+		pid := attrInt64(atts, dbAttributePrefix+querySampleColumnPID)
+		queryStart := attrString(atts, dbAttributePrefix+querySampleColumnQueryStart)
 		blockingPids, _ := atts[dbAttributePrefix+querySampleColumnBlockingPids].([]any)
 
 		key := fmt.Sprintf("%d:%s:%s", pid, queryStart, blockingPidsToKey(blockingPids))
@@ -270,28 +311,28 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 		p.lb.RecordDbServerQuerySampleEvent(logCtx,
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
-			atts[string(semconv.DBNamespaceKey)].(string),
-			atts["event.type"].(string),
-			atts[string(semconv.DBQueryTextKey)].(string),
+			attrString(atts, string(semconv.DBNamespaceKey)),
+			attrString(atts, "event.type"),
+			attrString(atts, string(semconv.DBQueryTextKey)),
 			comment,
-			atts["db.query.tables"].(string),
-			atts[string(semconv.UserNameKey)].(string),
+			attrString(atts, "db.query.tables"),
+			attrString(atts, string(semconv.UserNameKey)),
 			state,
 			pid,
-			atts[dbAttributePrefix+querySampleColumnApplicationName].(string),
-			atts[string(semconv.NetworkPeerAddressKey)].(string),
-			atts[string(semconv.NetworkPeerPortKey)].(int64),
-			atts[dbAttributePrefix+querySampleColumnClientHostname].(string),
-			atts[dbAttributePrefix+querySampleColumnBackendType].(string),
-			atts[dbAttributePrefix+querySampleColumnXactStart].(string),
+			attrString(atts, dbAttributePrefix+querySampleColumnApplicationName),
+			attrString(atts, string(semconv.NetworkPeerAddressKey)),
+			attrInt64(atts, string(semconv.NetworkPeerPortKey)),
+			attrString(atts, dbAttributePrefix+querySampleColumnClientHostname),
+			attrString(atts, dbAttributePrefix+querySampleColumnBackendType),
+			attrString(atts, dbAttributePrefix+querySampleColumnXactStart),
 			queryStart,
-			atts[dbAttributePrefix+querySampleColumnStateChange].(string),
-			atts[dbAttributePrefix+querySampleColumnWaitEvent].(string),
-			atts[dbAttributePrefix+querySampleColumnWaitEventType].(string),
+			attrString(atts, dbAttributePrefix+querySampleColumnStateChange),
+			attrString(atts, dbAttributePrefix+querySampleColumnWaitEvent),
+			attrString(atts, dbAttributePrefix+querySampleColumnWaitEventType),
 			blockingPids,
-			atts[dbAttributePrefix+querySampleColumnBackendXid].(int64),
-			atts[dbAttributePrefix+querySampleColumnQueryID].(string),
-			atts[postgresqlTotalExecTimeAttributeName].(float64),
+			attrInt64(atts, dbAttributePrefix+querySampleColumnBackendXid),
+			attrString(atts, dbAttributePrefix+querySampleColumnQueryID),
+			attrFloat64(atts, postgresqlTotalExecTimeAttributeName),
 		)
 	}
 
@@ -391,9 +432,9 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	pq := make(priorityqueue.PriorityQueue[map[string]any, float64], 0)
 
 	for i, row := range rows {
-		queryID := row[dbAttributePrefix+queryidColumnName]
+		queryID := attrString(row, dbAttributePrefix+queryidColumnName)
 
-		if queryID == nil {
+		if queryID == "" {
 			// this should not happen, but in case
 			logger.Error("queryid is nil", zap.Any("atts", row))
 			mux.addPartial(errors.New("queryid is nil"))
@@ -401,21 +442,17 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		}
 
 		for columnName, info := range updatedOnly {
-			var valInAtts float64
-			_val := row[dbAttributePrefix+columnName]
-			if i, ok := _val.(int64); ok {
-				valInAtts = float64(i)
-			} else {
-				valInAtts = _val.(float64)
-			}
-			valInCache, exist := p.cache.Get(queryID.(string) + columnName)
+			// A NULL column is absent from the row map entirely, so this must
+			// tolerate a missing key rather than assert on it.
+			valInAtts := attrFloat64(row, dbAttributePrefix+columnName)
+			valInCache, exist := p.cache.Get(queryID + columnName)
 			valDelta := valInAtts
 			if exist {
 				valDelta = valInAtts - valInCache
 			}
 			finalValue := float64(0)
 			if valDelta > 0 {
-				p.cache.Add(queryID.(string)+columnName, valInAtts)
+				p.cache.Add(queryID+columnName, valInAtts)
 				finalValue = valDelta
 			}
 			if info.finalConverter != nil {
@@ -429,7 +466,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		}
 		item := priorityqueue.QueueItem[map[string]any, float64]{
 			Value:    row,
-			Priority: row[dbAttributePrefix+totalExecTimeColumnName].(float64),
+			Priority: attrFloat64(row, dbAttributePrefix+totalExecTimeColumnName),
 			Index:    i,
 		}
 		pq.Push(&item)
@@ -438,15 +475,31 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	heap.Init(&pq)
 	explained := int64(0)
 	count := 0
+	// Counted rather than logged per row: on a server with churn a large share
+	// of pg_stat_statements rows can be orphaned, so a per-row log would itself
+	// become a significant source of allocation.
+	unresolvedDatabases := 0
 	for pq.Len() > 0 && count < int(topNQuery) {
 		item := heap.Pop(&pq).(*priorityqueue.QueueItem[map[string]any, float64])
-		query := item.Value[string(semconv.DBQueryTextKey)].(string)
-		queryID := item.Value[dbAttributePrefix+queryidColumnName].(string)
+		query := attrString(item.Value, string(semconv.DBQueryTextKey))
+		queryID := attrString(item.Value, dbAttributePrefix+queryidColumnName)
 		// Use raw query (with $1, $2 placeholders) for EXPLAIN, not the obfuscated one (with ?)
 		rawQuery, _ := item.Value[dbAttributePrefix+"raw_query"].(string)
+
+		// pg_stat_statements rows outlive the databases they came from: once a
+		// database is dropped, its dbid no longer joins to pg_database and
+		// datname comes back NULL, which leaves db.namespace absent from the
+		// row. Such a row cannot be EXPLAINed (there is no database to connect
+		// to), but it is still a real query worth reporting, so it is emitted
+		// under a placeholder rather than dropped.
+		database := attrString(item.Value, string(semconv.DBNamespaceKey))
+		if database == "" {
+			unresolvedDatabases++
+			database = unknownDatabaseName
+		}
+
 		plan, ok := p.queryPlanCache.Get(queryID + "-plan")
-		if !ok && explained < maxExplainEachInterval {
-			database := item.Value[string(semconv.DBNamespaceKey)].(string)
+		if !ok && explained < maxExplainEachInterval && database != unknownDatabaseName {
 			dbClient, err := clientFactory.getClient(database)
 			if err != nil {
 				logger.Warn("skipping explain: failed to get db client",
@@ -487,29 +540,35 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			logCtx,
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
-			item.Value[string(semconv.DBNamespaceKey)].(string),
+			database,
 			"top_query",
 			query,
 			topComment,
 			tables,
 			rolname,
-			item.Value[dbAttributePrefix+callsColumnName].(int64),
-			item.Value[dbAttributePrefix+rowsColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksDirtiedColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksHitColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksReadColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksWrittenColumnName].(int64),
-			item.Value[dbAttributePrefix+tempBlksReadColumnName].(int64),
-			item.Value[dbAttributePrefix+tempBlksWrittenColumnName].(int64),
+			attrInt64(item.Value, dbAttributePrefix+callsColumnName),
+			attrInt64(item.Value, dbAttributePrefix+rowsColumnName),
+			attrInt64(item.Value, dbAttributePrefix+sharedBlksDirtiedColumnName),
+			attrInt64(item.Value, dbAttributePrefix+sharedBlksHitColumnName),
+			attrInt64(item.Value, dbAttributePrefix+sharedBlksReadColumnName),
+			attrInt64(item.Value, dbAttributePrefix+sharedBlksWrittenColumnName),
+			attrInt64(item.Value, dbAttributePrefix+tempBlksReadColumnName),
+			attrInt64(item.Value, dbAttributePrefix+tempBlksWrittenColumnName),
 			queryID,
 			rolname,
-			item.Value[dbAttributePrefix+totalExecTimeColumnName].(float64),
-			item.Value[dbAttributePrefix+totalPlanTimeColumnName].(float64),
+			attrFloat64(item.Value, dbAttributePrefix+totalExecTimeColumnName),
+			attrFloat64(item.Value, dbAttributePrefix+totalPlanTimeColumnName),
 			plan,
-			item.Value[postgresqlBlkReadTimeAttributeName].(float64),
-			item.Value[postgresqlBlkWriteTimeAttributeName].(float64),
+			attrFloat64(item.Value, postgresqlBlkReadTimeAttributeName),
+			attrFloat64(item.Value, postgresqlBlkWriteTimeAttributeName),
 		)
 		count++
+	}
+
+	if unresolvedDatabases > 0 {
+		logger.Debug("top query rows had no resolvable database, reported as unknown",
+			zap.Int("count", unresolvedDatabases),
+			zap.Int("emitted", count))
 	}
 }
 
