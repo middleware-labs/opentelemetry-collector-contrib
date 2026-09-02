@@ -144,69 +144,44 @@ func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (retLogs
 		IncludeTables:  parseTableConfig(p.config.SchemaCollection.IncludeTables),
 	}
 
-	// 6. Decide whether to collect (global check — applies to all databases)
+	// 6. Collect schema from each database, deciding per database whether it
+	// needs collecting at all.
+	//
+	// The decision is per database because the state it consults is per
+	// database: each database has its own catalog, its own OIDs and its own
+	// xmin snapshot. A single global decision cannot express "this database
+	// changed and that one did not", so any change anywhere forced a full
+	// collection of every database — which, for a server with many databases
+	// and a stable schema, is nearly all of the work this receiver does.
 	eventEmitter := NewEventEmitter(logger, p.serviceInstanceID)
-	lastSnapshot := p.changeTracker.GetLastSnapshot()
-	timeSinceLastSnapshot := time.Since(lastSnapshot)
 
 	snapshotInterval := 24 * time.Hour
 	if p.config.SchemaCollection.RefreshInterval > 0 {
 		snapshotInterval = p.config.SchemaCollection.RefreshInterval
 	}
 
-	needsCollection := false
-	reason := ""
-
-	if lastSnapshot.IsZero() {
-		needsCollection = true
-		reason = "initial"
-	} else if timeSinceLastSnapshot >= snapshotInterval {
-		needsCollection = true
-		reason = "scheduled_refresh"
-	}
-
-	// For xmin detection, use the default connection for a quick check
-	if !needsCollection {
-		sqlBuilder := NewSQLBuilder(versionInfo.VersionNum)
-		_ = sqlBuilder // xmin detection needs a collector; we'll try with the first database
-		// Create a temporary collector on the default connection for change detection
-		tmpConfig := &CollectorConfig{
-			DatabaseName:    defaultPostgreSQLDatabase,
-			ContinueOnError: true,
-			ExcludeSchemas:  excludeSchemas,
-			IncludeSchemas:  includeSchemas,
-		}
-		tmpCollector, tmpErr := NewSchemaCollector(
-			wrappedDB, versionInfo, cloudProvider, cloudMetadata,
-			p.changeTracker, tmpConfig, filterConfig, logger,
-		)
-		if tmpErr == nil {
-			changedOIDs, detectErr := tmpCollector.DetectChanges(ctx)
-			if detectErr != nil {
-				p.logger.Error("Failed to detect changes", zap.Error(detectErr))
-				return plog.NewLogs(), detectErr
-			}
-			if len(changedOIDs) > 0 {
-				needsCollection = true
-				reason = fmt.Sprintf("xmin_change_detected(%d tables)", len(changedOIDs))
-			}
-		}
-	}
-
-	if !needsCollection {
-		p.logger.Debug("No schema changes detected, skipping collection")
-		return plog.NewLogs(), nil
-	}
-
-	p.logger.Info("Starting full schema snapshot",
-		zap.String("reason", reason),
-		zap.Strings("databases", databases),
-		zap.Duration("time_since_last", timeSinceLastSnapshot))
-
-	// 7. Collect schema from each database
 	allEvents := plog.NewLogs()
+	collected, skipped := 0, 0
 
 	for _, dbName := range databases {
+		reason, needsCollection, decideErr := p.schemaCollectionReason(
+			ctx, dbName, snapshotInterval, versionInfo, cloudProvider, cloudMetadata,
+			excludeSchemas, includeSchemas, filterConfig, logger,
+		)
+		if decideErr != nil {
+			p.logger.Error("Failed to detect schema changes for database",
+				zap.String("database", dbName), zap.Error(decideErr))
+			if !p.config.SchemaCollection.ContinueOnError {
+				return plog.NewLogs(), decideErr
+			}
+			continue
+		}
+
+		if !needsCollection {
+			skipped++
+			continue
+		}
+
 		dbEvents, dbErr := p.collectSchemaForDatabase(ctx, dbName, versionInfo, cloudProvider, cloudMetadata, excludeSchemas, includeSchemas, filterConfig, eventEmitter, logger, reason)
 		if dbErr != nil {
 			p.logger.Error("Failed to collect schema for database",
@@ -216,11 +191,90 @@ func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (retLogs
 			}
 			continue
 		}
+		collected++
 		dbEvents.ResourceLogs().MoveAndAppendTo(allEvents.ResourceLogs())
 	}
 
+	if collected == 0 {
+		p.logger.Debug("No schema changes detected, skipping collection",
+			zap.Int("databases_skipped", skipped))
+		return plog.NewLogs(), nil
+	}
+
+	p.logger.Info("Schema snapshot complete",
+		zap.Int("databases_collected", collected),
+		zap.Int("databases_skipped", skipped))
+
 	stripEmptyLogAttrs(allEvents)
 	return allEvents, nil
+}
+
+// schemaCollectionReason decides whether a single database needs a full schema
+// collection this cycle, and why.
+//
+// A database is collected when it has never been snapshotted, when its snapshot
+// is older than the refresh interval, or when xmin detection shows at least one
+// table whose definition changed since that snapshot. Detection reads only OIDs
+// and xmins from pg_class, which is far cheaper than reading every column,
+// index and constraint — so an unchanged database costs one small query instead
+// of a full collection.
+func (p *postgreSQLScraper) schemaCollectionReason(
+	ctx context.Context,
+	dbName string,
+	snapshotInterval time.Duration,
+	versionInfo *VersionInfo,
+	cloudProvider CloudProvider,
+	cloudMetadata *CloudMetadata,
+	excludeSchemas, includeSchemas map[string]bool,
+	filterConfig *FilterConfig,
+	logger *zapAdapter,
+) (string, bool, error) {
+	lastSnapshot, tracked := p.changeTracker.GetLastSnapshotFor(dbName)
+	if !tracked || lastSnapshot.IsZero() {
+		return "initial", true, nil
+	}
+	if time.Since(lastSnapshot) >= snapshotInterval {
+		return "scheduled_refresh", true, nil
+	}
+
+	// Detection must run against the database being checked: OIDs are only
+	// unique within a database, so another database's catalog cannot answer
+	// this question.
+	dbClient, err := p.clientFactory.getClient(dbName)
+	if err != nil {
+		return "", false, fmt.Errorf("failed to connect to database %s for change detection: %w", dbName, err)
+	}
+	defer dbClient.Close()
+
+	pgClient, ok := dbClient.(*postgreSQLClient)
+	if !ok {
+		return "", false, fmt.Errorf("incompatible client type for database %s", dbName)
+	}
+
+	collector, err := NewSchemaCollector(
+		pgClient.client, versionInfo, cloudProvider, cloudMetadata,
+		p.changeTracker,
+		&CollectorConfig{
+			DatabaseName:    dbName,
+			ContinueOnError: true,
+			ExcludeSchemas:  excludeSchemas,
+			IncludeSchemas:  includeSchemas,
+		},
+		filterConfig, logger,
+	)
+	if err != nil {
+		return "", false, fmt.Errorf("failed to initialize change detector for %s: %w", dbName, err)
+	}
+
+	changedOIDs, err := collector.DetectChanges(ctx)
+	if err != nil {
+		return "", false, fmt.Errorf("failed to detect changes for %s: %w", dbName, err)
+	}
+	if len(changedOIDs) > 0 {
+		return fmt.Sprintf("xmin_change_detected(%d tables)", len(changedOIDs)), true, nil
+	}
+
+	return "", false, nil
 }
 
 // collectSchemaForDatabase collects schema from a single database.

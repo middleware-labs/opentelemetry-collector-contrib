@@ -223,7 +223,7 @@ func (c *SchemaCollector) Collect(ctx context.Context) (*SchemaCollectionEvent, 
 	for _, table := range event.Tables {
 		xminMap[table.OID] = table.Xmin
 	}
-	c.changeTracker.UpdateSnapshot(xminMap)
+	c.changeTracker.UpdateSnapshot(c.config.DatabaseName, xminMap)
 
 	// 6. Set statistics
 	duration := time.Since(startTime)
@@ -268,6 +268,7 @@ func (c *SchemaCollector) DetectChanges(ctx context.Context) ([]uint32, error) {
 	}
 	defer rows.Close()
 
+	seen := 0
 	for rows.Next() {
 		var oid uint32
 		var xmin uint32
@@ -275,13 +276,26 @@ func (c *SchemaCollector) DetectChanges(ctx context.Context) ([]uint32, error) {
 			c.logger.Warn("failed to scan xmin", "error", err)
 			continue
 		}
+		seen++
 
-		if c.changeTracker.HasChanged(oid, xmin) {
+		if c.changeTracker.HasChanged(c.config.DatabaseName, oid, xmin) {
 			changed = append(changed, oid)
 		}
 	}
 
-	return changed, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// A table that disappeared since the last snapshot is a change too, and
+	// would otherwise go unnoticed: every remaining table matches, so nothing
+	// is reported as changed and the dropped table lingers in the last emitted
+	// schema indefinitely.
+	if len(changed) == 0 && c.changeTracker.TrackedTableCountFor(c.config.DatabaseName) != seen {
+		changed = append(changed, 0)
+	}
+
+	return changed, nil
 }
 
 // collectTables collects all tables from the database
