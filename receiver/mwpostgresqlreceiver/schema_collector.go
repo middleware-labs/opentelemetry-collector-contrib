@@ -259,16 +259,23 @@ func (c *SchemaCollector) Collect(ctx context.Context) (*SchemaCollectionEvent, 
 }
 
 // DetectChanges detects schema changes using xmin-based detection
-func (c *SchemaCollector) DetectChanges(ctx context.Context) ([]uint32, error) {
-	changed := []uint32{}
-
+//
+// It returns the OIDs of tables that are new or whose definition changed, and
+// the number of previously tracked tables that no longer exist. A dropped table
+// is a change too, and would otherwise go unnoticed: every remaining table
+// matches, so nothing is reported as changed and the dropped table lingers in
+// the last emitted schema indefinitely.
+//
+// Detection reads only OIDs and xmins from pg_class, which is far cheaper than
+// a full collection, so an unchanged database costs one small query.
+func (c *SchemaCollector) DetectChanges(ctx context.Context) (changed []uint32, dropped int, err error) {
 	rows, err := c.db.QueryContext(ctx, c.sqlBuilder.XminDetectionQuery())
 	if err != nil {
-		return nil, fmt.Errorf("failed to detect changes: %w", err)
+		return nil, 0, fmt.Errorf("failed to detect changes: %w", err)
 	}
 	defer rows.Close()
 
-	seen := 0
+	trackedSeen := 0
 	for rows.Next() {
 		var oid uint32
 		var xmin uint32
@@ -276,26 +283,25 @@ func (c *SchemaCollector) DetectChanges(ctx context.Context) ([]uint32, error) {
 			c.logger.Warn("failed to scan xmin", "error", err)
 			continue
 		}
-		seen++
 
-		if c.changeTracker.HasChanged(c.config.DatabaseName, oid, xmin) {
+		tracked, altered := c.changeTracker.Compare(c.config.DatabaseName, oid, xmin)
+		if tracked {
+			trackedSeen++
+		}
+		if !tracked || altered {
 			changed = append(changed, oid)
 		}
 	}
-
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	// A table that disappeared since the last snapshot is a change too, and
-	// would otherwise go unnoticed: every remaining table matches, so nothing
-	// is reported as changed and the dropped table lingers in the last emitted
-	// schema indefinitely.
-	if len(changed) == 0 && c.changeTracker.TrackedTableCountFor(c.config.DatabaseName) != seen {
-		changed = append(changed, 0)
+	// Anything tracked that did not appear this time has been dropped.
+	if tracked := c.changeTracker.TrackedTableCountFor(c.config.DatabaseName); tracked > trackedSeen {
+		dropped = tracked - trackedSeen
 	}
 
-	return changed, nil
+	return changed, dropped, nil
 }
 
 // collectTables collects all tables from the database

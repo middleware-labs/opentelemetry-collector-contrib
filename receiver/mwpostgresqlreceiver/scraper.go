@@ -63,6 +63,19 @@ type postgreSQLScraper struct {
 	seenQuerySamples  map[string]struct{}
 	serviceInstanceID string
 	lastSchemaCheck   time.Time
+	// schemaServer caches the server-level facts schema collection needs —
+	// version and cloud platform — which do not change for the life of the
+	// process. Detecting them costs several queries; doing so once rather
+	// than every cycle keeps the unchanged-schema cycle to one query per
+	// database.
+	schemaServer *schemaServerInfo
+}
+
+// schemaServerInfo is what schema collection learns about the server once.
+type schemaServerInfo struct {
+	version       *VersionInfo
+	cloudProvider CloudProvider
+	cloudMetadata *CloudMetadata
 }
 
 type errsMux struct {

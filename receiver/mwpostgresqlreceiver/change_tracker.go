@@ -84,6 +84,17 @@ func (ct *XminChangeTracker) HasChanged(database string, tableOID, currentXmin u
 	return currentXmin != lastXmin
 }
 
+// Compare reports whether a table is tracked and, if so, whether its xmin
+// differs from the snapshot. An untracked table is reported as not changed:
+// callers treat it as new, which is distinct from altered.
+func (ct *XminChangeTracker) Compare(database string, tableOID, currentXmin uint32) (tracked, changed bool) {
+	ct.mu.RLock()
+	defer ct.mu.RUnlock()
+
+	lastXmin, tracked := ct.lastXminByDB[database][tableOID]
+	return tracked, tracked && lastXmin != currentXmin
+}
+
 // UpdateXmin updates the tracked xmin for a table
 func (ct *XminChangeTracker) UpdateXmin(database string, tableOID, xmin uint32) {
 	ct.mu.Lock()

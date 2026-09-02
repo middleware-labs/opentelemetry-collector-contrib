@@ -88,10 +88,8 @@ func TestSchemaCollectionSkipsUnchangedDatabase(t *testing.T) {
 	// --- Cycle 2: xmin unchanged, so only detection runs and nothing is
 	// collected. Note the absence of any table/column/index expectations: if
 	// the gate failed to skip, those queries would be unexpected and the mock
-	// would error. ---
-	mock.ExpectQuery(`SELECT version\(\), current_setting`).
-		WillReturnRows(sqlmock.NewRows([]string{"version", "num"}).AddRow("PostgreSQL 15.0", 150000))
-	setupCloudDetectorExpectations(mock)
+	// would error. Version and cloud detection are cached from cycle 1, so
+	// the only query this cycle is the xmin probe. ---
 	mock.ExpectQuery(`SELECT c\.oid, c\.xmin`).WillReturnRows(
 		sqlmock.NewRows([]string{"oid", "xmin"}).AddRow(tableOID, xmin))
 
@@ -135,9 +133,6 @@ func TestSchemaCollectionRecollectsChangedDatabase(t *testing.T) {
 	require.NoError(t, err)
 
 	// --- Cycle 2: the table's xmin moved, so it is collected again. ---
-	mock.ExpectQuery(`SELECT version\(\), current_setting`).
-		WillReturnRows(sqlmock.NewRows([]string{"version", "num"}).AddRow("PostgreSQL 15.0", 150000))
-	setupCloudDetectorExpectations(mock)
 	mock.ExpectQuery(`SELECT c\.oid, c\.xmin`).WillReturnRows(
 		sqlmock.NewRows([]string{"oid", "xmin"}).AddRow(tableOID, 200))
 	expectSchemaCollection(mock, tableOID, 200)

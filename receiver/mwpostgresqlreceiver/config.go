@@ -79,6 +79,11 @@ type ConnectionPool struct {
 	MaxLifetime *time.Duration `mapstructure:"max_lifetime,omitempty"`
 	MaxIdle     *int           `mapstructure:"max_idle,omitempty"`
 	MaxOpen     *int           `mapstructure:"max_open,omitempty"`
+	// MaxDatabases bounds how many per-database connection pools are kept open
+	// at once. Pools for databases beyond this budget are closed once idle, so
+	// a server with many databases does not retain an idle backend per
+	// database indefinitely. The default database is always kept.
+	MaxDatabases *int `mapstructure:"max_databases,omitempty"`
 }
 
 func (cfg *Config) Validate() error {
