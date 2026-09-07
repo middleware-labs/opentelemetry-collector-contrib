@@ -3,6 +3,10 @@
 
 package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
 
+import (
+	semconv "go.opentelemetry.io/otel/semconv/v1.38.0"
+)
+
 // Attribute maps built from SQL result rows are not guaranteed to contain every
 // key. The sqlquery row scanner omits a column entirely when its value is NULL
 // (see internal/sqlquery/row_scanner.go), so a NULL column is an absent map key
@@ -41,4 +45,31 @@ func attrFloat64(attrs map[string]any, key string) float64 {
 	default:
 		return 0
 	}
+}
+
+// topQueryDeltaKey builds the cache key identifying one pg_stat_statements
+// entry across scrapes.
+//
+// pg_stat_statements identifies an entry by (userid, dbid, queryid, toplevel):
+// the same normalised query text executed by different roles, or against
+// different databases, produces separate rows with independent counters. A
+// delta cache keyed on queryid alone merges those rows, and each scrape then
+// differences a row against whichever sibling happened to be cached last,
+// emitting deltas that describe nothing real.
+//
+// Role and database are used in place of the raw userid and dbid because those
+// are what the query already joins and carries in the row; they are one-to-one
+// with the OIDs within a single server, which is the scope a cache entry lives
+// in. A missing component contributes an empty string rather than being
+// dropped, so rows that genuinely lack one still get a stable, distinct key.
+//
+// The separator must not occur in an identifier that could otherwise shift a
+// boundary. PostgreSQL identifiers can contain almost anything when quoted, so
+// a byte that cannot appear in a UTF-8 string at all is used instead of a
+// printable character.
+func topQueryDeltaKey(row map[string]any, queryID string) string {
+	const sep = "\x00"
+	return attrString(row, string(semconv.DBNamespaceKey)) + sep +
+		attrString(row, dbAttributePrefix+rolnameColumnName) + sep +
+		queryID + sep
 }

@@ -604,17 +604,25 @@ func TestScrapeTopQueries(t *testing.T) {
 	}
 
 	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
-	scraper.cache.Add(queryid+totalExecTimeColumnName, 10)
-	scraper.cache.Add(queryid+totalPlanTimeColumnName, 11)
-	scraper.cache.Add(queryid+callsColumnName, 120)
-	scraper.cache.Add(queryid+rowsColumnName, 20)
 
-	scraper.cache.Add(queryid+sharedBlksDirtiedColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksHitColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksWrittenColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksWrittenColumnName, 1110)
+	// The delta cache is keyed on the identity pg_stat_statements itself uses -
+	// database, role and queryid - not on queryid alone. Seed the previous
+	// scrape's cumulative values under that key so this scrape emits deltas.
+	priorKey := topQueryDeltaKey(map[string]any{
+		"db.namespace":                        expectedReturnedValue["datname"],
+		dbAttributePrefix + rolnameColumnName: expectedReturnedValue["rolname"],
+	}, queryid)
+	scraper.cache.Add(priorKey+totalExecTimeColumnName, 10)
+	scraper.cache.Add(priorKey+totalPlanTimeColumnName, 11)
+	scraper.cache.Add(priorKey+callsColumnName, 120)
+	scraper.cache.Add(priorKey+rowsColumnName, 20)
+
+	scraper.cache.Add(priorKey+sharedBlksDirtiedColumnName, 1110)
+	scraper.cache.Add(priorKey+sharedBlksHitColumnName, 1110)
+	scraper.cache.Add(priorKey+sharedBlksReadColumnName, 1110)
+	scraper.cache.Add(priorKey+sharedBlksWrittenColumnName, 1110)
+	scraper.cache.Add(priorKey+tempBlksReadColumnName, 1110)
+	scraper.cache.Add(priorKey+tempBlksWrittenColumnName, 1110)
 
 	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
 		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
@@ -631,17 +639,24 @@ func TestScrapeTopQueries(t *testing.T) {
 	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 
-	// Verify the cache has updated with latest counter
+	// Verify the cache has updated with latest counter, under the composite
+	// identity key rather than queryid alone.
 
-	calls, callsExists := scraper.cache.Get(queryid + callsColumnName)
+	calls, callsExists := scraper.cache.Get(priorKey + callsColumnName)
 	assert.True(t, callsExists)
 	assert.Equal(t, float64(123), calls)
-	execTime, execTimeExists := scraper.cache.Get(queryid + totalExecTimeColumnName)
+	execTime, execTimeExists := scraper.cache.Get(priorKey + totalExecTimeColumnName)
 	assert.True(t, execTimeExists)
 	assert.Equal(t, float64(11), execTime)
-	planTime, planTimeExists := scraper.cache.Get(queryid + totalPlanTimeColumnName)
+	planTime, planTimeExists := scraper.cache.Get(priorKey + totalPlanTimeColumnName)
 	assert.True(t, planTimeExists)
 	assert.Equal(t, float64(12), planTime)
+
+	// The old queryid-only key must NOT be written: that key is what allowed
+	// rows for the same query under different roles or databases to collide.
+	_, bareKeyExists := scraper.cache.Get(queryid + callsColumnName)
+	assert.False(t, bareKeyExists,
+		"delta cache must not be keyed on queryid alone")
 }
 
 func TestCanExplainQuery(t *testing.T) {

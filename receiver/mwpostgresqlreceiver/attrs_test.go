@@ -221,3 +221,92 @@ func TestCollectQuerySamplesEveryKeyMissingDoesNotPanic(t *testing.T) {
 		})
 	}
 }
+
+// pg_stat_statements identifies an entry by (userid, dbid, queryid, toplevel).
+// These tests pin that the delta cache key distinguishes the same query text
+// across roles and databases, which is what stops one row's counters being
+// differenced against another's.
+
+func TestTopQueryDeltaKeyDistinguishesRoles(t *testing.T) {
+	// The reported defect: the same normalised query run by two roles is two
+	// pg_stat_statements rows with independent counters. Keyed on queryid
+	// alone they collide, and each scrape differences one role's cumulative
+	// total against the other's.
+	appRow := map[string]any{
+		"db.namespace":                        "shop",
+		dbAttributePrefix + rolnameColumnName: "app",
+	}
+	reportingRow := map[string]any{
+		"db.namespace":                        "shop",
+		dbAttributePrefix + rolnameColumnName: "reporting",
+	}
+
+	require.NotEqual(t,
+		topQueryDeltaKey(appRow, "114514"),
+		topQueryDeltaKey(reportingRow, "114514"),
+		"same queryid under different roles must not share a cache key")
+}
+
+func TestTopQueryDeltaKeyDistinguishesDatabases(t *testing.T) {
+	// pg_stat_statements is cluster-wide, so one queryid legitimately appears
+	// once per database. This is the 52-database case.
+	staging := map[string]any{
+		"db.namespace":                        "shop_staging",
+		dbAttributePrefix + rolnameColumnName: "app",
+	}
+	prod := map[string]any{
+		"db.namespace":                        "shop_prod",
+		dbAttributePrefix + rolnameColumnName: "app",
+	}
+
+	require.NotEqual(t,
+		topQueryDeltaKey(staging, "114514"),
+		topQueryDeltaKey(prod, "114514"),
+		"same queryid in different databases must not share a cache key")
+}
+
+func TestTopQueryDeltaKeyIsStableAcrossScrapes(t *testing.T) {
+	// The key has to be reproducible or every scrape misses the cache and
+	// emits cumulative values as if they were deltas.
+	row := map[string]any{
+		"db.namespace":                        "shop",
+		dbAttributePrefix + rolnameColumnName: "app",
+	}
+	require.Equal(t, topQueryDeltaKey(row, "1"), topQueryDeltaKey(row, "1"))
+}
+
+func TestTopQueryDeltaKeyToleratesMissingComponents(t *testing.T) {
+	// datname comes back NULL for rows whose database has been dropped, and
+	// the row scanner omits NULL columns entirely. A missing component must
+	// still yield a usable, distinct key rather than panicking or collapsing
+	// every such row onto one key.
+	empty := topQueryDeltaKey(map[string]any{}, "114514")
+	require.NotEmpty(t, empty)
+
+	withDB := topQueryDeltaKey(map[string]any{"db.namespace": "shop"}, "114514")
+	require.NotEqual(t, empty, withDB)
+}
+
+func TestTopQueryDeltaKeyIsUnambiguous(t *testing.T) {
+	// A separator that can occur inside an identifier lets two different
+	// identities collapse onto one key by shifting the boundary. PostgreSQL
+	// identifiers may contain almost any character when quoted - including
+	// "|", "-", ":" and whitespace - so the separator must be a byte that
+	// cannot appear in a valid identifier at all.
+	//
+	// This probes candidate separators rather than assuming which one is in
+	// use, so it fails for ANY printable choice, not only the one it was
+	// written against.
+	for _, candidate := range []string{"|", "-", ":", "/", ".", " ", "_", ",", "\t"} {
+		split := topQueryDeltaKey(map[string]any{
+			"db.namespace":                        "a" + candidate + "b",
+			dbAttributePrefix + rolnameColumnName: "c",
+		}, "1")
+		shifted := topQueryDeltaKey(map[string]any{
+			"db.namespace":                        "a",
+			dbAttributePrefix + rolnameColumnName: "b" + candidate + "c",
+		}, "1")
+		require.NotEqual(t, split, shifted,
+			"separator %q is ambiguous: an identifier containing it can shift the field boundary", candidate)
+	}
+}

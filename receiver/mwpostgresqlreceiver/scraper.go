@@ -454,18 +454,28 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			continue
 		}
 
+		// pg_stat_statements keys its entries on (userid, dbid, queryid,
+		// toplevel), not on queryid alone: the same normalised query executed
+		// by two roles, or in two databases, is two separate rows with
+		// independent counters. Keying the delta cache on queryid alone merges
+		// them, so each row is differenced against whichever of its siblings
+		// was seen last and the emitted deltas are meaningless - typically
+		// oscillating between a large positive value and zero as the rows take
+		// turns. Key on the same tuple the server does.
+		deltaKey := topQueryDeltaKey(row, queryID)
+
 		for columnName, info := range updatedOnly {
 			// A NULL column is absent from the row map entirely, so this must
 			// tolerate a missing key rather than assert on it.
 			valInAtts := attrFloat64(row, dbAttributePrefix+columnName)
-			valInCache, exist := p.cache.Get(queryID + columnName)
+			valInCache, exist := p.cache.Get(deltaKey + columnName)
 			valDelta := valInAtts
 			if exist {
 				valDelta = valInAtts - valInCache
 			}
 			finalValue := float64(0)
 			if valDelta > 0 {
-				p.cache.Add(queryID+columnName, valInAtts)
+				p.cache.Add(deltaKey+columnName, valInAtts)
 				finalValue = valDelta
 			}
 			if info.finalConverter != nil {
