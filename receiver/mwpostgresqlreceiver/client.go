@@ -1561,8 +1561,24 @@ func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, e
 }
 
 func (c *postgreSQLClient) listDatabases(ctx context.Context) ([]string, error) {
+	// Only databases this role can actually open a connection to.
+	//
+	// datallowconn alone is not enough. On AWS RDS the rdsadmin database has
+	// datallowconn = true and is blocked by ACL instead, so a filter on
+	// datallowconn still returns it and every per-database connection attempt
+	// fails, once per database per scrape, filling the customer's server log
+	// with authentication rejections. has_database_privilege is the predicate
+	// that actually matches what the server will permit, and it covers the
+	// equivalent databases on other platforms - azure_maintenance,
+	// cloudsqladmin, alloydbadmin - without hardcoding a list of vendor names
+	// that would need extending for every new provider.
+	//
+	// Filtering here rather than after the fact also means these databases
+	// never consume connection budget.
 	query := `SELECT datname FROM pg_database
-	WHERE datistemplate = false;`
+	WHERE datistemplate = false
+	  AND datallowconn
+	  AND has_database_privilege(oid, 'CONNECT');`
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
