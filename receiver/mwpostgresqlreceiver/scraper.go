@@ -58,6 +58,10 @@ type postgreSQLScraper struct {
 	queryPlanCache       *expirable.LRU[string, string]
 	newestQueryTimestamp float64
 	topQueryDisabled     bool
+	// resetDetector notices when the server discards the counters that cache
+	// holds previous values for. It lives beside the cache because its only
+	// purpose is deciding when that cache has become meaningless.
+	resetDetector *resetDetector
 	// seenQuerySamples tracks (pid:query_start) keys for queries already
 	// emitted, so the same execution is never sent twice across scrapes.
 	seenQuerySamples  map[string]struct{}
@@ -128,6 +132,7 @@ func newPostgreSQLScraper(
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
 		excludes:           excludes,
 		cache:              cache,
+		resetDetector:      newResetDetector(),
 		changeTracker:      NewXminChangeTracker(1000), // Maintain state across scrapes
 		queryPlanCache:     queryPlanCache,
 		separateSchemaAttr: separateSchemaAttr,
@@ -391,6 +396,21 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		}
 
 		rows, err = dbClient.getTopQuery(ctx, limit, logger)
+		if err == nil {
+			// Ask the same connection that just read the counters whether they
+			// were discarded since last scrape. pg_stat_statements_reset()
+			// zeroes every counter, so the cached previous values describe a
+			// series that no longer exists; differencing against them reports
+			// the new absolute values as if they were one interval's work.
+			//
+			// This is checked here, on a successful read, so a reset is only
+			// acted on when there are fresh counters to re-baseline against.
+			if pgClient, ok := dbClient.(*postgreSQLClient); ok && p.resetDetector.check(ctx, pgClient.client) {
+				logger.Info("pg_stat_statements was reset, discarding cached counters",
+					zap.String("database", database))
+				p.cache.Purge()
+			}
+		}
 		closeErr := dbClient.Close()
 		if closeErr != nil {
 			logger.Error("failed to close", zap.Error(closeErr))
