@@ -67,11 +67,27 @@ type Config struct {
 	confignet.AddrConfig           `mapstructure:",squash"`       // provides Endpoint and Transport
 	configtls.ClientConfig         `mapstructure:"tls,omitempty"` // provides SSL details
 	ConnectionPool                 `mapstructure:"connection_pool,omitempty"`
+	ConnectionTimeouts             `mapstructure:"connection_timeouts,omitempty"`
 	metadata.MetricsBuilderConfig  `mapstructure:",squash"`
 	metadata.LogsBuilderConfig     `mapstructure:",squash"`
 	QuerySampleCollection          `mapstructure:"query_sample_collection,omitempty"`
 	TopQueryCollection             `mapstructure:"top_query_collection,omitempty"`
 	SchemaCollection               SchemaCollectionConfig `mapstructure:"schema_collection,omitempty"`
+}
+
+// ConnectionTimeouts configures the per-connection guards applied through the
+// DSN. Zero or unset means the built-in default; a negative value disables the
+// guard entirely, which is not recommended and is why the fields are pointers.
+type ConnectionTimeouts struct {
+	// StatementTimeout bounds any single statement issued by the receiver.
+	StatementTimeout *time.Duration `mapstructure:"statement_timeout,omitempty"`
+	// LockTimeout bounds how long a receiver statement waits for a lock. Keep
+	// this small: while we wait in a lock queue, the customer's own queries can
+	// be queued behind us.
+	LockTimeout *time.Duration `mapstructure:"lock_timeout,omitempty"`
+	// IdleSessionTimeout terminates receiver sessions left idle outside a
+	// transaction. Requires PostgreSQL 14 or later; ignored on older servers.
+	IdleSessionTimeout *time.Duration `mapstructure:"idle_session_timeout,omitempty"`
 }
 
 type ConnectionPool struct {

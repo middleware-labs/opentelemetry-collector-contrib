@@ -364,6 +364,77 @@ type postgreSQLConfig struct {
 	database string
 	address  confignet.AddrConfig
 	tls      configtls.ClientConfig
+	// timeouts are applied as connection parameters in the DSN rather than as
+	// SET statements after connecting. See connectionOptions for why.
+	timeouts connectionTimeouts
+}
+
+// connectionTimeouts bounds what a single monitoring connection may do, so that
+// a pathological query cannot hold a server backend open indefinitely and a
+// lock conflict cannot stall the customer's application.
+//
+// These are delivered through libpq's "options" DSN parameter, which passes
+// command-line options to the backend at startup, instead of by issuing SET
+// after connecting. Two reasons:
+//
+//  1. A SET is a session mutation. Transaction poolers — notably AWS RDS Proxy
+//     and PgBouncer in transaction mode — respond to session-state changes by
+//     pinning the client to a backend for the rest of the session, which
+//     defeats the pooling the customer is paying for. Startup options carry no
+//     such penalty because they are part of establishing the session.
+//  2. A SET is a round trip that must be repeated on every new physical
+//     connection, and easy to omit when a pool opens a connection lazily.
+//     Putting it in the DSN makes it a property of the connection itself, so
+//     every connection the pool ever opens has it, with no extra round trip.
+type connectionTimeouts struct {
+	// statement bounds any single statement. Guards against a catalog query on
+	// a very large database running unboundedly.
+	statement time.Duration
+	// lock bounds how long a statement waits to acquire a lock. This is the
+	// value that protects the customer: it caps how long we can sit in a lock
+	// queue that their queries are queued behind. It is deliberately much
+	// smaller than statement.
+	lock time.Duration
+	// idleSession terminates a session left idle outside a transaction.
+	// PostgreSQL 14+ only; ignored by older servers, which is safe because an
+	// unknown GUC in startup options is an error, so it is version-gated at the
+	// call site rather than sent blindly.
+	idleSession time.Duration
+}
+
+// defaultConnectionTimeouts are the values used when the user configures none.
+//
+// statement 30s: comfortably above the slowest legitimate catalog query
+// measured on the 52-database rig, far below any human-noticeable stall.
+// lock 2s: short on purpose. Waiting on a lock is never useful to us — the data
+// will still be there next cycle — and every second we wait is a second the
+// customer's queries may spend queued behind us.
+var defaultConnectionTimeouts = connectionTimeouts{
+	statement: 30 * time.Second,
+	lock:      2 * time.Second,
+}
+
+// connectionOptions renders the timeouts as a libpq "options" parameter.
+//
+// Values are rendered in milliseconds with an explicit unit. Backslash and
+// space are the only characters libpq treats specially inside options, and
+// since every value here is a generated integer, no user-controlled text
+// reaches this string.
+func (t connectionTimeouts) connectionOptions() string {
+	var opts []string
+	if t.statement > 0 {
+		opts = append(opts, fmt.Sprintf("-c statement_timeout=%dms", t.statement.Milliseconds()))
+	}
+	if t.lock > 0 {
+		opts = append(opts, fmt.Sprintf("-c lock_timeout=%dms", t.lock.Milliseconds()))
+	}
+	if t.idleSession > 0 {
+		opts = append(opts, fmt.Sprintf("-c idle_session_timeout=%dms", t.idleSession.Milliseconds()))
+	}
+	if len(opts) == 0 {
+		return ""
+	}
+	return strings.Join(opts, " ")
 }
 
 func sslConnectionString(tls configtls.ClientConfig) string {
@@ -412,7 +483,21 @@ func (c postgreSQLConfig) ConnectionString() (string, error) {
 		host = "/" + host
 	}
 
-	return fmt.Sprintf("port=%s host=%s user=%s password=%s dbname=%s %s", port, host, c.username, c.password, database, sslConnectionString(c.tls)), nil
+	dsn := fmt.Sprintf("port=%s host=%s user=%s password=%s dbname=%s %s",
+		port, host, c.username, c.password, database, sslConnectionString(c.tls))
+
+	// application_name identifies our backends in pg_stat_activity. It is what
+	// lets a DBA see which connections are ours, lets us count our own
+	// connections against the role's limit, and lets the customer target us in
+	// a pg_terminate_backend if we ever misbehave.
+	dsn += fmt.Sprintf(" application_name=%s", monitoringApplicationName)
+
+	if opts := c.timeouts.connectionOptions(); opts != "" {
+		// Single-quoted because the value contains spaces.
+		dsn += fmt.Sprintf(" options='%s'", opts)
+	}
+
+	return dsn, nil
 }
 
 func (c *postgreSQLClient) Close() error {

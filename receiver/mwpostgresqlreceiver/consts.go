@@ -61,3 +61,8 @@ const (
 	postgresqlBlkReadTimeAttributeName   = dbAttributePrefix + blkReadTimeAttributeName
 	postgresqlBlkWriteTimeAttributeName  = dbAttributePrefix + blkWriteTimeAttributeName
 )
+
+// monitoringApplicationName is set as application_name on every connection this
+// receiver opens. It appears in pg_stat_activity and in the server log, so the
+// customer's DBA can always tell which backends belong to the collector.
+const monitoringApplicationName = "mw-otel-collector"

@@ -30,6 +30,24 @@ const defaultMaxPooledDatabases = 16
 
 var errFactoryClosed = errors.New("postgresql client factory is closed")
 
+// resolveTimeouts turns the user's optional overrides into the effective
+// per-connection timeouts. An unset field takes the default; an explicitly
+// configured non-positive value disables that guard, which is why the config
+// fields are pointers — "not set" and "set to zero" must mean different things.
+func resolveTimeouts(cfg *Config) connectionTimeouts {
+	t := defaultConnectionTimeouts
+	if cfg.ConnectionTimeouts.StatementTimeout != nil {
+		t.statement = *cfg.ConnectionTimeouts.StatementTimeout
+	}
+	if cfg.ConnectionTimeouts.LockTimeout != nil {
+		t.lock = *cfg.ConnectionTimeouts.LockTimeout
+	}
+	if cfg.ConnectionTimeouts.IdleSessionTimeout != nil {
+		t.idleSession = *cfg.ConnectionTimeouts.IdleSessionTimeout
+	}
+	return t
+}
+
 type postgreSQLClientFactory interface {
 	getClient(database string) (client, error)
 	close() error
@@ -47,6 +65,7 @@ func newDefaultClientFactory(cfg *Config) *defaultClientFactory {
 			password: string(cfg.Password),
 			address:  cfg.AddrConfig,
 			tls:      cfg.ClientConfig,
+			timeouts: resolveTimeouts(cfg),
 		},
 	}
 }
@@ -109,6 +128,7 @@ func newPoolClientFactory(cfg *Config) *poolClientFactory {
 			password: string(cfg.Password),
 			address:  cfg.AddrConfig,
 			tls:      cfg.ClientConfig,
+			timeouts: resolveTimeouts(cfg),
 		},
 		poolConfig:         &poolCfg,
 		pool:               make(map[string]*pooledDB),
