@@ -237,11 +237,23 @@ func TestTopQueryPurgesCacheOnReset(t *testing.T) {
 	// Establish the reset baseline, then move it: this scrape sees a reset.
 	scraper.resetDetector.lastReset = time.Date(2026, 9, 7, 11, 0, 0, 0, time.UTC)
 	scraper.resetDetector.seen = true
+	// Pin the instance as already seen and unchanged, so the reset path is what
+	// is under test.
+	scraper.instanceTracker.current = instanceIdentity{
+		startTime: time.Date(2026, 9, 7, 9, 0, 0, 0, time.UTC),
+	}
+	scraper.instanceTracker.seen = true
 
 	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").
 		WillReturnRows(sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"))
 	mock.ExpectQuery(expectedScrapeTopQuery).
 		WillReturnRows(sqlmock.NewRows(cols).FromCSVString(vals[:len(vals)-1]))
+	// The instance check runs first and must report no change here, so that
+	// this test exercises the reset path rather than passing because the
+	// instance check happened to fire.
+	mock.ExpectQuery("/* otel-collector-ignore */ SELECT pg_postmaster_start_time()").
+		WillReturnRows(sqlmock.NewRows([]string{"pg_postmaster_start_time"}).
+			AddRow(time.Date(2026, 9, 7, 9, 0, 0, 0, time.UTC)))
 	mock.ExpectQuery("/* otel-collector-ignore */ SELECT stats_reset FROM pg_stat_statements_info").
 		WillReturnRows(resetRows(time.Date(2026, 9, 7, 12, 0, 0, 0, time.UTC)))
 	mock.ExpectQuery(expectedExplain).

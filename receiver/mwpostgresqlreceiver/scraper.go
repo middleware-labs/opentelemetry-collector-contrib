@@ -62,6 +62,10 @@ type postgreSQLScraper struct {
 	// holds previous values for. It lives beside the cache because its only
 	// purpose is deciding when that cache has become meaningless.
 	resetDetector *resetDetector
+	// instanceTracker notices when the server on the other end of the
+	// connection is no longer the same running process, which invalidates the
+	// same cache for a different reason.
+	instanceTracker *instanceTracker
 	// seenQuerySamples tracks (pid:query_start) keys for queries already
 	// emitted, so the same execution is never sent twice across scrapes.
 	seenQuerySamples  map[string]struct{}
@@ -133,6 +137,7 @@ func newPostgreSQLScraper(
 		excludes:           excludes,
 		cache:              cache,
 		resetDetector:      newResetDetector(),
+		instanceTracker:    newInstanceTracker(),
 		changeTracker:      NewXminChangeTracker(1000), // Maintain state across scrapes
 		queryPlanCache:     queryPlanCache,
 		separateSchemaAttr: separateSchemaAttr,
@@ -405,10 +410,26 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			//
 			// This is checked here, on a successful read, so a reset is only
 			// acted on when there are fresh counters to re-baseline against.
-			if pgClient, ok := dbClient.(*postgreSQLClient); ok && p.resetDetector.check(ctx, pgClient.client) {
-				logger.Info("pg_stat_statements was reset, discarding cached counters",
-					zap.String("database", database))
-				p.cache.Purge()
+			if pgClient, ok := dbClient.(*postgreSQLClient); ok {
+				// Two independent reasons the cached counters may no longer
+				// describe the same series, checked on the connection that
+				// just read them.
+				if p.instanceTracker.check(ctx, pgClient.client) {
+					// A restart zeroed the counters, or a failover pointed us
+					// at a different server that has been counting on its own.
+					// The second case is why this check exists: a promoted
+					// standby can report counters HIGHER than the cached ones,
+					// so the delta comes out positive and plausible while
+					// describing a different machine entirely. Nothing else
+					// notices that.
+					logger.Info("postgres instance changed, discarding cached counters",
+						zap.String("database", database))
+					p.cache.Purge()
+				} else if p.resetDetector.check(ctx, pgClient.client) {
+					logger.Info("pg_stat_statements was reset, discarding cached counters",
+						zap.String("database", database))
+					p.cache.Purge()
+				}
 			}
 		}
 		closeErr := dbClient.Close()
