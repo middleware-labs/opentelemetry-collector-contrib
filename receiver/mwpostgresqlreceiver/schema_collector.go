@@ -195,9 +195,39 @@ func (c *SchemaCollector) Collect(ctx context.Context) (*SchemaCollectionEvent, 
 	}
 	event.Tables = tables
 
-	// 2. Enrich with columns, indexes, constraints, stats
-	for _, table := range event.Tables {
-		c.enrichTableDefinition(ctx, table)
+	// 2. Enrich with columns, indexes, constraints, stats.
+	//
+	// Relations under an ACCESS EXCLUSIVE lock are skipped rather than waited
+	// on. See lock_guard.go for why waiting is actively harmful: our catalog
+	// introspection would join the lock queue behind the customer's DDL, and
+	// their application queries would then queue behind us.
+	locked, lockErr := lockedRelations(ctx, c.db)
+	if lockErr != nil {
+		// We could not determine what is locked. Introspecting blindly is the
+		// unguarded behaviour that can stall the customer's application, so
+		// treat it as a collection error and skip enrichment for this cycle.
+		// Table identity from the lock-free scan above is still emitted.
+		c.recordError(ErrorInfo{
+			Category:  "locks",
+			Severity:  "error",
+			Message:   fmt.Sprintf("failed to determine locked relations, skipping table enrichment: %v", lockErr),
+			Timestamp: time.Now(),
+		})
+		if !c.config.ContinueOnError {
+			return nil, lockErr
+		}
+	} else {
+		for _, table := range event.Tables {
+			if _, isLocked := locked[table.OID]; isLocked {
+				table.ExclusivelyLocked = true
+				c.logger.Info("skipping exclusively locked table",
+					"database", c.config.DatabaseName,
+					"schema", table.SchemaName,
+					"table", table.Name)
+				continue
+			}
+			c.enrichTableDefinition(ctx, table)
+		}
 	}
 
 	// 3. Collect extensions if enabled
@@ -236,6 +266,12 @@ func (c *SchemaCollector) Collect(ctx context.Context) (*SchemaCollectionEvent, 
 	var colCount, idxCount, constrCount int32
 	var totalSize, totalRows int64
 	for _, t := range event.Tables {
+		// Counted from the flag rather than incremented at the skip site, so
+		// that tables skipped by the pg_locks pre-check and tables abandoned on
+		// a mid-flight lock timeout are both included.
+		if t.ExclusivelyLocked {
+			event.Statistics.SkippedLockedTables++
+		}
 		colCount += int32(len(t.Columns))
 		idxCount += int32(len(t.Indexes))
 		constrCount += int32(len(t.Constraints))
@@ -368,10 +404,25 @@ func (c *SchemaCollector) collectTables(ctx context.Context) ([]*TableDefinition
 	return tables, rows.Err()
 }
 
-// enrichTableDefinition enriches a table with columns, indexes, constraints, and stats
+// enrichTableDefinition enriches a table with columns, indexes, constraints, and stats.
+//
+// Callers must have already skipped relations known to be locked. The pg_locks
+// pre-check is a snapshot, not a mutex, so a relation can still acquire an
+// ACCESS EXCLUSIVE lock in the window between that check and these queries. The
+// DSN lock_timeout bounds how long we wait; if it fires we abandon the whole
+// table rather than running the four remaining per-table queries, each of which
+// would queue on the same lock and pay the same timeout.
 func (c *SchemaCollector) enrichTableDefinition(ctx context.Context, table *TableDefinition) {
 	columns, err := c.collectColumns(ctx, table.OID)
 	if err != nil {
+		if isLockTimeout(err) {
+			table.ExclusivelyLocked = true
+			c.logger.Info("table locked during introspection, skipping",
+				"database", c.config.DatabaseName,
+				"schema", table.SchemaName,
+				"table", table.Name)
+			return
+		}
 		c.logger.Warn("failed to collect columns", "table", table.Name, "error", err)
 	}
 	table.Columns = columns

@@ -71,6 +71,10 @@ func TestScrapeSchemaCollection_Snapshot(t *testing.T) {
 	}).AddRow(16385, "public", "test_table", "r", false, 0, nil, "postgres", 100, 2048))
 
 	// --- ColumnsQuery ---
+	// Lock guard: runs once per collection, between the table list and the
+	// per-table queries. Empty result = nothing is exclusively locked.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
 	mock.ExpectQuery("SELECT.*pg_attribute").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
 		"attnum", "name", "type", "typeoid", "mod", "notnull", "hasdef", "def", "desc", "coll", "xmin",
 	}).AddRow(1, "id", "integer", 23, -1, true, false, nil, nil, 0, 100))
@@ -245,6 +249,11 @@ func TestScrapeSchemaCollection_ExcludeTable(t *testing.T) {
 		"oid", "schema", "table", "type", "hasoids", "tablespace", "desc", "owner", "xmin", "total_size",
 	}).AddRow(16385, "public", "test_table", "r", false, 0, nil, "postgres", 100, 1024))
 
+	// The lock guard still runs: it is per collection, not per table, so it is
+	// issued even when every table is filtered out.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
+
 	// No column/index/constraint/stats queries expected because the table is excluded
 
 	logs, err := scraper.scrapeSchemaCollection(context.Background())
@@ -301,6 +310,10 @@ func TestScrapeSchemaCollection_ReltupplesFallback(t *testing.T) {
 	}).AddRow(16385, "public", "test_table", "r", false, 0, nil, "postgres", 100, 2048))
 
 	// --- ColumnsQuery ---
+	// Lock guard: runs once per collection, between the table list and the
+	// per-table queries. Empty result = nothing is exclusively locked.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
 	mock.ExpectQuery("SELECT.*pg_attribute").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
 		"attnum", "name", "type", "typeoid", "mod", "notnull", "hasdef", "def", "desc", "coll", "xmin",
 	}).AddRow(1, "id", "integer", 23, -1, true, false, nil, nil, 0, 100))

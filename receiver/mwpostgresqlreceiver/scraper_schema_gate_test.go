@@ -29,6 +29,9 @@ func expectSchemaCollection(mock sqlmock.Sqlmock, tableOID uint32, xmin uint32) 
 		"oid", "schema", "table", "type", "hasoids", "tablespace", "desc", "owner", "xmin", "total_size",
 	}).AddRow(tableOID, "public", "test_table", "r", false, 0, nil, "postgres", xmin, 2048))
 
+	// Lock guard: one query per collection, before per-table enrichment.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
 	mock.ExpectQuery("SELECT.*pg_attribute").WithArgs(tableOID).WillReturnRows(sqlmock.NewRows([]string{
 		"attnum", "name", "type", "typeoid", "mod", "notnull", "hasdef", "def", "desc", "coll", "xmin",
 	}).AddRow(1, "id", "integer", 23, -1, true, false, nil, nil, 0, xmin))
