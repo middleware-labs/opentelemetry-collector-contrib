@@ -21,7 +21,7 @@ func newTestPoolFactory(t *testing.T, maxDatabases int) *poolClientFactory {
 	cfg.Endpoint = "localhost:5432"
 	cfg.ConnectionPool.MaxDatabases = &maxDatabases
 
-	f := newPoolClientFactory(cfg)
+	f := newPoolClientFactory(cfg, newConnectionBudget(1000))
 	t.Cleanup(func() { _ = f.close() })
 
 	// A deterministic clock so eviction order does not depend on how fast
@@ -166,7 +166,7 @@ func TestPoolFactoryDefaultBound(t *testing.T) {
 	cfg.Password = "otel"
 	cfg.Endpoint = "localhost:5432"
 
-	f := newPoolClientFactory(cfg)
+	f := newPoolClientFactory(cfg, newConnectionBudget(1000))
 	t.Cleanup(func() { _ = f.close() })
 
 	require.Equal(t, defaultMaxPooledDatabases, f.maxPooledDatabases)

@@ -5,6 +5,7 @@ package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-co
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	lru "github.com/hashicorp/golang-lru/v2"
@@ -39,6 +40,34 @@ func newTTLCache[v any](size int, ttl time.Duration) *expirable.LRU[string, v] {
 	}
 	cache := expirable.NewLRU[string, v](size, nil, ttl)
 	return cache
+}
+
+// sharedBudgets hands the metrics and logs receivers built from the same
+// configuration the same connection budget.
+//
+// The collector calls createMetricsReceiver and createLogsReceiver separately,
+// each building its own client factory, so without this the two would hold
+// independent budgets and the receiver could open twice what the operator
+// configured — against a role limit that PostgreSQL enforces cluster-wide
+// across both.
+//
+// Keyed by the *Config pointer, which the collector creates once per configured
+// receiver instance and passes to both calls. Two receiver instances pointed at
+// the same server therefore get separate budgets, which is correct: they are
+// separately configured and each is entitled to its own allowance.
+//
+// Entries are never removed. One small struct per configured receiver lives for
+// the process lifetime; receivers are created at startup, not per scrape, so
+// this does not grow.
+var sharedBudgets sync.Map
+
+func budgetFor(cfg *Config) *connectionBudget {
+	maxTotal := defaultMaxTotalConnections
+	if cfg.ConnectionPool.MaxTotalConnections != nil && *cfg.ConnectionPool.MaxTotalConnections > 0 {
+		maxTotal = *cfg.ConnectionPool.MaxTotalConnections
+	}
+	budget, _ := sharedBudgets.LoadOrStore(cfg, newConnectionBudget(maxTotal))
+	return budget.(*connectionBudget)
 }
 
 func NewFactory() receiver.Factory {
@@ -89,7 +118,7 @@ func createMetricsReceiver(
 
 	var clientFactory postgreSQLClientFactory
 	if connectionPoolGate.IsEnabled() {
-		clientFactory = newPoolClientFactory(cfg)
+		clientFactory = newPoolClientFactory(cfg, budgetFor(cfg))
 	} else {
 		clientFactory = newDefaultClientFactory(cfg)
 	}
@@ -117,7 +146,7 @@ func createLogsReceiver(
 
 	var clientFactory postgreSQLClientFactory
 	if connectionPoolGate.IsEnabled() {
-		clientFactory = newPoolClientFactory(cfg)
+		clientFactory = newPoolClientFactory(cfg, budgetFor(cfg))
 	} else {
 		clientFactory = newDefaultClientFactory(cfg)
 	}

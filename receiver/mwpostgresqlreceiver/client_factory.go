@@ -6,6 +6,7 @@ package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-co
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -29,6 +30,11 @@ var connectionPoolGate = featuregate.GlobalRegistry().MustRegister(
 const defaultMaxPooledDatabases = 16
 
 var errFactoryClosed = errors.New("postgresql client factory is closed")
+
+// errConnectionBudgetExhausted is returned when no budget remains for a new
+// database pool. Callers treat it as "skip this database this cycle", not as a
+// collection failure: the data will still be there next scrape.
+var errConnectionBudgetExhausted = errors.New("postgresql connection budget exhausted")
 
 // resolveTimeouts turns the user's optional overrides into the effective
 // per-connection timeouts. An unset field takes the default; an explicitly
@@ -113,10 +119,15 @@ type poolClientFactory struct {
 	pool               map[string]*pooledDB
 	closed             bool
 	maxPooledDatabases int
-	now                func() time.Time
+	// budget bounds connections across BOTH signals. The metrics and logs
+	// receivers each build their own factory, so a bound held here alone would
+	// only ever see half of what the receiver opens against the server; the
+	// same budget instance is handed to both.
+	budget *connectionBudget
+	now    func() time.Time
 }
 
-func newPoolClientFactory(cfg *Config) *poolClientFactory {
+func newPoolClientFactory(cfg *Config, budget *connectionBudget) *poolClientFactory {
 	poolCfg := cfg.ConnectionPool
 	maxPooled := defaultMaxPooledDatabases
 	if poolCfg.MaxDatabases != nil && *poolCfg.MaxDatabases > 0 {
@@ -134,6 +145,7 @@ func newPoolClientFactory(cfg *Config) *poolClientFactory {
 		pool:               make(map[string]*pooledDB),
 		closed:             false,
 		maxPooledDatabases: maxPooled,
+		budget:             budget,
 		now:                time.Now,
 	}
 }
@@ -148,8 +160,21 @@ func (p *poolClientFactory) getClient(database string) (client, error) {
 
 	entry, ok := p.pool[database]
 	if !ok {
+		// Opening a pool for a new database costs budget. Try to make room by
+		// closing an idle pool before giving up, so a steady rotation through
+		// many databases keeps working instead of stalling once the budget is
+		// first reached.
+		if !p.budget.tryAcquire() {
+			p.evictIdleLocked(1)
+			if !p.budget.tryAcquire() {
+				return nil, fmt.Errorf(
+					"%w: %d connections already in use", errConnectionBudgetExhausted, p.budget.used())
+			}
+		}
+
 		db, err := getDB(p.baseConfig, database)
 		if err != nil {
+			p.budget.release()
 			return nil, err
 		}
 		p.setPoolSettings(db, database)
@@ -192,24 +217,62 @@ func (p *poolClientFactory) release(database string) {
 // once. Callers must hold the lock.
 func (p *poolClientFactory) evictLocked() {
 	for len(p.pool) > p.maxPooledDatabases {
-		var victim string
-		var victimAt time.Time
-		for name, entry := range p.pool {
-			if name == defaultPostgreSQLDatabase || entry.refs > 0 {
-				continue
-			}
-			if victim == "" || entry.releasedAt.Before(victimAt) {
-				victim, victimAt = name, entry.releasedAt
-			}
-		}
+		victim := p.idlestVictimLocked()
 		if victim == "" {
 			return
 		}
-		// Close never blocks on idle connections, and there are no in-use ones
-		// to wait for since refs is zero.
-		_ = p.pool[victim].db.Close()
-		delete(p.pool, victim)
+		p.closePoolLocked(victim)
 	}
+}
+
+// evictIdleLocked closes up to n idle pools, oldest-released first, to free
+// budget for a database that has none. It returns how many it closed, which may
+// be fewer than n when every remaining pool is in use. Callers must hold the
+// lock.
+func (p *poolClientFactory) evictIdleLocked(n int) int {
+	closed := 0
+	for closed < n {
+		victim := p.idlestVictimLocked()
+		if victim == "" {
+			return closed
+		}
+		p.closePoolLocked(victim)
+		closed++
+	}
+	return closed
+}
+
+// idlestVictimLocked names the idle pool released longest ago, or "" when every
+// pool is either in use or the default database. The default database is never
+// a victim: every scraper uses it every cycle, so it is the one pool always
+// worth keeping warm. Callers must hold the lock.
+func (p *poolClientFactory) idlestVictimLocked() string {
+	var victim string
+	var victimAt time.Time
+	for name, entry := range p.pool {
+		if name == defaultPostgreSQLDatabase || entry.refs > 0 {
+			continue
+		}
+		if victim == "" || entry.releasedAt.Before(victimAt) {
+			victim, victimAt = name, entry.releasedAt
+		}
+	}
+	return victim
+}
+
+// closePoolLocked closes one pool and returns its budget. Every path that
+// removes a pool goes through here, so the budget cannot drift from the set of
+// live pools. Callers must hold the lock.
+func (p *poolClientFactory) closePoolLocked(database string) {
+	entry, ok := p.pool[database]
+	if !ok {
+		return
+	}
+	// Close never blocks on idle connections, and an evicted pool has no in-use
+	// ones to wait for since refs is zero.
+	_ = entry.db.Close()
+	delete(p.pool, database)
+	p.budget.release()
 }
 
 func (p *poolClientFactory) close() error {
@@ -225,14 +288,15 @@ func (p *poolClientFactory) close() error {
 		if closeErr := entry.db.Close(); closeErr != nil {
 			err = multierr.Append(err, closeErr)
 		}
-	}
-	if err != nil {
-		return err
+		// Released even when Close reports an error: the pool is being
+		// discarded either way, so holding its budget would leak it for the
+		// life of the process.
+		p.budget.release()
 	}
 
 	p.pool = make(map[string]*pooledDB)
 	p.closed = true
-	return nil
+	return err
 }
 
 func (p *poolClientFactory) setPoolSettings(db *sql.DB, database string) {

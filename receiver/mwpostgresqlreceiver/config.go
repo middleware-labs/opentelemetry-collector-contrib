@@ -100,6 +100,17 @@ type ConnectionPool struct {
 	// a server with many databases does not retain an idle backend per
 	// database indefinitely. The default database is always kept.
 	MaxDatabases *int `mapstructure:"max_databases,omitempty"`
+	// MaxTotalConnections caps connections across every database AND across
+	// both the metrics and logs signals. PostgreSQL enforces a role's
+	// CONNECTION LIMIT cluster-wide, counting every backend authenticated as
+	// that role whatever database it reached, so this — not MaxDatabases — is
+	// the setting that corresponds to the limit the server actually applies.
+	//
+	// Size it well below the role's limit. PostgreSQL's own enforcement is
+	// approximate (concurrent connection attempts can each see a count under
+	// the limit and all be admitted), so aiming at the limit exactly risks the
+	// FATAL that this bound exists to prevent.
+	MaxTotalConnections *int `mapstructure:"max_total_connections,omitempty"`
 }
 
 func (cfg *Config) Validate() error {
