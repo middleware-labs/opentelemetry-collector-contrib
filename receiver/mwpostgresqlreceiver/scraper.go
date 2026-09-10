@@ -35,6 +35,11 @@ const (
 	separateSchemaAttrID = "receiver.postgresql.separateSchemaAttr"
 
 	defaultPostgreSQLDatabase = "postgres"
+	// defaultQueryTextCacheSize matches PostgreSQL's default
+	// pg_stat_statements.max. Query text is retrieved only for cache misses, so
+	// this bounds the receiver's retained text while avoiding a full reload on
+	// every scrape for the usual server configuration.
+	defaultQueryTextCacheSize = 5000
 )
 
 var separateSchemaAttrGate = featuregate.GlobalRegistry().MustRegister(
@@ -45,14 +50,16 @@ var separateSchemaAttrGate = featuregate.GlobalRegistry().MustRegister(
 )
 
 type postgreSQLScraper struct {
-	logger        *zap.Logger
-	config        *Config
-	clientFactory postgreSQLClientFactory
-	mb            *metadata.MetricsBuilder
-	lb            *metadata.LogsBuilder
-	excludes      map[string]struct{}
-	cache         *lru.Cache[string, float64]
-	changeTracker *XminChangeTracker
+	logger             *zap.Logger
+	config             *Config
+	clientFactory      postgreSQLClientFactory
+	mb                 *metadata.MetricsBuilder
+	lb                 *metadata.LogsBuilder
+	excludes           map[string]struct{}
+	cache              *lru.Cache[string, float64]
+	queryTextCache     *lru.Cache[queryStatsKey, string]
+	queryTextCacheOnce sync.Once
+	changeTracker      *XminChangeTracker
 	// if enabled, uses a separated attribute for the schema
 	separateSchemaAttr   bool
 	queryPlanCache       *expirable.LRU[string, string]
@@ -136,6 +143,7 @@ func newPostgreSQLScraper(
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
 		excludes:           excludes,
 		cache:              cache,
+		queryTextCache:     newQueryTextCache(defaultQueryTextCacheSize),
 		resetDetector:      newResetDetector(),
 		instanceTracker:    newInstanceTracker(),
 		changeTracker:      NewXminChangeTracker(1000), // Maintain state across scrapes
@@ -1057,13 +1065,62 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 	client client,
 	errs *errsMux,
 ) {
+	p.queryTextCacheOnce.Do(func() {
+		max, err := client.getQueryStatsMax(ctx)
+		if err != nil {
+			p.logger.Debug("using default query text cache size", zap.Error(err))
+			return
+		}
+		if max > 0 {
+			p.queryTextCache.Resize(max)
+		}
+	})
+
 	queryStats, err := client.getQueryStats(ctx)
 	if err != nil {
 		errs.addPartial(err)
 		return
 	}
 
+	missing := make([]queryStatsKey, 0)
+	for i := range queryStats {
+		stat := &queryStats[i]
+		if stat.queryText != "" {
+			// Keep this path for test clients and for callers that already
+			// resolved text. Production clients intentionally leave it empty.
+			p.queryTextCache.Add(stat.key, stat.queryText)
+			continue
+		}
+		if text, ok := p.queryTextCache.Get(stat.key); ok {
+			stat.queryText = text
+			continue
+		}
+		missing = append(missing, stat.key)
+	}
+
+	if len(missing) > 0 {
+		texts, textErr := client.getQueryTexts(ctx, missing)
+		if textErr != nil {
+			errs.addPartial(textErr)
+			return
+		}
+		for key, text := range texts {
+			p.queryTextCache.Add(key, text)
+		}
+		for i := range queryStats {
+			if queryStats[i].queryText == "" {
+				queryStats[i].queryText, _ = p.queryTextCache.Get(queryStats[i].key)
+			}
+		}
+	}
+
 	for _, s := range queryStats {
+		if s.queryText == "" || s.queryText == excludedQueryText {
+			// Text can be unavailable after pg_stat_statements garbage-collects
+			// its external query-text file, or until a DBA grants access. Keep
+			// retrying on later scrapes rather than caching that absence.
+			continue
+		}
 		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryID)
 		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryID)
 	}

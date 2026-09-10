@@ -22,8 +22,8 @@ func expectSchemaCollection(mock sqlmock.Sqlmock, tableOID uint32, xmin uint32) 
 	mock.ExpectQuery(`SELECT oid FROM pg_database`).
 		WillReturnRows(sqlmock.NewRows([]string{"oid"}).AddRow(16384))
 
-	mock.ExpectQuery(`SELECT pg_total_size`).
-		WillReturnRows(sqlmock.NewRows([]string{"pg_total_size"}).AddRow(0))
+	mock.ExpectQuery(`SELECT pg_total_relation_size`).
+		WillReturnRows(sqlmock.NewRows([]string{"pg_total_relation_size"}).AddRow(0))
 
 	mock.ExpectQuery("SELECT.*pg_class.*pg_namespace").WillReturnRows(sqlmock.NewRows([]string{
 		"oid", "schema", "table", "type", "hasoids", "tablespace", "desc", "owner", "xmin", "total_size",
@@ -44,9 +44,9 @@ func expectSchemaCollection(mock sqlmock.Sqlmock, tableOID uint32, xmin uint32) 
 		"oid", "name", "type", "table", "def", "deferrable", "deferred", "validated",
 	}))
 
-	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(tableOID).WillReturnRows(sqlmock.NewRows([]string{
-		"live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
-	}).AddRow(100, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
+	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(sqlmock.AnyArg()).WillReturnRows(sqlmock.NewRows([]string{
+		"relid", "live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
+	}).AddRow(tableOID, 100, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
 }
 
 // TestSchemaCollectionSkipsUnchangedDatabase is the measurable claim of the
@@ -94,7 +94,7 @@ func TestSchemaCollectionSkipsUnchangedDatabase(t *testing.T) {
 	// would error. Version and cloud detection are cached from cycle 1, so
 	// the only query this cycle is the xmin probe. ---
 	mock.ExpectQuery(`SELECT c\.oid, c\.xmin`).WillReturnRows(
-		sqlmock.NewRows([]string{"oid", "xmin"}).AddRow(tableOID, xmin))
+		sqlmock.NewRows([]string{"oid", "xmin", "nspname", "relname"}).AddRow(tableOID, xmin, "public", "orders"))
 
 	logs, err = scraper.scrapeSchemaCollection(context.Background())
 	require.NoError(t, err)
@@ -137,7 +137,7 @@ func TestSchemaCollectionRecollectsChangedDatabase(t *testing.T) {
 
 	// --- Cycle 2: the table's xmin moved, so it is collected again. ---
 	mock.ExpectQuery(`SELECT c\.oid, c\.xmin`).WillReturnRows(
-		sqlmock.NewRows([]string{"oid", "xmin"}).AddRow(tableOID, 200))
+		sqlmock.NewRows([]string{"oid", "xmin", "nspname", "relname"}).AddRow(tableOID, 200, "public", "orders"))
 	expectSchemaCollection(mock, tableOID, 200)
 
 	logs, err := scraper.scrapeSchemaCollection(context.Background())
@@ -145,5 +145,205 @@ func TestSchemaCollectionRecollectsChangedDatabase(t *testing.T) {
 	require.Equal(t, 1, logs.ResourceLogs().Len(),
 		"a changed database must be re-collected")
 
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestSchemaChangeDetectionSkipsExcludedTables(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	tracker := NewXminChangeTracker(1)
+	tracker.UpdateSnapshot("postgres", map[uint32]uint32{16385: 100})
+	collector, err := NewSchemaCollector(
+		WrapDBWithIgnore(db),
+		&VersionInfo{VersionNum: 150000},
+		CloudProviderSelfHosted,
+		nil,
+		tracker,
+		&CollectorConfig{DatabaseName: "postgres"},
+		&FilterConfig{ExcludeTables: map[string][]string{"public": {"ignored"}}},
+		&zapAdapter{l: zap.NewNop()},
+	)
+	require.NoError(t, err)
+
+	// The ignored relation is new to pg_class. It must not make the database
+	// look changed, otherwise an excluded table causes a full schema snapshot
+	// every interval.
+	mock.ExpectQuery(`SELECT c\.oid, c\.xmin`).WillReturnRows(
+		sqlmock.NewRows([]string{"oid", "xmin", "nspname", "relname"}).
+			AddRow(16385, 100, "public", "tracked").
+			AddRow(16386, 200, "public", "ignored"))
+
+	changed, dropped, err := collector.DetectChanges(context.Background())
+	require.NoError(t, err)
+	require.Empty(t, changed)
+	require.Zero(t, dropped)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestSchemaCollectionBatchesIndexStats(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	collector, err := NewSchemaCollector(
+		WrapDBWithIgnore(db),
+		&VersionInfo{VersionNum: 150000},
+		CloudProviderSelfHosted,
+		nil,
+		NewXminChangeTracker(1),
+		&CollectorConfig{DatabaseName: "postgres"},
+		&FilterConfig{},
+		&zapAdapter{l: zap.NewNop()},
+	)
+	require.NoError(t, err)
+
+	first := &IndexDefinition{OID: 100}
+	second := &IndexDefinition{OID: 101}
+	mock.ExpectQuery(`SELECT.*indexrelid.*pg_stat_user_indexes`).
+		WithArgs(sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"indexrelid", "idx_scan", "idx_tup_read", "idx_tup_fetch"}).
+			AddRow(100, 4, 50, 40).
+			AddRow(101, 8, 100, 90))
+
+	collector.collectIndexStatsForTables(context.Background(), []*TableDefinition{
+		{Indexes: []*IndexDefinition{first}},
+		{Indexes: []*IndexDefinition{second}},
+	})
+	require.EqualValues(t, 4, first.ScanCount)
+	require.EqualValues(t, 50, first.TupleRead)
+	require.EqualValues(t, 40, first.TupleFetch)
+	require.EqualValues(t, 8, second.ScanCount)
+	require.EqualValues(t, 100, second.TupleRead)
+	require.EqualValues(t, 90, second.TupleFetch)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestSchemaCollectionBatchesTableStats(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	collector, err := NewSchemaCollector(
+		WrapDBWithIgnore(db),
+		&VersionInfo{VersionNum: 150000},
+		CloudProviderSelfHosted,
+		nil,
+		NewXminChangeTracker(1),
+		&CollectorConfig{DatabaseName: "postgres"},
+		&FilterConfig{},
+		&zapAdapter{l: zap.NewNop()},
+	)
+	require.NoError(t, err)
+
+	first := &TableDefinition{OID: 42, Type: "r"}
+	second := &TableDefinition{OID: 43, Type: "p"}
+	mock.ExpectQuery(`SELECT.*relid.*pg_stat_user_tables`).WithArgs(sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{
+			"relid", "live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
+		}).
+			AddRow(42, 100, 2, 3, nil, nil, nil, nil, 4, 500, 6, 70, 8192, 16384).
+			AddRow(43, 200, 5, 6, nil, nil, nil, nil, 7, 800, 9, 100, 32768, 65536))
+
+	collector.collectTableStatsForTables(context.Background(), []*TableDefinition{first, second})
+	require.EqualValues(t, 100, first.LiveTuples)
+	require.EqualValues(t, 2, first.DeadTuples)
+	require.EqualValues(t, 16384, first.TotalSizeBytes)
+	require.EqualValues(t, 200, second.LiveTuples)
+	require.EqualValues(t, 5, second.DeadTuples)
+	require.EqualValues(t, 65536, second.TotalSizeBytes)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestSchemaCollectionReadsIndexColumnsWithIndexes(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	collector, err := NewSchemaCollector(
+		WrapDBWithIgnore(db),
+		&VersionInfo{VersionNum: 150000},
+		CloudProviderSelfHosted,
+		nil,
+		NewXminChangeTracker(1),
+		&CollectorConfig{DatabaseName: "postgres"},
+		&FilterConfig{},
+		&zapAdapter{l: zap.NewNop()},
+	)
+	require.NoError(t, err)
+
+	mock.ExpectQuery(`SELECT.*pg_index`).WithArgs(uint32(42)).
+		WillReturnRows(sqlmock.NewRows([]string{
+			"oid", "name", "table", "primary", "unique", "valid", "exclusion", "type", "def", "partial", "xmin", "size", "columns",
+		}).AddRow(100, "orders_created_at_idx", 42, false, false, true, false, "btree", "CREATE INDEX", nil, 10, 8192, "{id,created_at}"))
+
+	indexes, err := collector.collectIndexes(context.Background(), 42)
+	require.NoError(t, err)
+	require.Len(t, indexes, 1)
+	require.Equal(t, []string{"id", "created_at"}, indexes[0].Columns)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestSchemaCollectionReadsForeignKeyDetailsWithConstraints(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	collector, err := NewSchemaCollector(
+		WrapDBWithIgnore(db),
+		&VersionInfo{VersionNum: 150000},
+		CloudProviderSelfHosted,
+		nil,
+		NewXminChangeTracker(1),
+		&CollectorConfig{DatabaseName: "postgres"},
+		&FilterConfig{},
+		&zapAdapter{l: zap.NewNop()},
+	)
+	require.NoError(t, err)
+
+	mock.ExpectQuery(`SELECT.*pg_constraint`).WithArgs(uint32(42)).
+		WillReturnRows(sqlmock.NewRows([]string{
+			"oid", "name", "type", "table", "def", "deferrable", "deferred", "validated", "ref_table", "columns", "ref_columns",
+		}).AddRow(100, "orders_customer_id_fkey", "f", 42, "FOREIGN KEY", false, false, true, 43, "{customer_id}", "{id}"))
+
+	constraints, err := collector.collectConstraints(context.Background(), 42)
+	require.NoError(t, err)
+	require.Len(t, constraints, 1)
+	require.EqualValues(t, 43, constraints[0].ReferencedTableOID)
+	require.Equal(t, []string{"customer_id"}, constraints[0].ColumnNames)
+	require.Equal(t, []string{"id"}, constraints[0].ReferencedColumns)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestSchemaCollectionBatchesPostgres16IndexStats(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	collector, err := NewSchemaCollector(
+		WrapDBWithIgnore(db),
+		&VersionInfo{VersionNum: 160000},
+		CloudProviderSelfHosted,
+		nil,
+		NewXminChangeTracker(1),
+		&CollectorConfig{DatabaseName: "postgres"},
+		&FilterConfig{},
+		&zapAdapter{l: zap.NewNop()},
+	)
+	require.NoError(t, err)
+
+	lastScan := time.Date(2026, time.September, 10, 12, 0, 0, 0, time.UTC)
+	index := &IndexDefinition{OID: 100}
+	mock.ExpectQuery(`SELECT.*indexrelid.*last_idx_scan.*pg_stat_user_indexes`).
+		WithArgs(sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"indexrelid", "idx_scan", "idx_tup_read", "idx_tup_fetch", "last_idx_scan"}).
+			AddRow(100, 4, 50, 40, lastScan))
+
+	collector.collectIndexStats(context.Background(), []*IndexDefinition{index})
+	require.EqualValues(t, 4, index.ScanCount)
+	require.EqualValues(t, 50, index.TupleRead)
+	require.EqualValues(t, 40, index.TupleFetch)
+	require.Equal(t, &lastScan, index.LastScan)
 	require.NoError(t, mock.ExpectationsWereMet())
 }

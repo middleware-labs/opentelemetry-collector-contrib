@@ -10,6 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/receiver/receivertest"
 	"go.uber.org/zap"
 
@@ -86,6 +87,36 @@ func newTestTopQueryScraper(t *testing.T) *postgreSQLScraper {
 	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
 
 	return newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newCache(10), newTTLCache[string](10, time.Second))
+}
+
+type queryTextCacheClient struct {
+	client
+	stats     []queryStats
+	textCalls int
+}
+
+func (c *queryTextCacheClient) getQueryStats(context.Context) ([]queryStats, error) {
+	return c.stats, nil
+}
+
+func (*queryTextCacheClient) getQueryStatsMax(context.Context) (int, error) { return 1, nil }
+
+func (c *queryTextCacheClient) getQueryTexts(_ context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error) {
+	c.textCalls++
+	return map[queryStatsKey]string{keys[0]: "SELECT cached_statement"}, nil
+}
+
+func TestQueryPerformanceStatsCachesQueryText(t *testing.T) {
+	scraper := newTestTopQueryScraper(t)
+	key := queryStatsKey{queryID: 42, database: 1, user: 2, topLevel: true, hasTopLevel: true}
+	client := &queryTextCacheClient{stats: []queryStats{{key: key, queryID: "42", queryCount: 3, queryExecTime: 4}}}
+
+	var errs errsMux
+	scraper.collectQueryPerfStats(t.Context(), pcommon.NewTimestampFromTime(time.Now()), client, &errs)
+	scraper.collectQueryPerfStats(t.Context(), pcommon.NewTimestampFromTime(time.Now()), client, &errs)
+
+	require.Equal(t, 1, client.textCalls)
+	require.NoError(t, errs.combine())
 }
 
 func completeTopQueryRow() map[string]any {

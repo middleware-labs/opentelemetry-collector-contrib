@@ -19,6 +19,8 @@ import (
 	"text/template"
 	"time"
 
+	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/lib/pq"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configtls"
 	"go.opentelemetry.io/collector/featuregate"
@@ -196,6 +198,8 @@ type client interface {
 	explainQuery(query, queryID string, logger *zap.Logger) (string, error)
 	getRowStats(ctx context.Context) ([]RowStats, error)
 	getQueryStats(ctx context.Context) ([]queryStats, error)
+	getQueryStatsMax(ctx context.Context) (int, error)
+	getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error)
 	getBufferHit(ctx context.Context) ([]BufferHit, error)
 	getVersionString(ctx context.Context) (string, error)
 	getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error)
@@ -1435,10 +1439,31 @@ func (c *postgreSQLClient) getRowStats(ctx context.Context) ([]RowStats, error) 
 }
 
 type queryStats struct {
+	key           queryStatsKey
 	queryID       string
 	queryText     string
 	queryCount    int64
 	queryExecTime int64
+}
+
+// queryStatsKey is PostgreSQL's statement identity. Query IDs alone are not
+// unique: the same normalized statement can have separate rows for different
+// databases, roles, and top-level status.
+type queryStatsKey struct {
+	queryID     int64
+	database    int64
+	user        int64
+	topLevel    bool
+	hasTopLevel bool
+}
+
+// excludedQueryText is not a valid PostgreSQL text value. Caching it prevents
+// the receiver from resolving its own ignored statements on every scrape.
+const excludedQueryText = "\x00"
+
+func newQueryTextCache(size int) *lru.Cache[queryStatsKey, string] {
+	cache, _ := lru.New[queryStatsKey, string](size)
+	return cache
 }
 
 func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
@@ -1457,17 +1482,23 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		execTimeCol = "total_time AS total_exec_time"
 	}
 
+	hasTopLevel := major >= 14
+	topLevelCol := "false"
+	if hasTopLevel {
+		topLevelCol = "toplevel"
+	}
+
 	query := fmt.Sprintf(`
     SELECT
-      queryid,
-      regexp_replace(
-          regexp_replace(query, '/\*.*?\*/', '', 'g'),
-          '--.*$', '', 'gm'
-      ) AS query,
+      queryid::TEXT,
+      dbid::BIGINT,
+      userid::BIGINT,
+      %s AS toplevel,
       calls,
       %s
-    FROM pg_stat_statements;
-	`, execTimeCol)
+	    FROM pg_stat_statements(false)
+	    WHERE queryid IS NOT NULL;
+	`, topLevelCol, execTimeCol)
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
@@ -1476,22 +1507,131 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 	var qs []queryStats
 	var errors error
 	for rows.Next() {
-		var queryID, queryText string
+		var queryID string
+		var databaseID, userID int64
+		var topLevel bool
 		var queryCount int64
 		var queryExecTime float64
-		err = rows.Scan(&queryID, &queryText, &queryCount, &queryExecTime)
+		err = rows.Scan(&queryID, &databaseID, &userID, &topLevel, &queryCount, &queryExecTime)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 		}
 		queryExectimeNS := int64(queryExecTime * 1000000)
 		qs = append(qs, queryStats{
+			key: queryStatsKey{
+				queryID:     parseQueryID(queryID),
+				database:    databaseID,
+				user:        userID,
+				topLevel:    topLevel,
+				hasTopLevel: hasTopLevel,
+			},
 			queryID:       queryID,
-			queryText:     queryText,
 			queryCount:    queryCount,
 			queryExecTime: queryExectimeNS,
 		})
 	}
 	return qs, errors
+}
+
+func (c *postgreSQLClient) getQueryStatsMax(ctx context.Context) (int, error) {
+	var max int
+	if err := c.client.QueryRowContext(ctx, "SHOW pg_stat_statements.max").Scan(&max); err != nil {
+		return 0, fmt.Errorf("unable to read pg_stat_statements.max: %w", err)
+	}
+	return max, nil
+}
+
+func parseQueryID(value string) int64 {
+	queryID, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return queryID
+}
+
+// getQueryTexts resolves representative text only for cache misses from the
+// lightweight pg_stat_statements(false) pass. Calling the view (rather than
+// the false-valued function) is intentional here: PostgreSQL loads its text
+// file only when there are unseen statement identities to resolve.
+func (c *postgreSQLClient) getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error) {
+	if len(keys) == 0 {
+		return map[queryStatsKey]string{}, nil
+	}
+
+	queryIDs := make([]int64, 0, len(keys))
+	databaseIDs := make([]int64, 0, len(keys))
+	userIDs := make([]int64, 0, len(keys))
+	topLevels := make([]bool, 0, len(keys))
+	for _, key := range keys {
+		queryIDs = append(queryIDs, key.queryID)
+		databaseIDs = append(databaseIDs, key.database)
+		userIDs = append(userIDs, key.user)
+		topLevels = append(topLevels, key.topLevel)
+	}
+
+	hasTopLevel := keys[0].hasTopLevel
+	query := `
+    SELECT
+      s.queryid::TEXT,
+      s.dbid::BIGINT,
+      s.userid::BIGINT,
+      %s AS toplevel,
+      s.query AS raw_query,
+      regexp_replace(
+          regexp_replace(s.query, '/\*.*?\*/', '', 'g'),
+          '--.*$', '', 'gm'
+      ) AS query
+    FROM pg_stat_statements AS s
+    INNER JOIN unnest(%s)
+      AS wanted(queryid, dbid, userid%s)
+      ON s.queryid = wanted.queryid
+      AND s.dbid = wanted.dbid
+	      AND s.userid = wanted.userid%s
+    WHERE s.query != '<insufficient privilege>';`
+	args := []any{pq.Array(queryIDs), pq.Array(databaseIDs), pq.Array(userIDs)}
+	selectTopLevel := "false"
+	unnestArgs := "$1::BIGINT[], $2::OID[], $3::OID[]"
+	unnestColumns := ""
+	joinTopLevel := ""
+	if hasTopLevel {
+		selectTopLevel = "s.toplevel"
+		unnestArgs += ", $4::BOOL[]"
+		unnestColumns = ", toplevel"
+		joinTopLevel = "\n      AND s.toplevel = wanted.toplevel"
+		args = append(args, pq.Array(topLevels))
+	}
+	query = fmt.Sprintf(query, selectTopLevel, unnestArgs, unnestColumns, joinTopLevel)
+	rows, err := c.client.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("unable to resolve pg_stat_statements query text: %w", err)
+	}
+	defer rows.Close()
+
+	texts := make(map[queryStatsKey]string, len(keys))
+	for rows.Next() {
+		var queryID, rawQuery, queryText string
+		var databaseID, userID int64
+		var topLevel bool
+		if err := rows.Scan(&queryID, &databaseID, &userID, &topLevel, &rawQuery, &queryText); err != nil {
+			return nil, fmt.Errorf("unable to scan pg_stat_statements query text: %w", err)
+		}
+		key := queryStatsKey{
+			queryID:     parseQueryID(queryID),
+			database:    databaseID,
+			user:        userID,
+			topLevel:    topLevel,
+			hasTopLevel: hasTopLevel,
+		}
+		if strings.HasPrefix(rawQuery, otelIgnorePrefix) {
+			texts[key] = excludedQueryText
+			continue
+		}
+		texts[key] = queryText
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("unable to iterate pg_stat_statements query text: %w", err)
+	}
+	return texts, nil
 }
 
 type BufferHit struct {

@@ -79,8 +79,8 @@ func NewSchemaCollector(
 type sizeQueryMode int
 
 const (
-	sizeDirect    sizeQueryMode = iota // pg_total_size(oid) — standard
-	sizeQualified                      // pg_catalog.pg_total_size(oid) — explicit schema
+	sizeDirect    sizeQueryMode = iota // pg_total_relation_size(oid) — standard
+	sizeQualified                      // pg_catalog.pg_total_relation_size(oid) — explicit schema
 	sizeEstimate                       // relpages * block_size — catalog-only estimate
 )
 
@@ -97,32 +97,32 @@ func (c *SchemaCollector) probeSizeFunctions(ctx context.Context) {
 
 	// Tier 1: unqualified — works on standard PostgreSQL
 	if err := c.db.QueryRowContext(ctx,
-		"SELECT pg_total_size(oid) FROM pg_class LIMIT 1").Scan(&dummy); err == nil {
+		"SELECT pg_total_relation_size(oid) FROM pg_class LIMIT 1").Scan(&dummy); err == nil {
 		c.sizeMode = sizeDirect
 		return
 	}
 
 	// Tier 2: schema-qualified — fixes missing search_path (PgBouncer, etc.)
 	if err := c.db.QueryRowContext(ctx,
-		"SELECT pg_catalog.pg_total_size(oid) FROM pg_class LIMIT 1").Scan(&dummy); err == nil {
+		"SELECT pg_catalog.pg_total_relation_size(oid) FROM pg_class LIMIT 1").Scan(&dummy); err == nil {
 		c.sizeMode = sizeQualified
-		c.logger.Warn("pg_total_size requires schema qualification, using pg_catalog.pg_total_size")
+		c.logger.Warn("pg_total_relation_size requires schema qualification, using pg_catalog.pg_total_relation_size")
 		return
 	}
 
 	// Tier 3: relpages estimate
 	c.sizeMode = sizeEstimate
-	c.logger.Warn("pg_total_size not available, using relpages-based size estimates")
+	c.logger.Warn("pg_total_relation_size not available, using relpages-based size estimates")
 }
 
 func (c *SchemaCollector) totalSizeExpr(arg string) string {
 	switch c.sizeMode {
 	case sizeQualified:
-		return fmt.Sprintf("pg_catalog.pg_total_size(%s)", arg)
+		return fmt.Sprintf("pg_catalog.pg_total_relation_size(%s)", arg)
 	case sizeEstimate:
 		return fmt.Sprintf("(c.relpages * current_setting('block_size')::bigint)")
 	default:
-		return fmt.Sprintf("pg_total_size(%s)", arg)
+		return fmt.Sprintf("pg_total_relation_size(%s)", arg)
 	}
 }
 
@@ -228,6 +228,8 @@ func (c *SchemaCollector) Collect(ctx context.Context) (*SchemaCollectionEvent, 
 			}
 			c.enrichTableDefinition(ctx, table)
 		}
+		c.collectTableStatsForTables(ctx, event.Tables)
+		c.collectIndexStatsForTables(ctx, event.Tables)
 	}
 
 	// 3. Collect extensions if enabled
@@ -315,8 +317,12 @@ func (c *SchemaCollector) DetectChanges(ctx context.Context) (changed []uint32, 
 	for rows.Next() {
 		var oid uint32
 		var xmin uint32
-		if err := rows.Scan(&oid, &xmin); err != nil {
+		var schemaName, tableName string
+		if err := rows.Scan(&oid, &xmin, &schemaName, &tableName); err != nil {
 			c.logger.Warn("failed to scan xmin", "error", err)
+			continue
+		}
+		if c.shouldExcludeTable(schemaName, tableName) {
 			continue
 		}
 
@@ -433,30 +439,14 @@ func (c *SchemaCollector) enrichTableDefinition(ctx context.Context, table *Tabl
 	}
 	table.Indexes = indexes
 
-	// Populate index column names
-	c.collectIndexColumns(ctx, table)
-
-	// Collect index statistics
-	for _, idx := range table.Indexes {
-		c.collectIndexStats(ctx, idx)
-	}
-
 	constraints, err := c.collectConstraints(ctx, table.OID)
 	if err != nil {
 		c.logger.Warn("failed to collect constraints", "table", table.Name, "error", err)
 	}
 	table.Constraints = constraints
 
-	// Enrich FK constraints with referenced table/column details
-	c.collectForeignKeyDetails(ctx, table)
-
-	// Collect table stats (live/dead tuples, size, vacuum times) for user and partitioned tables.
-	// pg_stat_user_tables only tracks 'r' (regular) and 'p' (partitioned) tables.
-	// If that fails (e.g. permissions, PgBouncer), we fall back to pg_class.reltuples inside collectTableStats.
-	// For materialized views ('m') use reltuples from pg_class only.
-	if table.Type == "r" || table.Type == "p" {
-		c.collectTableStats(ctx, table)
-	} else if table.Type == "m" {
+	// Materialized views are not covered by pg_stat_user_tables.
+	if table.Type == "m" {
 		c.collectMatViewStats(ctx, table)
 	}
 
@@ -531,6 +521,8 @@ func (c *SchemaCollector) collectTableByOID(ctx context.Context, oid uint32) (*T
 	}
 
 	c.enrichTableDefinition(ctx, table)
+	c.collectTableStatsForTables(ctx, []*TableDefinition{table})
+	c.collectIndexStats(ctx, table.Indexes)
 
 	return table, nil
 }
@@ -617,10 +609,11 @@ func (c *SchemaCollector) collectIndexes(ctx context.Context, tableOID uint32) (
 			partial    sql.NullString
 			xmin       uint32
 			sizeBytes  sql.NullInt64
+			columns    []string
 		)
 
 		if err := rows.Scan(&oid, &name, &table, &isPrimary, &isUnique, &isValid,
-			&isExcl, &indexType, &definition, &partial, &xmin, &sizeBytes); err != nil {
+			&isExcl, &indexType, &definition, &partial, &xmin, &sizeBytes, pq.Array(&columns)); err != nil {
 			c.logger.Warn("failed to scan index", "error", err)
 			continue
 		}
@@ -636,6 +629,7 @@ func (c *SchemaCollector) collectIndexes(ctx context.Context, tableOID uint32) (
 			IndexType:   indexType,
 			Definition:  definition,
 			Xmin:        xmin,
+			Columns:     columns,
 		}
 
 		if partial.Valid {
@@ -651,56 +645,69 @@ func (c *SchemaCollector) collectIndexes(ctx context.Context, tableOID uint32) (
 	return indexes, rows.Err()
 }
 
-// collectIndexColumns populates index column names for all indexes on a table
-func (c *SchemaCollector) collectIndexColumns(ctx context.Context, table *TableDefinition) {
-	if len(table.Indexes) == 0 {
+// collectIndexStatsForTables collects statistics for every unlocked table in a
+// schema snapshot in one catalog query.
+func (c *SchemaCollector) collectIndexStatsForTables(ctx context.Context, tables []*TableDefinition) {
+	indexes := make([]*IndexDefinition, 0)
+	for _, table := range tables {
+		if table.ExclusivelyLocked {
+			continue
+		}
+		indexes = append(indexes, table.Indexes...)
+	}
+	c.collectIndexStats(ctx, indexes)
+}
+
+// collectIndexStats collects statistics for all supplied indexes in one query.
+func (c *SchemaCollector) collectIndexStats(ctx context.Context, indexes []*IndexDefinition) {
+	if len(indexes) == 0 {
 		return
 	}
 
-	rows, err := c.db.QueryContext(ctx, c.sqlBuilder.IndexColumnsQuery(), table.OID)
+	oids := make([]uint32, 0, len(indexes))
+	byOID := make(map[uint32]*IndexDefinition, len(indexes))
+	for _, idx := range indexes {
+		oids = append(oids, idx.OID)
+		byOID[idx.OID] = idx
+	}
+
+	rows, err := c.db.QueryContext(ctx, c.sqlBuilder.IndexStatsQuery(), pq.Array(oids))
 	if err != nil {
-		c.logger.Warn("failed to collect index columns", "table", table.Name, "error", err)
 		return
 	}
 	defer rows.Close()
 
-	colMap := make(map[uint32][]string)
-	for rows.Next() {
-		var indexOID uint32
-		var colNames []string
-		if err := rows.Scan(&indexOID, pq.Array(&colNames)); err != nil {
-			c.logger.Warn("failed to scan index columns", "error", err)
-			continue
-		}
-		colMap[indexOID] = colNames
-	}
-
-	for _, idx := range table.Indexes {
-		if cols, ok := colMap[idx.OID]; ok {
-			idx.Columns = cols
-		}
-	}
-}
-
-// collectIndexStats collects statistics for a single index
-func (c *SchemaCollector) collectIndexStats(ctx context.Context, idx *IndexDefinition) {
 	if c.sqlBuilder.MajorVersion() >= 16 {
 		// PG16+ has last_idx_scan
-		var lastScan sql.NullTime
-		err := c.db.QueryRowContext(ctx, c.sqlBuilder.IndexStatsQuery(), idx.OID).
-			Scan(&idx.ScanCount, &idx.TupleRead, &idx.TupleFetch, &lastScan)
-		if err != nil {
-			return
-		}
-		if lastScan.Valid {
-			idx.LastScan = &lastScan.Time
+		for rows.Next() {
+			var indexOID uint32
+			var lastScan sql.NullTime
+			var scanCount, tupleRead, tupleFetch int64
+			if err := rows.Scan(&indexOID, &scanCount, &tupleRead, &tupleFetch, &lastScan); err != nil {
+				continue
+			}
+			idx, ok := byOID[indexOID]
+			if !ok {
+				continue
+			}
+			idx.ScanCount, idx.TupleRead, idx.TupleFetch = scanCount, tupleRead, tupleFetch
+			if lastScan.Valid {
+				idx.LastScan = &lastScan.Time
+			}
 		}
 	} else {
 		// PG10-15: no last_idx_scan
-		err := c.db.QueryRowContext(ctx, c.sqlBuilder.IndexStatsQuery(), idx.OID).
-			Scan(&idx.ScanCount, &idx.TupleRead, &idx.TupleFetch)
-		if err != nil {
-			return
+		for rows.Next() {
+			var indexOID uint32
+			var scanCount, tupleRead, tupleFetch int64
+			if err := rows.Scan(&indexOID, &scanCount, &tupleRead, &tupleFetch); err != nil {
+				continue
+			}
+			idx, ok := byOID[indexOID]
+			if !ok {
+				continue
+			}
+			idx.ScanCount, idx.TupleRead, idx.TupleFetch = scanCount, tupleRead, tupleFetch
 		}
 	}
 }
@@ -717,17 +724,21 @@ func (c *SchemaCollector) collectConstraints(ctx context.Context, tableOID uint3
 
 	for rows.Next() {
 		var (
-			oid        uint32
-			name       string
-			conType    string
-			table      uint32
-			definition string
-			deferrable bool
-			deferred   bool
-			validated  bool
+			oid               uint32
+			name              string
+			conType           string
+			table             uint32
+			definition        string
+			deferrable        bool
+			deferred          bool
+			validated         bool
+			refTableOID       uint32
+			columnNames       []string
+			referencedColumns []string
 		)
 
-		if err := rows.Scan(&oid, &name, &conType, &table, &definition, &deferrable, &deferred, &validated); err != nil {
+		if err := rows.Scan(&oid, &name, &conType, &table, &definition, &deferrable, &deferred, &validated,
+			&refTableOID, pq.Array(&columnNames), pq.Array(&referencedColumns)); err != nil {
 			c.logger.Warn("failed to scan constraint", "error", err)
 			continue
 		}
@@ -742,6 +753,11 @@ func (c *SchemaCollector) collectConstraints(ctx context.Context, tableOID uint3
 			Deferred:   deferred,
 			Validated:  validated,
 		}
+		if conType == "f" {
+			constraint.ReferencedTableOID = refTableOID
+			constraint.ColumnNames = columnNames
+			constraint.ReferencedColumns = referencedColumns
+		}
 
 		constraints = append(constraints, constraint)
 	}
@@ -749,123 +765,97 @@ func (c *SchemaCollector) collectConstraints(ctx context.Context, tableOID uint3
 	return constraints, rows.Err()
 }
 
-// collectForeignKeyDetails enriches FK constraints with referenced table/column info
-func (c *SchemaCollector) collectForeignKeyDetails(ctx context.Context, table *TableDefinition) {
-	hasFKs := false
-	for _, con := range table.Constraints {
-		if con.Type == "f" {
-			hasFKs = true
-			break
-		}
-	}
-	if !hasFKs {
-		return
-	}
-
-	rows, err := c.db.QueryContext(ctx, c.sqlBuilder.ForeignKeyDetailsQuery(), table.OID)
-	if err != nil {
-		c.logger.Warn("failed to collect FK details", "table", table.Name, "error", err)
-		return
-	}
-	defer rows.Close()
-
-	fkDetails := make(map[uint32]struct {
-		refTableOID uint32
-		colNames    []string
-		refCols     []string
-	})
-
-	for rows.Next() {
-		var (
-			oid         uint32
-			name        string
-			tableOID    uint32
-			refTableOID uint32
-			colNames    []string
-			refCols     []string
-		)
-		_ = name
-		_ = tableOID
-
-		if err := rows.Scan(&oid, &name, &tableOID, &refTableOID,
-			pq.Array(&colNames), pq.Array(&refCols)); err != nil {
-			c.logger.Warn("failed to scan FK details", "error", err)
+// collectTableStatsForTables collects pg_stat_user_tables data for every
+// regular and partitioned table in one query. Tables without a statistics row,
+// and all tables after a query failure, retain the pg_class fallback.
+func (c *SchemaCollector) collectTableStatsForTables(ctx context.Context, tables []*TableDefinition) {
+	byOID := make(map[uint32]*TableDefinition)
+	oids := make([]uint32, 0, len(tables))
+	for _, table := range tables {
+		if table.ExclusivelyLocked || (table.Type != "r" && table.Type != "p") {
 			continue
 		}
-
-		fkDetails[oid] = struct {
-			refTableOID uint32
-			colNames    []string
-			refCols     []string
-		}{refTableOID, colNames, refCols}
+		byOID[table.OID] = table
+		oids = append(oids, table.OID)
 	}
-
-	for _, con := range table.Constraints {
-		if detail, ok := fkDetails[con.OID]; ok {
-			con.ReferencedTableOID = detail.refTableOID
-			con.ColumnNames = detail.colNames
-			con.ReferencedColumns = detail.refCols
-		}
-	}
-}
-
-// collectTableStats collects statistics for a table
-func (c *SchemaCollector) collectTableStats(ctx context.Context, table *TableDefinition) {
-	var (
-		liveTuples      int64
-		deadTuples      int64
-		modSinceAnalyze int64
-		lastVacuum      sql.NullTime
-		lastAutovacuum  sql.NullTime
-		lastAnalyze     sql.NullTime
-		lastAutoanalyze sql.NullTime
-		seqScans        int64
-		seqTupRead      int64
-		idxScans        int64
-		idxTupFetch     int64
-		sizeBytes       int64
-		totalSizeBytes  int64
-	)
-
-	statsQuery := c.tableStatsQueryForMode()
-	err := c.db.QueryRowContext(ctx, statsQuery, table.OID).
-		Scan(&liveTuples, &deadTuples, &modSinceAnalyze, &lastVacuum, &lastAutovacuum,
-			&lastAnalyze, &lastAutoanalyze, &seqScans, &seqTupRead, &idxScans, &idxTupFetch,
-			&sizeBytes, &totalSizeBytes)
-
-	if err != nil {
-		c.logger.Warn("failed to collect table stats; live_tuples left 0 (actual count only)", "table", table.Name, "error", err)
-		// Optional: still try to get size from pg_class so we have size even when stats are unavailable
-		c.collectRowEstimateFromPgClass(ctx, table)
+	if len(oids) == 0 {
 		return
 	}
 
-	table.LiveTuples = liveTuples
-	// If n_live_tup is 0 (ANALYZE hasn't run yet), fall back to reltuples estimate
-	if liveTuples == 0 {
-		c.fillLiveTuplesFromReltuples(ctx, table)
+	rows, err := c.db.QueryContext(ctx, c.tableStatsQueryForMode(), pq.Array(oids))
+	if err != nil {
+		c.logger.Warn("failed to collect batched table stats; using pg_class estimates", "error", err)
+		for _, table := range byOID {
+			c.collectRowEstimateFromPgClass(ctx, table)
+		}
+		return
 	}
-	table.DeadTuples = deadTuples
-	table.ModSinceAnalyze = modSinceAnalyze
-	table.SeqScans = seqScans
-	table.SeqTupRead = seqTupRead
-	table.IndexScans = idxScans
-	table.IndexTupFetch = idxTupFetch
-	table.SizeBytes = sizeBytes
-	table.TotalSizeBytes = totalSizeBytes
 
-	if lastVacuum.Valid {
-		table.LastVacuum = &lastVacuum.Time
+	seen := make(map[uint32]bool, len(byOID))
+	for rows.Next() {
+		var (
+			tableOID        uint32
+			liveTuples      int64
+			deadTuples      int64
+			modified        int64
+			lastVacuum      sql.NullTime
+			lastAutovacuum  sql.NullTime
+			lastAnalyze     sql.NullTime
+			lastAutoanalyze sql.NullTime
+			seqScans        int64
+			seqTupRead      int64
+			idxScans        int64
+			idxTupFetch     int64
+			sizeBytes       int64
+			totalSizeBytes  int64
+		)
+		if err := rows.Scan(&tableOID, &liveTuples, &deadTuples, &modified,
+			&lastVacuum, &lastAutovacuum, &lastAnalyze, &lastAutoanalyze,
+			&seqScans, &seqTupRead, &idxScans, &idxTupFetch, &sizeBytes, &totalSizeBytes); err != nil {
+			continue
+		}
+		table, ok := byOID[tableOID]
+		if !ok {
+			continue
+		}
+		seen[tableOID] = true
+		table.LiveTuples = liveTuples
+		table.DeadTuples = deadTuples
+		table.ModSinceAnalyze = modified
+		table.SeqScans = seqScans
+		table.SeqTupRead = seqTupRead
+		table.IndexScans = idxScans
+		table.IndexTupFetch = idxTupFetch
+		table.SizeBytes = sizeBytes
+		table.TotalSizeBytes = totalSizeBytes
+		if lastVacuum.Valid {
+			table.LastVacuum = &lastVacuum.Time
+		}
+		if lastAutovacuum.Valid {
+			table.LastAutovacuum = &lastAutovacuum.Time
+		}
+		if lastAnalyze.Valid {
+			table.LastAnalyze = &lastAnalyze.Time
+		}
+		if lastAutoanalyze.Valid {
+			table.LastAutoanalyze = &lastAutoanalyze.Time
+		}
 	}
-	if lastAutovacuum.Valid {
-		table.LastAutovacuum = &lastAutovacuum.Time
+	rowsErr := rows.Err()
+	_ = rows.Close()
+	if rowsErr != nil {
+		c.logger.Warn("failed while reading batched table stats", "error", rowsErr)
 	}
-	if lastAnalyze.Valid {
-		table.LastAnalyze = &lastAnalyze.Time
+
+	zeroLiveTuples := make([]*TableDefinition, 0)
+	for oid, table := range byOID {
+		if !seen[oid] {
+			c.collectRowEstimateFromPgClass(ctx, table)
+		} else if table.LiveTuples == 0 {
+			zeroLiveTuples = append(zeroLiveTuples, table)
+		}
 	}
-	if lastAutoanalyze.Valid {
-		table.LastAutoanalyze = &lastAutoanalyze.Time
-	}
+	c.fillLiveTuplesFromReltuples(ctx, zeroLiveTuples)
 }
 
 // collectMatViewStats collects row-count and size for a materialized view using
@@ -878,11 +868,11 @@ func (c *SchemaCollector) collectMatViewStats(ctx context.Context, table *TableD
 	var sizeCol string
 	switch c.sizeMode {
 	case sizeQualified:
-		sizeCol = "pg_catalog.pg_total_size(c.oid)"
+		sizeCol = "pg_catalog.pg_total_relation_size(c.oid)"
 	case sizeEstimate:
 		sizeCol = "(c.relpages * current_setting('block_size')::bigint)"
 	default:
-		sizeCol = "pg_total_size(c.oid)"
+		sizeCol = "pg_total_relation_size(c.oid)"
 	}
 	query := fmt.Sprintf(`
 		SELECT c.reltuples, %s, %s
@@ -918,11 +908,11 @@ func (c *SchemaCollector) collectRowEstimateFromPgClass(ctx context.Context, tab
 	var sizeCol string
 	switch c.sizeMode {
 	case sizeQualified:
-		sizeCol = "pg_catalog.pg_total_size(c.oid)"
+		sizeCol = "pg_catalog.pg_total_relation_size(c.oid)"
 	case sizeEstimate:
 		sizeCol = "(c.relpages * current_setting('block_size')::bigint)"
 	default:
-		sizeCol = "pg_total_size(c.oid)"
+		sizeCol = "pg_total_relation_size(c.oid)"
 	}
 	query := fmt.Sprintf(`
 		SELECT c.reltuples, %s, %s
@@ -948,18 +938,38 @@ func (c *SchemaCollector) collectRowEstimateFromPgClass(ctx context.Context, tab
 	}
 }
 
-// fillLiveTuplesFromReltuples queries pg_class.reltuples and sets LiveTuples
-// when n_live_tup is 0 (i.e. ANALYZE has not yet run on the table).
+// fillLiveTuplesFromReltuples queries pg_class.reltuples once and sets
+// LiveTuples for tables whose n_live_tup is 0 (i.e. ANALYZE has not yet run).
 // reltuples is an estimate maintained by VACUUM/ANALYZE/bulk operations
 // and is better than showing 0 for tables that clearly have data.
-func (c *SchemaCollector) fillLiveTuplesFromReltuples(ctx context.Context, table *TableDefinition) {
-	var reltuples float64
-	err := c.db.QueryRowContext(ctx,
-		"SELECT c.reltuples FROM pg_class c WHERE c.oid = $1", table.OID).Scan(&reltuples)
-	if err != nil || reltuples <= 0 {
+func (c *SchemaCollector) fillLiveTuplesFromReltuples(ctx context.Context, tables []*TableDefinition) {
+	if len(tables) == 0 {
 		return
 	}
-	table.LiveTuples = int64(reltuples)
+
+	byOID := make(map[uint32]*TableDefinition, len(tables))
+	oids := make([]uint32, 0, len(tables))
+	for _, table := range tables {
+		byOID[table.OID] = table
+		oids = append(oids, table.OID)
+	}
+
+	rows, err := c.db.QueryContext(ctx,
+		"SELECT c.oid, c.reltuples FROM pg_class c WHERE c.oid = ANY($1::oid[])", pq.Array(oids))
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var oid uint32
+		var reltuples float64
+		if err := rows.Scan(&oid, &reltuples); err != nil || reltuples <= 0 {
+			continue
+		}
+		if table, ok := byOID[oid]; ok {
+			table.LiveTuples = int64(reltuples)
+		}
+	}
 }
 
 // collectViewDefinition collects the SQL definition of a view

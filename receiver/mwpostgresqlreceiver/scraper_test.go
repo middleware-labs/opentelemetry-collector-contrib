@@ -961,6 +961,15 @@ func (m *mockClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
 	return args.Get(0).([]queryStats), args.Error(1)
 }
 
+func (*mockClient) getQueryStatsMax(context.Context) (int, error) {
+	return defaultQueryTextCacheSize, nil
+}
+
+func (m *mockClient) getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error) {
+	args := m.Called(ctx, keys)
+	return args.Get(0).(map[queryStatsKey]string), args.Error(1)
+}
+
 func (m *mockClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]BufferHit), args.Error(1)

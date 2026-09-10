@@ -188,8 +188,8 @@ func TestSchemaCollectionSkipsLockedTable(t *testing.T) {
 
 	mock.ExpectQuery(`SELECT oid FROM pg_database`).
 		WillReturnRows(sqlmock.NewRows([]string{"oid"}).AddRow(16384))
-	mock.ExpectQuery(`SELECT pg_total_size`).
-		WillReturnRows(sqlmock.NewRows([]string{"pg_total_size"}).AddRow(0))
+	mock.ExpectQuery(`SELECT pg_total_relation_size`).
+		WillReturnRows(sqlmock.NewRows([]string{"pg_total_relation_size"}).AddRow(0))
 
 	// The table is visible in the lock-free catalog scan...
 	mock.ExpectQuery("SELECT.*pg_class.*pg_namespace").WillReturnRows(sqlmock.NewRows([]string{
@@ -220,9 +220,9 @@ func TestSchemaCollectionSkipsLockedTable(t *testing.T) {
 	mock.ExpectQuery("SELECT.*pg_constraint").WithArgs(lockedOID).WillReturnRows(sqlmock.NewRows([]string{
 		"oid", "name", "type", "table", "def", "deferrable", "deferred", "validated",
 	}))
-	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(lockedOID).WillReturnRows(sqlmock.NewRows([]string{
-		"live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
-	}).AddRow(100, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
+	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(sqlmock.AnyArg()).WillReturnRows(sqlmock.NewRows([]string{
+		"relid", "live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
+	}).AddRow(lockedOID, 100, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
 
 	logs, err := scraper.scrapeSchemaCollection(context.Background())
 	require.NoError(t, err)
