@@ -108,17 +108,71 @@ func TestDBSQLClient_Nulls_MultiRow(t *testing.T) {
 	}, rows[1])
 }
 
+func TestDBSQLClient_IterationError(t *testing.T) {
+	// A driver error that ends iteration leaves Next returning false exactly as
+	// a completed result set does, so the rows read before it must not be
+	// returned as if they were the whole answer.
+	iterErr := errors.New("connection reset by peer")
+	cl := DbSQLClient{
+		Db: fakeDB{
+			rowVals: [][]any{{42, "hello"}},
+			err:     iterErr,
+		},
+		Logger: zap.NewNop(),
+		SQL:    "",
+	}
+	rows, err := cl.QueryRows(t.Context())
+	require.ErrorIs(t, err, iterErr)
+	assert.Nil(t, rows)
+}
+
+func TestDBSQLClient_ClosesRows(t *testing.T) {
+	for _, tt := range []struct {
+		iterErr error
+		name    string
+	}{
+		{name: "success"},
+		{name: "iteration error", iterErr: errors.New("boom")},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			var produced *fakeRows
+			cl := DbSQLClient{
+				Db: fakeDB{
+					rowVals: [][]any{{42, "hello"}},
+					err:     tt.iterErr,
+					last:    &produced,
+				},
+				Logger: zap.NewNop(),
+				SQL:    "",
+			}
+			_, _ = cl.QueryRows(t.Context())
+			require.NotNil(t, produced)
+			assert.True(t, produced.closed, "rows must be closed so the connection returns to the pool")
+		})
+	}
+}
+
 type fakeDB struct {
+	// err, when set, is returned by the produced rows' Err method, standing in
+	// for a driver or network failure that ends iteration part way through.
+	err     error
+	last    **fakeRows
 	rowVals [][]any
 }
 
 func (db fakeDB) QueryContext(context.Context, string, ...any) (rows, error) {
-	return &fakeRows{vals: db.rowVals}, nil
+	r := &fakeRows{vals: db.rowVals, err: db.err}
+	if db.last != nil {
+		*db.last = r
+	}
+	return r, nil
 }
 
 type fakeRows struct {
-	vals [][]any
-	row  int
+	err    error
+	vals   [][]any
+	row    int
+	closed bool
 }
 
 func (r *fakeRows) ColumnTypes() ([]colType, error) {
@@ -139,6 +193,15 @@ func (r *fakeRows) Scan(dest ...any) error {
 		*ptr = r.vals[r.row][i]
 	}
 	r.row++
+	return nil
+}
+
+func (r *fakeRows) Err() error {
+	return r.err
+}
+
+func (r *fakeRows) Close() error {
+	r.closed = true
 	return nil
 }
 
