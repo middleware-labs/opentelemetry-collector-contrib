@@ -77,22 +77,19 @@ func (p *postgreSQLScraper) scrapeSchemaCollection(ctx context.Context) (retLogs
 
 	// 3. Resolve database list: use configured databases, or discover all
 	databases := p.config.Databases
-	if len(databases) == 0 {
+	// Schema collection uses the same policy as every other path: discovery
+	// only when there is no allowlist, and a discovery failure is reported
+	// rather than resolved by widening scope.
+	var discovered []string
+	if !p.selection.isRestricted() {
 		dbList, dbErr := listClient.listDatabases(ctx)
 		if dbErr != nil {
 			p.logger.Error("Failed to list databases for schema collection", zap.Error(dbErr))
 			return plog.NewLogs(), dbErr
 		}
-		databases = dbList
+		discovered = dbList
 	}
-	// Apply exclusions
-	var filteredDatabases []string
-	for _, db := range databases {
-		if _, excluded := p.excludes[db]; !excluded {
-			filteredDatabases = append(filteredDatabases, db)
-		}
-	}
-	databases = filteredDatabases
+	databases = p.selection.effectiveDatabases(discovered)
 
 	if len(databases) == 0 {
 		p.logger.Warn("No databases to collect schema from")

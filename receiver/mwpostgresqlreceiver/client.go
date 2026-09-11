@@ -178,11 +178,11 @@ var errNoLastArchive = errors.New("no last archive found, not able to calculate 
 
 type client interface {
 	Close() error
-	getDatabaseStats(ctx context.Context, databases []string) (map[databaseName]databaseStats, error)
+	getDatabaseStats(ctx context.Context, sel databaseSelection) (map[databaseName]databaseStats, error)
 	getDatabaseLocks(ctx context.Context) ([]databaseLocks, error)
 	getBGWriterStats(ctx context.Context) (*bgStat, error)
-	getBackends(ctx context.Context, databases []string) (map[databaseName]int64, error)
-	getDatabaseSize(ctx context.Context, databases []string) (map[databaseName]int64, error)
+	getBackends(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error)
+	getDatabaseSize(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error)
 	getDatabaseTableMetrics(ctx context.Context, db string) (map[tableIdentifier]tableStats, error)
 	getBlocksReadByTable(ctx context.Context, db string) (map[tableIdentifier]tableIOStats, error)
 	getReplicationStats(ctx context.Context) ([]replicationStats, error)
@@ -193,20 +193,20 @@ type client interface {
 	getActiveConnections(ctx context.Context) (int64, error)
 	listDatabases(ctx context.Context) ([]string, error)
 	getVersion(ctx context.Context) (string, error)
-	getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, logger *zap.Logger) ([]map[string]any, float64, error)
-	getTopQuery(ctx context.Context, limit int64, logger *zap.Logger) ([]map[string]any, error)
+	getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, float64, error)
+	getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, error)
 	explainQuery(query, queryID string, logger *zap.Logger) (string, error)
 	getRowStats(ctx context.Context) ([]RowStats, error)
-	getQueryStats(ctx context.Context) ([]queryStats, error)
+	getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error)
 	getQueryStatsMax(ctx context.Context) (int, error)
 	getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error)
-	getBufferHit(ctx context.Context) ([]BufferHit, error)
+	getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error)
 	getVersionString(ctx context.Context) (string, error)
 	getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error)
 	getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error)
 	getWALStats(ctx context.Context) (int64, int64, error)
 	getTransactionsStats(ctx context.Context) (float64, float64, error)
-	getConnectionStats(ctx context.Context, databases []string) (map[databaseName][]connectionStat, error)
+	getConnectionStats(ctx context.Context, sel databaseSelection) (map[databaseName][]connectionStat, error)
 }
 
 type postgreSQLClient struct {
@@ -546,14 +546,12 @@ type databaseStats struct {
 	blkWriteTime         float64
 }
 
-func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []string) (map[databaseName]databaseStats, error) {
-	query := filterQueryByDatabases(
+func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, sel databaseSelection) (map[databaseName]databaseStats, error) {
+	query, args := sel.appendDatnameFilter(
 		"SELECT datname, xact_commit, xact_rollback, deadlocks, temp_files, temp_bytes, tup_updated, tup_returned, tup_fetched, tup_inserted, tup_deleted, blks_hit, blks_read, blk_read_time, blk_write_time FROM pg_stat_database",
-		databases,
-		false,
-	)
+		"datname", false)
 
-	rows, err := c.client.QueryContext(ctx, query)
+	rows, err := c.client.QueryContext(ctx, query+";", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -563,7 +561,12 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 	dbStats := map[databaseName]databaseStats{}
 
 	for rows.Next() {
-		var datname string
+		// pg_stat_database carries one row with a NULL datname holding the
+		// statistics for shared objects, which belong to no database. Scanning
+		// it into a plain string fails, so the column is read as nullable and
+		// the row is skipped below; previously this row was filtered out
+		// incidentally by the WHERE clause the old helper always added.
+		var datname sql.NullString
 		var transactionCommitted, transactionRollback, deadlocks, tempIo, tempFiles, tupUpdated, tupReturned, tupFetched, tupInserted, tupDeleted, blksHit, blksRead int64
 		var blkReadTime, blkWriteTime float64
 		err = rows.Scan(&datname, &transactionCommitted, &transactionRollback, &deadlocks, &tempFiles, &tempIo, &tupUpdated, &tupReturned, &tupFetched, &tupInserted, &tupDeleted, &blksHit, &blksRead, &blkReadTime, &blkWriteTime)
@@ -571,8 +574,8 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 			errs = multierr.Append(errs, err)
 			continue
 		}
-		if datname != "" {
-			dbStats[databaseName(datname)] = databaseStats{
+		if datname.Valid && datname.String != "" {
+			dbStats[databaseName(datname.String)] = databaseStats{
 				transactionCommitted: transactionCommitted,
 				transactionRollback:  transactionRollback,
 				deadlocks:            deadlocks,
@@ -632,9 +635,10 @@ func (c *postgreSQLClient) getDatabaseLocks(ctx context.Context) ([]databaseLock
 }
 
 // getBackends returns a map of database names to the number of active connections
-func (c *postgreSQLClient) getBackends(ctx context.Context, databases []string) (map[databaseName]int64, error) {
-	query := filterQueryByDatabases("SELECT datname, count(*) as count from pg_stat_activity", databases, true)
-	rows, err := c.client.QueryContext(ctx, query)
+func (c *postgreSQLClient) getBackends(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	query, args := sel.appendDatnameFilter(
+		"SELECT datname, count(*) as count from pg_stat_activity", "datname", false)
+	rows, err := c.client.QueryContext(ctx, query+" GROUP BY datname;", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -642,32 +646,30 @@ func (c *postgreSQLClient) getBackends(ctx context.Context, databases []string) 
 	ars := map[databaseName]int64{}
 	var errors error
 	for rows.Next() {
-		var datname string
+		// pg_stat_activity rows for background workers (autovacuum launcher,
+		// walwriter, checkpointer) have a NULL datname: they belong to no
+		// database. They are skipped rather than failing the scan.
+		var datname sql.NullString
 		var count int64
 		err = rows.Scan(&datname, &count)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 			continue
 		}
-		if datname != "" {
-			ars[databaseName(datname)] = count
+		if datname.Valid && datname.String != "" {
+			ars[databaseName(datname.String)] = count
 		}
 	}
 	return ars, errors
 }
 
-func (c *postgreSQLClient) getConnectionStats(ctx context.Context, databases []string) (map[databaseName][]connectionStat, error) {
-	query := "SELECT datname, usename, application_name, state, count(*) FROM pg_stat_activity"
-	if len(databases) > 0 {
-		var queryDatabases []string
-		for _, db := range databases {
-			queryDatabases = append(queryDatabases, fmt.Sprintf("'%s'", db))
-		}
-		query += fmt.Sprintf(" WHERE datname IN (%s)", strings.Join(queryDatabases, ","))
-	}
+func (c *postgreSQLClient) getConnectionStats(ctx context.Context, sel databaseSelection) (map[databaseName][]connectionStat, error) {
+	query, args := sel.appendDatnameFilter(
+		"SELECT datname, usename, application_name, state, count(*) FROM pg_stat_activity",
+		"datname", false)
 	query += " GROUP BY 1, 2, 3, 4;"
 
-	rows, err := c.client.QueryContext(ctx, query)
+	rows, err := c.client.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -698,9 +700,11 @@ func (c *postgreSQLClient) getConnectionStats(ctx context.Context, databases []s
 	return stats, multierr.Combine(errs)
 }
 
-func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, databases []string) (map[databaseName]int64, error) {
-	query := filterQueryByDatabases("SELECT datname, pg_database_size(datname) FROM pg_catalog.pg_database WHERE datistemplate = false", databases, false)
-	rows, err := c.client.QueryContext(ctx, query)
+func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	query, args := sel.appendDatnameFilter(
+		"SELECT datname, pg_database_size(datname) FROM pg_catalog.pg_database WHERE datistemplate = false",
+		"datname", true)
+	rows, err := c.client.QueryContext(ctx, query+";", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -1476,7 +1480,7 @@ func newQueryTextCache(size int) *lru.Cache[queryStatsKey, string] {
 	return cache
 }
 
-func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
+func (c *postgreSQLClient) getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error) {
 	// Gate on the extension's own version, not the server's. pg_upgrade leaves
 	// the extension at whatever version the old cluster had, so a PG14+ server
 	// can still be on pg_stat_statements 1.8 with no toplevel column at all;
@@ -1500,6 +1504,20 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 		topLevelCol = "toplevel"
 	}
 
+	// pg_stat_statements is keyed on dbid, not on a database name, so the
+	// selection is resolved to OIDs in the server rather than in Go. A
+	// subquery against pg_database keeps this a single round trip and avoids a
+	// separate name-to-OID cache with its own staleness and failure semantics:
+	// a database dropped between the two halves simply matches nothing.
+	//
+	// Rows whose dbid no longer resolves are dropped under an allowlist -
+	// they cannot be shown to belong to a selected database - and kept
+	// otherwise, matching databaseSelection.includes.
+	dbPredicate, args := sel.dbidPredicate("dbid", 1)
+	if dbPredicate != "" {
+		dbPredicate = " AND " + dbPredicate
+	}
+
 	query := fmt.Sprintf(`
     SELECT
       queryid::TEXT,
@@ -1509,9 +1527,9 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
       calls,
       %s
 	    FROM %s(false)
-	    WHERE queryid IS NOT NULL;
-	`, topLevelCol, execTimeCol, caps.qualify("pg_stat_statements"))
-	rows, err := c.client.QueryContext(ctx, query)
+	    WHERE queryid IS NOT NULL%s;
+	`, topLevelCol, execTimeCol, caps.qualify("pg_stat_statements"), dbPredicate)
+	rows, err := c.client.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
 	}
@@ -1651,10 +1669,13 @@ type BufferHit struct {
 	hits   int64
 }
 
-func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
-	query := `SELECT datname, blks_hit FROM pg_stat_database;`
+func (c *postgreSQLClient) getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error) {
+	// pg_stat_database has one row per database, so this must respect the
+	// selection: it previously emitted a point for every database on the
+	// server regardless of `databases` and `exclude_databases`.
+	query, args := sel.appendDatnameFilter("SELECT datname, blks_hit FROM pg_stat_database", "datname", false)
 
-	rows, err := c.client.QueryContext(ctx, query)
+	rows, err := c.client.QueryContext(ctx, query+";", args...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_database:: %w", err)
 	}
@@ -1766,25 +1787,6 @@ func parseMajorVersion(ver string) (int, error) {
 	return strconv.Atoi(parts[0])
 }
 
-func filterQueryByDatabases(baseQuery string, databases []string, groupBy bool) string {
-	if len(databases) > 0 {
-		var queryDatabases []string
-		for _, db := range databases {
-			queryDatabases = append(queryDatabases, fmt.Sprintf("'%s'", db))
-		}
-		if strings.Contains(baseQuery, "WHERE") {
-			baseQuery += fmt.Sprintf(" AND datname IN (%s)", strings.Join(queryDatabases, ","))
-		} else {
-			baseQuery += fmt.Sprintf(" WHERE datname IN (%s)", strings.Join(queryDatabases, ","))
-		}
-	}
-	if groupBy {
-		baseQuery += " GROUP BY datname"
-	}
-
-	return baseQuery + ";"
-}
-
 func tableKey(database, schema, table string) tableIdentifier {
 	return tableIdentifier(fmt.Sprintf("%s|%s|%s", database, schema, table))
 }
@@ -1807,7 +1809,7 @@ var querySampleTemplate string
 var querySampleTemplateParsed = template.Must(
 	template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
 
-func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, logger *zap.Logger) ([]map[string]any, float64, error) {
+func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, float64, error) {
 	version, err := c.getVersion(ctx)
 	if err != nil {
 		return nil, newestQueryTimestamp, fmt.Errorf("failed to get PostgreSQL version: %w", err)
@@ -1819,10 +1821,17 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 
 	buf := bytes.Buffer{}
 
+	// Applied before LIMIT for the same reason as the top-query path. The
+	// sample query has no ORDER BY, so which rows survive the cap is already
+	// planner-dependent; filtering first at least ensures the surviving rows
+	// are in scope.
+	databasePredicate, args := sel.datnamePredicate("datname", 1)
+
 	if err := querySampleTemplateParsed.Execute(&buf, map[string]any{
 		"limit":                limit,
 		"newestQueryTimestamp": newestQueryTimestamp,
 		"hasQueryID":           major >= 14,
+		"databasePredicate":    databasePredicate,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
 		return []map[string]any{}, newestQueryTimestamp, fmt.Errorf("failed executing template: %w", err)
@@ -1831,7 +1840,7 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 	// Prepend the ignore prefix manually since we unwrap the DB here
 	wrappedDb := sqlquery.NewDbClient(sqlquery.DbWrapper{Db: c.client.Unwrap()}, otelIgnorePrefix+buf.String(), logger, sqlquery.TelemetryConfig{})
 
-	rows, err := wrappedDb.QueryRows(ctx)
+	rows, err := wrappedDb.QueryRows(ctx, args...)
 	if err != nil {
 		if !errors.Is(err, sqlquery.ErrNullValueWarning) {
 			logger.Error("failed getting log rows", zap.Error(err))
@@ -2078,7 +2087,7 @@ var topQueryColumnConverters = map[string]func(string, string, *zap.Logger) (any
 }
 
 // getTopQuery implements client.
-func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger *zap.Logger) ([]map[string]any, error) {
+func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, error) {
 	// The column names here follow the extension version, not the server
 	// version. Extension 1.11, which CREATE EXTENSION installs on PostgreSQL
 	// 17, renamed blk_read_time/blk_write_time to shared_blk_read_time and
@@ -2096,12 +2105,21 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 		orderByExecTimeCol = "total_exec_time"
 	}
 
+	// The predicate goes inside WHERE, before ORDER BY and LIMIT, so an
+	// unselected database with high query volume cannot consume the candidate
+	// limit before selected rows are considered.
+	//
+	// The column is pg_database.datname from the LEFT JOIN, which is NULL for a
+	// statement whose database has been dropped.
+	databasePredicate, args := sel.datnamePredicate("pg_database.datname", 1)
+
 	if err := topQueryTemplateParsed.Execute(&buf, map[string]any{
 		"limit":               limit,
 		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
 		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 		"statementsView":      caps.qualify("pg_stat_statements"),
 		"orderByExecTimeCol":  orderByExecTimeCol,
+		"databasePredicate":   databasePredicate,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
 		return []map[string]any{}, fmt.Errorf("failed executing template: %w", err)
@@ -2109,7 +2127,7 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 
 	wrappedDb := sqlquery.NewDbClient(sqlquery.DbWrapper{Db: c.client.Unwrap()}, otelIgnorePrefix+buf.String(), logger, sqlquery.TelemetryConfig{})
 
-	rows, err := wrappedDb.QueryRows(ctx)
+	rows, err := wrappedDb.QueryRows(ctx, args...)
 	if err != nil {
 		if !errors.Is(err, sqlquery.ErrNullValueWarning) {
 			logger.Error("failed getting log rows", zap.Error(err))

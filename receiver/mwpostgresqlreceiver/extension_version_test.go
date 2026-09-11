@@ -119,7 +119,7 @@ func TestGetTopQueryUsesExtensionVersionNotServerVersion(t *testing.T) {
 			mock.ExpectQuery(tt.expected).
 				WillReturnRows(sqlmock.NewRows([]string{"queryid"}))
 
-			_, err = client.getTopQuery(t.Context(), 31, zap.NewNop())
+			_, err = client.getTopQuery(t.Context(), 31, databaseSelection{}, zap.NewNop())
 			require.NoError(t, err)
 			require.NoError(t, mock.ExpectationsWereMet())
 		})
@@ -154,7 +154,7 @@ func TestGetQueryStatsGatesTopLevelOnExtensionVersion(t *testing.T) {
 					"queryid", "dbid", "userid", "toplevel", "calls", "total_exec_time",
 				}).AddRow("42", 1, 2, true, 3, 4.0))
 
-			stats, err := client.getQueryStats(t.Context())
+			stats, err := client.getQueryStats(t.Context(), databaseSelection{})
 			require.NoError(t, err)
 			require.Len(t, stats, 1)
 			assert.Equal(t, tt.hasTopLevel, stats[0].key.hasTopLevel)

@@ -68,7 +68,7 @@ func benchTopQueryRows(b *testing.B, n int, row func(int) []driverValue) {
 		mock.ExpectQuery(topQueryPrefixForBench).WillReturnRows(sqlRows)
 		b.StartTimer()
 
-		if _, err := client.getTopQuery(b.Context(), int64(n), logger); err != nil {
+		if _, err := client.getTopQuery(b.Context(), int64(n), databaseSelection{}, logger); err != nil {
 			b.Fatal(err)
 		}
 	}

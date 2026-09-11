@@ -82,8 +82,12 @@ func TestScraper(t *testing.T) {
 			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
-	runTest(true, "expected_schemaattr.yaml")
-	runTest(false, "expected.yaml")
+	// These expectations omit postgresql.database.locks and the postgresql.rows_*
+	// family. Both are read from the maintenance connection but describe only
+	// the `postgres` database, which this configuration does not select, so they
+	// are no longer collected. The unrestricted tests below still expect them.
+	runTest(true, "expected_scoped_schemaattr.yaml")
+	runTest(false, "expected_scoped.yaml")
 }
 
 func TestScraperNoDatabaseSingle(t *testing.T) {
@@ -885,8 +889,14 @@ func TestExplainQuery(t *testing.T) {
 }
 
 type (
-	mockClientFactory       struct{ mock.Mock }
-	mockClient              struct{ mock.Mock }
+	mockClientFactory struct{ mock.Mock }
+	mockClient        struct {
+		mock.Mock
+		// discoverable is what listDatabases returns for this mock, used to
+		// render an unrestricted selection back to the name list the
+		// expectations are written against.
+		discoverable []string
+	}
 	mockSimpleClientFactory struct {
 		db *sql.DB
 	}
@@ -898,7 +908,7 @@ func (*mockClient) explainQuery(string, string, *zap.Logger) (string, error) {
 }
 
 // getTopQuery implements client.
-func (*mockClient) getTopQuery(context.Context, int64, *zap.Logger) ([]map[string]any, error) {
+func (*mockClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]map[string]any, error) {
 	panic("unimplemented")
 }
 
@@ -910,7 +920,7 @@ func (*mockClient) getTransactionsStats(context.Context) (float64, float64, erro
 	return 100.0, 500.0, nil
 }
 
-func (*mockClient) getConnectionStats(context.Context, []string) (map[databaseName][]connectionStat, error) {
+func (*mockClient) getConnectionStats(context.Context, databaseSelection) (map[databaseName][]connectionStat, error) {
 	return map[databaseName][]connectionStat{
 		"otel": {
 			{database: "otel", user: "otel", app: "otel", state: "active", count: 1},
@@ -932,7 +942,7 @@ func (m mockSimpleClientFactory) getClient(string) (client, error) {
 }
 
 // getQuerySamples implements client.
-func (*mockClient) getQuerySamples(context.Context, int64, float64, *zap.Logger) ([]map[string]any, float64, error) {
+func (*mockClient) getQuerySamples(context.Context, int64, float64, databaseSelection, *zap.Logger) ([]map[string]any, float64, error) {
 	panic("this should not be invoked")
 }
 
@@ -943,8 +953,12 @@ func (m *mockClient) Close() error {
 	return args.Error(0)
 }
 
-func (m *mockClient) getDatabaseStats(_ context.Context, databases []string) (map[databaseName]databaseStats, error) {
-	args := m.Called(databases)
+func (m *mockClient) getDatabaseStats(_ context.Context, sel databaseSelection) (map[databaseName]databaseStats, error) {
+	// Expectations are registered against the database name list these tests
+	// were written with. A restricted selection carries that list; an
+	// unrestricted one is satisfied by whatever discovery returned, which for
+	// these mocks is the same list, so it is substituted here.
+	args := m.Called(m.selectionNames(sel))
 	return args.Get(0).(map[databaseName]databaseStats), args.Error(1)
 }
 
@@ -953,13 +967,21 @@ func (m *mockClient) getDatabaseLocks(ctx context.Context) ([]databaseLocks, err
 	return args.Get(0).([]databaseLocks), args.Error(1)
 }
 
-func (m *mockClient) getBackends(_ context.Context, databases []string) (map[databaseName]int64, error) {
-	args := m.Called(databases)
+func (m *mockClient) getBackends(_ context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	// Expectations are registered against the database name list these tests
+	// were written with. A restricted selection carries that list; an
+	// unrestricted one is satisfied by whatever discovery returned, which for
+	// these mocks is the same list, so it is substituted here.
+	args := m.Called(m.selectionNames(sel))
 	return args.Get(0).(map[databaseName]int64), args.Error(1)
 }
 
-func (m *mockClient) getDatabaseSize(_ context.Context, databases []string) (map[databaseName]int64, error) {
-	args := m.Called(databases)
+func (m *mockClient) getDatabaseSize(_ context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	// Expectations are registered against the database name list these tests
+	// were written with. A restricted selection carries that list; an
+	// unrestricted one is satisfied by whatever discovery returned, which for
+	// these mocks is the same list, so it is substituted here.
+	args := m.Called(m.selectionNames(sel))
 	return args.Get(0).(map[databaseName]int64), args.Error(1)
 }
 
@@ -983,7 +1005,7 @@ func (m *mockClient) getFunctionStats(ctx context.Context, database string) (map
 	return args.Get(0).(map[functionIdentifer]functionStat), args.Error(1)
 }
 
-func (m *mockClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
+func (m *mockClient) getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]queryStats), args.Error(1)
 }
@@ -997,7 +1019,7 @@ func (m *mockClient) getQueryTexts(ctx context.Context, keys []queryStatsKey) (m
 	return args.Get(0).(map[queryStatsKey]string), args.Error(1)
 }
 
-func (m *mockClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
+func (m *mockClient) getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]BufferHit), args.Error(1)
 }
@@ -1079,7 +1101,17 @@ func (m *mockClientFactory) initMocks(databases []string) {
 	}
 }
 
+// selectionNames renders a selection back to the database-name list the
+// expectations in these tests are written against.
+func (m *mockClient) selectionNames(sel databaseSelection) []string {
+	if sel.isRestricted() {
+		return sel.effectiveDatabases(nil)
+	}
+	return sel.apply(m.discoverable)
+}
+
 func (m *mockClient) initMocks(database, schema string, databases []string, index int) {
+	m.discoverable = databases
 	m.On("Close").Return(nil)
 
 	if database == defaultPostgreSQLDatabase {
@@ -1541,6 +1573,6 @@ type fakeQuerySamplesClient struct {
 	rows []map[string]any
 }
 
-func (f *fakeQuerySamplesClient) getQuerySamples(_ context.Context, _ int64, newest float64, _ *zap.Logger) ([]map[string]any, float64, error) {
+func (f *fakeQuerySamplesClient) getQuerySamples(_ context.Context, _ int64, newest float64, _ databaseSelection, _ *zap.Logger) ([]map[string]any, float64, error) {
 	return f.rows, newest, nil
 }

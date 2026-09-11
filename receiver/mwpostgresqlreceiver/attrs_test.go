@@ -58,7 +58,7 @@ type fakeTopQueryClient struct {
 	rows []map[string]any
 }
 
-func (f *fakeTopQueryClient) getTopQuery(context.Context, int64, *zap.Logger) ([]map[string]any, error) {
+func (f *fakeTopQueryClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]map[string]any, error) {
 	return f.rows, nil
 }
 
@@ -105,7 +105,7 @@ type queryTextCacheClient struct {
 	textCalls int
 }
 
-func (c *queryTextCacheClient) getQueryStats(context.Context) ([]queryStats, error) {
+func (c *queryTextCacheClient) getQueryStats(context.Context, databaseSelection) ([]queryStats, error) {
 	return c.stats, nil
 }
 

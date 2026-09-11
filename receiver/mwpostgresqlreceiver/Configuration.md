@@ -26,10 +26,59 @@ receivers:
 | `transport` | No | `tcp` or `unix` | `tcp` (default) |
 | `username` | Yes | Database user | `otelu` |
 | `password` | Yes | Database password | `otelp` |
-| `databases` | No | List of databases to scrape. If empty, all databases are discovered (except those in `exclude_databases`). | `[demo, appdb]` |
-| `exclude_databases` | No | Databases to skip when using auto-discovery | `[template0, template1]` |
+| `databases` | No | List of databases to collect from. If empty, databases are discovered automatically. See [Database selection](#database-selection). | `[demo, appdb]` |
+| `exclude_databases` | No | Databases to skip. Applies to both auto-discovery and an explicit `databases` list. | `[template0, template1]` |
 | `tls.insecure` | No | Use TLS | `false` (default) |
 | `tls.insecure_skip_verify` | No | Skip TLS server certificate verification | `true` (default) |
+
+---
+
+## Database selection
+
+`databases` and `exclude_databases` together decide which databases the
+receiver collects from. The selection applies to **every** database-specific
+signal: per-database metrics, schema collection, query samples, top-query
+events, query-performance metrics, and the databases `EXPLAIN` may run in.
+
+```yaml
+databases: [orders, billing]
+exclude_databases: [billing]
+```
+
+This collects from `orders` only.
+
+| Configuration | Result |
+|---|---|
+| Neither set | All databases are discovered and collected from |
+| `databases` set | Only the named databases; duplicates are collapsed |
+| `exclude_databases` set | Everything except the named databases |
+| A database in both | Exclusion wins; it is not collected |
+| Every name in `databases` also excluded | Configuration error at startup — the receiver will not start, rather than silently collecting nothing |
+| A named database is unreachable | Reported as an error; scope is never widened to compensate |
+| Discovery fails | Reported as an error; scope is never widened to compensate |
+
+### Behavior change
+
+Before this release, `databases` and `exclude_databases` were applied to
+per-database metrics and schema collection, but **not** to query samples,
+top-query events or query-performance metrics. A receiver configured for one
+database still reported query telemetry from every database on the server.
+
+They are now applied consistently. If you relied on the previous broader query
+telemetry, remove the `databases` restriction or add the databases you want to
+keep seeing.
+
+### The maintenance connection
+
+The receiver always connects to the `postgres` database to read server-wide
+statistics (background writer, WAL, replication, connection counts) and to
+discover databases. It does this even when `postgres` is not in the selection:
+it is a control connection, not data scope.
+
+Its own database-specific telemetry is **not** collected when it is out of
+scope. In particular `postgresql.database.locks` and the `postgresql.rows_*`
+family are read through that connection but describe only the `postgres`
+database, so they are collected only when `postgres` is itself selected.
 
 ---
 

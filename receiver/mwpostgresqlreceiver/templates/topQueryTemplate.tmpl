@@ -32,5 +32,8 @@ FROM
 WHERE
   query != '<insufficient privilege>'
   AND query NOT LIKE '/* otel-collector-ignore */%'
+{{- if .databasePredicate }}
+  AND {{ .databasePredicate }}
+{{- end }}
 ORDER BY {{ .orderByExecTimeCol }} DESC
 LIMIT {{ .limit }};

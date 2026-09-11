@@ -133,6 +133,14 @@ func (cfg *Config) Validate() error {
 		err = multierr.Append(err, fmt.Errorf(ErrNotSupported, "MinVersion"))
 	}
 
+	// A configuration whose exclusions cancel its entire allowlist collects no
+	// database-specific telemetry at all. That is almost certainly a mistake,
+	// and without this check it would present as silently absent metrics rather
+	// than as a startup error.
+	if selErr := validateDatabaseSelection(cfg.Databases, cfg.ExcludeDatabases); selErr != nil {
+		err = multierr.Append(err, selErr)
+	}
+
 	switch cfg.Transport {
 	case confignet.TransportTypeTCP, confignet.TransportTypeUnix:
 		_, _, endpointErr := net.SplitHostPort(cfg.Endpoint)

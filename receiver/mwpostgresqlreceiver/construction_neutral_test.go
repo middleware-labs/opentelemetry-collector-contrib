@@ -129,7 +129,7 @@ func TestGetTopQueryAttributesUnchangedAcrossScrapes(t *testing.T) {
 		// A NULL column yields a warning rather than a failure and the rows are
 		// still returned, so the error is tolerated here; a hard failure would
 		// come back with no rows, which the length assertion below catches.
-		got, _ := client.getTopQuery(t.Context(), 100, zap.NewNop())
+		got, _ := client.getTopQuery(t.Context(), 100, databaseSelection{}, zap.NewNop())
 		return got
 	}
 
@@ -171,6 +171,7 @@ func TestTopQueryTemplateRendersPerCall(t *testing.T) {
 			"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 			"statementsView":      caps.qualify("pg_stat_statements"),
 			"orderByExecTimeCol":  "total_exec_time",
+			"databasePredicate":   "",
 		}))
 		return buf.String()
 	}
@@ -199,6 +200,7 @@ func TestQuerySampleTemplateRendersPerCall(t *testing.T) {
 			"limit":                limit,
 			"newestQueryTimestamp": float64(0),
 			"hasQueryID":           true,
+			"databasePredicate":    "",
 		}))
 		rendered = append(rendered, buf.String())
 	}

@@ -50,12 +50,15 @@ var separateSchemaAttrGate = featuregate.GlobalRegistry().MustRegister(
 )
 
 type postgreSQLScraper struct {
-	logger             *zap.Logger
-	config             *Config
-	clientFactory      postgreSQLClientFactory
-	mb                 *metadata.MetricsBuilder
-	lb                 *metadata.LogsBuilder
-	excludes           map[string]struct{}
+	logger        *zap.Logger
+	config        *Config
+	clientFactory postgreSQLClientFactory
+	mb            *metadata.MetricsBuilder
+	lb            *metadata.LogsBuilder
+	// selection is the immutable include/exclude policy every collection path
+	// consults, so metrics, schema and query telemetry cannot disagree about
+	// which databases are in scope.
+	selection          databaseSelection
 	cache              *lru.Cache[string, float64]
 	queryTextCache     *lru.Cache[queryStatsKey, string]
 	queryTextCacheOnce sync.Once
@@ -123,10 +126,6 @@ func newPostgreSQLScraper(
 	cache *lru.Cache[string, float64],
 	queryPlanCache *expirable.LRU[string, string],
 ) *postgreSQLScraper {
-	excludes := make(map[string]struct{})
-	for _, db := range config.ExcludeDatabases {
-		excludes[db] = struct{}{}
-	}
 	separateSchemaAttr := separateSchemaAttrGate.IsEnabled()
 
 	if !separateSchemaAttr {
@@ -141,7 +140,7 @@ func newPostgreSQLScraper(
 		clientFactory:      clientFactory,
 		mb:                 metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
-		excludes:           excludes,
+		selection:          newDatabaseSelection(config.Databases, config.ExcludeDatabases),
 		cache:              cache,
 		queryTextCache:     newQueryTextCache(defaultQueryTextCacheSize),
 		resetDetector:      newResetDetector(),
@@ -165,7 +164,6 @@ type dbRetrieval struct {
 func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metrics, retErr error) {
 	defer recoverScrape(p.logger, "metrics", &retErr)
 
-	databases := p.config.Databases
 	listClient, err := p.clientFactory.getClient(defaultPostgreSQLDatabase)
 	if err != nil {
 		p.logger.Error("Failed to initialize connection to postgres", zap.Error(err))
@@ -173,21 +171,20 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	}
 	defer listClient.Close()
 
-	if len(databases) == 0 {
+	// Discovery runs only when there is no allowlist. An allowlist is
+	// authoritative: a named database that is not currently connectable is a
+	// failure to report, not a reason to widen scope, and a discovery failure
+	// must never be resolved by collecting from everything.
+	var discovered []string
+	if !p.selection.isRestricted() {
 		dbList, dbErr := listClient.listDatabases(ctx)
 		if dbErr != nil {
 			p.logger.Error("Failed to request list of databases from postgres", zap.Error(dbErr))
 			return pmetric.NewMetrics(), dbErr
 		}
-		databases = dbList
+		discovered = dbList
 	}
-	var filteredDatabases []string
-	for _, db := range databases {
-		if _, ok := p.excludes[db]; !ok {
-			filteredDatabases = append(filteredDatabases, db)
-		}
-	}
-	databases = filteredDatabases
+	databases := p.selection.effectiveDatabases(discovered)
 
 	now := pcommon.NewTimestampFromTime(time.Now())
 
@@ -197,7 +194,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 		dbSizeMap:   make(map[databaseName]int64),
 		dbStats:     make(map[databaseName]databaseStats),
 	}
-	p.retrieveDBMetrics(ctx, listClient, databases, r, &errs)
+	p.retrieveDBMetrics(ctx, listClient, p.selection, r, &errs)
 
 	for _, database := range databases {
 		p.collectDatabaseMetrics(ctx, now, database, r, &errs)
@@ -209,8 +206,18 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	p.collectReplicationStats(ctx, now, listClient, &errs)
 	p.collectMaxConnections(ctx, now, listClient, &errs)
 	p.collectActiveConnections(ctx, now, listClient, &errs)
-	p.collectDatabaseLocks(ctx, now, listClient, &errs)
-	p.collectRowStats(ctx, now, listClient, &errs)
+	// These two read database-local catalogs (pg_locks joined to pg_class, and
+	// pg_stat_all_tables) but run only on the maintenance connection, so their
+	// values describe `postgres` alone while their resource identity does not
+	// say so. Moving them into the per-database loop would change that identity
+	// and collide with existing series, which the plan defers to a separately
+	// reviewed change. Until then the honest behaviour is to stop collecting
+	// them when `postgres` itself is out of scope, rather than reporting one
+	// database's locks as though they were the server's.
+	if p.selection.includes(defaultPostgreSQLDatabase) {
+		p.collectDatabaseLocks(ctx, now, listClient, &errs)
+		p.collectRowStats(ctx, now, listClient, &errs)
+	}
 	p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	p.collectBufferHits(ctx, now, listClient, &errs)
 	p.collectWALStats(ctx, now, listClient, &errs)
@@ -305,7 +312,7 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient client, limit int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 
-	attributes, newestQueryTimestamp, err := dbClient.getQuerySamples(ctx, limit, p.newestQueryTimestamp, logger)
+	attributes, newestQueryTimestamp, err := dbClient.getQuerySamples(ctx, limit, p.newestQueryTimestamp, p.selection, logger)
 	p.newestQueryTimestamp = newestQueryTimestamp
 	if err != nil {
 		mux.addPartial(err)
@@ -414,20 +421,31 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		return
 	}
 
-	candidateDatabases := make([]string, 0, len(p.config.Databases)+1)
-	seen := make(map[string]struct{}, len(p.config.Databases)+1)
-	for _, db := range p.config.Databases {
-		if _, excluded := p.excludes[db]; excluded {
-			continue
-		}
+	// Candidates for the *extension* connection, not for data scope.
+	//
+	// pg_stat_statements reports statistics for the whole server regardless of
+	// which database the extension is installed in, so this list only decides
+	// where to connect to read the view. The rows it returns are filtered to the
+	// configured selection separately, below.
+	//
+	// `postgres` is appended even when it is outside the selection: it is a
+	// control connection used to reach server-wide statistics, not permission
+	// to collect that database's telemetry. This exception is documented in
+	// Configuration.md.
+	// `postgres` is tried first because it is where pg_stat_statements is
+	// installed on the large majority of servers, and every candidate that does
+	// not have the extension costs a failed connection and a logged error
+	// before the next one is tried.
+	allowed := p.selection.effectiveDatabases(nil)
+	candidateDatabases := make([]string, 0, len(allowed)+1)
+	seen := map[string]struct{}{defaultPostgreSQLDatabase: {}}
+	candidateDatabases = append(candidateDatabases, defaultPostgreSQLDatabase)
+	for _, db := range allowed {
 		if _, ok := seen[db]; ok {
 			continue
 		}
 		seen[db] = struct{}{}
 		candidateDatabases = append(candidateDatabases, db)
-	}
-	if _, ok := seen[defaultPostgreSQLDatabase]; !ok {
-		candidateDatabases = append(candidateDatabases, defaultPostgreSQLDatabase)
 	}
 
 	var rows []map[string]any
@@ -442,7 +460,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			continue
 		}
 
-		rows, err = dbClient.getTopQuery(ctx, limit, logger)
+		rows, err = dbClient.getTopQuery(ctx, limit, p.selection, logger)
 		if err == nil {
 			// Ask the same connection that just read the counters whether they
 			// were discarded since last scrape. pg_stat_statements_reset()
@@ -624,7 +642,14 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		}
 
 		plan, ok := p.queryPlanCache.Get(queryID + "-plan")
-		if !ok && explained < maxExplainEachInterval && database != unknownDatabaseName {
+		// Check membership again before opening a connection. The SQL predicate
+		// already restricts the rows, but EXPLAIN is the one place the receiver
+		// connects to a database named by the data rather than by
+		// configuration, so it gets an independent check: a row that reached
+		// here out of scope must not cause a connection to an unselected
+		// database.
+		if !ok && explained < maxExplainEachInterval && database != unknownDatabaseName &&
+			p.selection.includes(database) {
 			dbClient, err := clientFactory.getClient(database)
 			if err != nil {
 				logger.Warn("skipping explain: failed to get db client",
@@ -707,16 +732,16 @@ func (p *postgreSQLScraper) shutdown(_ context.Context) error {
 func (p *postgreSQLScraper) retrieveDBMetrics(
 	ctx context.Context,
 	listClient client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	wg := &sync.WaitGroup{}
 
 	wg.Add(3)
-	go p.retrieveBackends(ctx, wg, listClient, databases, r, errs)
-	go p.retrieveDatabaseSize(ctx, wg, listClient, databases, r, errs)
-	go p.retrieveDatabaseStats(ctx, wg, listClient, databases, r, errs)
+	go p.retrieveBackends(ctx, wg, listClient, sel, r, errs)
+	go p.retrieveDatabaseSize(ctx, wg, listClient, sel, r, errs)
+	go p.retrieveDatabaseStats(ctx, wg, listClient, sel, r, errs)
 
 	wg.Wait()
 }
@@ -953,7 +978,9 @@ func (p *postgreSQLScraper) collectActiveConnections(
 	client client,
 	errs *errsMux,
 ) {
-	stats, err := client.getConnectionStats(ctx, nil)
+	// Server-wide: active connections are a property of the instance, not of
+	// any one database, so this deliberately passes an unrestricted selection.
+	stats, err := client.getConnectionStats(ctx, databaseSelection{})
 	if err != nil {
 		errs.addPartial(err)
 		return
@@ -1129,7 +1156,7 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 		}
 	})
 
-	queryStats, err := client.getQueryStats(ctx)
+	queryStats, err := client.getQueryStats(ctx, p.selection)
 	if err != nil {
 		errs.addPartial(err)
 		return
@@ -1185,7 +1212,7 @@ func (p *postgreSQLScraper) collectBufferHits(
 	client client,
 	errs *errsMux,
 ) {
-	bhs, err := client.getBufferHit(ctx)
+	bhs, err := client.getBufferHit(ctx, p.selection)
 	if err != nil {
 		errs.addPartial(err)
 		return
@@ -1200,12 +1227,12 @@ func (p *postgreSQLScraper) retrieveDatabaseStats(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	client client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	defer wg.Done()
-	dbStats, err := client.getDatabaseStats(ctx, databases)
+	dbStats, err := client.getDatabaseStats(ctx, sel)
 	if err != nil {
 		p.logger.Error("Errors encountered while fetching commits and rollbacks", zap.Error(err))
 		errs.addPartial(err)
@@ -1220,12 +1247,12 @@ func (p *postgreSQLScraper) retrieveDatabaseSize(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	client client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	defer wg.Done()
-	databaseSizeMetrics, err := client.getDatabaseSize(ctx, databases)
+	databaseSizeMetrics, err := client.getDatabaseSize(ctx, sel)
 	if err != nil {
 		p.logger.Error("Errors encountered while fetching database size", zap.Error(err))
 		errs.addPartial(err)
@@ -1240,12 +1267,12 @@ func (*postgreSQLScraper) retrieveBackends(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	client client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	defer wg.Done()
-	activityByDB, err := client.getBackends(ctx, databases)
+	activityByDB, err := client.getBackends(ctx, sel)
 	if err != nil {
 		errs.addPartial(err)
 		return
