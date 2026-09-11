@@ -1800,6 +1800,13 @@ func functionKey(database, schema, function string) functionIdentifer {
 //go:embed templates/querySampleTemplate.tmpl
 var querySampleTemplate string
 
+// Parsed once at startup rather than on every scrape. The template text is a
+// compile-time constant, so re-parsing it per scrape rebuilt the same parse
+// tree every ten seconds. The per-scrape conditionals remain template
+// variables, so the rendered SQL is unaffected.
+var querySampleTemplateParsed = template.Must(
+	template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
+
 func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, logger *zap.Logger) ([]map[string]any, float64, error) {
 	version, err := c.getVersion(ctx)
 	if err != nil {
@@ -1810,10 +1817,9 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		return nil, newestQueryTimestamp, fmt.Errorf("failed to parse PostgreSQL version: %w", err)
 	}
 
-	tmpl := template.Must(template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
 	buf := bytes.Buffer{}
 
-	if err := tmpl.Execute(&buf, map[string]any{
+	if err := querySampleTemplateParsed.Execute(&buf, map[string]any{
 		"limit":                limit,
 		"newestQueryTimestamp": newestQueryTimestamp,
 		"hasQueryID":           major >= 14,
@@ -2040,6 +2046,37 @@ func parseBlockingPids(value string, logger *zap.Logger) []any {
 //go:embed templates/topQueryTemplate.tmpl
 var topQueryTemplate string
 
+// Parsed once at startup; see querySampleTemplateParsed.
+var topQueryTemplateParsed = template.Must(
+	template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
+
+// topQuerySemconvColumns maps the top-query columns that carry a semantic
+// convention attribute name rather than the receiver's own prefix.
+//
+// Package level because it is constant: building it per row allocated one map
+// for every row of every scrape.
+var topQuerySemconvColumns = map[string]string{
+	"datname": string(semconv.DBNamespaceKey),
+	"query":   string(semconv.DBQueryTextKey),
+}
+
+// topQueryColumnConverters maps each numeric top-query column to the conversion
+// applied to its string value. Package level for the same reason.
+var topQueryColumnConverters = map[string]func(string, string, *zap.Logger) (any, error){
+	callsColumnName:             convertToInt,
+	rowsColumnName:              convertToInt,
+	sharedBlksDirtiedColumnName: convertToInt,
+	sharedBlksHitColumnName:     convertToInt,
+	sharedBlksReadColumnName:    convertToInt,
+	sharedBlksWrittenColumnName: convertToInt,
+	tempBlksReadColumnName:      convertToInt,
+	tempBlksWrittenColumnName:   convertToInt,
+	totalExecTimeColumnName:     convertMillisecondToSecond,
+	totalPlanTimeColumnName:     convertMillisecondToSecond,
+	blkReadTimeAttributeName:    convertMillisecondToSecond,
+	blkWriteTimeAttributeName:   convertMillisecondToSecond,
+}
+
 // getTopQuery implements client.
 func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger *zap.Logger) ([]map[string]any, error) {
 	// The column names here follow the extension version, not the server
@@ -2052,7 +2089,6 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 		return nil, err
 	}
 
-	tmpl := template.Must(template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
 	buf := bytes.Buffer{}
 
 	orderByExecTimeCol := "total_time"
@@ -2060,7 +2096,7 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 		orderByExecTimeCol = "total_exec_time"
 	}
 
-	if err := tmpl.Execute(&buf, map[string]any{
+	if err := topQueryTemplateParsed.Execute(&buf, map[string]any{
 		"limit":               limit,
 		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
 		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
@@ -2087,25 +2123,6 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 	finalAttributes := make([]map[string]any, 0)
 
 	for _, row := range rows {
-		hasConvention := map[string]string{
-			"datname": string(semconv.DBNamespaceKey),
-			"query":   string(semconv.DBQueryTextKey),
-		}
-
-		needConversion := map[string]func(string, string, *zap.Logger) (any, error){
-			callsColumnName:             convertToInt,
-			rowsColumnName:              convertToInt,
-			sharedBlksDirtiedColumnName: convertToInt,
-			sharedBlksHitColumnName:     convertToInt,
-			sharedBlksReadColumnName:    convertToInt,
-			sharedBlksWrittenColumnName: convertToInt,
-			tempBlksReadColumnName:      convertToInt,
-			tempBlksWrittenColumnName:   convertToInt,
-			totalExecTimeColumnName:     convertMillisecondToSecond,
-			totalPlanTimeColumnName:     convertMillisecondToSecond,
-			blkReadTimeAttributeName:    convertMillisecondToSecond,
-			blkWriteTimeAttributeName:   convertMillisecondToSecond,
-		}
 		currentAttributes := make(map[string]any)
 
 		// Store raw query before obfuscation (needed for EXPLAIN with $N placeholders)
@@ -2135,7 +2152,7 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 		for col := range row {
 			var val any
 			var err error
-			converter, ok := needConversion[col]
+			converter, ok := topQueryColumnConverters[col]
 			switch {
 			case ok:
 				val, err = converter(col, row[col], logger)
@@ -2152,8 +2169,8 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger 
 			default:
 				val = row[col]
 			}
-			if hasConvention[col] != "" {
-				currentAttributes[hasConvention[col]] = val
+			if topQuerySemconvColumns[col] != "" {
+				currentAttributes[topQuerySemconvColumns[col]] = val
 			} else {
 				currentAttributes[dbAttributePrefix+col] = val
 			}

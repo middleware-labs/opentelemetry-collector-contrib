@@ -1155,6 +1155,16 @@ tests:
         - "github.com/cihub/seelog.(*asyncLoopLogger).processQueue" # see https://github.com/cihub/seelog/issues/182
         - "github.com/godbus/dbus.(*Conn).inWorker"
         - github.com/hashicorp/golang-lru/v2/expirable.NewLRU[...].func1
+        # The SQL obfuscator is a process-wide singleton with a bounded query
+        # cache (see obfuscate.go). Its ristretto cache runs three background
+        # goroutines for eviction and stats which live for the life of the
+        # process by design: there is no shutdown path for a singleton that
+        # every scrape uses, and the cache is bounded by bytes rather than
+        # growing. These are not per-test leaks - one set exists no matter how
+        # many receivers or tests run.
+        - "github.com/DataDog/datadog-agent/pkg/obfuscate.(*measuredCache).statsLoop"
+        - "github.com/outcaste-io/ristretto.(*Cache).processItems"
+        - "github.com/outcaste-io/ristretto.(*lfuPolicy).processItems"
       top:
         # Can be removed once the following issue is resolved:
         # https://github.com/snowflakedb/gosnowflake/issues/1369

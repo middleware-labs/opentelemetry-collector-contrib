@@ -186,6 +186,46 @@ side effect of skipping the emit path for statements that cannot produce a valid
 delta, and would not appear on a server where every candidate is always
 reportable.
 
+## Step 3 result
+
+Measured as a same-session A/B, 8 runs each, baseline and change interleaved in
+one session. That matters: an earlier comparison against the numbers recorded
+above appeared to show a 30–45% wall-time regression, which turned out to be
+machine drift — re-running the *unmodified* baseline at that moment gave 42.9 ms
+where the recorded table says 37.1 ms. Only same-session comparisons are
+meaningful for wall time on this host; the allocation figures are stable enough
+to compare across sessions.
+
+| Benchmark | sec/op | B/op | allocs/op |
+|---|---:|---:|---:|
+| GetTopQueryRepresentative/rows=50 | -43.2% | ~ | -11.6% |
+| GetTopQueryRepresentative/rows=1000 | -45.8% | -17.6% | -9.8% |
+| GetTopQueryLongSQL/rows=50 | ~ | **-68.5%** | -10.7% |
+| GetTopQueryLongSQL/rows=1000 | ~ | -9.4% | +5.1% |
+| GetTopQueryRepeatedSQL | -21.9% | -18.6% | -10.4% |
+| GetTopQueryWithTraceComments | ~ | -4.0% | +5.8% |
+| GetTopQueryNullHeavy | -32.0% | -27.2% | -9.4% |
+| **geomean** | **-21.9%** | **-26.3%** | **-6.1%** |
+
+`~` means no statistically significant difference. All other entries are
+significant at p ≤ 0.01.
+
+Allocation *count* rises ~5% in the two shapes where bytes and time both fall.
+An `alloc_objects` profile attributes that to the obfuscator cache's own
+bookkeeping — `ristretto.(*keyCosts).fillSample` and `setInternal` together are
+about 16% of objects in the long-SQL shape. Fewer, larger allocations in place
+of many small ones; the byte and time figures are what matter.
+
+### Item 4 was not implemented
+
+The plan's fourth item — pre-size the log-record slice through the generator —
+is not achievable as specified. mdatagen's `logs.go.tmpl` has no capacity
+support at all: `EnsureCapacity` appears only in `metrics.go.tmpl`, and the
+generated event constructor calls `plog.NewLogRecordSlice()` with no hint. The
+plan forbids hand-editing generated code, and rightly so, so this needs an
+upstream mdatagen change before it can be done here. Recorded rather than
+silently skipped.
+
 ## What is not covered here
 
 Still outstanding from Step 1:
