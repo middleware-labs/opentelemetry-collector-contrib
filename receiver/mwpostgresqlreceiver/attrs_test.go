@@ -78,7 +78,7 @@ func (f fakeTopQueryClientFactory) getClient(string) (client, error) {
 
 func (fakeTopQueryClientFactory) close() error { return nil }
 
-func newTestTopQueryScraper(t *testing.T) *postgreSQLScraper {
+func newTestTopQueryScraper(t testing.TB) *postgreSQLScraper {
 	t.Helper()
 
 	cfg := createDefaultConfig().(*Config)
@@ -90,7 +90,7 @@ func newTestTopQueryScraper(t *testing.T) *postgreSQLScraper {
 	return newTestTopQueryScraperWithConfig(t, cfg, newCache(int(topQueryCounterCount)*8))
 }
 
-func newTestTopQueryScraperWithConfig(t *testing.T, cfg *Config, cache *lru.Cache[string, float64]) *postgreSQLScraper {
+func newTestTopQueryScraperWithConfig(t testing.TB, cfg *Config, cache *lru.Cache[string, float64]) *postgreSQLScraper {
 	t.Helper()
 
 	settings := receivertest.NewNopSettings(metadata.Type)
