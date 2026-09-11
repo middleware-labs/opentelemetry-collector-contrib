@@ -58,7 +58,11 @@ type postgreSQLScraper struct {
 	// selection is the immutable include/exclude policy every collection path
 	// consults, so metrics, schema and query telemetry cannot disagree about
 	// which databases are in scope.
-	selection          databaseSelection
+	selection databaseSelection
+	// plan records which query families any enabled metric still needs. It is
+	// derived from config.Metrics once at construction so the per-scrape path
+	// only reads booleans.
+	plan               collectionPlan
 	cache              *lru.Cache[string, float64]
 	queryTextCache     *lru.Cache[queryStatsKey, string]
 	queryTextCacheOnce sync.Once
@@ -141,6 +145,7 @@ func newPostgreSQLScraper(
 		mb:                 metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
 		selection:          newDatabaseSelection(config.Databases, config.ExcludeDatabases),
+		plan:               newCollectionPlan(config.Metrics),
 		cache:              cache,
 		queryTextCache:     newQueryTextCache(defaultQueryTextCacheSize),
 		resetDetector:      newResetDetector(),
@@ -201,11 +206,21 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	}
 
 	p.mb.RecordPostgresqlDatabaseCountDataPoint(now, int64(len(databases)))
-	p.collectBGWriterStats(ctx, now, listClient, &errs)
-	p.collectWalAge(ctx, now, listClient, &errs)
-	p.collectReplicationStats(ctx, now, listClient, &errs)
-	p.collectMaxConnections(ctx, now, listClient, &errs)
-	p.collectActiveConnections(ctx, now, listClient, &errs)
+	if p.plan.bgWriter {
+		p.collectBGWriterStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.walAge {
+		p.collectWalAge(ctx, now, listClient, &errs)
+	}
+	if p.plan.replication {
+		p.collectReplicationStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.maxConnections {
+		p.collectMaxConnections(ctx, now, listClient, &errs)
+	}
+	if p.plan.activeConnections {
+		p.collectActiveConnections(ctx, now, listClient, &errs)
+	}
 	// These two read database-local catalogs (pg_locks joined to pg_class, and
 	// pg_stat_all_tables) but run only on the maintenance connection, so their
 	// values describe `postgres` alone while their resource identity does not
@@ -215,13 +230,25 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	// them when `postgres` itself is out of scope, rather than reporting one
 	// database's locks as though they were the server's.
 	if p.selection.includes(defaultPostgreSQLDatabase) {
-		p.collectDatabaseLocks(ctx, now, listClient, &errs)
-		p.collectRowStats(ctx, now, listClient, &errs)
+		if p.plan.databaseLocks {
+			p.collectDatabaseLocks(ctx, now, listClient, &errs)
+		}
+		if p.plan.rowStats {
+			p.collectRowStats(ctx, now, listClient, &errs)
+		}
 	}
-	p.collectQueryPerfStats(ctx, now, listClient, &errs)
-	p.collectBufferHits(ctx, now, listClient, &errs)
-	p.collectWALStats(ctx, now, listClient, &errs)
-	p.collectTransactionsStats(ctx, now, listClient, &errs)
+	if p.plan.queryPerf {
+		p.collectQueryPerfStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.bufferHit {
+		p.collectBufferHits(ctx, now, listClient, &errs)
+	}
+	if p.plan.walStats {
+		p.collectWALStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.transactions {
+		p.collectTransactionsStats(ctx, now, listClient, &errs)
+	}
 
 	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
@@ -243,6 +270,15 @@ func (p *postgreSQLScraper) collectDatabaseMetrics(
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
+	// With every per-database collector disabled there is nothing this
+	// connection would be used for, so do not open it. The database still gets
+	// its resource and whatever data points the maintenance-connection queries
+	// produced for it.
+	if !p.plan.needsDatabaseClient() {
+		p.recordDatabase(now, database, r, 0)
+		return
+	}
+
 	dbClient, dbErr := p.clientFactory.getClient(database)
 	if dbErr != nil {
 		errs.add(dbErr)
@@ -251,13 +287,24 @@ func (p *postgreSQLScraper) collectDatabaseMetrics(
 	}
 	defer dbClient.Close()
 
-	numTables := p.collectTables(ctx, now, dbClient, database, errs)
+	var numTables int64
+	if p.plan.tables {
+		numTables = p.collectTables(ctx, now, dbClient, database, errs)
+	}
 
 	p.recordDatabase(now, database, r, numTables)
-	p.collectIndexes(ctx, now, dbClient, database, errs)
-	p.collectFunctions(ctx, now, dbClient, database, errs)
-	p.collectTableBloat(ctx, now, dbClient, database, errs)
-	p.collectIndexBloat(ctx, now, dbClient, database, errs)
+	if p.plan.indexes {
+		p.collectIndexes(ctx, now, dbClient, database, errs)
+	}
+	if p.plan.functions {
+		p.collectFunctions(ctx, now, dbClient, database, errs)
+	}
+	if p.plan.tableBloat {
+		p.collectTableBloat(ctx, now, dbClient, database, errs)
+	}
+	if p.plan.indexBloat {
+		p.collectIndexBloat(ctx, now, dbClient, database, errs)
+	}
 }
 
 // recoverScrape converts a panic on a scrape goroutine into an error. The
@@ -738,10 +785,21 @@ func (p *postgreSQLScraper) retrieveDBMetrics(
 ) {
 	wg := &sync.WaitGroup{}
 
-	wg.Add(3)
-	go p.retrieveBackends(ctx, wg, listClient, sel, r, errs)
-	go p.retrieveDatabaseSize(ctx, wg, listClient, sel, r, errs)
-	go p.retrieveDatabaseStats(ctx, wg, listClient, sel, r, errs)
+	// Each of these three is one query on the maintenance connection feeding one
+	// group of per-database data points; a group with nothing enabled leaves its
+	// map empty and recordDatabase simply finds no entry for it.
+	if p.plan.backends {
+		wg.Add(1)
+		go p.retrieveBackends(ctx, wg, listClient, sel, r, errs)
+	}
+	if p.plan.databaseSize {
+		wg.Add(1)
+		go p.retrieveDatabaseSize(ctx, wg, listClient, sel, r, errs)
+	}
+	if p.plan.databaseStats {
+		wg.Add(1)
+		go p.retrieveDatabaseStats(ctx, wg, listClient, sel, r, errs)
+	}
 
 	wg.Wait()
 }
@@ -776,14 +834,24 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 }
 
 func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Timestamp, dbClient client, db string, errs *errsMux) (numTables int64) {
-	blockReads, err := dbClient.getBlocksReadByTable(ctx, db)
-	if err != nil {
-		errs.addPartial(err)
+	var blockReads map[tableIdentifier]tableIOStats
+	if p.plan.blocksReadByTable {
+		var brErr error
+		blockReads, brErr = dbClient.getBlocksReadByTable(ctx, db)
+		if brErr != nil {
+			errs.addPartial(brErr)
+		}
 	}
 
 	tableMetrics, err := dbClient.getDatabaseTableMetrics(ctx, db)
 	if err != nil {
 		errs.addPartial(err)
+	}
+
+	// postgresql.table.count needs only the row count. When no per-table metric
+	// is enabled, skip the conversion and the resource per table entirely.
+	if !p.plan.tableDetails && !p.plan.blocksReadByTable {
+		return int64(len(tableMetrics))
 	}
 
 	for tableKey := range tableMetrics {
