@@ -224,7 +224,13 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 		TelemetrySettings: component.TelemetrySettings{
 			Logger: zap.Must(zap.NewProduction()),
 		},
-	}, &cfg, clientFactory, newCache(1), newTTLCache[string](1000, time.Second))
+	}, &cfg, clientFactory,
+		// Sized the way the factory sizes it: from the candidate count, since
+		// every candidate is traversed each scrape and each occupies one entry
+		// per counter. A cache smaller than that evicts a statement's baseline
+		// before the next scrape can difference against it.
+		newCache(int(30*topQueryCounterCount*2)),
+		newTTLCache[string](1000, time.Second))
 	plogs, err := ns.scrapeQuerySamples(t.Context(), 30)
 	assert.NoError(t, err)
 	logRecords := plogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
@@ -246,35 +252,21 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 	assert.True(t, found, "Expected to find a log record with the query text")
 	assert.True(t, ns.newestQueryTimestamp > 0)
 
+	// pg_stat_statements counters are cumulative, so the first scrape of a
+	// statement only records a baseline. Reporting anything here would attribute
+	// the statement's entire lifetime on this server to one interval.
 	firstTimeTopQueryPLogs, err := ns.scrapeTopQuery(t.Context(), 30, 30, 30)
 	assert.NoError(t, err)
-	logRecords = firstTimeTopQueryPLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
-	found = false
-	for _, record := range logRecords.All() {
-		attributes := record.Attributes().AsRaw()
-		queryAttribute, ok := attributes["db.query.text"]
-		query := strings.ToLower(queryAttribute.(string))
-		assert.True(t, ok)
-		if !strings.HasPrefix(query, "select * from test2 where") {
-			continue
-		}
-		assert.Equal(t, "select * from test2 where id = ?", query)
-		databaseAttribute, ok := attributes["db.namespace"]
-		assert.True(t, ok)
-		assert.Equal(t, "otel2", databaseAttribute.(string))
-		calls, ok := attributes["postgresql.calls"]
-		assert.True(t, ok)
-		assert.Equal(t, int64(1), calls.(int64))
-		assert.NotEmpty(t, attributes["postgresql.query_plan"])
-		found = true
-	}
-	assert.True(t, found, "Expected to find a log record with the query text from the first time top query")
+	assert.Zero(t, firstTimeTopQueryPLogs.LogRecordCount(),
+		"the first scrape establishes baselines and must emit nothing")
 
 	_, err = db.Exec("Select * from test2 where id = 67")
 	assert.NoError(t, err)
 
 	secondTimeTopQueryPLogs, err := ns.scrapeTopQuery(t.Context(), 30, 30, 30)
 	assert.NoError(t, err)
+	assert.Greater(t, secondTimeTopQueryPLogs.ResourceLogs().Len(), 0,
+		"the second scrape has baselines to difference against and must emit top queries")
 	logRecords = secondTimeTopQueryPLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
 	found = false
 	for _, record := range logRecords.All() {
@@ -291,8 +283,11 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 		assert.Equal(t, "otel2", databaseAttribute.(string))
 		calls, ok := attributes["postgresql.calls"]
 		assert.True(t, ok)
-		assert.Equal(t, int64(2), calls.(int64))
+		// One execution happened between the two scrapes, so the reported
+		// value is that single call, not the cumulative two.
+		assert.Equal(t, int64(1), calls.(int64))
+		assert.NotEmpty(t, attributes["postgresql.query_plan"])
 		found = true
 	}
-	assert.True(t, found, "Expected to find a log record with the query text from the first time top query")
+	assert.True(t, found, "Expected to find a log record with the query text from the second top query scrape")
 }

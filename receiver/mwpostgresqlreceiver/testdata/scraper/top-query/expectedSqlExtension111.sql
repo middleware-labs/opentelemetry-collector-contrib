@@ -1,4 +1,4 @@
-SELECT
+/* otel-collector-ignore */ SELECT
   calls,
   datname,
   shared_blks_dirtied,
@@ -11,26 +11,16 @@ SELECT
   queryid::TEXT,
   rolname,
   rows::TEXT,
-{{- if .hasExecTimeColumns }}
   total_exec_time,
   total_plan_time,
-{{- else }}
-  total_time AS total_exec_time,
-  0::float8 AS total_plan_time,
-{{- end }}
-{{- if .hasSharedBlkTimings }}
   shared_blk_read_time AS blk_read_time,
   shared_blk_write_time AS blk_write_time
-{{- else }}
-  blk_read_time,
-  blk_write_time
-{{- end }}
 FROM
-  {{ .statementsView }} as pg_stat_statements
+  public.pg_stat_statements as pg_stat_statements
   LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid
   LEFT JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid
 WHERE
   query != '<insufficient privilege>'
   AND query NOT LIKE '/* otel-collector-ignore */%'
-ORDER BY {{ .orderByExecTimeCol }} DESC
-LIMIT {{ .limit }};
+ORDER BY total_exec_time DESC
+LIMIT 31;

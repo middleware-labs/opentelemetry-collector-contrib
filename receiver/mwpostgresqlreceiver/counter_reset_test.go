@@ -244,8 +244,7 @@ func TestTopQueryPurgesCacheOnReset(t *testing.T) {
 	}
 	scraper.instanceTracker.seen = true
 
-	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").
-		WillReturnRows(sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"))
+	expectPgStatStatementsVersion(mock, "1.9")
 	mock.ExpectQuery(expectedScrapeTopQuery).
 		WillReturnRows(sqlmock.NewRows(cols).FromCSVString(vals[:len(vals)-1]))
 	// The instance check runs first and must report no change here, so that

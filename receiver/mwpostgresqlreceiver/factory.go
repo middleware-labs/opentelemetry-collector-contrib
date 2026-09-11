@@ -172,8 +172,17 @@ func createLogsReceiver(
 	}
 
 	if cfg.Events.DbServerTopQuery.Enabled {
-		// we have 10 updated only attributes. so we set the cache size accordingly.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(int(cfg.TopNQuery*10*2)), newTTLCache[string](cfg.QueryPlanCacheSize, cfg.QueryPlanCacheTTL))
+		// The cache holds one entry per counter per candidate statement, and
+		// every candidate row is traversed on every scrape - not just the
+		// top_n_query rows that are emitted. Sizing it from the output count
+		// makes a small top_n_query evict the whole candidate set each scrape,
+		// so every row looks like a first observation and never produces a
+		// delta. Size it from the candidate count instead.
+		//
+		// There are 12 counters (see updatedOnly in collectTopQuery); the
+		// factor of 2 is headroom for the candidate set shifting between
+		// scrapes.
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*topQueryCounterCount*2)), newTTLCache[string](cfg.QueryPlanCacheSize, cfg.QueryPlanCacheTTL))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeTopQuery(ctx, cfg.TopQueryCollection.MaxRowsPerQuery, cfg.TopNQuery, cfg.MaxExplainEachInterval)
 		}, scraper.WithShutdown(ns.shutdown))

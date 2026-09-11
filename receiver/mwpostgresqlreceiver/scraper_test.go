@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -553,6 +554,27 @@ func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
 //go:embed testdata/scraper/top-query/expectedSql.sql
 var expectedScrapeTopQuery string
 
+//go:embed testdata/scraper/top-query/expectedSqlExtension111.sql
+var expectedScrapeTopQueryExtension111 string
+
+// expectPgStatStatementsVersion queues the catalog lookup that resolves the
+// installed extension version. The statement paths read this instead of the
+// server version, because pg_upgrade leaves the extension behind and the two
+// can disagree by several releases.
+func expectPgStatStatementsVersion(mock sqlmock.Sqlmock, version string) {
+	mock.ExpectQuery(pgStatStatementsVersionSQL).
+		WillReturnRows(sqlmock.NewRows([]string{"extversion", "quote_ident"}).AddRow(version, "public"))
+}
+
+// expectPgStatStatementsVersionRegexp is the same expectation for mocks using
+// sqlmock's regexp matcher.
+func expectPgStatStatementsVersionRegexp(mock sqlmock.Sqlmock, version string) {
+	mock.ExpectQuery(regexp.QuoteMeta(pgStatStatementsVersionSQL)).
+		WillReturnRows(sqlmock.NewRows([]string{"extversion", "quote_ident"}).AddRow(version, "public"))
+}
+
+const pgStatStatementsVersionSQL = "/* otel-collector-ignore */ SELECT e.extversion, quote_ident(n.nspname)\n\tFROM pg_extension e\n\tJOIN pg_namespace n ON n.oid = e.extnamespace\n\tWHERE e.extname = 'pg_stat_statements'"
+
 //go:embed testdata/scraper/top-query/expectedExplain.sql
 var expectedExplain string
 
@@ -623,10 +645,15 @@ func TestScrapeTopQueries(t *testing.T) {
 	scraper.cache.Add(priorKey+sharedBlksWrittenColumnName, 1110)
 	scraper.cache.Add(priorKey+tempBlksReadColumnName, 1110)
 	scraper.cache.Add(priorKey+tempBlksWrittenColumnName, 1110)
+	// Every counter needs a baseline: one missing counter means this statement
+	// has not been fully observed before, and a statement in that state is
+	// baselined rather than reported.
+	// Seeded at zero: the previous scrape saw this statement having done no
+	// block I/O, so the whole of this scrape's timing is the interval delta.
+	scraper.cache.Add(priorKey+blkReadTimeAttributeName, 0)
+	scraper.cache.Add(priorKey+blkWriteTimeAttributeName, 0)
 
-	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
-		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
-	)
+	expectPgStatStatementsVersion(mock, "1.9")
 	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).FromCSVString(expectedValues[:len(expectedValues)-1]))
 	// Non-parameterized query: explainQuery runs direct EXPLAIN (no version check)
 	mock.ExpectQuery(expectedExplain).WillReturnRows(sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow("[{\"Plan\":{\"Node Type\":\"Merge Join\",\"Parallel Aware\":false,\"Async Capable\":false,\"Join Type\":\"Inner\",\"Startup Cost\":0.43,\"Total Cost\":55.27,\"Plan Rows\":290,\"Plan Width\":1675,\"Inner Unique\":\"?\",\"Merge Cond\":\"( e.businessentityid = p.businessentityid )\",\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Employee_BusinessEntityID\",\"Relation Name\":\"employee\",\"Alias\":\"e\",\"Startup Cost\":0.15,\"Total Cost\":21.5,\"Plan Rows\":290,\"Plan Width\":112},{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Inner\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Person_BusinessEntityID\",\"Relation Name\":\"person\",\"Alias\":\"p\",\"Startup Cost\":0.29,\"Total Cost\":2261.87,\"Plan Rows\":19972,\"Plan Width\":1563}]}}]"))

@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -83,10 +84,19 @@ func newTestTopQueryScraper(t *testing.T) *postgreSQLScraper {
 	cfg := createDefaultConfig().(*Config)
 	cfg.Events.DbServerTopQuery.Enabled = true
 
+	// One statement occupies topQueryCounterCount entries, so a cache smaller
+	// than that evicts part of a statement's own baseline before the next
+	// scrape reads it and every row looks like a first observation forever.
+	return newTestTopQueryScraperWithConfig(t, cfg, newCache(int(topQueryCounterCount)*8))
+}
+
+func newTestTopQueryScraperWithConfig(t *testing.T, cfg *Config, cache *lru.Cache[string, float64]) *postgreSQLScraper {
+	t.Helper()
+
 	settings := receivertest.NewNopSettings(metadata.Type)
 	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
 
-	return newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newCache(10), newTTLCache[string](10, time.Second))
+	return newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, cache, newTTLCache[string](10, time.Second))
 }
 
 type queryTextCacheClient struct {
@@ -146,15 +156,27 @@ func completeTopQueryRow() map[string]any {
 // the whole agent process: pg_stat_statements rows outlive the databases they
 // came from, so datname comes back NULL and db.namespace is absent from the row.
 func TestCollectTopQueryMissingDatabaseDoesNotPanic(t *testing.T) {
-	row := completeTopQueryRow()
-	delete(row, "db.namespace")
+	withoutDatabase := func() map[string]any {
+		row := completeTopQueryRow()
+		delete(row, "db.namespace")
+		return row
+	}
 
 	scraper := newTestTopQueryScraper(t)
-	factory := fakeTopQueryClientFactory{rows: []map[string]any{row}}
+
+	// The first scrape only establishes a baseline; counters are cumulative, so
+	// there is nothing to report until a second observation exists.
+	require.NotPanics(t, func() {
+		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []map[string]any{withoutDatabase()}}, 30, 10, 10, &errsMux{}, zap.NewNop())
+	})
+
+	advanced := withoutDatabase()
+	advanced[dbAttributePrefix+callsColumnName] = int64(4)
+	advanced[dbAttributePrefix+totalExecTimeColumnName] = float64(3.5)
 
 	before := scraper.lb.Emit().LogRecordCount()
 	require.NotPanics(t, func() {
-		scraper.collectTopQuery(t.Context(), factory, 30, 10, 10, &errsMux{}, zap.NewNop())
+		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []map[string]any{advanced}}, 30, 10, 10, &errsMux{}, zap.NewNop())
 	})
 	after := scraper.lb.Emit().LogRecordCount()
 

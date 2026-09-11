@@ -212,6 +212,16 @@ type client interface {
 type postgreSQLClient struct {
 	client  *IgnoredDB
 	closeFn func() error
+
+	// statementExtension resolves the installed pg_stat_statements version and
+	// schema once per connection. The zero value is ready to use.
+	statementExtension extensionCapabilityCache
+}
+
+// statementCapabilities returns what this connection's pg_stat_statements
+// extension supports, reading the catalog on first use.
+func (c *postgreSQLClient) statementCapabilities(ctx context.Context) (pgStatStatementsCapabilities, error) {
+	return c.statementExtension.get(ctx, c.client)
 }
 
 // explainQuery implements client.
@@ -1467,22 +1477,24 @@ func newQueryTextCache(size int) *lru.Cache[queryStatsKey, string] {
 }
 
 func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
-	version, err := c.getVersion(ctx)
+	// Gate on the extension's own version, not the server's. pg_upgrade leaves
+	// the extension at whatever version the old cluster had, so a PG14+ server
+	// can still be on pg_stat_statements 1.8 with no toplevel column at all;
+	// selecting it there fails the whole query-metrics path.
+	caps, err := c.statementCapabilities(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PostgreSQL version: %w", err)
-	}
-	major, err := parseMajorVersion(version)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse PostgreSQL version: %w", err)
+		return nil, err
 	}
 
-	// total_exec_time was renamed from total_time in PG13
+	// total_exec_time replaced total_time in extension 1.8.
 	execTimeCol := "total_exec_time"
-	if major < 13 {
+	if !caps.hasExecTimeColumns() {
 		execTimeCol = "total_time AS total_exec_time"
 	}
 
-	hasTopLevel := major >= 14
+	// toplevel arrived in extension 1.9. Selecting a literal keeps the result
+	// shape, and therefore the scan destinations, constant across versions.
+	hasTopLevel := caps.hasTopLevel()
 	topLevelCol := "false"
 	if hasTopLevel {
 		topLevelCol = "toplevel"
@@ -1496,9 +1508,9 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
       %s AS toplevel,
       calls,
       %s
-	    FROM pg_stat_statements(false)
+	    FROM %s(false)
 	    WHERE queryid IS NOT NULL;
-	`, topLevelCol, execTimeCol)
+	`, topLevelCol, execTimeCol, caps.qualify("pg_stat_statements"))
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
@@ -2030,27 +2042,30 @@ var topQueryTemplate string
 
 // getTopQuery implements client.
 func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger *zap.Logger) ([]map[string]any, error) {
-	version, err := c.getVersion(ctx)
+	// The column names here follow the extension version, not the server
+	// version. Extension 1.11, which CREATE EXTENSION installs on PostgreSQL
+	// 17, renamed blk_read_time/blk_write_time to shared_blk_read_time and
+	// shared_blk_write_time; selecting the old names there fails the entire
+	// top-query path with `column "blk_read_time" does not exist`.
+	caps, err := c.statementCapabilities(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PostgreSQL version: %w", err)
-	}
-	major, err := parseMajorVersion(version)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse PostgreSQL version: %w", err)
+		return nil, err
 	}
 
 	tmpl := template.Must(template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
 	buf := bytes.Buffer{}
 
 	orderByExecTimeCol := "total_time"
-	if major >= 13 {
+	if caps.hasExecTimeColumns() {
 		orderByExecTimeCol = "total_exec_time"
 	}
 
 	if err := tmpl.Execute(&buf, map[string]any{
-		"limit":              limit,
-		"hasPG13Columns":     major >= 13,
-		"orderByExecTimeCol": orderByExecTimeCol,
+		"limit":               limit,
+		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
+		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
+		"statementsView":      caps.qualify("pg_stat_statements"),
+		"orderByExecTimeCol":  orderByExecTimeCol,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
 		return []map[string]any{}, fmt.Errorf("failed executing template: %w", err)

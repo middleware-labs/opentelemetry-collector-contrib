@@ -1,7 +1,7 @@
 /* otel-collector-ignore */ SELECT
   calls,
   datname,
-  shared_blks_dirtied, 
+  shared_blks_dirtied,
   shared_blks_hit,
   shared_blks_read,
   shared_blks_written,
@@ -16,7 +16,7 @@
   blk_read_time,
   blk_write_time
 FROM
-  pg_stat_statements as pg_stat_statements
+  public.pg_stat_statements as pg_stat_statements
   LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid
   LEFT JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid
 WHERE

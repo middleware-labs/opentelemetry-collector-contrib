@@ -373,6 +373,40 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 	p.seenQuerySamples = currentSeen
 }
 
+type updatedOnlyInfo struct {
+	finalConverter func(float64) any
+}
+
+func deltaToInt(f float64) any {
+	return int64(f)
+}
+
+// updatedOnly lists the cumulative pg_stat_statements counters that are
+// reported as per-interval deltas, with the conversion applied to the delta
+// before it is emitted.
+//
+// It is package level both to avoid rebuilding it on every scrape and so the
+// delta cache can be sized from its length rather than from a hand-maintained
+// number that has already drifted once.
+var updatedOnly = map[string]updatedOnlyInfo{
+	totalExecTimeColumnName:     {},
+	totalPlanTimeColumnName:     {},
+	blkReadTimeAttributeName:    {},
+	blkWriteTimeAttributeName:   {},
+	rowsColumnName:              {finalConverter: deltaToInt},
+	callsColumnName:             {finalConverter: deltaToInt},
+	sharedBlksDirtiedColumnName: {finalConverter: deltaToInt},
+	sharedBlksHitColumnName:     {finalConverter: deltaToInt},
+	sharedBlksReadColumnName:    {finalConverter: deltaToInt},
+	sharedBlksWrittenColumnName: {finalConverter: deltaToInt},
+	tempBlksReadColumnName:      {finalConverter: deltaToInt},
+	tempBlksWrittenColumnName:   {finalConverter: deltaToInt},
+}
+
+// topQueryCounterCount is the number of delta-cache entries one statement
+// occupies.
+var topQueryCounterCount = int64(len(updatedOnly))
+
 func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory postgreSQLClientFactory, limit, topNQuery, maxExplainEachInterval int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 
@@ -468,29 +502,6 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		return
 	}
 
-	type updatedOnlyInfo struct {
-		finalConverter func(float64) any
-	}
-
-	convertToInt := func(f float64) any {
-		return int64(f)
-	}
-
-	updatedOnly := map[string]updatedOnlyInfo{
-		totalExecTimeColumnName:     {},
-		totalPlanTimeColumnName:     {},
-		blkReadTimeAttributeName:    {},
-		blkWriteTimeAttributeName:   {},
-		rowsColumnName:              {finalConverter: convertToInt},
-		callsColumnName:             {finalConverter: convertToInt},
-		sharedBlksDirtiedColumnName: {finalConverter: convertToInt},
-		sharedBlksHitColumnName:     {finalConverter: convertToInt},
-		sharedBlksReadColumnName:    {finalConverter: convertToInt},
-		sharedBlksWrittenColumnName: {finalConverter: convertToInt},
-		tempBlksReadColumnName:      {finalConverter: convertToInt},
-		tempBlksWrittenColumnName:   {finalConverter: convertToInt},
-	}
-
 	pq := make(priorityqueue.PriorityQueue[map[string]any, float64], 0)
 
 	for i, row := range rows {
@@ -513,24 +524,66 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		// turns. Key on the same tuple the server does.
 		deltaKey := topQueryDeltaKey(row, queryID)
 
-		for columnName, info := range updatedOnly {
+		// pg_stat_statements counters are cumulative for the life of the
+		// entry, so a row is only reportable once there is a previous
+		// observation to difference it against. Three cases are not:
+		//
+		//   - The first time an entry is seen, whether because the collector
+		//     just started, the cache was purged after a reset or an instance
+		//     change, or the entry was evicted and re-read. Emitting the
+		//     cumulative value here reports the statement's entire lifetime as
+		//     one interval's work.
+		//   - A counter that went backwards, which means the entry was reset
+		//     or deallocated and re-created. The remembered value describes a
+		//     series that no longer exists.
+		//   - An entry whose calls did not advance. Its counters cannot have
+		//     changed, so there is no work to report; an entry deallocated and
+		//     re-inserted with identical counts must not be reported as if it
+		//     had run.
+		//
+		// In all three the new values are stored as the baseline and the row
+		// is skipped, so the next scrape produces a true interval delta.
+		baselineOnly := false
+		for columnName := range updatedOnly {
 			// A NULL column is absent from the row map entirely, so this must
 			// tolerate a missing key rather than assert on it.
 			valInAtts := attrFloat64(row, dbAttributePrefix+columnName)
 			valInCache, exist := p.cache.Get(deltaKey + columnName)
-			valDelta := valInAtts
-			if exist {
-				valDelta = valInAtts - valInCache
+			if !exist || valInAtts < valInCache {
+				baselineOnly = true
+				break
 			}
-			finalValue := float64(0)
-			if valDelta > 0 {
-				p.cache.Add(deltaKey+columnName, valInAtts)
-				finalValue = valDelta
+		}
+
+		callsDelta := float64(0)
+		if !baselineOnly {
+			current := attrFloat64(row, dbAttributePrefix+callsColumnName)
+			if previous, exist := p.cache.Get(deltaKey + callsColumnName); exist {
+				callsDelta = current - previous
 			}
+			if callsDelta <= 0 {
+				baselineOnly = true
+			}
+		}
+
+		if baselineOnly {
+			// Store every counter so the next scrape has a complete baseline,
+			// and emit nothing for this entry.
+			for columnName := range updatedOnly {
+				p.cache.Add(deltaKey+columnName, attrFloat64(row, dbAttributePrefix+columnName))
+			}
+			continue
+		}
+
+		for columnName, info := range updatedOnly {
+			valInAtts := attrFloat64(row, dbAttributePrefix+columnName)
+			valInCache, _ := p.cache.Get(deltaKey + columnName)
+			valDelta := valInAtts - valInCache
+			p.cache.Add(deltaKey+columnName, valInAtts)
 			if info.finalConverter != nil {
-				row[dbAttributePrefix+columnName] = info.finalConverter(finalValue)
+				row[dbAttributePrefix+columnName] = info.finalConverter(valDelta)
 			} else {
-				row[dbAttributePrefix+columnName] = finalValue
+				row[dbAttributePrefix+columnName] = valDelta
 			}
 		}
 		if row[dbAttributePrefix+totalExecTimeColumnName] == 0.0 {
