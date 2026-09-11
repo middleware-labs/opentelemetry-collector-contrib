@@ -50,3 +50,11 @@ internal/tools/testresults/*
 go.work*
 
 /result
+
+# Compiled test binaries from `go test -c` / `-memprofile` runs.
+# Scoped to package directories rather than a bare `*.test`, because
+# processor/deltatocumulativeprocessor/testdata/ uses `.test` for checked-in
+# fixtures and a blanket rule would silently refuse new ones.
+/receiver/*/[a-z]*receiver.test
+/processor/*/[a-z]*processor.test
+/exporter/*/[a-z]*exporter.test
