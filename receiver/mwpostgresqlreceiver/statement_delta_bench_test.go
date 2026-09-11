@@ -4,6 +4,7 @@
 package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
 
 import (
+	"database/sql"
 	"strconv"
 	"testing"
 
@@ -41,14 +42,19 @@ func benchCollectTopQuery(b *testing.B, candidates int, topN int64) {
 	scraper := newTestTopQueryScraperWithConfig(b, cfg,
 		newCache(candidates*int(topQueryCounterCount)*2))
 
-	rows := func(scrape int) []map[string]any {
-		out := make([]map[string]any, candidates)
+	rows := func(scrape int) []topQueryStatRow {
+		out := make([]topQueryStatRow, candidates)
 		for i := range candidates {
 			// Counters advance every scrape, so every statement is reportable
 			// and none takes the cheap baseline-only path.
-			out[i] = topQueryRow("q"+strconv.Itoa(i),
+			row := topQueryRow("q"+strconv.Itoa(i),
 				float64(1000+scrape),
 				float64(5000+scrape*10))
+			// Real statement text, so the enrichment this benchmark measures -
+			// obfuscation and the comment scan - does the work it does in
+			// production rather than running over a two-token literal.
+			row.query = sql.NullString{String: representativeQuery, Valid: true}
+			out[i] = row
 		}
 		return out
 	}
@@ -108,7 +114,7 @@ func BenchmarkTopQueryDeltaKey(b *testing.B) {
 
 	b.ReportAllocs()
 	for b.Loop() {
-		key := topQueryDeltaKey(row, "987654321")
+		key := topQueryStatDeltaKey(&row, "987654321")
 		// Reproduce what the delta loop does with the key, since the
 		// concatenation is the part being removed.
 		for columnName := range updatedOnly {

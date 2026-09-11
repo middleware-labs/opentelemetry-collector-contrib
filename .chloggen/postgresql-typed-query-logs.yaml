@@ -1,0 +1,56 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: enhancement
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Decode top-query rows into typed fields and defer enrichment until after candidate selection
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  The top-query path decoded every row through a generic scanner that rendered each column with
+  fmt.Sprintf, stored it in a map[string]string, and then re-parsed the numbers and copied them into
+  a second map keyed by a freshly concatenated attribute name. Rows are now scanned directly into
+  typed fields with explicit nullable columns, and the `::TEXT` casts that existed only to satisfy
+  the generic scanner have been removed from `queryid` and `rows`.
+
+  Three further changes on the same path:
+
+  - Obfuscation, SQL comment extraction and trace-context parsing now run only for rows selected for
+    emission, rather than for every candidate during decoding.
+  - Comment extraction tests for the literal `/*` and `--` markers before running the comment regex.
+    A comment cannot exist without one of them, so the result is unchanged, but the regex previously
+    scanned the full text of every candidate statement on every scrape and cost as much to find
+    nothing as to find something.
+  - The SQL now also projects `dbid`, `userid` and `toplevel`, which pg_stat_statements uses as part
+    of an entry's identity. Nothing consumes them yet; they are selected here so the delta cache can
+    be keyed on the server's own identity without a second change to the query.
+
+  Emitted telemetry is unchanged, which the existing golden-file scrape test verifies.
+
+  Measured on the receiver's benchmarks as a same-session A/B, 10 runs each. Decoding 1000 rows
+  allocates 99.7% fewer objects and 89.7% fewer bytes, and is 91% faster; the long-statement shape
+  improves 99.5% in bytes and 99.9% in time, because statement length no longer drives a regex scan
+  of every candidate. End to end, a scrape allocates 25% fewer objects in a low-N configuration
+  (top_n_query 50 of 1000 candidates) and 15% fewer at the defaults, where top_n_query and
+  max_rows_per_query are both 1000 and every candidate is emitted.
+
+  Remaining allocation on the end-to-end path is dominated by the per-counter delta cache keys,
+  which are unchanged here and are the subject of separate work.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

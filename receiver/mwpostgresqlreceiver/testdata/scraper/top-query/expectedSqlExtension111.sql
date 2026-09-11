@@ -8,13 +8,16 @@
   temp_blks_read,
   temp_blks_written,
   query,
-  queryid::TEXT,
+  queryid,
   rolname,
-  rows::TEXT,
+  rows,
   total_exec_time,
   total_plan_time,
   shared_blk_read_time AS blk_read_time,
-  shared_blk_write_time AS blk_write_time
+  shared_blk_write_time AS blk_write_time,
+  pg_stat_statements.dbid,
+  pg_stat_statements.userid,
+  pg_stat_statements.toplevel
 FROM
   public.pg_stat_statements as pg_stat_statements
   LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid

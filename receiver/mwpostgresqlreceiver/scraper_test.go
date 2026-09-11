@@ -603,41 +603,47 @@ func TestScrapeTopQueries(t *testing.T) {
 	}
 
 	queryid := "114514"
-	expectedReturnedValue := map[string]string{
-		"calls":               "123",
-		"datname":             "postgres",
-		"shared_blks_dirtied": "1111",
-		"shared_blks_hit":     "1112",
-		"shared_blks_read":    "1113",
-		"shared_blks_written": "1114",
-		"temp_blks_read":      "1115",
-		"temp_blks_written":   "1116",
-		"query":               "select * from pg_stat_activity where id = 32",
-		"queryid":             queryid,
-		"rolname":             "master",
-		"rows":                "30",
-		"total_exec_time":     "11000",
-		"total_plan_time":     "12000",
-		"blk_read_time":       "100",
-		"blk_write_time":      "200",
-	}
+	const (
+		topQueryDatname = "postgres"
+		topQueryRolname = "master"
+	)
 
-	expectedRows := make([]string, 0, len(expectedReturnedValue))
-	expectedValues := ""
-	for k, v := range expectedReturnedValue {
-		expectedRows = append(expectedRows, k)
-		expectedValues += fmt.Sprintf("%s,", v)
-	}
+	// Column order matters now: rows are scanned positionally into typed
+	// fields, so the fixture lists the projection in template order rather
+	// than iterating a map, whose order is random.
+	expectedRows := append([]string(nil), benchmarkTopQueryColumns...)
+	expectedValues := strings.Join([]string{
+		"123", // calls
+		topQueryDatname,
+		"1111", // shared_blks_dirtied
+		"1112", // shared_blks_hit
+		"1113", // shared_blks_read
+		"1114", // shared_blks_written
+		"1115", // temp_blks_read
+		"1116", // temp_blks_written
+		"select * from pg_stat_activity where id = 32",
+		queryid,
+		topQueryRolname,
+		"30",    // rows
+		"11000", // total_exec_time, milliseconds
+		"12000", // total_plan_time, milliseconds
+		"100",   // blk_read_time, milliseconds
+		"200",   // blk_write_time, milliseconds
+		"16384", // dbid
+		"10",    // userid
+		"true",  // toplevel
+	}, ",")
 
 	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
 
 	// The delta cache is keyed on the identity pg_stat_statements itself uses -
 	// database, role and queryid - not on queryid alone. Seed the previous
 	// scrape's cumulative values under that key so this scrape emits deltas.
-	priorKey := topQueryDeltaKey(map[string]any{
-		"db.namespace":                        expectedReturnedValue["datname"],
-		dbAttributePrefix + rolnameColumnName: expectedReturnedValue["rolname"],
-	}, queryid)
+	priorRow := topQueryStatRow{
+		datname: sql.NullString{String: topQueryDatname, Valid: true},
+		rolname: sql.NullString{String: topQueryRolname, Valid: true},
+	}
+	priorKey := topQueryStatDeltaKey(&priorRow, queryid)
 	scraper.cache.Add(priorKey+totalExecTimeColumnName, 10)
 	scraper.cache.Add(priorKey+totalPlanTimeColumnName, 11)
 	scraper.cache.Add(priorKey+callsColumnName, 120)
@@ -658,7 +664,7 @@ func TestScrapeTopQueries(t *testing.T) {
 	scraper.cache.Add(priorKey+blkWriteTimeAttributeName, 0)
 
 	expectPgStatStatementsVersion(mock, "1.9")
-	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).FromCSVString(expectedValues[:len(expectedValues)-1]))
+	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).FromCSVString(expectedValues))
 	// Non-parameterized query: explainQuery runs direct EXPLAIN (no version check)
 	mock.ExpectQuery(expectedExplain).WillReturnRows(sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow("[{\"Plan\":{\"Node Type\":\"Merge Join\",\"Parallel Aware\":false,\"Async Capable\":false,\"Join Type\":\"Inner\",\"Startup Cost\":0.43,\"Total Cost\":55.27,\"Plan Rows\":290,\"Plan Width\":1675,\"Inner Unique\":\"?\",\"Merge Cond\":\"( e.businessentityid = p.businessentityid )\",\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Employee_BusinessEntityID\",\"Relation Name\":\"employee\",\"Alias\":\"e\",\"Startup Cost\":0.15,\"Total Cost\":21.5,\"Plan Rows\":290,\"Plan Width\":112},{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Inner\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Person_BusinessEntityID\",\"Relation Name\":\"person\",\"Alias\":\"p\",\"Startup Cost\":0.29,\"Total Cost\":2261.87,\"Plan Rows\":19972,\"Plan Width\":1563}]}}]"))
 	actualLogs, err := scraper.scrapeTopQuery(t.Context(), 31, 32, 33)
@@ -908,7 +914,7 @@ func (*mockClient) explainQuery(string, string, *zap.Logger) (string, error) {
 }
 
 // getTopQuery implements client.
-func (*mockClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]map[string]any, error) {
+func (*mockClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]topQueryStatRow, error) {
 	panic("unimplemented")
 }
 

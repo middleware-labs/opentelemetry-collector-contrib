@@ -44,6 +44,9 @@ var benchmarkTopQueryColumns = []string{
 	totalPlanTimeColumnName,
 	blkReadTimeAttributeName,
 	blkWriteTimeAttributeName,
+	"dbid",
+	"userid",
+	"toplevel",
 }
 
 // representativeQuery is an ordinary application statement: parameter
@@ -79,8 +82,12 @@ func buildLongQuery(unions int) string {
 const queryWithTraceComment = `/*traceparent='00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01',` +
 	`controller='orders',action='index'*/ ` + representativeQuery
 
-// benchmarkTopQueryRow renders one top-query row as the SQL driver delivers it:
-// every value a string, which is what the generic scanner produces.
+// benchmarkTopQueryRow renders one top-query row as the SQL driver delivers it.
+//
+// Values are typed as lib/pq delivers them, not stringified: the template no
+// longer casts queryid and rows to TEXT, and integer and float columns arrive
+// as int64 and float64. Feeding strings here would measure a decode path the
+// server does not produce.
 //
 // Each row's query text is made unique by i. That matters for the obfuscator
 // cache Step 3 enables: a benchmark where every row carried identical text would
@@ -91,22 +98,25 @@ func benchmarkTopQueryRow(i int, query string) []driverValue {
 	// way the obfuscator must actually normalise.
 	text := strings.Replace(query, "$1", "$1 /* shard_"+strconv.Itoa(i)+" */", 1)
 	return []driverValue{
-		strconv.Itoa(100 + i),    // calls
-		"orders_db",              // datname
-		strconv.Itoa(10 + i),     // shared_blks_dirtied
-		strconv.Itoa(2000 + i),   // shared_blks_hit
-		strconv.Itoa(300 + i),    // shared_blks_read
-		strconv.Itoa(40 + i),     // shared_blks_written
-		strconv.Itoa(5 + i),      // temp_blks_read
-		strconv.Itoa(6 + i),      // temp_blks_written
-		text,                     // query
-		strconv.Itoa(900000 + i), // queryid
-		"app_user",               // rolname
-		strconv.Itoa(700 + i),    // rows
-		"1234.5678",              // total_exec_time
-		"234.5678",               // total_plan_time
-		"12.25",                  // blk_read_time
-		"3.5",                    // blk_write_time
+		int64(100 + i),    // calls
+		"orders_db",       // datname
+		int64(10 + i),     // shared_blks_dirtied
+		int64(2000 + i),   // shared_blks_hit
+		int64(300 + i),    // shared_blks_read
+		int64(40 + i),     // shared_blks_written
+		int64(5 + i),      // temp_blks_read
+		int64(6 + i),      // temp_blks_written
+		text,              // query
+		int64(900000 + i), // queryid
+		"app_user",        // rolname
+		int64(700 + i),    // rows
+		1234.5678,         // total_exec_time
+		234.5678,          // total_plan_time
+		12.25,             // blk_read_time
+		3.5,               // blk_write_time
+		int64(16384),      // dbid
+		int64(10),         // userid
+		true,              // toplevel
 	}
 }
 
@@ -114,22 +124,25 @@ func benchmarkTopQueryRow(i int, query string) []driverValue {
 // NULL, which the driver delivers as nil.
 func benchmarkTopQueryRowNullHeavy(i int) []driverValue {
 	return []driverValue{
-		strconv.Itoa(100 + i), // calls
-		nil,                   // datname: the dropped-database case
-		nil,                   // shared_blks_dirtied
-		nil,                   // shared_blks_hit
-		nil,                   // shared_blks_read
-		nil,                   // shared_blks_written
-		nil,                   // temp_blks_read
-		nil,                   // temp_blks_written
-		representativeQuery,   // query
-		strconv.Itoa(900000 + i),
-		nil,         // rolname
-		nil,         // rows
-		"1234.5678", // total_exec_time
-		nil,         // total_plan_time
-		nil,         // blk_read_time
-		nil,         // blk_write_time
+		int64(100 + i),      // calls
+		nil,                 // datname: the dropped-database case
+		nil,                 // shared_blks_dirtied
+		nil,                 // shared_blks_hit
+		nil,                 // shared_blks_read
+		nil,                 // shared_blks_written
+		nil,                 // temp_blks_read
+		nil,                 // temp_blks_written
+		representativeQuery, // query
+		int64(900000 + i),   // queryid
+		nil,                 // rolname
+		nil,                 // rows
+		1234.5678,           // total_exec_time
+		nil,                 // total_plan_time
+		nil,                 // blk_read_time
+		nil,                 // blk_write_time
+		nil,                 // dbid
+		nil,                 // userid
+		nil,                 // toplevel
 	}
 }
 

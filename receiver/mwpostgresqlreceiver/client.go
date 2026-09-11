@@ -102,6 +102,13 @@ func isExplainPermissionError(errStr string) bool {
 }
 
 // sqlCommentPattern matches both block (/* ... */) and line (-- ...) SQL comments.
+//
+// Every alternative begins with a literal two-byte marker, and hasCommentMarker
+// in query_log_rows.go relies on exactly that: it skips this regex entirely for
+// text containing neither "/*" nor "--". Widening this pattern to a form that
+// can match without one of those markers - a dollar-quoted or nested-comment
+// syntax, say - silently breaks that guard. TestCommentPrefilterMatchesRegex
+// asserts the two agree, so update the guard and that test together.
 var sqlCommentPattern = regexp.MustCompile(`/\*.*?\*/|--[^\n]*`)
 var traceparentInCommentPattern = regexp.MustCompile(`(?i)\btraceparent\s*=\s*['"]?([^'" ]+)['"]?`)
 
@@ -194,7 +201,7 @@ type client interface {
 	listDatabases(ctx context.Context) ([]string, error)
 	getVersion(ctx context.Context) (string, error)
 	getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, float64, error)
-	getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, error)
+	getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]topQueryStatRow, error)
 	explainQuery(query, queryID string, logger *zap.Logger) (string, error)
 	getRowStats(ctx context.Context) ([]RowStats, error)
 	getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error)
@@ -1943,7 +1950,9 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		rawQuery := row[querySampleColumnQuery]
 
 		// Extract comments before obfuscation (obfuscation strips them).
-		comments := extractSQLComments(rawQuery)
+		// The marker pre-check keeps the regex off statements that cannot
+		// contain a comment; see hasCommentMarker.
+		comments := extractSQLCommentsFast(rawQuery)
 		if len(comments) > 0 {
 			currentAttributes["db.query.comment"] = strings.Join(comments, "; ")
 			// If no trace context was found in application_name, try SQL comments.
@@ -1987,30 +1996,6 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 	}
 
 	return finalAttributes, newestQueryTimestamp, errors.Join(errs...)
-}
-
-func convertMillisecondToSecond(column, value string, logger *zap.Logger) (any, error) {
-	result := float64(0)
-	var err error
-	if value != "" {
-		result, err = strconv.ParseFloat(value, 64)
-		if err != nil {
-			logger.Error("failed to parse float", zap.String("column", column), zap.String("value", value), zap.Error(err))
-		}
-	}
-	return result / 1000.0, err
-}
-
-func convertToInt(column, value string, logger *zap.Logger) (any, error) {
-	result := 0
-	var err error
-	if value != "" {
-		result, err = strconv.Atoi(value)
-		if err != nil {
-			logger.Error("failed to parse int", zap.String("column", column), zap.String("value", value), zap.Error(err))
-		}
-	}
-	return int64(result), err
 }
 
 // parseBlockingPids converts a Postgres int[] textual representation
@@ -2059,35 +2044,13 @@ var topQueryTemplate string
 var topQueryTemplateParsed = template.Must(
 	template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
 
-// topQuerySemconvColumns maps the top-query columns that carry a semantic
-// convention attribute name rather than the receiver's own prefix.
-//
-// Package level because it is constant: building it per row allocated one map
-// for every row of every scrape.
-var topQuerySemconvColumns = map[string]string{
-	"datname": string(semconv.DBNamespaceKey),
-	"query":   string(semconv.DBQueryTextKey),
-}
-
-// topQueryColumnConverters maps each numeric top-query column to the conversion
-// applied to its string value. Package level for the same reason.
-var topQueryColumnConverters = map[string]func(string, string, *zap.Logger) (any, error){
-	callsColumnName:             convertToInt,
-	rowsColumnName:              convertToInt,
-	sharedBlksDirtiedColumnName: convertToInt,
-	sharedBlksHitColumnName:     convertToInt,
-	sharedBlksReadColumnName:    convertToInt,
-	sharedBlksWrittenColumnName: convertToInt,
-	tempBlksReadColumnName:      convertToInt,
-	tempBlksWrittenColumnName:   convertToInt,
-	totalExecTimeColumnName:     convertMillisecondToSecond,
-	totalPlanTimeColumnName:     convertMillisecondToSecond,
-	blkReadTimeAttributeName:    convertMillisecondToSecond,
-	blkWriteTimeAttributeName:   convertMillisecondToSecond,
-}
-
 // getTopQuery implements client.
-func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, error) {
+//
+// Rows are scanned into typed fields rather than the generic string-map
+// scanner, and enrichment that only the emitted rows need - obfuscation,
+// comment extraction and trace-context parsing - is left to the caller to
+// apply after candidate selection. See query_log_rows.go for why.
+func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]topQueryStatRow, error) {
 	// The column names here follow the extension version, not the server
 	// version. Extension 1.11, which CREATE EXTENSION installs on PostgreSQL
 	// 17, renamed blk_read_time/blk_write_time to shared_blk_read_time and
@@ -2117,84 +2080,105 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, sel dat
 		"limit":               limit,
 		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
 		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
+		"hasTopLevel":         caps.hasTopLevel(),
 		"statementsView":      caps.qualify("pg_stat_statements"),
 		"orderByExecTimeCol":  orderByExecTimeCol,
 		"databasePredicate":   databasePredicate,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
-		return []map[string]any{}, fmt.Errorf("failed executing template: %w", err)
+		return nil, fmt.Errorf("failed executing template: %w", err)
 	}
 
-	wrappedDb := sqlquery.NewDbClient(sqlquery.DbWrapper{Db: c.client.Unwrap()}, otelIgnorePrefix+buf.String(), logger, sqlquery.TelemetryConfig{})
-
-	rows, err := wrappedDb.QueryRows(ctx, args...)
+	// c.client is the IgnoredDB wrapper, which prepends the ignore prefix
+	// itself, so the statement is passed through unprefixed here.
+	sqlRows, err := c.client.QueryContext(ctx, buf.String(), args...)
 	if err != nil {
-		if !errors.Is(err, sqlquery.ErrNullValueWarning) {
-			logger.Error("failed getting log rows", zap.Error(err))
-			return []map[string]any{}, fmt.Errorf("getTopQuery failed getting log rows: %w", err)
+		logger.Error("failed getting log rows", zap.Error(err))
+		return nil, fmt.Errorf("getTopQuery failed getting log rows: %w", err)
+	}
+	defer sqlRows.Close()
+
+	// One row struct and one destination slice for the whole result set. Every
+	// scan overwrites the same fields, and each row is copied into the output
+	// slice by value, so no destination is shared between retained rows.
+	var scratch topQueryStatRow
+	dest := scratch.scanDest()
+
+	// The server never returns more than LIMIT rows, so the candidate slice can
+	// be sized exactly once instead of growing by repeated append.
+	rows := make([]topQueryStatRow, 0, limit)
+	for sqlRows.Next() {
+		if err := sqlRows.Scan(dest...); err != nil {
+			// A row that cannot be decoded is skipped rather than failing the
+			// scrape, matching the previous behavior where a bad value became
+			// a warning and a zero.
+			logger.Warn("failed to scan top query row", zap.Error(err))
+			continue
 		}
-		// in case the sql returned rows contains null value, we just log a warning and continue
-		logger.Warn("problems encountered getting log rows", zap.Error(err))
+		rows = append(rows, scratch)
+	}
+	// An error that ends iteration leaves Next returning false exactly as a
+	// completed result set does, so without this check a driver or network
+	// failure part way through is a silent short read.
+	if err := sqlRows.Err(); err != nil {
+		logger.Error("failed iterating top query rows", zap.Error(err))
+		return nil, fmt.Errorf("getTopQuery failed iterating log rows: %w", err)
 	}
 
-	errs := make([]error, 0)
-	finalAttributes := make([]map[string]any, 0)
+	return rows, nil
+}
 
-	for _, row := range rows {
-		currentAttributes := make(map[string]any)
+// topQueryEnrichment is everything a selected top-query row needs that is not
+// a counter delta or a plain column: the obfuscated text, the raw text EXPLAIN
+// needs, the comment string and any trace context parsed out of it.
+type topQueryEnrichment struct {
+	obfuscated string
+	rawQuery   string
+	comment    string
+	traceCtx   context.Context
+}
 
-		// Store raw query before obfuscation (needed for EXPLAIN with $N placeholders)
-		if rawQuery, ok := row["query"]; ok {
-			currentAttributes[dbAttributePrefix+"raw_query"] = rawQuery
+// enrichTopQueryRow performs the work that only emitted rows need: obfuscating
+// the statement, scanning it for comments and parsing a W3C trace context out
+// of them.
+//
+// This used to run during decoding, for every candidate row, whether or not the
+// row was ever emitted. At the defaults, where top_n_query equals
+// max_rows_per_query, every candidate is selected and it runs as often as
+// before - the saving there comes from the comment pre-check, not from the
+// deferral. In a low-N configuration it runs for N rows instead of
+// max_rows_per_query of them.
+//
+// The result is a struct rather than an attribute map: the caller passes each
+// field to a positional emit call, so building a map would allocate the map
+// plus a key string per entry for values that are read once, immediately.
+func enrichTopQueryRow(row *topQueryStatRow, logger *zap.Logger) topQueryEnrichment {
+	out := topQueryEnrichment{rawQuery: row.query.String}
 
-			comments := extractSQLComments(rawQuery)
-			if len(comments) > 0 {
-				currentAttributes["db.query.comment"] = strings.Join(comments, "; ")
-				propagator := propagation.TraceContext{}
-				for _, c := range comments {
-					tp := extractTraceparentValue(c)
-					if tp == "" {
-						continue
-					}
-					ctxFromComment := propagator.Extract(context.Background(), propagation.MapCarrier{
-						traceparentCarrierKey: tp,
-					})
-					if trace.SpanContextFromContext(ctxFromComment).IsValid() {
-						currentAttributes[querySampleTraceContextKey] = ctxFromComment
-						break
-					}
-				}
+	if comments := extractSQLCommentsFast(out.rawQuery); len(comments) > 0 {
+		out.comment = strings.Join(comments, "; ")
+		propagator := propagation.TraceContext{}
+		for _, comment := range comments {
+			tp := extractTraceparentValue(comment)
+			if tp == "" {
+				continue
+			}
+			ctxFromComment := propagator.Extract(context.Background(), propagation.MapCarrier{
+				traceparentCarrierKey: tp,
+			})
+			if trace.SpanContextFromContext(ctxFromComment).IsValid() {
+				out.traceCtx = ctxFromComment
+				break
 			}
 		}
-
-		for col := range row {
-			var val any
-			var err error
-			converter, ok := topQueryColumnConverters[col]
-			switch {
-			case ok:
-				val, err = converter(col, row[col], logger)
-				if err != nil {
-					logger.Warn("failed to convert column to int", zap.String("column", col), zap.Error(err))
-					errs = append(errs, err)
-				}
-			case col == "query":
-				val, err = obfuscateSQL(row[col])
-				if err != nil {
-					logger.Error("failed to obfuscate query", zap.String("query", row[col]))
-					val = ""
-				}
-			default:
-				val = row[col]
-			}
-			if topQuerySemconvColumns[col] != "" {
-				currentAttributes[topQuerySemconvColumns[col]] = val
-			} else {
-				currentAttributes[dbAttributePrefix+col] = val
-			}
-		}
-		finalAttributes = append(finalAttributes, currentAttributes)
 	}
 
-	return finalAttributes, errors.Join(errs...)
+	obfuscated, err := obfuscateSQL(out.rawQuery)
+	if err != nil {
+		logger.Error("failed to obfuscate query", zap.String("query", out.rawQuery))
+		obfuscated = ""
+	}
+	out.obfuscated = obfuscated
+
+	return out
 }

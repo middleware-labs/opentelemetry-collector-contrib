@@ -4,7 +4,10 @@
 package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
 
 import (
+	"database/sql"
+	"hash/crc32"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,33 +18,29 @@ import (
 // topQueryRow builds one pg_stat_statements row as collectTopQuery receives it,
 // with the counters the caller wants to control.
 //
-// collectTopQuery mutates the row map in place, so every scrape needs its own.
-func topQueryRow(queryID string, calls, execTime float64) map[string]any {
-	return map[string]any{
-		"db.namespace":                                  "somedb",
-		"db.query.text":                                 "select 1",
-		"db.query.comment":                              "",
-		dbAttributePrefix + "raw_query":                 "select 1",
-		dbAttributePrefix + "rolname":                   "someuser",
-		dbAttributePrefix + queryidColumnName:           queryID,
-		dbAttributePrefix + callsColumnName:             calls,
-		dbAttributePrefix + rowsColumnName:              float64(0),
-		dbAttributePrefix + sharedBlksDirtiedColumnName: float64(0),
-		dbAttributePrefix + sharedBlksHitColumnName:     float64(0),
-		dbAttributePrefix + sharedBlksReadColumnName:    float64(0),
-		dbAttributePrefix + sharedBlksWrittenColumnName: float64(0),
-		dbAttributePrefix + tempBlksReadColumnName:      float64(0),
-		dbAttributePrefix + tempBlksWrittenColumnName:   float64(0),
-		dbAttributePrefix + totalExecTimeColumnName:     execTime,
-		dbAttributePrefix + totalPlanTimeColumnName:     float64(0),
-		postgresqlBlkReadTimeAttributeName:              float64(0),
-		postgresqlBlkWriteTimeAttributeName:             float64(0),
+// execTime is given in the unit the emitted attribute uses (seconds), and is
+// converted to the milliseconds pg_stat_statements actually reports, so the
+// expectations in these tests read in the same unit as the assertion.
+func topQueryRow(queryID string, calls, execTime float64) topQueryStatRow {
+	id, err := strconv.ParseInt(strings.TrimPrefix(queryID, "q"), 10, 64)
+	if err != nil {
+		// The tests use short symbolic ids like "q1"; anything else is hashed
+		// to a stable number so distinct ids stay distinct.
+		id = int64(crc32.ChecksumIEEE([]byte(queryID)))
+	}
+	return topQueryStatRow{
+		calls:         sql.NullInt64{Int64: int64(calls), Valid: true},
+		datname:       sql.NullString{String: "somedb", Valid: true},
+		query:         sql.NullString{String: "select 1", Valid: true},
+		queryID:       sql.NullInt64{Int64: id, Valid: true},
+		rolname:       sql.NullString{String: "someuser", Valid: true},
+		totalExecTime: sql.NullFloat64{Float64: execTime * 1000.0, Valid: true},
 	}
 }
 
 // scrapeTopQueryRows runs one scrape over the given rows and returns the log
 // records it emitted.
-func scrapeTopQueryRows(t *testing.T, scraper *postgreSQLScraper, rows ...map[string]any) int {
+func scrapeTopQueryRows(t *testing.T, scraper *postgreSQLScraper, rows ...topQueryStatRow) int {
 	t.Helper()
 	before := scraper.lb.Emit().LogRecordCount()
 	scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: rows}, 1000, 1000, 10, &errsMux{}, zap.NewNop())
@@ -50,7 +49,7 @@ func scrapeTopQueryRows(t *testing.T, scraper *postgreSQLScraper, rows ...map[st
 
 // emittedExecTime runs a scrape and returns the total_exec_time attribute of
 // the single record it emitted.
-func emittedExecTime(t *testing.T, scraper *postgreSQLScraper, rows ...map[string]any) float64 {
+func emittedExecTime(t *testing.T, scraper *postgreSQLScraper, rows ...topQueryStatRow) float64 {
 	t.Helper()
 	scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: rows}, 1000, 1000, 10, &errsMux{}, zap.NewNop())
 	logs := scraper.lb.Emit()
@@ -95,8 +94,8 @@ func TestTopQueryLowTopNWithManyCandidatesEmitsNoCumulativeTotals(t *testing.T) 
 	scraper := newTestTopQueryScraperWithConfig(t, cfg,
 		newCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*topQueryCounterCount*2)))
 
-	first := make([]map[string]any, 0, candidates)
-	second := make([]map[string]any, 0, candidates)
+	first := make([]topQueryStatRow, 0, candidates)
+	second := make([]topQueryStatRow, 0, candidates)
 	for i := range candidates {
 		id := "q" + strconv.Itoa(i)
 		// Large lifetime totals, tiny interval movement. If any cumulative

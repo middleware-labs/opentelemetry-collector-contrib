@@ -240,3 +240,112 @@ Still outstanding from Step 1:
 - A rig running pg_stat_statements 1.11. The current rig is on 1.10, so the
   live runs exercise the pre-rename column path; the 1.11 path is covered by the
   PostgreSQL 17 container integration test instead.
+
+## Step 6 result
+
+Typed row decoding, deferred enrichment and the comment-marker pre-check.
+Same-session A/B, 10 runs each, baseline and change interleaved in one session
+for the reasons recorded under Step 3.
+
+### Decode path
+
+`getTopQuery` in isolation: the generic string-map scanner replaced by typed
+positional scanning, and obfuscation/comment/trace work moved out to the caller.
+
+| Benchmark | sec/op | B/op | allocs/op |
+|---|---:|---:|---:|
+| GetTopQueryRepresentative/rows=50 | -71.3% | -43.8% | -94.3% |
+| GetTopQueryRepresentative/rows=1000 | -91.3% | -89.7% | -99.7% |
+| GetTopQueryLongSQL/rows=50 | -99.4% | -87.2% | -94.3% |
+| GetTopQueryLongSQL/rows=1000 | **-99.9%** | **-99.5%** | -99.7% |
+| GetTopQueryRepeatedSQL | -91.2% | -89.5% | -99.7% |
+| GetTopQueryWithTraceComments | -93.9% | -92.3% | -99.8% |
+| GetTopQueryNullHeavy | -94.5% | -82.2% | -99.7% |
+| **geomean** | **-78.8%** | **-69.9%** | **-92.1%** |
+
+All significant at p ≤ 0.001. Allocations per scrape fall from roughly 65-84k to
+under 200 because nothing per-row is retained in a map any more: the rows are
+scanned into a reused struct and appended to a pre-sized slice.
+
+The long-SQL case is the largest because two costs compound there. Statement
+text no longer drives a regex scan of every candidate, and it is no longer
+rendered through `fmt.Sprintf` into an intermediate string.
+
+### End-to-end path
+
+`collectTopQuery`, including delta computation, selection and emission.
+
+These three benchmarks changed fixture in this commit - their rows now carry a
+representative statement instead of the two-token literal `select 1`, so that
+the enrichment being measured does the work it does in production. That makes
+the raw before/after numbers not comparable on wall time. The table below is the
+like-for-like comparison, new code measured against the old fixture:
+
+| Benchmark | sec/op | B/op | allocs/op |
+|---|---:|---:|---:|
+| CollectTopQueryDefaultShape (1000 of 1000) | ~ | -3.7% | -14.9% |
+| CollectTopQueryLowN (50 of 1000) | ~ | -11.8% | -25.8% |
+| CollectTopQuerySmallServer (50 of 50) | +7.5% | -5.5% | -18.8% |
+
+`~` means no statistically significant difference.
+
+The low-N shape improves most, which is what deferring enrichment predicts: 950
+of 1000 candidates are discarded before anything expensive touches them. The
+default shape still improves because the pre-check and the typed decode help
+every row regardless of selection, but it improves less, because at the defaults
+no row is ever discarded.
+
+Holding the code constant and changing only the fixture accounts for +166% and
++211% of wall time on the default and small-server shapes respectively. That is
+the cost of obfuscating and scanning a real statement rather than `select 1`,
+and it is the reason the fixture was changed: the previous numbers understated
+the enrichment this step defers.
+
+### What did not improve
+
+`CollectTopQueryDefaultShape` bytes fall only 3.7%, against a 90% fall in the
+decode benchmark for the same row count. The `alloc_space` profile puts the
+remainder in the delta cache: `deltaKey + columnName` is built twice per counter
+per row, 12 counters per row, which is about 10.5 MB of the 37 MB profile. That
+concatenation is untouched here and is exactly what Step 7 removes by keying one
+typed snapshot per statement instead of twelve string-keyed entries. Reporting it
+rather than folding it into this step's numbers keeps the two separable.
+
+`BenchmarkExtractSQLComments` is unchanged in all three shapes, as it must be:
+it calls `extractSQLComments` directly, not the pre-checked wrapper. The
+pre-check's effect appears in the `getTopQuery` benchmarks, which call the path
+the receiver actually uses.
+
+### Comment extraction: pre-check rather than deferral
+
+Step 1 recorded `extractSQLComments` at 32% of CPU in the default shape and 74%
+in the long-SQL shape, and noted that deferral alone would not help at the
+defaults because no candidate is ever discarded there.
+
+The regex is `/\*.*?\*/|--[^\n]*`. Every alternative starts with a literal
+two-byte marker, so text containing neither `/*` nor `--` cannot match, and
+testing for the markers first is exact rather than approximate. Measured in
+isolation:
+
+| Shape | regex only | pre-check then regex |
+|---|---:|---:|
+| short statement, no comment | 5.40 µs | 40 ns |
+| long statement, no comment | 3.15 ms | 4.9 µs |
+| statement with a comment | ~5 µs | ~5 µs, identical allocations |
+
+`strings.Contains` is a tuned byte scan; the regex engine was backtracking over
+the whole statement to find nothing. A statement that does carry a comment pays
+the scan exactly as before.
+
+This was preferred over gating comment extraction on configuration. A
+configuration gate would have needed a setting expressing "trace propagation is
+unused", which no existing key expresses, and the plan forbids adding one where
+existing enablement already expresses the choice. The pre-check needs no
+configuration reasoning, cannot surprise anyone, and helps every deployment.
+
+Equivalence is asserted in `TestCommentPrefilterMatchesRegex` over both markers,
+partial and overlapping markers, markers inside string literals and non-ASCII
+text. It was additionally fuzzed against the unguarded function for 142k
+executions with no divergence; the fuzz target is not kept in the tree, since
+the property it checks is a property of the pattern and the table test states it
+directly.

@@ -101,6 +101,7 @@ func renderTopQuerySQL(t *testing.T, sel databaseSelection) string {
 	require.NoError(t, topQueryTemplateParsed.Execute(buf, map[string]any{
 		"limit":               100,
 		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
+		"hasTopLevel":         caps.hasTopLevel(),
 		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 		"statementsView":      caps.qualify("pg_stat_statements"),
 		"orderByExecTimeCol":  "total_exec_time",

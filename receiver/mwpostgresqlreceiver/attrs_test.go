@@ -5,6 +5,7 @@ package postgresqlreceiver
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -55,10 +56,10 @@ func TestAttrHelpersTolerateMissingAndMistypedKeys(t *testing.T) {
 // collectTopQuery with a controlled set of rows.
 type fakeTopQueryClient struct {
 	client
-	rows []map[string]any
+	rows []topQueryStatRow
 }
 
-func (f *fakeTopQueryClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]map[string]any, error) {
+func (f *fakeTopQueryClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]topQueryStatRow, error) {
 	return f.rows, nil
 }
 
@@ -69,7 +70,7 @@ func (*fakeTopQueryClient) explainQuery(string, string, *zap.Logger) (string, er
 func (*fakeTopQueryClient) Close() error { return nil }
 
 type fakeTopQueryClientFactory struct {
-	rows []map[string]any
+	rows []topQueryStatRow
 }
 
 func (f fakeTopQueryClientFactory) getClient(string) (client, error) {
@@ -129,36 +130,61 @@ func TestQueryPerformanceStatsCachesQueryText(t *testing.T) {
 	require.NoError(t, errs.combine())
 }
 
-func completeTopQueryRow() map[string]any {
-	return map[string]any{
-		"db.namespace":                                  "somedb",
-		"db.query.text":                                 "select 1",
-		"db.query.comment":                              "",
-		dbAttributePrefix + "raw_query":                 "select 1",
-		dbAttributePrefix + "rolname":                   "someuser",
-		dbAttributePrefix + queryidColumnName:           "qid-1",
-		dbAttributePrefix + callsColumnName:             int64(3),
-		dbAttributePrefix + rowsColumnName:              int64(4),
-		dbAttributePrefix + sharedBlksDirtiedColumnName: int64(5),
-		dbAttributePrefix + sharedBlksHitColumnName:     int64(6),
-		dbAttributePrefix + sharedBlksReadColumnName:    int64(7),
-		dbAttributePrefix + sharedBlksWrittenColumnName: int64(8),
-		dbAttributePrefix + tempBlksReadColumnName:      int64(9),
-		dbAttributePrefix + tempBlksWrittenColumnName:   int64(10),
-		dbAttributePrefix + totalExecTimeColumnName:     float64(2.5),
-		dbAttributePrefix + totalPlanTimeColumnName:     float64(1.5),
-		postgresqlBlkReadTimeAttributeName:              float64(0.5),
-		postgresqlBlkWriteTimeAttributeName:             float64(0.25),
+func completeTopQueryRow() topQueryStatRow {
+	return topQueryStatRow{
+		calls:             sql.NullInt64{Int64: 3, Valid: true},
+		datname:           sql.NullString{String: "somedb", Valid: true},
+		sharedBlksDirtied: sql.NullInt64{Int64: 5, Valid: true},
+		sharedBlksHit:     sql.NullInt64{Int64: 6, Valid: true},
+		sharedBlksRead:    sql.NullInt64{Int64: 7, Valid: true},
+		sharedBlksWritten: sql.NullInt64{Int64: 8, Valid: true},
+		tempBlksRead:      sql.NullInt64{Int64: 9, Valid: true},
+		tempBlksWritten:   sql.NullInt64{Int64: 10, Valid: true},
+		query:             sql.NullString{String: "select 1", Valid: true},
+		queryID:           sql.NullInt64{Int64: 1, Valid: true},
+		rolname:           sql.NullString{String: "someuser", Valid: true},
+		rows:              sql.NullInt64{Int64: 4, Valid: true},
+		totalExecTime:     sql.NullFloat64{Float64: 2500, Valid: true},
+		totalPlanTime:     sql.NullFloat64{Float64: 1500, Valid: true},
+		blkReadTime:       sql.NullFloat64{Float64: 500, Valid: true},
+		blkWriteTime:      sql.NullFloat64{Float64: 250, Valid: true},
+		dbid:              sql.NullInt64{Int64: 16384, Valid: true},
+		userid:            sql.NullInt64{Int64: 10, Valid: true},
+		toplevel:          sql.NullBool{Bool: true, Valid: true},
 	}
+}
+
+// nullableTopQueryFields sets each nullable column of a row to NULL in turn.
+// Named so a failing subtest says which column was NULL.
+var nullableTopQueryFields = map[string]func(*topQueryStatRow){
+	"calls":               func(r *topQueryStatRow) { r.calls = sql.NullInt64{} },
+	"datname":             func(r *topQueryStatRow) { r.datname = sql.NullString{} },
+	"shared_blks_dirtied": func(r *topQueryStatRow) { r.sharedBlksDirtied = sql.NullInt64{} },
+	"shared_blks_hit":     func(r *topQueryStatRow) { r.sharedBlksHit = sql.NullInt64{} },
+	"shared_blks_read":    func(r *topQueryStatRow) { r.sharedBlksRead = sql.NullInt64{} },
+	"shared_blks_written": func(r *topQueryStatRow) { r.sharedBlksWritten = sql.NullInt64{} },
+	"temp_blks_read":      func(r *topQueryStatRow) { r.tempBlksRead = sql.NullInt64{} },
+	"temp_blks_written":   func(r *topQueryStatRow) { r.tempBlksWritten = sql.NullInt64{} },
+	"query":               func(r *topQueryStatRow) { r.query = sql.NullString{} },
+	"queryid":             func(r *topQueryStatRow) { r.queryID = sql.NullInt64{} },
+	"rolname":             func(r *topQueryStatRow) { r.rolname = sql.NullString{} },
+	"rows":                func(r *topQueryStatRow) { r.rows = sql.NullInt64{} },
+	"total_exec_time":     func(r *topQueryStatRow) { r.totalExecTime = sql.NullFloat64{} },
+	"total_plan_time":     func(r *topQueryStatRow) { r.totalPlanTime = sql.NullFloat64{} },
+	"blk_read_time":       func(r *topQueryStatRow) { r.blkReadTime = sql.NullFloat64{} },
+	"blk_write_time":      func(r *topQueryStatRow) { r.blkWriteTime = sql.NullFloat64{} },
+	"dbid":                func(r *topQueryStatRow) { r.dbid = sql.NullInt64{} },
+	"userid":              func(r *topQueryStatRow) { r.userid = sql.NullInt64{} },
+	"toplevel":            func(r *topQueryStatRow) { r.toplevel = sql.NullBool{} },
 }
 
 // TestCollectTopQueryMissingDatabaseDoesNotPanic covers the crash that took down
 // the whole agent process: pg_stat_statements rows outlive the databases they
 // came from, so datname comes back NULL and db.namespace is absent from the row.
 func TestCollectTopQueryMissingDatabaseDoesNotPanic(t *testing.T) {
-	withoutDatabase := func() map[string]any {
+	withoutDatabase := func() topQueryStatRow {
 		row := completeTopQueryRow()
-		delete(row, "db.namespace")
+		row.datname = sql.NullString{}
 		return row
 	}
 
@@ -167,16 +193,16 @@ func TestCollectTopQueryMissingDatabaseDoesNotPanic(t *testing.T) {
 	// The first scrape only establishes a baseline; counters are cumulative, so
 	// there is nothing to report until a second observation exists.
 	require.NotPanics(t, func() {
-		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []map[string]any{withoutDatabase()}}, 30, 10, 10, &errsMux{}, zap.NewNop())
+		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []topQueryStatRow{withoutDatabase()}}, 30, 10, 10, &errsMux{}, zap.NewNop())
 	})
 
 	advanced := withoutDatabase()
-	advanced[dbAttributePrefix+callsColumnName] = int64(4)
-	advanced[dbAttributePrefix+totalExecTimeColumnName] = float64(3.5)
+	advanced.calls = sql.NullInt64{Int64: 4, Valid: true}
+	advanced.totalExecTime = sql.NullFloat64{Float64: 3500, Valid: true}
 
 	before := scraper.lb.Emit().LogRecordCount()
 	require.NotPanics(t, func() {
-		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []map[string]any{advanced}}, 30, 10, 10, &errsMux{}, zap.NewNop())
+		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []topQueryStatRow{advanced}}, 30, 10, 10, &errsMux{}, zap.NewNop())
 	})
 	after := scraper.lb.Emit().LogRecordCount()
 
@@ -185,18 +211,22 @@ func TestCollectTopQueryMissingDatabaseDoesNotPanic(t *testing.T) {
 	require.Equal(t, 1, after-before, "row with unresolvable database should still be emitted")
 }
 
-// TestCollectTopQueryEveryKeyMissingDoesNotPanic removes each attribute in turn
-// and asserts the scrape survives. This is the regression gate for the whole
-// class of unguarded type assertions, not just the one that was observed
-// crashing in production.
-func TestCollectTopQueryEveryKeyMissingDoesNotPanic(t *testing.T) {
-	for key := range completeTopQueryRow() {
-		t.Run("missing_"+key, func(t *testing.T) {
+// TestCollectTopQueryEveryColumnNullDoesNotPanic sets each nullable column to
+// NULL in turn and asserts the scrape survives.
+//
+// Typed rows make the original failure mode - an absent map key read as an
+// untyped nil and then type-asserted - structurally impossible, since every
+// field exists with a zero value whether or not the column was NULL. This keeps
+// the guarantee under test rather than assuming the new representation is
+// self-evidently safe.
+func TestCollectTopQueryEveryColumnNullDoesNotPanic(t *testing.T) {
+	for name, makeNull := range nullableTopQueryFields {
+		t.Run("null_"+name, func(t *testing.T) {
 			row := completeTopQueryRow()
-			delete(row, key)
+			makeNull(&row)
 
 			scraper := newTestTopQueryScraper(t)
-			factory := fakeTopQueryClientFactory{rows: []map[string]any{row}}
+			factory := fakeTopQueryClientFactory{rows: []topQueryStatRow{row}}
 
 			require.NotPanics(t, func() {
 				scraper.collectTopQuery(t.Context(), factory, 30, 10, 10, &errsMux{}, zap.NewNop())
@@ -205,23 +235,15 @@ func TestCollectTopQueryEveryKeyMissingDoesNotPanic(t *testing.T) {
 	}
 }
 
-// TestCollectTopQueryNilValuesDoNotPanic covers the same keys being present but
-// explicitly nil, which is what an untyped NULL looks like if it ever reaches
-// the map with its key intact.
-func TestCollectTopQueryNilValuesDoNotPanic(t *testing.T) {
-	for key := range completeTopQueryRow() {
-		t.Run("nil_"+key, func(t *testing.T) {
-			row := completeTopQueryRow()
-			row[key] = nil
+// TestCollectTopQueryAllColumnsNullDoesNotPanic is the degenerate case: a row
+// where every nullable column is NULL at once.
+func TestCollectTopQueryAllColumnsNullDoesNotPanic(t *testing.T) {
+	var row topQueryStatRow
 
-			scraper := newTestTopQueryScraper(t)
-			factory := fakeTopQueryClientFactory{rows: []map[string]any{row}}
-
-			require.NotPanics(t, func() {
-				scraper.collectTopQuery(t.Context(), factory, 30, 10, 10, &errsMux{}, zap.NewNop())
-			})
-		})
-	}
+	scraper := newTestTopQueryScraper(t)
+	require.NotPanics(t, func() {
+		scraper.collectTopQuery(t.Context(), fakeTopQueryClientFactory{rows: []topQueryStatRow{row}}, 30, 10, 10, &errsMux{}, zap.NewNop())
+	})
 }
 
 // TestCollectQuerySamplesEveryKeyMissingDoesNotPanic is the equivalent gate for

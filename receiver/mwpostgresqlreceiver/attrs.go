@@ -51,7 +51,7 @@ func attrFloat64(attrs map[string]any, key string) float64 {
 // entry across scrapes.
 //
 // pg_stat_statements identifies an entry by (userid, dbid, queryid, toplevel):
-// the same normalised query text executed by different roles, or against
+// the same normalized query text executed by different roles, or against
 // different databases, produces separate rows with independent counters. A
 // delta cache keyed on queryid alone merges those rows, and each scrape then
 // differences a row against whichever sibling happened to be cached last,
@@ -71,5 +71,39 @@ func topQueryDeltaKey(row map[string]any, queryID string) string {
 	const sep = "\x00"
 	return attrString(row, string(semconv.DBNamespaceKey)) + sep +
 		attrString(row, dbAttributePrefix+rolnameColumnName) + sep +
+		queryID + sep
+}
+
+// topQuerySelection is one candidate that survived delta computation, carried
+// through the priority queue.
+//
+// It holds an index into the row slice rather than the row itself: the rows are
+// already retained for the duration of the scrape, and the queue reorders its
+// elements, so copying a 19-field struct per sift would be pure waste. The
+// deltas travel with it because they are what the emitted attributes report and
+// what the queue orders on, and recomputing them after selection would mean
+// reading the cache a second time after it has already been updated.
+type topQuerySelection struct {
+	index   int
+	queryID string
+	deltas  topQueryDeltas
+}
+
+// topQueryStatDeltaKey builds the cache key identifying one pg_stat_statements
+// entry across scrapes, from a typed row.
+//
+// Same contract as the map-based key it replaces: database, role and queryid
+// separated by a byte that cannot appear in a UTF-8 identifier, with an absent
+// component contributing an empty string rather than being dropped. The typed
+// row makes "absent" explicit, so a NULL datname or rolname is distinguishable
+// from an empty one here even though both produce the same key component - the
+// previous code could not tell them apart at all.
+//
+// Step 7 replaces this with the server's own (dbid, userid, queryid, toplevel)
+// identity, which the row now carries.
+func topQueryStatDeltaKey(row *topQueryStatRow, queryID string) string {
+	const sep = "\x00"
+	return row.datname.String + sep +
+		row.rolname.String + sep +
 		queryID + sep
 }

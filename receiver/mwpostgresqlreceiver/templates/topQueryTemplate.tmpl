@@ -8,9 +8,9 @@ SELECT
   temp_blks_read,
   temp_blks_written,
   query,
-  queryid::TEXT,
+  queryid,
   rolname,
-  rows::TEXT,
+  rows,
 {{- if .hasExecTimeColumns }}
   total_exec_time,
   total_plan_time,
@@ -24,6 +24,13 @@ SELECT
 {{- else }}
   blk_read_time,
   blk_write_time
+{{- end }},
+  pg_stat_statements.dbid,
+  pg_stat_statements.userid,
+{{- if .hasTopLevel }}
+  pg_stat_statements.toplevel
+{{- else }}
+  true AS toplevel
 {{- end }}
 FROM
   {{ .statementsView }} as pg_stat_statements

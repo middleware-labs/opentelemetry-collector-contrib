@@ -214,7 +214,7 @@ func (*countingClient) getQuerySamples(context.Context, int64, float64, database
 	panic("not used by metric scrapes")
 }
 
-func (*countingClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]map[string]any, error) {
+func (*countingClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]topQueryStatRow, error) {
 	panic("not used by metric scrapes")
 }
 

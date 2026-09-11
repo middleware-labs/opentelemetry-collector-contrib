@@ -112,7 +112,7 @@ func TestGetTopQueryAttributesUnchangedAcrossScrapes(t *testing.T) {
 		benchmarkTopQueryRowNullHeavy(3),
 	}
 
-	scrape := func() []map[string]any {
+	scrape := func() []topQueryStatRow {
 		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
 		require.NoError(t, err)
 		defer db.Close()
@@ -143,22 +143,6 @@ func TestGetTopQueryAttributesUnchangedAcrossScrapes(t *testing.T) {
 	}
 }
 
-// TestTopQueryConversionMapsCoverEveryCounter guards the hoisted map against
-// drifting out of step with the counter set the delta loop differences.
-//
-// Before hoisting, the two lived in different functions and could only be
-// compared by eye; a counter present in one and absent from the other would
-// either be emitted without conversion or differenced without being emitted.
-func TestTopQueryConversionMapsCoverEveryCounter(t *testing.T) {
-	for columnName := range updatedOnly {
-		_, ok := topQueryColumnConverters[columnName]
-		assert.True(t, ok,
-			"counter %q is differenced by the delta loop but has no conversion", columnName)
-	}
-	assert.Len(t, topQueryColumnConverters, len(updatedOnly),
-		"the conversion map and the delta counter set must describe the same columns")
-}
-
 // TestTopQueryTemplateRendersPerCall confirms that hoisting the parse did not
 // make the rendered SQL static. The parsed template is shared across every
 // scrape, so the values substituted into it must still vary per call.
@@ -168,6 +152,7 @@ func TestTopQueryTemplateRendersPerCall(t *testing.T) {
 		require.NoError(t, topQueryTemplateParsed.Execute(buf, map[string]any{
 			"limit":               limit,
 			"hasExecTimeColumns":  caps.hasExecTimeColumns(),
+			"hasTopLevel":         caps.hasTopLevel(),
 			"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 			"statementsView":      caps.qualify("pg_stat_statements"),
 			"orderByExecTimeCol":  "total_exec_time",

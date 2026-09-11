@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -226,7 +227,7 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	// values describe `postgres` alone while their resource identity does not
 	// say so. Moving them into the per-database loop would change that identity
 	// and collide with existing series, which the plan defers to a separately
-	// reviewed change. Until then the honest behaviour is to stop collecting
+	// reviewed change. Until then the honest behavior is to stop collecting
 	// them when `postgres` itself is out of scope, rather than reporting one
 	// database's locks as though they were the server's.
 	if p.selection.includes(defaultPostgreSQLDatabase) {
@@ -461,6 +462,63 @@ var updatedOnly = map[string]updatedOnlyInfo{
 // occupies.
 var topQueryCounterCount = int64(len(updatedOnly))
 
+// orderedTopQueryCounters is updatedOnly in a fixed order, so a statement's
+// deltas can live in an array indexed by position instead of a map keyed by
+// column name.
+//
+// The delta loop runs for every candidate on every scrape, and at the default
+// max_rows_per_query of 1000 a per-row map cost one allocation and a dozen
+// hash insertions per selected statement for a set whose size and membership
+// are known at build time. The order itself carries no meaning; it only has to
+// be stable, so the array and the emit loop agree on which slot is which.
+var orderedTopQueryCounters = func() []string {
+	out := make([]string, 0, len(updatedOnly))
+	for columnName := range updatedOnly {
+		out = append(out, columnName)
+	}
+	sort.Strings(out)
+	return out
+}()
+
+// Slot indices into topQueryDeltas, resolved once from the ordered counter
+// list so the emit path can read a delta by name without hashing a map or
+// rebuilding an attribute key per counter per row.
+var (
+	slotCalls             = topQueryCounterSlot(callsColumnName)
+	slotRows              = topQueryCounterSlot(rowsColumnName)
+	slotSharedBlksDirtied = topQueryCounterSlot(sharedBlksDirtiedColumnName)
+	slotSharedBlksHit     = topQueryCounterSlot(sharedBlksHitColumnName)
+	slotSharedBlksRead    = topQueryCounterSlot(sharedBlksReadColumnName)
+	slotSharedBlksWritten = topQueryCounterSlot(sharedBlksWrittenColumnName)
+	slotTempBlksRead      = topQueryCounterSlot(tempBlksReadColumnName)
+	slotTempBlksWritten   = topQueryCounterSlot(tempBlksWrittenColumnName)
+	slotTotalExecTime     = topQueryCounterSlot(totalExecTimeColumnName)
+	slotTotalPlanTime     = topQueryCounterSlot(totalPlanTimeColumnName)
+	slotBlkReadTime       = topQueryCounterSlot(blkReadTimeAttributeName)
+	slotBlkWriteTime      = topQueryCounterSlot(blkWriteTimeAttributeName)
+)
+
+// topQueryCounterSlot returns the position of a counter in topQueryDeltas.
+// It panics on an unknown column because the callers above run at package
+// initialization, where a typo is a build-time mistake rather than a runtime
+// condition.
+func topQueryCounterSlot(column string) int {
+	for slot, columnName := range orderedTopQueryCounters {
+		if columnName == column {
+			return slot
+		}
+	}
+	panic("unknown top-query counter: " + column)
+}
+
+// topQueryDeltas holds one statement's per-interval deltas, positionally
+// aligned with orderedTopQueryCounters.
+//
+// The length is fixed so the deltas travel by value with no allocation. A
+// counter added to updatedOnly without widening this array would be silently
+// dropped, so TestTopQueryDeltasCoversEveryCounter asserts the two agree.
+type topQueryDeltas [12]float64
+
 func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory postgreSQLClientFactory, limit, topNQuery, maxExplainEachInterval int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 
@@ -495,7 +553,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		candidateDatabases = append(candidateDatabases, db)
 	}
 
-	var rows []map[string]any
+	var rows []topQueryStatRow
 	extensionMissing := false
 	var lastErr error
 	scrapedTopQuery := false
@@ -567,27 +625,32 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		return
 	}
 
-	pq := make(priorityqueue.PriorityQueue[map[string]any, float64], 0)
+	// Selection works on the typed rows, and a row's text is obfuscated and
+	// scanned for comments only once it has been selected for emission. The
+	// queue therefore carries an index into rows plus the deltas computed for
+	// it, rather than a decorated attribute map per candidate.
+	pq := make(priorityqueue.PriorityQueue[topQuerySelection, float64], 0)
 
-	for i, row := range rows {
-		queryID := attrString(row, dbAttributePrefix+queryidColumnName)
+	for i := range rows {
+		row := &rows[i]
 
-		if queryID == "" {
+		if !row.queryID.Valid {
 			// this should not happen, but in case
-			logger.Error("queryid is nil", zap.Any("atts", row))
+			logger.Error("queryid is nil", zap.Int("row", i))
 			mux.addPartial(errors.New("queryid is nil"))
 			continue
 		}
+		queryID := strconv.FormatInt(row.queryID.Int64, 10)
 
 		// pg_stat_statements keys its entries on (userid, dbid, queryid,
-		// toplevel), not on queryid alone: the same normalised query executed
+		// toplevel), not on queryid alone: the same normalized query executed
 		// by two roles, or in two databases, is two separate rows with
 		// independent counters. Keying the delta cache on queryid alone merges
 		// them, so each row is differenced against whichever of its siblings
 		// was seen last and the emitted deltas are meaningless - typically
 		// oscillating between a large positive value and zero as the rows take
 		// turns. Key on the same tuple the server does.
-		deltaKey := topQueryDeltaKey(row, queryID)
+		deltaKey := topQueryStatDeltaKey(row, queryID)
 
 		// pg_stat_statements counters are cumulative for the life of the
 		// entry, so a row is only reportable once there is a previous
@@ -610,9 +673,9 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		// is skipped, so the next scrape produces a true interval delta.
 		baselineOnly := false
 		for columnName := range updatedOnly {
-			// A NULL column is absent from the row map entirely, so this must
-			// tolerate a missing key rather than assert on it.
-			valInAtts := attrFloat64(row, dbAttributePrefix+columnName)
+			// A NULL counter reads as zero, as it did when the generic scanner
+			// left the key out of the row map entirely.
+			valInAtts := row.counter(columnName)
 			valInCache, exist := p.cache.Get(deltaKey + columnName)
 			if !exist || valInAtts < valInCache {
 				baselineOnly = true
@@ -622,7 +685,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 
 		callsDelta := float64(0)
 		if !baselineOnly {
-			current := attrFloat64(row, dbAttributePrefix+callsColumnName)
+			current := row.counter(callsColumnName)
 			if previous, exist := p.cache.Get(deltaKey + callsColumnName); exist {
 				callsDelta = current - previous
 			}
@@ -635,28 +698,28 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			// Store every counter so the next scrape has a complete baseline,
 			// and emit nothing for this entry.
 			for columnName := range updatedOnly {
-				p.cache.Add(deltaKey+columnName, attrFloat64(row, dbAttributePrefix+columnName))
+				p.cache.Add(deltaKey+columnName, row.counter(columnName))
 			}
 			continue
 		}
 
-		for columnName, info := range updatedOnly {
-			valInAtts := attrFloat64(row, dbAttributePrefix+columnName)
+		var deltas topQueryDeltas
+		execTimeDelta := float64(0)
+		for slot, columnName := range orderedTopQueryCounters {
+			valInAtts := row.counter(columnName)
 			valInCache, _ := p.cache.Get(deltaKey + columnName)
-			valDelta := valInAtts - valInCache
+			deltas[slot] = valInAtts - valInCache
 			p.cache.Add(deltaKey+columnName, valInAtts)
-			if info.finalConverter != nil {
-				row[dbAttributePrefix+columnName] = info.finalConverter(valDelta)
-			} else {
-				row[dbAttributePrefix+columnName] = valDelta
+			if columnName == totalExecTimeColumnName {
+				execTimeDelta = deltas[slot]
 			}
 		}
-		if row[dbAttributePrefix+totalExecTimeColumnName] == 0.0 {
+		if execTimeDelta == 0.0 {
 			continue
 		}
-		item := priorityqueue.QueueItem[map[string]any, float64]{
-			Value:    row,
-			Priority: attrFloat64(row, dbAttributePrefix+totalExecTimeColumnName),
+		item := priorityqueue.QueueItem[topQuerySelection, float64]{
+			Value:    topQuerySelection{index: i, queryID: queryID, deltas: deltas},
+			Priority: execTimeDelta,
 			Index:    i,
 		}
 		pq.Push(&item)
@@ -670,11 +733,19 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	// become a significant source of allocation.
 	unresolvedDatabases := 0
 	for pq.Len() > 0 && count < int(topNQuery) {
-		item := heap.Pop(&pq).(*priorityqueue.QueueItem[map[string]any, float64])
-		query := attrString(item.Value, string(semconv.DBQueryTextKey))
-		queryID := attrString(item.Value, dbAttributePrefix+queryidColumnName)
+		item := heap.Pop(&pq).(*priorityqueue.QueueItem[topQuerySelection, float64])
+		sel := item.Value
+		row := &rows[sel.index]
+
+		// Enrichment happens here, for selected rows only: obfuscation, comment
+		// extraction and trace-context parsing used to run for every candidate
+		// during decoding, whether or not the row was ever emitted.
+		enriched := enrichTopQueryRow(row, logger)
+
+		query := enriched.obfuscated
+		queryID := sel.queryID
 		// Use raw query (with $1, $2 placeholders) for EXPLAIN, not the obfuscated one (with ?)
-		rawQuery, _ := item.Value[dbAttributePrefix+"raw_query"].(string)
+		rawQuery := enriched.rawQuery
 
 		// pg_stat_statements rows outlive the databases they came from: once a
 		// database is dropped, its dbid no longer joins to pg_database and
@@ -682,7 +753,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		// row. Such a row cannot be EXPLAINed (there is no database to connect
 		// to), but it is still a real query worth reporting, so it is emitted
 		// under a placeholder rather than dropped.
-		database := attrString(item.Value, string(semconv.DBNamespaceKey))
+		database := row.datname.String
 		if database == "" {
 			unresolvedDatabases++
 			database = unknownDatabaseName
@@ -723,16 +794,14 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		// Extract table names from raw query for db.query.tables enrichment
 		tables := strings.Join(extractTablesFromQuery(rawQuery), ",")
 		// user.name is aliased from rolname
-		rolname, _ := item.Value[dbAttributePrefix+"rolname"].(string)
+		rolname := row.rolname.String
 
 		logCtx := context.Background()
-		if ctxFromQuery, ok := item.Value[querySampleTraceContextKey]; ok {
-			if c, ok := ctxFromQuery.(context.Context); ok {
-				logCtx = c
-			}
+		if enriched.traceCtx != nil {
+			logCtx = enriched.traceCtx
 		}
 
-		topComment, _ := item.Value["db.query.comment"].(string)
+		topComment := enriched.comment
 		p.lb.RecordDbServerTopQueryEvent(
 			logCtx,
 			timestamp,
@@ -743,21 +812,21 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			topComment,
 			tables,
 			rolname,
-			attrInt64(item.Value, dbAttributePrefix+callsColumnName),
-			attrInt64(item.Value, dbAttributePrefix+rowsColumnName),
-			attrInt64(item.Value, dbAttributePrefix+sharedBlksDirtiedColumnName),
-			attrInt64(item.Value, dbAttributePrefix+sharedBlksHitColumnName),
-			attrInt64(item.Value, dbAttributePrefix+sharedBlksReadColumnName),
-			attrInt64(item.Value, dbAttributePrefix+sharedBlksWrittenColumnName),
-			attrInt64(item.Value, dbAttributePrefix+tempBlksReadColumnName),
-			attrInt64(item.Value, dbAttributePrefix+tempBlksWrittenColumnName),
+			int64(sel.deltas[slotCalls]),
+			int64(sel.deltas[slotRows]),
+			int64(sel.deltas[slotSharedBlksDirtied]),
+			int64(sel.deltas[slotSharedBlksHit]),
+			int64(sel.deltas[slotSharedBlksRead]),
+			int64(sel.deltas[slotSharedBlksWritten]),
+			int64(sel.deltas[slotTempBlksRead]),
+			int64(sel.deltas[slotTempBlksWritten]),
 			queryID,
 			rolname,
-			attrFloat64(item.Value, dbAttributePrefix+totalExecTimeColumnName),
-			attrFloat64(item.Value, dbAttributePrefix+totalPlanTimeColumnName),
+			sel.deltas[slotTotalExecTime],
+			sel.deltas[slotTotalPlanTime],
 			plan,
-			attrFloat64(item.Value, postgresqlBlkReadTimeAttributeName),
-			attrFloat64(item.Value, postgresqlBlkWriteTimeAttributeName),
+			sel.deltas[slotBlkReadTime],
+			sel.deltas[slotBlkWriteTime],
 		)
 		count++
 	}
