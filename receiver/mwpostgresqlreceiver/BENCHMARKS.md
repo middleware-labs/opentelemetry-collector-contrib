@@ -164,21 +164,39 @@ similar share of CPU, so enabling its cache should show up in
 `GetTopQueryRepeatedSQL` specifically, and barely at all in the all-distinct
 benchmarks.
 
+## Full-agent runs on the 52-database rig
+
+The plan also asks for a matched full-agent pipeline run rather than
+construction cost in isolation. That was done on September 11 against the
+52-database rig, 20 minutes per build, 71 steady-state samples each. Artifacts,
+method and caveats are in `~/pg-leak-test/measure-2026-09-11/README.md`.
+
+The headline is a correctness result, not a performance one. With query load
+running, the server's own counters advance ~22 calls per 10-second interval.
+The pre-Step-2 receiver emitted `postgresql.calls` values around 5,600 — the
+cumulative lifetime total, reported every interval, overstating interval work by
+roughly 250x and growing without bound. The corrected receiver emits 18–25,
+matching the server's interval delta.
+
+Resource use at equal work (identical data-point counts, zero errors on both
+sides): allocation rate flat at 2.58 vs 2.60 MB/s, CPU 10.1% vs 8.8% of one
+core, connections 12 vs 12, heap median identical at 31.3 MB. Step 2 was not an
+optimization pass and no allocation improvement was expected; the CPU drop is a
+side effect of skipping the emit path for statements that cannot produce a valid
+delta, and would not appear on a server where every candidate is always
+reportable.
+
 ## What is not covered here
 
-Per the plan, these are receiver-level benchmarks against a cheap sink. Still
-outstanding from Step 1:
+Still outstanding from Step 1:
 
-- A matched full-agent pipeline run, to show end-to-end effect rather than
-  construction cost in isolation.
-- Live-heap (`inuse_space`) profiles over a steady 20–30 minute window, which is
-  what the plan's validation section asks for and what a short benchmark cannot
-  produce.
+- Live-heap (`inuse_space`) profiles over a steady window. The September 11 runs
+  sampled heap through the collector's own telemetry, which gives a level but
+  not an attribution.
 - Schema collection: cold start and forced refresh, measured separately from
   steady state.
 - Query samples, which share the generic scanner with top queries but have their
   own deduplication and watermark behaviour.
-
-The rig for the live runs is the 52-database PostgreSQL 16 container described in
-`MWPOSTGRESQL-OPTIMIZATION-PLAN.md`; the notes and sampler are under
-`~/pg-leak-test/`.
+- A rig running pg_stat_statements 1.11. The current rig is on 1.10, so the
+  live runs exercise the pre-rename column path; the 1.11 path is covered by the
+  PostgreSQL 17 container integration test instead.
