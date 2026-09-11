@@ -164,6 +164,34 @@ similar share of CPU, so enabling its cache should show up in
 `GetTopQueryRepeatedSQL` specifically, and barely at all in the all-distinct
 benchmarks.
 
+## Step 6 full-agent run: no measurable effect, and why
+
+Same-session A/B on the 52-database rig, 20 minutes per build, 71 steady-state
+samples each. Artifacts in `~/pg-leak-test/measure-2026-09-11-step6/`.
+
+Allocation 2.58 -> 2.58 MB/s, CPU 9.0% -> 9.0%, heap and connections unchanged,
+identical data-point counts (45,982) and zero errors on both sides. Flat.
+
+That sits beside a decode path measured at 65-84k allocations per scrape falling
+to under 200. Both are true. The reconciliation is candidate count: the
+benchmarks decode 1000 rows, which is the `max_rows_per_query` default, and this
+rig decodes **58**, because `pg_stat_statements` is installed on 1 of its 52
+databases. Scaling the benchmark's per-row figures to the rig puts the decode
+path at **1.35%** of the receiver's allocation, so removing 90% of it moves the
+total by ~1.2% - inside the noise floor.
+
+This is the plan's second acceptable Step 6 outcome: a documented reason the path
+is not dominant, with arithmetic rather than assertion. The change stays - it is
+output-neutral, the cost it removes is real, and that cost scales with candidate
+count, so a server with the extension installed broadly exercises it far harder
+than this rig does.
+
+The open question it raises is where the 2.58 MB/s actually lives at 58 rows.
+Step 1's profile attributed 91.7% cumulative to `getTopQuery`, but that was under
+a 1000-row benchmark - the shape this rig does not have. A live profile of the
+agent on the rig is the missing input, and it is what Step 8's "follow the
+remaining profiles" should start from.
+
 ## Full-agent runs on the 52-database rig
 
 The plan also asks for a matched full-agent pipeline run rather than
