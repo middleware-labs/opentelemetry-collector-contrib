@@ -521,7 +521,8 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 					logger.Info("postgres instance changed, discarding cached counters",
 						zap.String("database", database))
 					p.statements.purge()
-				} else if p.resetDetector.check(ctx, pgClient.client) {
+				} else if caps, capsErr := pgClient.statementCapabilities(ctx); capsErr == nil &&
+					p.resetDetector.check(ctx, pgClient.client, caps) {
 					logger.Info("pg_stat_statements was reset, discarding cached counters",
 						zap.String("database", database))
 					p.statements.purge()

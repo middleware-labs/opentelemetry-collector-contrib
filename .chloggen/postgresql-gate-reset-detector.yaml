@@ -1,0 +1,41 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: bug_fix
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Gate and schema-qualify the pg_stat_statements reset probe
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  Counter resets are detected by reading `pg_stat_statements_info.stats_reset`. That read was issued
+  unconditionally and unqualified, although the receiver already resolves the extension's version and
+  schema for its other statement queries.
+
+  Two consequences. On an extension below 1.9 the view does not exist yet, so every such server spent
+  a round trip on a query whose only possible answer was `42P01`. And on an installation that keeps
+  the extension outside `search_path`, the unqualified name fails with that same `42P01` — which the
+  detector reads as "this server has no such view" and latches, disabling reset detection for the life
+  of the connection on a server that would have answered correctly had the name been qualified. The
+  operator could fix `search_path` at runtime and nothing would recover.
+
+  The probe is now skipped below extension 1.9 on the version rather than on an observed error, and
+  qualified with the extension's schema otherwise. Servers below 1.9 continue to fall back to the
+  weaker per-counter went-backwards guard, as before.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

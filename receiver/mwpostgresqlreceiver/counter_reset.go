@@ -11,11 +11,13 @@ import (
 // statsResetQuery reads the moment pg_stat_statements last had its statistics
 // discarded.
 //
-// pg_stat_statements_info exists from extension version 1.9 (PostgreSQL 14).
-// On older servers the view is absent and the query errors, which callers treat
-// as "cannot detect resets here" rather than as a failure.
-func statsResetQuery() string {
-	return `SELECT stats_reset FROM pg_stat_statements_info`
+// The view is schema-qualified for the same reason the statement queries are:
+// an extension installed outside search_path is only reachable by its schema,
+// and an unqualified name there fails with 42P01 -- indistinguishable from the
+// view genuinely not existing, which would disable detection permanently on a
+// server that can actually answer.
+func statsResetQuery(caps pgStatStatementsCapabilities) string {
+	return `SELECT stats_reset FROM ` + caps.qualify("pg_stat_statements_info")
 }
 
 // resetDetector decides whether cached counter values are still comparable with
@@ -62,18 +64,27 @@ func newResetDetector() *resetDetector {
 // interval to invalidate, and reporting true would discard a cache that is
 // already empty.
 //
-// A server without pg_stat_statements_info reports false forever. That is the
-// honest answer — we cannot see resets there — and the per-counter
+// A server below extension 1.9 has no pg_stat_statements_info and reports false
+// without asking. That is the honest answer — we cannot see resets there — and the per-counter
 // went-backwards check remains as the weaker fallback. It is not treated as an
 // error, because running against PostgreSQL 13 is a supported configuration,
 // not a fault.
-func (d *resetDetector) check(ctx context.Context, db *IgnoredDB) bool {
+func (d *resetDetector) check(ctx context.Context, db *IgnoredDB, caps pgStatStatementsCapabilities) bool {
 	if !d.supported {
 		return false
 	}
 
+	// pg_stat_statements_info arrived with extension 1.9. Below that the view
+	// is absent by construction, so asking is a round trip whose only possible
+	// outcome is a 42P01 we already know about. The gate is the version rather
+	// than the error, so a later ALTER EXTENSION ... UPDATE is picked up on the
+	// next connection instead of being remembered as unsupported.
+	if !caps.hasTopLevel() {
+		return false
+	}
+
 	var resetAt *time.Time
-	err := db.QueryRowContext(ctx, statsResetQuery()).Scan(&resetAt)
+	err := db.QueryRowContext(ctx, statsResetQuery(caps)).Scan(&resetAt)
 	if err != nil {
 		// Probe once. A missing view (SQLSTATE 42P01, undefined_table) or a
 		// missing column means this server will never answer, so stop asking.

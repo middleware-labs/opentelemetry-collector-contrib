@@ -23,6 +23,14 @@ func resetRows(ts any) *sqlmock.Rows {
 	return sqlmock.NewRows([]string{"stats_reset"}).AddRow(ts)
 }
 
+// resetCaps is an extension new enough to have pg_stat_statements_info, in the
+// default schema. Tests about reset detection itself use this so the version
+// gate is satisfied and out of the way.
+var resetCaps = pgStatStatementsCapabilities{
+	installed: true,
+	version:   extensionVersion{major: 1, minor: 9},
+}
+
 func TestResetDetectorFirstCheckEstablishesBaseline(t *testing.T) {
 	// The first observation has no predecessor to invalidate. Reporting a reset
 	// here would purge a cache that is already empty and, worse, would make
@@ -35,7 +43,7 @@ func TestResetDetectorFirstCheckEstablishesBaseline(t *testing.T) {
 		WillReturnRows(resetRows(time.Now()))
 
 	d := newResetDetector()
-	assert.False(t, d.check(context.Background(), WrapDBWithIgnore(db)))
+	assert.False(t, d.check(context.Background(), WrapDBWithIgnore(db), resetCaps))
 }
 
 func TestResetDetectorReportsChangedTimestamp(t *testing.T) {
@@ -52,8 +60,8 @@ func TestResetDetectorReportsChangedTimestamp(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	require.False(t, d.check(context.Background(), wrapped), "baseline")
-	assert.True(t, d.check(context.Background(), wrapped),
+	require.False(t, d.check(context.Background(), wrapped, resetCaps), "baseline")
+	assert.True(t, d.check(context.Background(), wrapped, resetCaps),
 		"a moved stats_reset must be reported as a reset")
 }
 
@@ -73,9 +81,9 @@ func TestResetDetectorSilentWhenUnchanged(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	require.False(t, d.check(context.Background(), wrapped))
-	assert.False(t, d.check(context.Background(), wrapped))
-	assert.False(t, d.check(context.Background(), wrapped))
+	require.False(t, d.check(context.Background(), wrapped, resetCaps))
+	assert.False(t, d.check(context.Background(), wrapped, resetCaps))
+	assert.False(t, d.check(context.Background(), wrapped, resetCaps))
 }
 
 func TestResetDetectorReportsOnlyOncePerReset(t *testing.T) {
@@ -97,9 +105,9 @@ func TestResetDetectorReportsOnlyOncePerReset(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	require.False(t, d.check(context.Background(), wrapped))
-	require.True(t, d.check(context.Background(), wrapped))
-	assert.False(t, d.check(context.Background(), wrapped),
+	require.False(t, d.check(context.Background(), wrapped, resetCaps))
+	require.True(t, d.check(context.Background(), wrapped, resetCaps))
+	assert.False(t, d.check(context.Background(), wrapped, resetCaps),
 		"the reset must be reported once, not on every following scrape")
 }
 
@@ -116,8 +124,8 @@ func TestResetDetectorHandlesNullStatsReset(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	require.False(t, d.check(context.Background(), wrapped))
-	assert.False(t, d.check(context.Background(), wrapped),
+	require.False(t, d.check(context.Background(), wrapped, resetCaps))
+	assert.False(t, d.check(context.Background(), wrapped, resetCaps),
 		"a persistently NULL stats_reset is not a reset")
 }
 
@@ -134,8 +142,8 @@ func TestResetDetectorNullThenSetIsAReset(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	require.False(t, d.check(context.Background(), wrapped))
-	assert.True(t, d.check(context.Background(), wrapped))
+	require.False(t, d.check(context.Background(), wrapped, resetCaps))
+	assert.True(t, d.check(context.Background(), wrapped, resetCaps))
 }
 
 func TestResetDetectorStopsAskingWhenViewIsAbsent(t *testing.T) {
@@ -154,8 +162,8 @@ func TestResetDetectorStopsAskingWhenViewIsAbsent(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	assert.False(t, d.check(context.Background(), wrapped))
-	assert.False(t, d.check(context.Background(), wrapped))
+	assert.False(t, d.check(context.Background(), wrapped, resetCaps))
+	assert.False(t, d.check(context.Background(), wrapped, resetCaps))
 	assert.False(t, d.supported, "an absent view must disable further probing")
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
@@ -178,10 +186,10 @@ func TestResetDetectorKeepsTryingAfterTransientError(t *testing.T) {
 	d := newResetDetector()
 	wrapped := WrapDBWithIgnore(db)
 
-	require.False(t, d.check(context.Background(), wrapped), "transient error")
+	require.False(t, d.check(context.Background(), wrapped, resetCaps), "transient error")
 	require.True(t, d.supported, "a transient error must not disable detection")
-	require.False(t, d.check(context.Background(), wrapped), "baseline after recovery")
-	assert.True(t, d.check(context.Background(), wrapped),
+	require.False(t, d.check(context.Background(), wrapped, resetCaps), "baseline after recovery")
+	assert.True(t, d.check(context.Background(), wrapped, resetCaps),
 		"detection must still work after a transient failure")
 }
 
@@ -279,4 +287,58 @@ func TestTopQueryPurgesCacheOnReset(t *testing.T) {
 	stale, exists := scraper.statements.lru.Get(priorID)
 	assert.False(t, exists && stale.counters.calls == 999999,
 		"cached pre-reset counters must be discarded when the server reports a reset")
+}
+
+// TestResetDetectorSkipsQueryBelowExtension19 pins the version gate.
+//
+// pg_stat_statements_info arrived with extension 1.9. Below that the view is
+// absent by construction, so the query can only come back 42P01 -- a round trip
+// per scrape whose answer is already known. Asking anyway also spent the single
+// probe that distinguishes "this server cannot answer" from a transient error.
+func TestResetDetectorSkipsQueryBelowExtension19(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	// A 42P01 is queued for anyone who asks, which is what a real pre-1.9
+	// server answers. A gated detector never sends the query, so the
+	// expectation goes unconsumed; an ungated one consumes it and, because
+	// 42P01 is the undefined-table state, latches supported=false forever.
+	mock.ExpectQuery("SELECT stats_reset FROM pg_stat_statements_info").
+		WillReturnError(&pq.Error{Code: "42P01"})
+
+	d := newResetDetector()
+	caps := pgStatStatementsCapabilities{installed: true, version: extensionVersion{major: 1, minor: 8}}
+
+	assert.False(t, d.check(context.Background(), WrapDBWithIgnore(db), caps))
+
+	// The query was not sent, so the queued expectation is still outstanding.
+	assert.Error(t, mock.ExpectationsWereMet(), "the version gate must skip the query entirely")
+
+	// And the gate is the version rather than a remembered failure: the probe
+	// is unspent, so a connection whose extension is later updated still works.
+	assert.True(t, d.supported, "a skipped query must not disable detection")
+}
+
+// TestResetDetectorQualifiesInfoView covers an extension installed outside
+// search_path, where an unqualified name fails with 42P01 exactly as a missing
+// view does -- and so would have disabled detection permanently on a server
+// that can answer perfectly well once the name is qualified.
+func TestResetDetectorQualifiesInfoView(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	mock.ExpectQuery("SELECT stats_reset FROM extensions.pg_stat_statements_info").
+		WillReturnRows(resetRows(time.Now()))
+
+	d := newResetDetector()
+	caps := pgStatStatementsCapabilities{
+		installed: true,
+		version:   extensionVersion{major: 1, minor: 9},
+		schema:    "extensions",
+	}
+
+	assert.False(t, d.check(context.Background(), WrapDBWithIgnore(db), caps), "baseline")
+	require.NoError(t, mock.ExpectationsWereMet())
 }
