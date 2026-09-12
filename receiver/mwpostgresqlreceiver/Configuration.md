@@ -87,10 +87,10 @@ database, so they are collected only when `postgres` is itself selected.
 | Option | Default | Description |
 |--------|---------|-------------|
 | `collection_interval` | `10s` | How often the receiver runs (metrics and all log scrapers). Schema collection then throttles internally using `schema_collection.collection_interval`. |
-| `relation_metrics.collection_interval` | unset (every scrape) | How often the per-relation metric families run: per-table statistics and block reads, per-index statistics and per-function statistics. Database-level and server-wide metrics still run every scrape. `postgresql.table.count` is reported every scrape and refreshed at this cadence. |
-| `bloat_collection_interval` | unset (every scrape) | How often `postgresql.table_bloat` and `postgresql.index_bloat` run. Their two estimator queries are the heaviest SQL the receiver issues. |
+| `relation_metrics.collection_interval` | `60s` | How often the per-relation metric families run: per-table statistics and block reads, per-index statistics and per-function statistics. Database-level and server-wide metrics still run every scrape. `postgresql.table.count` is reported every scrape and refreshed at this cadence. |
+| `bloat_collection_interval` | `10m` | How often `postgresql.table_bloat` and `postgresql.index_bloat` run. Their two estimator queries are the heaviest SQL the receiver issues. |
 
-Each per-family interval, when set, must be at least `collection_interval`. A family runs on the first scrape at or after its interval has elapsed since it last ran, so an interval that is not a multiple of `collection_interval` rounds up to the next scrape. Between runs the family issues no SQL and emits no data points; cumulative metrics keep their start timestamp across the gap, so rates computed from them stay correct. When every per-database family is throttled and not due, no connection is opened to the individual databases on that scrape.
+A family runs on the first scrape at or after its interval has elapsed since it last ran, so an interval that is not a multiple of `collection_interval` rounds up to the next scrape, and an interval shorter than `collection_interval` (including `0`) means every scrape. Set `relation_metrics.collection_interval: 0` and `bloat_collection_interval: 0` to restore per-scrape collection of those families. Between runs the family issues no SQL and emits no data points; cumulative metrics keep their start timestamp across the gap, so rates computed from them stay correct. When every per-database family is throttled and not due, no connection is opened to the individual databases on that scrape.
 
 ```yaml
 collection_interval: 10s

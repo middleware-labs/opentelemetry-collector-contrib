@@ -57,6 +57,11 @@ func newCadenceHarness(t *testing.T, c client, mutate func(*Config)) *cadenceHar
 	t.Helper()
 
 	cfg := createDefaultConfig().(*Config)
+	// The factory defaults throttle relations and bloat. Each test here opts
+	// into the single knob it exercises, so start from every family on every
+	// scrape; TestCadenceDefaultsThrottleRelationsAndBloat pins the defaults.
+	cfg.RelationMetrics.CollectionInterval = 0
+	cfg.BloatCollectionInterval = 0
 	// Functions are off by default; turn them on so the relation family is
 	// exercised in full.
 	cfg.Metrics.PostgresqlFunctionCalls.Enabled = true
@@ -242,6 +247,40 @@ func TestCadenceBothThrottledOpensNoDatabaseConnection(t *testing.T) {
 // TestCadenceUnsetRunsEveryFamilyEveryScrape pins the default: with no
 // interval configured, seven consecutive scrapes each issue the full
 // all-enabled query set, which is what the golden tests assert on.
+// TestCadenceDefaultsThrottleRelationsAndBloat pins the factory defaults: on a
+// 10s scrape, relation families run once a minute (scrapes 1, 7, 13, ...) and
+// bloat once every ten minutes (scrapes 1 and 61), while database-level and
+// server-wide families and postgresql.table.count are on every scrape.
+func TestCadenceDefaultsThrottleRelationsAndBloat(t *testing.T) {
+	defaults := createDefaultConfig().(*Config)
+	require.Equal(t, time.Minute, defaults.RelationMetrics.CollectionInterval)
+	require.Equal(t, 10*time.Minute, defaults.BloatCollectionInterval)
+	require.Equal(t, 10*time.Second, defaults.CollectionInterval)
+
+	h := newCadenceHarness(t, newCountingClient(), func(cfg *Config) {
+		cfg.RelationMetrics.CollectionInterval = defaults.RelationMetrics.CollectionInterval
+		cfg.BloatCollectionInterval = defaults.BloatCollectionInterval
+	})
+	const scrapes = 61
+	records := h.run(t, scrapes, h.scraper.config.CollectionInterval)
+
+	var every, relationDue []int
+	for i := 1; i <= scrapes; i++ {
+		every = append(every, i)
+		if (i-1)%6 == 0 {
+			relationDue = append(relationDue, i)
+		}
+	}
+	assertRanOn(t, records, relationQueries, relationDue...)
+	assertRanOn(t, records, bloatQueries, 1, 61)
+	assertRanOn(t, records, everyScrapeQueries, every...)
+	for i, r := range records {
+		assert.Equal(t, map[string]int64{"otel": 2}, tableCountsByDatabase(r.metrics),
+			"scrape %d: table.count must be reported every scrape", i+1)
+		assert.True(t, hasMetric(r.metrics, "postgresql.commits"), "scrape %d: database-level metrics", i+1)
+	}
+}
+
 func TestCadenceUnsetRunsEveryFamilyEveryScrape(t *testing.T) {
 	h := newCadenceHarness(t, newCountingClient(), func(cfg *Config) {
 		enableAll(&cfg.Metrics)

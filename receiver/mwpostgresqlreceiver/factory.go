@@ -85,6 +85,21 @@ func createDefaultConfig() component.Config {
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,
 		},
+		// Per-relation families run once a minute and bloat once every ten
+		// minutes by default. The receiver's cost is proportional to the number
+		// of tables and indexes times the enabled per-relation families divided
+		// by their interval, and nothing in the product depends on a ten-second
+		// resolution for per-table or per-index series; database-level and
+		// server-wide metrics stay on every scrape. Bloat estimates move slowly
+		// and their two estimator queries are the heaviest SQL the receiver
+		// issues. Both are the most conservative cadences among comparable
+		// agents (pgwatch2 tables 300s, indexes 900s, bloat 7200s; pganalyze
+		// schema and bloat in a 600s snapshot; Percona PMM relation views on
+		// its 60s tier; Datadog bloat off by default).
+		RelationMetrics: RelationMetricsConfig{
+			CollectionInterval: time.Minute,
+		},
+		BloatCollectionInterval: 10 * time.Minute,
 		TopQueryCollection: TopQueryCollection{
 			TopNQuery:              1000,
 			MaxRowsPerQuery:        1000,

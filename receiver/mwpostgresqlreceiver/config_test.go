@@ -105,8 +105,11 @@ func TestValidate(t *testing.T) {
 			},
 		},
 		{
-			// A family cannot run more often than the scraper that hosts it.
-			desc: "family intervals shorter than the scrape interval",
+			// A family cannot run more often than the scraper that hosts it, so
+			// a shorter interval is not an error; it means every scrape. The
+			// defaults are non-zero, so a deployment that raises
+			// collection_interval above them must keep loading.
+			desc: "family intervals shorter than the scrape interval mean every scrape",
 			defaultConfigModifier: func(cfg *Config) {
 				cfg.Username = "otel"
 				cfg.Password = "otel"
@@ -115,11 +118,7 @@ func TestValidate(t *testing.T) {
 				cfg.BloatCollectionInterval = time.Second
 				cfg.TopQueryCollection.Interval = 10 * time.Second
 			},
-			expected: []error{
-				fmt.Errorf(ErrIntervalTooShort, "relation_metrics.collection_interval", 29*time.Second, 30*time.Second),
-				fmt.Errorf(ErrIntervalTooShort, "bloat_collection_interval", time.Second, 30*time.Second),
-				fmt.Errorf(ErrIntervalTooShort, "top_query_collection.collection_interval", 10*time.Second, 30*time.Second),
-			},
+			expected: nil,
 		},
 		{
 			// Equal to the scrape interval is the lower bound, and zero means

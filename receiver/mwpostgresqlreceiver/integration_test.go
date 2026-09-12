@@ -107,6 +107,13 @@ func integrationTest(name string, databases []string, pgVersion string) func(*te
 				rCfg.Metrics.PostgresqlBlksRead.Enabled = true
 				rCfg.Metrics.PostgresqlSequentialScans.Enabled = true
 				rCfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
+				// The goldens record a full scrape. The harness retries until a
+				// scrape matches, and under the default cadence every scrape after
+				// the first within a minute omits the relation families, so pin
+				// both knobs to every scrape here; the defaults are pinned by
+				// TestCadenceDefaultsThrottleRelationsAndBloat.
+				rCfg.RelationMetrics.CollectionInterval = 0
+				rCfg.BloatCollectionInterval = 0
 			}),
 		scraperinttest.WithExpectedFile(expectedFile),
 		scraperinttest.WithCompareOptions(

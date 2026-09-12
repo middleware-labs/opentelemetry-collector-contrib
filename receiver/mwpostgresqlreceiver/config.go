@@ -26,7 +26,6 @@ const (
 	ErrTransportsSupported = "invalid config: 'transport' must be 'tcp' or 'unix'"
 	ErrHostPort            = "invalid config: 'endpoint' must be in the form <host>:<port> no matter what 'transport' is configured"
 	ErrIntervalNegative    = "invalid config: '%s' must not be negative"
-	ErrIntervalTooShort    = "invalid config: '%s' (%s) must not be shorter than 'collection_interval' (%s)"
 )
 
 type TopQueryCollection struct {
@@ -192,16 +191,15 @@ func (cfg *Config) Validate() error {
 	return err
 }
 
-// validateFamilyInterval checks one per-family cadence. A family cannot run
-// more often than the scraper that hosts it, so a set value must be at least
-// the receiver's own collection_interval; zero leaves the family on every
-// scrape.
+// validateFamilyInterval checks one per-family cadence. Only a negative value
+// is rejected. A value shorter than the receiver's collection_interval,
+// including zero, means the family runs on every scrape: the scraper cannot
+// run more often than its controller, and the defaults are non-zero, so a
+// deployment that raises collection_interval above them must not be turned
+// into a configuration error.
 func (cfg *Config) validateFamilyInterval(name string, interval time.Duration) error {
-	switch {
-	case interval < 0:
+	if interval < 0 {
 		return fmt.Errorf(ErrIntervalNegative, name)
-	case interval > 0 && interval < cfg.ControllerConfig.CollectionInterval:
-		return fmt.Errorf(ErrIntervalTooShort, name, interval, cfg.ControllerConfig.CollectionInterval)
 	}
 	return nil
 }
