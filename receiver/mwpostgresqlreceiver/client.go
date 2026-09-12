@@ -1595,6 +1595,15 @@ func (c *postgreSQLClient) getQueryTexts(ctx context.Context, keys []queryStatsK
 		return map[queryStatsKey]string{}, nil
 	}
 
+	// Qualify the view for the same reason getQueryStats does: an extension
+	// installed outside search_path (Supabase uses "extensions") is only
+	// reachable by its schema. Leaving this bare resolved counters but never
+	// text on those installs, so every statement arrived unnamed.
+	caps, err := c.statementCapabilities(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	queryIDs := make([]int64, 0, len(keys))
 	databaseIDs := make([]int64, 0, len(keys))
 	userIDs := make([]int64, 0, len(keys))
@@ -1618,7 +1627,7 @@ func (c *postgreSQLClient) getQueryTexts(ctx context.Context, keys []queryStatsK
           regexp_replace(s.query, '/\*.*?\*/', '', 'g'),
           '--.*$', '', 'gm'
       ) AS query
-    FROM pg_stat_statements AS s
+    FROM %s AS s
     INNER JOIN unnest(%s)
       AS wanted(queryid, dbid, userid%s)
       ON s.queryid = wanted.queryid
@@ -1637,7 +1646,7 @@ func (c *postgreSQLClient) getQueryTexts(ctx context.Context, keys []queryStatsK
 		joinTopLevel = "\n      AND s.toplevel = wanted.toplevel"
 		args = append(args, pq.Array(topLevels))
 	}
-	query = fmt.Sprintf(query, selectTopLevel, unnestArgs, unnestColumns, joinTopLevel)
+	query = fmt.Sprintf(query, selectTopLevel, caps.qualify("pg_stat_statements"), unnestArgs, unnestColumns, joinTopLevel)
 	rows, err := c.client.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to resolve pg_stat_statements query text: %w", err)

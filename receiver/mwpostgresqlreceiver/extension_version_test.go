@@ -278,3 +278,36 @@ func TestGetTopQueryTreatsAbsentStatsSinceAsUnavailable(t *testing.T) {
 		"an absent stats_since must read as the zero time, which is how the "+
 			"cache recognizes the signal is unavailable")
 }
+
+// TestGetQueryTextsQualifiesStatementsView pins the schema qualification of the
+// text-resolution pass.
+//
+// getQueryStats and the top-query template both qualify the view, but
+// getQueryTexts named it bare. On an installation that keeps the extension out
+// of search_path -- Supabase puts it in "extensions" -- that combination is
+// quietly asymmetric: counters resolve, text never does, and every statement is
+// reported without the query it stands for.
+func TestGetQueryTextsQualifiesStatementsView(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+	require.NoError(t, err)
+	defer db.Close()
+
+	client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+
+	mock.ExpectQuery(regexp.QuoteMeta(pgStatStatementsVersionSQL)).
+		WillReturnRows(sqlmock.NewRows([]string{"extversion", "quote_ident"}).AddRow("1.11", "extensions"))
+
+	// The assertion is the expectation itself: only a FROM naming the
+	// extension's own schema matches, so a bare view name fails here.
+	mock.ExpectQuery(`FROM extensions\.pg_stat_statements AS s`).
+		WillReturnRows(sqlmock.NewRows([]string{
+			"queryid", "dbid", "userid", "toplevel", "raw_query", "query",
+		}).AddRow("42", 1, 2, true, "SELECT 1", "SELECT 1"))
+
+	texts, err := client.getQueryTexts(t.Context(), []queryStatsKey{{
+		queryID: 42, database: 1, user: 2, topLevel: true, hasTopLevel: true,
+	}})
+	require.NoError(t, err)
+	require.Len(t, texts, 1)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
