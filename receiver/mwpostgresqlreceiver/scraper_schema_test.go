@@ -48,7 +48,7 @@ func TestScrapeSchemaCollection_Snapshot(t *testing.T) {
 	logger := zap.New(core)
 	settings.Logger = logger
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	// --- VersionDetector ---
 	mock.ExpectQuery(`SELECT version\(\), current_setting`).
@@ -227,7 +227,7 @@ func TestScrapeSchemaCollection_ExcludeTable(t *testing.T) {
 	cfg.SchemaCollection.ExcludeTables = []string{"public.test_table"}
 
 	settings := receivertest.NewNopSettings(metadata.Type)
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	// Version Detector
 	mock.ExpectQuery(`SELECT version\(\), current_setting`).
@@ -287,7 +287,7 @@ func TestScrapeSchemaCollection_ReltupplesFallback(t *testing.T) {
 	cfg.Databases = []string{"postgres"}
 
 	settings := receivertest.NewNopSettings(metadata.Type)
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	// --- VersionDetector ---
 	mock.ExpectQuery(`SELECT version\(\), current_setting`).

@@ -59,13 +59,18 @@ type topQueryStatRow struct {
 	blkWriteTime      sql.NullFloat64
 
 	// Identity columns. pg_stat_statements keys an entry on
-	// (userid, dbid, queryid, toplevel); the receiver currently reconstructs
-	// that from the joined names. Projecting the OIDs and toplevel here lets
-	// Step 7 key the delta cache on the server's own identity without a second
-	// template change, as the plan requires.
+	// (userid, dbid, queryid, toplevel); the delta cache keys on the same
+	// tuple, taken from these fields rather than from the names they join to.
 	dbid     sql.NullInt64
 	userid   sql.NullInt64
 	toplevel sql.NullBool
+
+	// statsSince is the moment the entry's statistics began accumulating,
+	// reported per entry from extension 1.11. It is NULL on older extensions,
+	// where the template selects a literal NULL to keep the projection the
+	// same shape across versions, and the delta cache falls back to the
+	// counter-decrease guard.
+	statsSince sql.NullTime
 }
 
 // scanDest returns the scan destinations for one row, in SELECT order.
@@ -97,47 +102,50 @@ func (r *topQueryStatRow) scanDest() []any {
 		&r.dbid,
 		&r.userid,
 		&r.toplevel,
+		&r.statsSince,
 	}
 }
 
-// counter returns one cumulative counter by its column name, as float64.
+// identity returns the (userid, dbid, queryid, toplevel) tuple the server keys
+// this entry on, for use as the delta cache key.
 //
-// The delta arithmetic in collectTopQuery is uniform across all twelve
-// counters and keyed by column name, so this keeps that loop intact while the
-// values behind it become typed fields. A NULL counter reads as 0, matching
-// the previous behavior where a missing map key yielded the zero value.
-func (r *topQueryStatRow) counter(column string) float64 {
-	switch column {
-	case callsColumnName:
-		return float64(r.calls.Int64)
-	case rowsColumnName:
-		return float64(r.rows.Int64)
-	case sharedBlksDirtiedColumnName:
-		return float64(r.sharedBlksDirtied.Int64)
-	case sharedBlksHitColumnName:
-		return float64(r.sharedBlksHit.Int64)
-	case sharedBlksReadColumnName:
-		return float64(r.sharedBlksRead.Int64)
-	case sharedBlksWrittenColumnName:
-		return float64(r.sharedBlksWritten.Int64)
-	case tempBlksReadColumnName:
-		return float64(r.tempBlksRead.Int64)
-	case tempBlksWrittenColumnName:
-		return float64(r.tempBlksWritten.Int64)
-	case totalExecTimeColumnName:
-		// Milliseconds in the view, seconds in the emitted attribute. The
-		// conversion used to happen during decoding, before any row was
-		// selected; doing it here keeps the delta arithmetic in the same units
-		// the previous code used.
-		return r.totalExecTime.Float64 / 1000.0
-	case totalPlanTimeColumnName:
-		return r.totalPlanTime.Float64 / 1000.0
-	case blkReadTimeAttributeName:
-		return r.blkReadTime.Float64 / 1000.0
-	case blkWriteTimeAttributeName:
-		return r.blkWriteTime.Float64 / 1000.0
-	default:
-		return 0
+// A NULL component contributes its zero value rather than being dropped. NULL
+// is not something pg_stat_statements produces for these columns - they are the
+// entry's own identity, not a join result - but a row that somehow lacks one
+// still gets a stable key distinct from rows that have it, which is the same
+// contract the string key it replaces offered.
+func (r *topQueryStatRow) identity() statementIdentity {
+	return statementIdentity{
+		queryID:  r.queryID.Int64,
+		dbID:     r.dbid.Int64,
+		userID:   r.userid.Int64,
+		topLevel: r.toplevel.Bool,
+	}
+}
+
+// snapshot returns the row's cumulative counters and stats_since, in the units
+// and types the server reports them in.
+//
+// A NULL counter reads as zero, as it did when the generic scanner left the key
+// out of the row map entirely. A NULL stats_since reads as the zero time, which
+// is how the cache recognizes that the signal is unavailable on this server.
+func (r *topQueryStatRow) snapshot() statementSnapshot {
+	return statementSnapshot{
+		statsSince: r.statsSince.Time,
+		counters: statementCounters{
+			calls:             r.calls.Int64,
+			rows:              r.rows.Int64,
+			sharedBlksDirtied: r.sharedBlksDirtied.Int64,
+			sharedBlksHit:     r.sharedBlksHit.Int64,
+			sharedBlksRead:    r.sharedBlksRead.Int64,
+			sharedBlksWritten: r.sharedBlksWritten.Int64,
+			tempBlksRead:      r.tempBlksRead.Int64,
+			tempBlksWritten:   r.tempBlksWritten.Int64,
+			totalExecTimeMS:   r.totalExecTime.Float64,
+			totalPlanTimeMS:   r.totalPlanTime.Float64,
+			blkReadTimeMS:     r.blkReadTime.Float64,
+			blkWriteTimeMS:    r.blkWriteTime.Float64,
+		},
 	}
 }
 

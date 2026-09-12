@@ -40,7 +40,7 @@ func benchCollectTopQuery(b *testing.B, candidates int, topN int64) {
 	cfg.TopQueryCollection.MaxRowsPerQuery = int64(candidates)
 
 	scraper := newTestTopQueryScraperWithConfig(b, cfg,
-		newCache(candidates*int(topQueryCounterCount)*2))
+		newStatementStateCache(candidates*2))
 
 	rows := func(scrape int) []topQueryStatRow {
 		out := make([]topQueryStatRow, candidates)
@@ -104,24 +104,35 @@ func BenchmarkCollectTopQuerySmallServer(b *testing.B) {
 	benchCollectTopQuery(b, 50, 50)
 }
 
-// BenchmarkTopQueryDeltaKey isolates the per-counter key construction. The
-// delta loop builds deltaKey once per row but then concatenates a column name
-// onto it for each of the twelve counters, so this cost is paid 12x per
-// candidate per scrape. Step 7 removes the concatenation entirely by keying a
-// single snapshot on a typed identity.
-func BenchmarkTopQueryDeltaKey(b *testing.B) {
+// BenchmarkTopQueryStatementState isolates the per-statement cache access that
+// replaced the per-counter key construction.
+//
+// The old layout built one key per row and then concatenated a column name
+// onto it for each of the twelve counters, twice over - once to read, once to
+// write - so the cost was paid 24x per candidate per scrape and every one of
+// those concatenations allocated. The Step 6 profile attributed 24.3% of the
+// top-query path's allocation to exactly this. One entry keyed on a comparable
+// struct builds no string at all, which is what this measures.
+func BenchmarkTopQueryStatementState(b *testing.B) {
 	row := topQueryRow("987654321", 1, 1)
+	row.dbid = sql.NullInt64{Int64: 16384, Valid: true}
+	row.userid = sql.NullInt64{Int64: 10, Valid: true}
+	row.toplevel = sql.NullBool{Bool: true, Valid: true}
+
+	cache := newStatementStateCache(64)
+	// Seed it, so the benchmark measures the steady state - a hit followed by
+	// a store - rather than the first-observation path.
+	cache.observe(row.identity(), row.snapshot())
 
 	b.ReportAllocs()
+	i := int64(0)
 	for b.Loop() {
-		key := topQueryStatDeltaKey(&row, "987654321")
-		// Reproduce what the delta loop does with the key, since the
-		// concatenation is the part being removed.
-		for columnName := range updatedOnly {
-			sink = key + columnName
-		}
+		i++
+		snap := row.snapshot()
+		// Counters must advance, or observe takes the calls-did-not-advance
+		// path and skips the subtraction being measured.
+		snap.counters.calls += i
+		snap.counters.totalExecTimeMS += float64(i)
+		cache.observe(row.identity(), snap)
 	}
 }
-
-// sink prevents the compiler from eliminating the work under measurement.
-var sink string

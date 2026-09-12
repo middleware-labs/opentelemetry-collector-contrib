@@ -73,7 +73,7 @@ func TestSchemaCollectionSkipsUnchangedDatabase(t *testing.T) {
 	settings := receivertest.NewNopSettings(metadata.Type)
 	settings.Logger = zap.NewNop()
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	const tableOID = uint32(16385)
 	const xmin = uint32(100)
@@ -122,7 +122,7 @@ func TestSchemaCollectionRecollectsChangedDatabase(t *testing.T) {
 	settings := receivertest.NewNopSettings(metadata.Type)
 	settings.Logger = zap.NewNop()
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	const tableOID = uint32(16385)
 

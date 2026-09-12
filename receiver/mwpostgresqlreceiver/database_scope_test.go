@@ -102,6 +102,7 @@ func renderTopQuerySQL(t *testing.T, sel databaseSelection) string {
 		"limit":               100,
 		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
 		"hasTopLevel":         caps.hasTopLevel(),
+		"hasStatsSince":       caps.hasStatsSince(),
 		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 		"statementsView":      caps.qualify("pg_stat_statements"),
 		"orderByExecTimeCol":  "total_exec_time",

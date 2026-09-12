@@ -5,6 +5,7 @@ package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-co
 
 import (
 	"database/sql"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -168,11 +169,14 @@ func TestTopQueryStatRowScanDestMatchesTemplate(t *testing.T) {
 		"scanDest must have one destination per projected column")
 }
 
-// TestTopQueryStatRowCounterCoversEveryDeltaColumn asserts the typed counter
-// accessor knows every column the delta loop differences. A counter missing
-// here would read as a constant zero, so its delta would always be zero and the
-// statement would never be reported - a silent telemetry loss.
-func TestTopQueryStatRowCounterCoversEveryDeltaColumn(t *testing.T) {
+// TestTopQueryStatRowSnapshotCarriesEveryCounter checks that snapshot copies
+// every counter out of the row, in the units the server reports.
+//
+// A field the row scans but snapshot forgets to copy reads as zero forever, so
+// its delta is always zero and the counter silently never appears in an event.
+// Every value below is distinct, so a copy that reads the wrong field fails
+// too, not just one that reads nothing.
+func TestTopQueryStatRowSnapshotCarriesEveryCounter(t *testing.T) {
 	row := topQueryStatRow{
 		calls:             nullInt(1),
 		rows:              nullInt(2),
@@ -188,65 +192,129 @@ func TestTopQueryStatRowCounterCoversEveryDeltaColumn(t *testing.T) {
 		blkWriteTime:      nullFloat(12000),
 	}
 
-	for columnName := range updatedOnly {
-		assert.NotZero(t, row.counter(columnName),
-			"counter(%q) returned zero for a non-zero column, so its delta would always be zero", columnName)
+	assert.Equal(t, statementCounters{
+		calls:             1,
+		rows:              2,
+		sharedBlksDirtied: 3,
+		sharedBlksHit:     4,
+		sharedBlksRead:    5,
+		sharedBlksWritten: 6,
+		tempBlksRead:      7,
+		tempBlksWritten:   8,
+		// Milliseconds, unconverted: the conversion to seconds happens once on
+		// the delta rather than on both operands.
+		totalExecTimeMS: 9000,
+		totalPlanTimeMS: 10000,
+		blkReadTimeMS:   11000,
+		blkWriteTimeMS:  12000,
+	}, row.snapshot().counters)
+}
+
+// TestStatementCountersCoverEveryReportedColumn asserts that the struct
+// carrying the counters has exactly one field per counter the receiver reports.
+//
+// statementCounters uses named fields rather than a map or an array, so a
+// counter added to the SQL and to the row without being added here would be
+// dropped with nothing to notice it. The two lists are declared independently -
+// one from the column names, one by reflecting over the struct - so they can
+// only agree if both were updated.
+func TestStatementCountersCoverEveryReportedColumn(t *testing.T) {
+	require.Len(t, topQueryCounterColumns, reflect.TypeFor[statementCounters]().NumField(),
+		"statementCounters must have exactly one field per counter in topQueryCounterColumns")
+	require.Len(t, topQueryCounterColumns, reflect.TypeFor[statementDeltas]().NumField(),
+		"statementDeltas must have exactly one field per counter in topQueryCounterColumns")
+
+	seen := make(map[string]struct{}, len(topQueryCounterColumns))
+	for _, columnName := range topQueryCounterColumns {
+		_, duplicate := seen[columnName]
+		require.False(t, duplicate, "%q appears twice in topQueryCounterColumns", columnName)
+		seen[columnName] = struct{}{}
 	}
 }
 
-// TestTopQueryStatRowCounterConvertsMillisecondsToSeconds pins the unit
-// conversion that moved out of the decode path and into the typed accessor.
-func TestTopQueryStatRowCounterConvertsMillisecondsToSeconds(t *testing.T) {
-	row := topQueryStatRow{
-		totalExecTime: nullFloat(11000),
-		totalPlanTime: nullFloat(12000),
-		blkReadTime:   nullFloat(100),
-		blkWriteTime:  nullFloat(200),
-		calls:         nullInt(123),
+// TestStatementCountersSubConvertsMillisecondsToSeconds pins the unit
+// conversion, which happens once on the difference rather than on each operand.
+func TestStatementCountersSubConvertsMillisecondsToSeconds(t *testing.T) {
+	prev := statementCounters{
+		calls:           100,
+		totalExecTimeMS: 1000,
+		totalPlanTimeMS: 2000,
+		blkReadTimeMS:   50,
+		blkWriteTimeMS:  150,
+	}
+	cur := statementCounters{
+		calls:           123,
+		totalExecTimeMS: 12000,
+		totalPlanTimeMS: 14000,
+		blkReadTimeMS:   150,
+		blkWriteTimeMS:  350,
 	}
 
-	assert.InDelta(t, 11.0, row.counter(totalExecTimeColumnName), 1e-9)
-	assert.InDelta(t, 12.0, row.counter(totalPlanTimeColumnName), 1e-9)
-	assert.InDelta(t, 0.1, row.counter(blkReadTimeAttributeName), 1e-9)
-	assert.InDelta(t, 0.2, row.counter(blkWriteTimeAttributeName), 1e-9)
-	// Integer counters are not scaled.
-	assert.InDelta(t, 123.0, row.counter(callsColumnName), 1e-9)
+	deltas := prev.sub(cur)
+	assert.InDelta(t, 11.0, deltas.totalExecTime, 1e-9)
+	assert.InDelta(t, 12.0, deltas.totalPlanTime, 1e-9)
+	assert.InDelta(t, 0.1, deltas.blkReadTime, 1e-9)
+	assert.InDelta(t, 0.2, deltas.blkWriteTime, 1e-9)
+	// Integer counters are not scaled, and stay integers.
+	assert.Equal(t, int64(23), deltas.calls)
 }
 
-// TestTopQueryStatRowCounterTreatsNullAsZero preserves the previous behavior,
+// TestStatementCountersSubIsExactForLargeCounters checks that a delta of two
+// large counters is computed in integer arithmetic.
+//
+// pg_stat_statements counts calls and rows as bigint. The previous code
+// converted each operand to float64 before subtracting, which silently rounds
+// any value above 2^53 to the nearest representable one: two counters a few
+// apart round to the same float and the delta comes out as zero, so a busy
+// statement stops being reported entirely rather than reporting a wrong number.
+func TestStatementCountersSubIsExactForLargeCounters(t *testing.T) {
+	// Both above 2^53, seven apart. As float64 both round to the same value.
+	const prevCalls = int64(1) << 60
+	const curCalls = prevCalls + 7
+	require.Equal(t, float64(prevCalls), float64(curCalls),
+		"the fixture must be in the range where float64 cannot tell the two apart")
+
+	deltas := statementCounters{calls: prevCalls}.sub(statementCounters{calls: curCalls})
+	assert.Equal(t, int64(7), deltas.calls,
+		"a delta of large counters must be computed as integers, not through float64")
+}
+
+// TestTopQueryStatRowSnapshotTreatsNullAsZero preserves the previous behavior,
 // where a NULL column was absent from the row map and read back as zero.
-func TestTopQueryStatRowCounterTreatsNullAsZero(t *testing.T) {
+func TestTopQueryStatRowSnapshotTreatsNullAsZero(t *testing.T) {
 	var row topQueryStatRow
-	for columnName := range updatedOnly {
-		assert.Zero(t, row.counter(columnName), "NULL %q must read as zero", columnName)
+	assert.Equal(t, statementCounters{}, row.snapshot().counters)
+	assert.True(t, row.snapshot().statsSince.IsZero(),
+		"a NULL stats_since must read as the zero time, which is how the cache "+
+			"recognizes that the signal is unavailable")
+}
+
+// TestTopQueryStatRowIdentityUsesProjectedOIDs checks that the cache key is
+// built from the identity columns rather than the joined names.
+func TestTopQueryStatRowIdentityUsesProjectedOIDs(t *testing.T) {
+	row := topQueryStatRow{
+		queryID:  nullInt(114514),
+		dbid:     nullInt(16384),
+		userid:   nullInt(10),
+		toplevel: sql.NullBool{Bool: true, Valid: true},
+		// The names must not participate: they are a join result, and a
+		// database dropped and re-created under the same name is a different
+		// database with a different OID.
+		datname: sql.NullString{String: "orders_db", Valid: true},
+		rolname: sql.NullString{String: "app_user", Valid: true},
 	}
+
+	assert.Equal(t, statementIdentity{
+		queryID: 114514, dbID: 16384, userID: 10, topLevel: true,
+	}, row.identity())
+
+	renamed := row
+	renamed.datname = sql.NullString{String: "something_else", Valid: true}
+	renamed.rolname = sql.NullString{String: "someone_else", Valid: true}
+	assert.Equal(t, row.identity(), renamed.identity(),
+		"identity must not depend on the joined names")
 }
 
 func nullInt(v int64) sql.NullInt64 { return sql.NullInt64{Int64: v, Valid: true} }
 
 func nullFloat(v float64) sql.NullFloat64 { return sql.NullFloat64{Float64: v, Valid: true} }
-
-// TestTopQueryDeltasCoversEveryCounter guards the fixed-size delta array
-// against the counter set outgrowing it.
-//
-// topQueryDeltas is an array so the deltas travel with a selected candidate
-// without allocating. That trades a compile-time guarantee for a runtime one:
-// adding a counter to updatedOnly without widening the array would write past
-// the slots the emit loop reads, so the new counter would be silently dropped
-// from every event.
-func TestTopQueryDeltasCoversEveryCounter(t *testing.T) {
-	var deltas topQueryDeltas
-	require.Len(t, orderedTopQueryCounters, len(deltas),
-		"topQueryDeltas must have one slot per counter in updatedOnly")
-	require.Len(t, orderedTopQueryCounters, len(updatedOnly),
-		"orderedTopQueryCounters must list every counter exactly once")
-
-	seen := make(map[string]struct{}, len(orderedTopQueryCounters))
-	for _, columnName := range orderedTopQueryCounters {
-		_, known := updatedOnly[columnName]
-		require.True(t, known, "%q is ordered but not in updatedOnly", columnName)
-		_, duplicate := seen[columnName]
-		require.False(t, duplicate, "%q appears twice in orderedTopQueryCounters", columnName)
-		seen[columnName] = struct{}{}
-	}
-}

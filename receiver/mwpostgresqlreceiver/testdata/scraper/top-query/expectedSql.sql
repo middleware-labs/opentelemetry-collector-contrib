@@ -17,7 +17,8 @@
   blk_write_time,
   pg_stat_statements.dbid,
   pg_stat_statements.userid,
-  pg_stat_statements.toplevel
+  pg_stat_statements.toplevel,
+  NULL::timestamptz AS stats_since
 FROM
   public.pg_stat_statements as pg_stat_statements
   LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid

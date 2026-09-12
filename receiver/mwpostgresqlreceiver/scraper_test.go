@@ -38,7 +38,7 @@ func TestUnsuccessfulScrape(t *testing.T) {
 	cfg := factory.CreateDefaultConfig().(*Config)
 	cfg.Endpoint = "fake:11111"
 
-	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, newDefaultClientFactory(cfg), newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, newDefaultClientFactory(cfg), newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	actualMetrics, err := scraper.scrape(t.Context())
 	require.Error(t, err)
@@ -69,7 +69,7 @@ func TestScraper(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -127,7 +127,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
 
@@ -152,7 +152,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = false
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = false
 
-		scraper = newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper = newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		actualMetrics, err = scraper.scrape(t.Context())
 		require.NoError(t, err)
 
@@ -204,7 +204,7 @@ func TestScraperNoDatabaseMultipleWithoutPreciseLag(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -257,7 +257,7 @@ func TestScraperNoDatabaseMultiple(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -311,7 +311,7 @@ func TestScraperWithResourceAttributeFeatureGate(t *testing.T) {
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -364,7 +364,7 @@ func TestScraperWithResourceAttributeFeatureGateSingle(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -391,7 +391,7 @@ func TestScraperExcludeDatabase(t *testing.T) {
 		cfg := createDefaultConfig().(*Config)
 		cfg.ExcludeDatabases = []string{"open"}
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -464,7 +464,7 @@ func TestScrapeQuerySample(t *testing.T) {
 	settings.TelemetrySettings = component.TelemetrySettings{
 		Logger: logger,
 	}
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 	scraper.newestQueryTimestamp = 123440.111
 	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
 		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
@@ -515,7 +515,7 @@ func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
 		Logger: logger,
 	}
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 	scraper.newestQueryTimestamp = 123440.111
 
 	traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
@@ -602,7 +602,8 @@ func TestScrapeTopQueries(t *testing.T) {
 		Logger: logger,
 	}
 
-	queryid := "114514"
+	// The queryid, as the fixture reports it and as the identity keys on it.
+	const queryid = int64(114514)
 	const (
 		topQueryDatname = "postgres"
 		topQueryRolname = "master"
@@ -612,59 +613,67 @@ func TestScrapeTopQueries(t *testing.T) {
 	// fields, so the fixture lists the projection in template order rather
 	// than iterating a map, whose order is random.
 	expectedRows := append([]string(nil), benchmarkTopQueryColumns...)
-	expectedValues := strings.Join([]string{
-		"123", // calls
+	// Typed values rather than a CSV string: stats_since is NULL on this
+	// extension version, and a CSV cell cannot express NULL - it produces an
+	// empty string, which fails to scan into a nullable timestamp.
+	expectedValues := []driverValue{
+		int64(123), // calls
 		topQueryDatname,
-		"1111", // shared_blks_dirtied
-		"1112", // shared_blks_hit
-		"1113", // shared_blks_read
-		"1114", // shared_blks_written
-		"1115", // temp_blks_read
-		"1116", // temp_blks_written
+		int64(1111), // shared_blks_dirtied
+		int64(1112), // shared_blks_hit
+		int64(1113), // shared_blks_read
+		int64(1114), // shared_blks_written
+		int64(1115), // temp_blks_read
+		int64(1116), // temp_blks_written
 		"select * from pg_stat_activity where id = 32",
-		queryid,
+		queryid, // queryid
 		topQueryRolname,
-		"30",    // rows
-		"11000", // total_exec_time, milliseconds
-		"12000", // total_plan_time, milliseconds
-		"100",   // blk_read_time, milliseconds
-		"200",   // blk_write_time, milliseconds
-		"16384", // dbid
-		"10",    // userid
-		"true",  // toplevel
-	}, ",")
-
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
-
-	// The delta cache is keyed on the identity pg_stat_statements itself uses -
-	// database, role and queryid - not on queryid alone. Seed the previous
-	// scrape's cumulative values under that key so this scrape emits deltas.
-	priorRow := topQueryStatRow{
-		datname: sql.NullString{String: topQueryDatname, Valid: true},
-		rolname: sql.NullString{String: topQueryRolname, Valid: true},
+		int64(30),    // rows
+		11000.0,      // total_exec_time, milliseconds
+		12000.0,      // total_plan_time, milliseconds
+		100.0,        // blk_read_time, milliseconds
+		200.0,        // blk_write_time, milliseconds
+		int64(16384), // dbid
+		int64(10),    // userid
+		true,         // toplevel
+		nil,          // stats_since, NULL below extension 1.11
 	}
-	priorKey := topQueryStatDeltaKey(&priorRow, queryid)
-	scraper.cache.Add(priorKey+totalExecTimeColumnName, 10)
-	scraper.cache.Add(priorKey+totalPlanTimeColumnName, 11)
-	scraper.cache.Add(priorKey+callsColumnName, 120)
-	scraper.cache.Add(priorKey+rowsColumnName, 20)
 
-	scraper.cache.Add(priorKey+sharedBlksDirtiedColumnName, 1110)
-	scraper.cache.Add(priorKey+sharedBlksHitColumnName, 1110)
-	scraper.cache.Add(priorKey+sharedBlksReadColumnName, 1110)
-	scraper.cache.Add(priorKey+sharedBlksWrittenColumnName, 1110)
-	scraper.cache.Add(priorKey+tempBlksReadColumnName, 1110)
-	scraper.cache.Add(priorKey+tempBlksWrittenColumnName, 1110)
-	// Every counter needs a baseline: one missing counter means this statement
-	// has not been fully observed before, and a statement in that state is
-	// baselined rather than reported.
-	// Seeded at zero: the previous scrape saw this statement having done no
-	// block I/O, so the whole of this scrape's timing is the interval delta.
-	scraper.cache.Add(priorKey+blkReadTimeAttributeName, 0)
-	scraper.cache.Add(priorKey+blkWriteTimeAttributeName, 0)
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(30), newTTLCache[queryPlanKey, string](1, time.Second))
+
+	// The delta cache is keyed on the identity pg_stat_statements itself uses:
+	// the (userid, dbid, queryid, toplevel) tuple the row projects, not the
+	// names it joins to and not queryid alone. Seed the previous scrape's
+	// cumulative values under that identity so this scrape emits deltas.
+	//
+	// One entry holds all twelve counters, so there is no way to seed a
+	// statement partially: the state is present or it is not.
+	priorID := statementIdentity{queryID: queryid, dbID: 16384, userID: 10, topLevel: true}
+	scraper.statements.lru.Add(priorID, statementSnapshot{
+		counters: statementCounters{
+			calls:             120,
+			rows:              20,
+			sharedBlksDirtied: 1110,
+			sharedBlksHit:     1110,
+			sharedBlksRead:    1110,
+			sharedBlksWritten: 1110,
+			tempBlksRead:      1110,
+			tempBlksWritten:   1110,
+			// Milliseconds, as pg_stat_statements reports them and as the
+			// cache now stores them. This scrape reads 11000 and 12000, so the
+			// deltas are 1.0 s and 1.0 s.
+			totalExecTimeMS: 10000,
+			totalPlanTimeMS: 11000,
+			// Seeded at zero: the previous scrape saw this statement having
+			// done no block I/O, so the whole of this scrape's timing is the
+			// interval delta.
+			blkReadTimeMS:  0,
+			blkWriteTimeMS: 0,
+		},
+	})
 
 	expectPgStatStatementsVersion(mock, "1.9")
-	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).FromCSVString(expectedValues))
+	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).AddRow(expectedValues...))
 	// Non-parameterized query: explainQuery runs direct EXPLAIN (no version check)
 	mock.ExpectQuery(expectedExplain).WillReturnRows(sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow("[{\"Plan\":{\"Node Type\":\"Merge Join\",\"Parallel Aware\":false,\"Async Capable\":false,\"Join Type\":\"Inner\",\"Startup Cost\":0.43,\"Total Cost\":55.27,\"Plan Rows\":290,\"Plan Width\":1675,\"Inner Unique\":\"?\",\"Merge Cond\":\"( e.businessentityid = p.businessentityid )\",\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Employee_BusinessEntityID\",\"Relation Name\":\"employee\",\"Alias\":\"e\",\"Startup Cost\":0.15,\"Total Cost\":21.5,\"Plan Rows\":290,\"Plan Width\":112},{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Inner\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Person_BusinessEntityID\",\"Relation Name\":\"person\",\"Alias\":\"p\",\"Startup Cost\":0.29,\"Total Cost\":2261.87,\"Plan Rows\":19972,\"Plan Width\":1563}]}}]"))
 	actualLogs, err := scraper.scrapeTopQuery(t.Context(), 31, 32, 33)
@@ -676,24 +685,31 @@ func TestScrapeTopQueries(t *testing.T) {
 	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 
-	// Verify the cache has updated with latest counter, under the composite
-	// identity key rather than queryid alone.
+	// Verify the cache has updated with the latest counters, under the full
+	// identity tuple and as a single entry.
+	updated, exists := scraper.statements.lru.Get(priorID)
+	assert.True(t, exists)
+	assert.Equal(t, int64(123), updated.counters.calls)
+	assert.InDelta(t, 11000.0, updated.counters.totalExecTimeMS, 0.001)
+	assert.InDelta(t, 12000.0, updated.counters.totalPlanTimeMS, 0.001)
 
-	calls, callsExists := scraper.cache.Get(priorKey + callsColumnName)
-	assert.True(t, callsExists)
-	assert.Equal(t, float64(123), calls)
-	execTime, execTimeExists := scraper.cache.Get(priorKey + totalExecTimeColumnName)
-	assert.True(t, execTimeExists)
-	assert.Equal(t, float64(11), execTime)
-	planTime, planTimeExists := scraper.cache.Get(priorKey + totalPlanTimeColumnName)
-	assert.True(t, planTimeExists)
-	assert.Equal(t, float64(12), planTime)
+	// Identity is the tuple, so a key that differs in any one component must
+	// not resolve to this statement's state. Keyed on queryid alone - which is
+	// what allowed rows for the same query under different roles, databases or
+	// top-level status to collide - every one of these would have hit.
+	for name, other := range map[string]statementIdentity{
+		"different database":     {queryID: queryid, dbID: 99999, userID: 10, topLevel: true},
+		"different role":         {queryID: queryid, dbID: 16384, userID: 99999, topLevel: true},
+		"nested rather than top": {queryID: queryid, dbID: 16384, userID: 10, topLevel: false},
+		"queryid alone":          {queryID: queryid},
+	} {
+		_, hit := scraper.statements.lru.Get(other)
+		assert.False(t, hit, "%s must be a distinct cache entry", name)
+	}
 
-	// The old queryid-only key must NOT be written: that key is what allowed
-	// rows for the same query under different roles or databases to collide.
-	_, bareKeyExists := scraper.cache.Get(queryid + callsColumnName)
-	assert.False(t, bareKeyExists,
-		"delta cache must not be keyed on queryid alone")
+	// The whole statement is one entry, so a scrape of one statement leaves
+	// exactly one.
+	assert.Equal(t, 1, scraper.statements.len())
 }
 
 func TestCanExplainQuery(t *testing.T) {
@@ -1516,7 +1532,7 @@ func TestQuerySampleDedupKeyIncludesBlockingPids(t *testing.T) {
 	settings := receivertest.NewNopSettings(metadata.Type)
 	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
 
-	scraper := newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	baseRow := func() map[string]any {
 		return map[string]any{

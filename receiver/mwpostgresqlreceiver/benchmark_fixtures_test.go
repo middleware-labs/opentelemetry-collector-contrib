@@ -47,6 +47,7 @@ var benchmarkTopQueryColumns = []string{
 	"dbid",
 	"userid",
 	"toplevel",
+	"stats_since",
 }
 
 // representativeQuery is an ordinary application statement: parameter
@@ -117,6 +118,9 @@ func benchmarkTopQueryRow(i int, query string) []driverValue {
 		int64(16384),      // dbid
 		int64(10),         // userid
 		true,              // toplevel
+		// stats_since: NULL, as the pre-1.11 template projects it. The
+		// benchmark measures the common case, and 1.11 is the newer extension.
+		nil,
 	}
 }
 
@@ -143,6 +147,7 @@ func benchmarkTopQueryRowNullHeavy(i int) []driverValue {
 		nil,                 // dbid
 		nil,                 // userid
 		nil,                 // toplevel
+		nil,                 // stats_since
 	}
 }
 

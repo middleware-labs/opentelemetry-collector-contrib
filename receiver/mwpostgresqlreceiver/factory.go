@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confignet"
@@ -22,23 +21,11 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
-// newCache creates a new cache with the given size.
-// If the size is less or equal to 0, it will be set to 1.
-// It will never return an error.
-func newCache(size int) *lru.Cache[string, float64] {
+func newTTLCache[k comparable, v any](size int, ttl time.Duration) *expirable.LRU[k, v] {
 	if size <= 0 {
 		size = 1
 	}
-	// lru will only return error when the size is less than 0
-	cache, _ := lru.New[string, float64](size)
-	return cache
-}
-
-func newTTLCache[v any](size int, ttl time.Duration) *expirable.LRU[string, v] {
-	if size <= 0 {
-		size = 1
-	}
-	cache := expirable.NewLRU[string, v](size, nil, ttl)
+	cache := expirable.NewLRU[k, v](size, nil, ttl)
 	return cache
 }
 
@@ -123,7 +110,7 @@ func createMetricsReceiver(
 		clientFactory = newDefaultClientFactory(cfg)
 	}
 
-	ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+	ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 	s, err := scraper.NewMetrics(ns.scrape, scraper.WithShutdown(ns.shutdown))
 	if err != nil {
 		return nil, err
@@ -156,7 +143,7 @@ func createLogsReceiver(
 	if cfg.Events.DbServerQuerySample.Enabled {
 		// query sample collection does not need cache, but we do not want to make it
 		// nil, so create one size 1 cache as a placeholder.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeQuerySamples(ctx, cfg.QuerySampleCollection.MaxRowsPerQuery)
 		}, scraper.WithShutdown(ns.shutdown))
@@ -172,17 +159,19 @@ func createLogsReceiver(
 	}
 
 	if cfg.Events.DbServerTopQuery.Enabled {
-		// The cache holds one entry per counter per candidate statement, and
-		// every candidate row is traversed on every scrape - not just the
+		// The cache holds one entry per candidate statement, and every
+		// candidate row is traversed on every scrape - not just the
 		// top_n_query rows that are emitted. Sizing it from the output count
 		// makes a small top_n_query evict the whole candidate set each scrape,
 		// so every row looks like a first observation and never produces a
 		// delta. Size it from the candidate count instead.
 		//
-		// There are 12 counters (see updatedOnly in collectTopQuery); the
-		// factor of 2 is headroom for the candidate set shifting between
-		// scrapes.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*topQueryCounterCount*2)), newTTLCache[string](cfg.QueryPlanCacheSize, cfg.QueryPlanCacheTTL))
+		// The unit is statements. It was previously statements times a counter
+		// count, because each counter occupied its own entry; one entry now
+		// holds all twelve, which also means eviction can no longer take part
+		// of a statement's state and leave the rest. The factor of 2 remains as
+		// headroom for the candidate set shifting between scrapes.
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*2)), newTTLCache[queryPlanKey, string](cfg.QueryPlanCacheSize, cfg.QueryPlanCacheTTL))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeTopQuery(ctx, cfg.TopQueryCollection.MaxRowsPerQuery, cfg.TopNQuery, cfg.MaxExplainEachInterval)
 		}, scraper.WithShutdown(ns.shutdown))
@@ -200,7 +189,7 @@ func createLogsReceiver(
 	if cfg.SchemaCollection.Enabled {
 		// schema collection does not need cache, but we do not want to make it
 		// nil, so create one size 1 cache as a placeholder.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeSchemaCollection(ctx)
 		}, scraper.WithShutdown(ns.shutdown))

@@ -229,8 +229,8 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 		// every candidate is traversed each scrape and each occupies one entry
 		// per counter. A cache smaller than that evicts a statement's baseline
 		// before the next scrape can difference against it.
-		newCache(int(30*topQueryCounterCount*2)),
-		newTTLCache[string](1000, time.Second))
+		newStatementStateCache(30*2),
+		newTTLCache[queryPlanKey, string](1000, time.Second))
 	plogs, err := ns.scrapeQuerySamples(t.Context(), 30)
 	assert.NoError(t, err)
 	logRecords := plogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()

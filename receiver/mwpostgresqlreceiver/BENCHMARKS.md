@@ -417,3 +417,84 @@ text. It was additionally fuzzed against the unguarded function for 142k
 executions with no divergence; the fuzz target is not kept in the tree, since
 the property it checks is a property of the pattern and the table test states it
 directly.
+
+## Step 7 result
+
+Compact statement state: one typed snapshot per statement keyed on the
+`(userid, dbid, queryid, toplevel)` identity, replacing twelve string-keyed LRU
+entries per statement. Same-session A/B, 10 runs each, interleaved in one
+session for the reasons recorded under Step 3.
+
+### The target
+
+Step 6 left `deltaKey + columnName` as the dominant remaining allocation on this
+path. The rig-shape profile taken after Step 6 put it at 24.3% of a 63.8 MB
+profile and 94% of what `collectTopQuery` allocates on its own.
+
+The concatenation is gone entirely. The identity is a comparable struct used
+directly as the map key, so no key string is built:
+
+| | B/op | allocs/op |
+|---|---:|---:|
+| before, per statement per scrape | 544 | 12 |
+| after | **0** | **0** |
+
+The two benchmarks are not measuring identical spans — the old one measured key
+construction alone, the new one the whole cache access including the
+subtraction — so the allocation elimination is the claim, not the ns/op ratio.
+
+### End-to-end path
+
+`collectTopQuery`, including delta computation, selection and emission.
+
+| Benchmark | sec/op | B/op | allocs/op |
+|---|---:|---:|---:|
+| CollectTopQueryDefaultShape (1000 of 1000) | -7.7% | -27.1% | -43.1% |
+| CollectTopQueryLowN (50 of 1000) | -70.8% | -79.4% | -89.0% |
+| CollectTopQuerySmallServer (50 of 50) | -13.1% | -22.5% | -41.3% |
+
+The emitted record count was asserted equal before and after for all three
+shapes — 1000, 50 and 50 — so this is a comparison at equal work rather than one
+where the change quietly emits less.
+
+The low-N shape improves far more than the others, and the reason is not only
+the key construction. The old cache was sized at `max_rows_per_query × 12 × 2`
+entries, which is the right number of entries but the wrong shape: twelve
+independent entries per statement mean the LRU's recency order interleaves
+counters from different statements, so pressure evicts fragments. One entry per
+statement removes that. The default shape improves less because it was the shape
+least affected by fragmentation to begin with.
+
+### Calibrating this against the whole agent
+
+Step 6 cut its own path by 99.7% and moved the whole-agent number by nothing
+measurable, because that path was 1.35% of the total at the rig's 58 rows. This
+step's target was 24.3% of the same profile, so it should move something — but
+the honest expectation is a fraction of the top-query path's share, not a
+figure shaped like the table above. The whole-agent measurement is a separate
+run and is not claimed here.
+
+### What this does not address
+
+The post-Step-6 profile put 44.7% in pdata attribute construction —
+`Map.PutDouble` at 22.7%, `PutStr` and `PutInt` at 7.1% each. That is the cost
+of emitting twelve counters plus identity per statement as pdata, and it is
+inherent to the output contract rather than waste. Nothing here changes it, and
+reducing it would mean changing what is emitted, which is a product decision
+rather than an optimization.
+
+### Correctness measured alongside
+
+Every behavioral claim was verified failing-first against the unfixed code:
+the plan-cache key reverted to queryid alone, the identity reduced to queryid
+alone, the `stats_since` signal disabled, integer subtraction replaced with
+float64, and each of the three Step 2 guards removed in turn.
+
+Two of the Step 2 guard mutations initially did **not** fail, which is the
+result the fail-first rule exists to produce. `TestTopQueryUnchangedEntryNotReported`
+and `TestTopQueryRebaselinesOnCounterDecrease` were both passing for the wrong
+reason: their fixtures held `total_exec_time` constant or decreasing alongside
+the counter under test, and the emit path independently drops a row whose
+exec-time delta is not positive. Each fixture now moves exec time in the
+direction that only the named guard can account for, and both mutations then
+fail as they should.

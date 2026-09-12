@@ -113,7 +113,7 @@ func benchScrape(b *testing.B, objects int, mutate func(*metadata.MetricsConfig)
 
 	c := &benchClient{countingClient: newCountingClient(), objects: objects}
 	factory := &benchClientFactory{c: c}
-	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	b.ReportAllocs()
 	for b.Loop() {

@@ -2081,6 +2081,7 @@ func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, sel dat
 		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
 		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 		"hasTopLevel":         caps.hasTopLevel(),
+		"hasStatsSince":       caps.hasStatsSince(),
 		"statementsView":      caps.qualify("pg_stat_statements"),
 		"orderByExecTimeCol":  orderByExecTimeCol,
 		"databasePredicate":   databasePredicate,

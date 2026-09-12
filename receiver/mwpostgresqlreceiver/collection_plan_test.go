@@ -251,7 +251,7 @@ func scrapeWith(t *testing.T, mutate func(m *metadata.MetricsConfig)) (pmetric.M
 
 	c := newCountingClient()
 	factory := &countingClientFactory{c: c}
-	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	c.reset()
 	m, err := scraper.scrape(t.Context())

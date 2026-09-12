@@ -6,6 +6,7 @@ package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-co
 import (
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -58,6 +59,7 @@ func TestExtensionCapabilityGates(t *testing.T) {
 		execTimeColumns  bool
 		topLevel         bool
 		sharedBlkTimings bool
+		statsSince       bool
 	}{
 		// total_exec_time/total_plan_time arrive in 1.8.
 		{version: "1.7"},
@@ -66,9 +68,13 @@ func TestExtensionCapabilityGates(t *testing.T) {
 		{version: "1.9", execTimeColumns: true, topLevel: true},
 		// 1.10 must not be mistaken for older than 1.9.
 		{version: "1.10", execTimeColumns: true, topLevel: true},
-		// 1.11 renames the block timing columns.
-		{version: "1.11", execTimeColumns: true, topLevel: true, sharedBlkTimings: true},
-		{version: "1.13", execTimeColumns: true, topLevel: true, sharedBlkTimings: true},
+		// 1.11 renames the block timing columns and adds the per-entry
+		// stats_since. They are stated separately rather than sharing one
+		// expectation: they arrive in the same upgrade script today, but they
+		// are independent capabilities and a later split should fail here
+		// rather than pass silently.
+		{version: "1.11", execTimeColumns: true, topLevel: true, sharedBlkTimings: true, statsSince: true},
+		{version: "1.13", execTimeColumns: true, topLevel: true, sharedBlkTimings: true, statsSince: true},
 	} {
 		t.Run(tt.version, func(t *testing.T) {
 			v, err := parseExtensionVersion(tt.version)
@@ -78,8 +84,7 @@ func TestExtensionCapabilityGates(t *testing.T) {
 			assert.Equal(t, tt.execTimeColumns, caps.hasExecTimeColumns())
 			assert.Equal(t, tt.topLevel, caps.hasTopLevel())
 			assert.Equal(t, tt.sharedBlkTimings, caps.hasSharedBlkTimings())
-			// stats_since lands with the rename, in the same upgrade script.
-			assert.Equal(t, tt.sharedBlkTimings, caps.hasStatsSince())
+			assert.Equal(t, tt.statsSince, caps.hasStatsSince())
 		})
 	}
 }
@@ -200,4 +205,76 @@ func TestStatementCapabilitiesExtensionAbsent(t *testing.T) {
 	caps, err := client.statementCapabilities(t.Context())
 	require.NoError(t, err)
 	assert.False(t, caps.installed)
+}
+
+// TestGetTopQueryScansStatsSinceOnExtension111 checks that a real 1.11 row's
+// stats_since survives the scan and reaches the delta logic.
+//
+// The rig this receiver is measured on runs pg_stat_statements 1.10, so a clean
+// rig run never exercises this column at all. Only the PostgreSQL 17 container
+// integration test and this unit test cover it, which is why the scan is
+// asserted here rather than left to the SQL-shape test above — that one asserts
+// the statement sent, not that the value comes back typed.
+func TestGetTopQueryScansStatsSinceOnExtension111(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+	defer db.Close()
+
+	client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+
+	statsSince := time.Date(2026, 9, 12, 10, 30, 0, 0, time.UTC)
+	values := []driverValue{
+		int64(5), "postgres", int64(1), int64(1), int64(1), int64(1), int64(1), int64(1),
+		"select 1", int64(114514), "master", int64(5),
+		5000.0, 5000.0, 1.0, 1.0,
+		int64(16384), int64(10), true,
+		statsSince,
+	}
+
+	expectPgStatStatementsVersion(mock, "1.11")
+	mock.ExpectQuery(expectedScrapeTopQueryExtension111).
+		WillReturnRows(sqlmock.NewRows(benchmarkTopQueryColumns).AddRow(values...))
+
+	rows, err := client.getTopQuery(t.Context(), 31, databaseSelection{}, zap.NewNop())
+	require.NoError(t, err)
+	require.Len(t, rows, 1)
+
+	require.True(t, rows[0].statsSince.Valid, "a 1.11 row must carry a non-NULL stats_since")
+	assert.Equal(t, statsSince, rows[0].statsSince.Time.UTC())
+	assert.Equal(t, statsSince, rows[0].snapshot().statsSince.UTC(),
+		"the snapshot the delta cache compares must carry the scanned value")
+}
+
+// TestGetTopQueryTreatsAbsentStatsSinceAsUnavailable is the pre-1.11 half.
+//
+// Below 1.11 the template selects a literal NULL, which must read as the zero
+// time. That is what tells the cache the signal is unavailable, so it falls
+// back to the counter guards rather than treating a NULL as a timestamp.
+func TestGetTopQueryTreatsAbsentStatsSinceAsUnavailable(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+	defer db.Close()
+
+	client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+
+	values := []driverValue{
+		int64(5), "postgres", int64(1), int64(1), int64(1), int64(1), int64(1), int64(1),
+		"select 1", int64(114514), "master", int64(5),
+		5000.0, 5000.0, 1.0, 1.0,
+		int64(16384), int64(10), true,
+		nil, // stats_since: the literal NULL the pre-1.11 template selects
+	}
+
+	expectPgStatStatementsVersion(mock, "1.9")
+	mock.ExpectQuery(expectedScrapeTopQuery).
+		WillReturnRows(sqlmock.NewRows(benchmarkTopQueryColumns).AddRow(values...))
+
+	rows, err := client.getTopQuery(t.Context(), 31, databaseSelection{}, zap.NewNop())
+	require.NoError(t, err)
+	require.Len(t, rows, 1)
+
+	assert.False(t, rows[0].statsSince.Valid)
+	assert.True(t, rows[0].snapshot().statsSince.IsZero(),
+		"an absent stats_since must read as the zero time, which is how the "+
+			"cache recognizes the signal is unavailable")
 }

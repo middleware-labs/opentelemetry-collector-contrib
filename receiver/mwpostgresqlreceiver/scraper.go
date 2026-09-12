@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -64,13 +63,13 @@ type postgreSQLScraper struct {
 	// derived from config.Metrics once at construction so the per-scrape path
 	// only reads booleans.
 	plan               collectionPlan
-	cache              *lru.Cache[string, float64]
+	statements         *statementStateCache
 	queryTextCache     *lru.Cache[queryStatsKey, string]
 	queryTextCacheOnce sync.Once
 	changeTracker      *XminChangeTracker
 	// if enabled, uses a separated attribute for the schema
 	separateSchemaAttr   bool
-	queryPlanCache       *expirable.LRU[string, string]
+	queryPlanCache       *expirable.LRU[queryPlanKey, string]
 	newestQueryTimestamp float64
 	topQueryDisabled     bool
 	// resetDetector notices when the server discards the counters that cache
@@ -128,8 +127,8 @@ func newPostgreSQLScraper(
 	settings receiver.Settings,
 	config *Config,
 	clientFactory postgreSQLClientFactory,
-	cache *lru.Cache[string, float64],
-	queryPlanCache *expirable.LRU[string, string],
+	statements *statementStateCache,
+	queryPlanCache *expirable.LRU[queryPlanKey, string],
 ) *postgreSQLScraper {
 	separateSchemaAttr := separateSchemaAttrGate.IsEnabled()
 
@@ -147,7 +146,7 @@ func newPostgreSQLScraper(
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
 		selection:          newDatabaseSelection(config.Databases, config.ExcludeDatabases),
 		plan:               newCollectionPlan(config.Metrics),
-		cache:              cache,
+		statements:         statements,
 		queryTextCache:     newQueryTextCache(defaultQueryTextCacheSize),
 		resetDetector:      newResetDetector(),
 		instanceTracker:    newInstanceTracker(),
@@ -428,96 +427,28 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 	p.seenQuerySamples = currentSeen
 }
 
-type updatedOnlyInfo struct {
-	finalConverter func(float64) any
-}
-
-func deltaToInt(f float64) any {
-	return int64(f)
-}
-
-// updatedOnly lists the cumulative pg_stat_statements counters that are
-// reported as per-interval deltas, with the conversion applied to the delta
-// before it is emitted.
+// topQueryCounterColumns names the twelve cumulative pg_stat_statements
+// counters the receiver differences and reports as per-interval deltas.
 //
-// It is package level both to avoid rebuilding it on every scrape and so the
-// delta cache can be sized from its length rather than from a hand-maintained
-// number that has already drifted once.
-var updatedOnly = map[string]updatedOnlyInfo{
-	totalExecTimeColumnName:     {},
-	totalPlanTimeColumnName:     {},
-	blkReadTimeAttributeName:    {},
-	blkWriteTimeAttributeName:   {},
-	rowsColumnName:              {finalConverter: deltaToInt},
-	callsColumnName:             {finalConverter: deltaToInt},
-	sharedBlksDirtiedColumnName: {finalConverter: deltaToInt},
-	sharedBlksHitColumnName:     {finalConverter: deltaToInt},
-	sharedBlksReadColumnName:    {finalConverter: deltaToInt},
-	sharedBlksWrittenColumnName: {finalConverter: deltaToInt},
-	tempBlksReadColumnName:      {finalConverter: deltaToInt},
-	tempBlksWrittenColumnName:   {finalConverter: deltaToInt},
+// The delta arithmetic itself lives in statementCounters, whose fields are
+// named and typed, so nothing looks a counter up by name at runtime. This list
+// exists so a test can assert that the struct and the emitted attributes cover
+// exactly the same set: adding a counter to the SQL and the row without adding
+// it here, or the reverse, is the mistake worth catching.
+var topQueryCounterColumns = []string{
+	callsColumnName,
+	rowsColumnName,
+	sharedBlksDirtiedColumnName,
+	sharedBlksHitColumnName,
+	sharedBlksReadColumnName,
+	sharedBlksWrittenColumnName,
+	tempBlksReadColumnName,
+	tempBlksWrittenColumnName,
+	totalExecTimeColumnName,
+	totalPlanTimeColumnName,
+	blkReadTimeAttributeName,
+	blkWriteTimeAttributeName,
 }
-
-// topQueryCounterCount is the number of delta-cache entries one statement
-// occupies.
-var topQueryCounterCount = int64(len(updatedOnly))
-
-// orderedTopQueryCounters is updatedOnly in a fixed order, so a statement's
-// deltas can live in an array indexed by position instead of a map keyed by
-// column name.
-//
-// The delta loop runs for every candidate on every scrape, and at the default
-// max_rows_per_query of 1000 a per-row map cost one allocation and a dozen
-// hash insertions per selected statement for a set whose size and membership
-// are known at build time. The order itself carries no meaning; it only has to
-// be stable, so the array and the emit loop agree on which slot is which.
-var orderedTopQueryCounters = func() []string {
-	out := make([]string, 0, len(updatedOnly))
-	for columnName := range updatedOnly {
-		out = append(out, columnName)
-	}
-	sort.Strings(out)
-	return out
-}()
-
-// Slot indices into topQueryDeltas, resolved once from the ordered counter
-// list so the emit path can read a delta by name without hashing a map or
-// rebuilding an attribute key per counter per row.
-var (
-	slotCalls             = topQueryCounterSlot(callsColumnName)
-	slotRows              = topQueryCounterSlot(rowsColumnName)
-	slotSharedBlksDirtied = topQueryCounterSlot(sharedBlksDirtiedColumnName)
-	slotSharedBlksHit     = topQueryCounterSlot(sharedBlksHitColumnName)
-	slotSharedBlksRead    = topQueryCounterSlot(sharedBlksReadColumnName)
-	slotSharedBlksWritten = topQueryCounterSlot(sharedBlksWrittenColumnName)
-	slotTempBlksRead      = topQueryCounterSlot(tempBlksReadColumnName)
-	slotTempBlksWritten   = topQueryCounterSlot(tempBlksWrittenColumnName)
-	slotTotalExecTime     = topQueryCounterSlot(totalExecTimeColumnName)
-	slotTotalPlanTime     = topQueryCounterSlot(totalPlanTimeColumnName)
-	slotBlkReadTime       = topQueryCounterSlot(blkReadTimeAttributeName)
-	slotBlkWriteTime      = topQueryCounterSlot(blkWriteTimeAttributeName)
-)
-
-// topQueryCounterSlot returns the position of a counter in topQueryDeltas.
-// It panics on an unknown column because the callers above run at package
-// initialization, where a typo is a build-time mistake rather than a runtime
-// condition.
-func topQueryCounterSlot(column string) int {
-	for slot, columnName := range orderedTopQueryCounters {
-		if columnName == column {
-			return slot
-		}
-	}
-	panic("unknown top-query counter: " + column)
-}
-
-// topQueryDeltas holds one statement's per-interval deltas, positionally
-// aligned with orderedTopQueryCounters.
-//
-// The length is fixed so the deltas travel by value with no allocation. A
-// counter added to updatedOnly without widening this array would be silently
-// dropped, so TestTopQueryDeltasCoversEveryCounter asserts the two agree.
-type topQueryDeltas [12]float64
 
 func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory postgreSQLClientFactory, limit, topNQuery, maxExplainEachInterval int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
@@ -589,11 +520,11 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 					// notices that.
 					logger.Info("postgres instance changed, discarding cached counters",
 						zap.String("database", database))
-					p.cache.Purge()
+					p.statements.purge()
 				} else if p.resetDetector.check(ctx, pgClient.client) {
 					logger.Info("pg_stat_statements was reset, discarding cached counters",
 						zap.String("database", database))
-					p.cache.Purge()
+					p.statements.purge()
 				}
 			}
 		}
@@ -649,77 +580,24 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		// them, so each row is differenced against whichever of its siblings
 		// was seen last and the emitted deltas are meaningless - typically
 		// oscillating between a large positive value and zero as the rows take
-		// turns. Key on the same tuple the server does.
-		deltaKey := topQueryStatDeltaKey(row, queryID)
-
-		// pg_stat_statements counters are cumulative for the life of the
-		// entry, so a row is only reportable once there is a previous
-		// observation to difference it against. Three cases are not:
+		// turns. Key on the same tuple the server does, taken from the OIDs the
+		// row projects rather than from the names they join to.
 		//
-		//   - The first time an entry is seen, whether because the collector
-		//     just started, the cache was purged after a reset or an instance
-		//     change, or the entry was evicted and re-read. Emitting the
-		//     cumulative value here reports the statement's entire lifetime as
-		//     one interval's work.
-		//   - A counter that went backwards, which means the entry was reset
-		//     or deallocated and re-created. The remembered value describes a
-		//     series that no longer exists.
-		//   - An entry whose calls did not advance. Its counters cannot have
-		//     changed, so there is no work to report; an entry deallocated and
-		//     re-inserted with identical counts must not be reported as if it
-		//     had run.
-		//
-		// In all three the new values are stored as the baseline and the row
-		// is skipped, so the next scrape produces a true interval delta.
-		baselineOnly := false
-		for columnName := range updatedOnly {
-			// A NULL counter reads as zero, as it did when the generic scanner
-			// left the key out of the row map entirely.
-			valInAtts := row.counter(columnName)
-			valInCache, exist := p.cache.Get(deltaKey + columnName)
-			if !exist || valInAtts < valInCache {
-				baselineOnly = true
-				break
-			}
-		}
-
-		callsDelta := float64(0)
-		if !baselineOnly {
-			current := row.counter(callsColumnName)
-			if previous, exist := p.cache.Get(deltaKey + callsColumnName); exist {
-				callsDelta = current - previous
-			}
-			if callsDelta <= 0 {
-				baselineOnly = true
-			}
-		}
-
-		if baselineOnly {
-			// Store every counter so the next scrape has a complete baseline,
-			// and emit nothing for this entry.
-			for columnName := range updatedOnly {
-				p.cache.Add(deltaKey+columnName, row.counter(columnName))
-			}
+		// The cache holds one entry per statement, so the twelve counters are
+		// stored, read and evicted together, and no key string is built: the
+		// identity is a comparable struct used as the map key directly.
+		// observe applies the first-observation, re-entry, decrease and
+		// calls-did-not-advance rules and stores the new baseline in every case.
+		deltas, reportable := p.statements.observe(row.identity(), row.snapshot())
+		if !reportable {
 			continue
 		}
-
-		var deltas topQueryDeltas
-		execTimeDelta := float64(0)
-		for slot, columnName := range orderedTopQueryCounters {
-			valInAtts := row.counter(columnName)
-			valInCache, _ := p.cache.Get(deltaKey + columnName)
-			deltas[slot] = valInAtts - valInCache
-			p.cache.Add(deltaKey+columnName, valInAtts)
-			if columnName == totalExecTimeColumnName {
-				execTimeDelta = deltas[slot]
-			}
-		}
-		if execTimeDelta == 0.0 {
+		if deltas.totalExecTime == 0.0 {
 			continue
 		}
 		item := priorityqueue.QueueItem[topQuerySelection, float64]{
 			Value:    topQuerySelection{index: i, queryID: queryID, deltas: deltas},
-			Priority: execTimeDelta,
+			Priority: deltas.totalExecTime,
 			Index:    i,
 		}
 		pq.Push(&item)
@@ -759,7 +637,16 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			database = unknownDatabaseName
 		}
 
-		plan, ok := p.queryPlanCache.Get(queryID + "-plan")
+		// The plan cache is keyed on the database as well as the statement.
+		// A queryid identifies a normalized statement, not a plan: the same
+		// text against two databases has two different sets of tables,
+		// statistics and indexes, so it plans differently. Keyed on queryid
+		// alone, whichever database was EXPLAINed first supplied the plan
+		// reported for every other database's copy of that statement - and
+		// silently, since the plan is plausible SQL either way. The key is a
+		// comparable struct, so no key string is built per row either.
+		planKey := queryPlanKey{queryID: row.queryID.Int64, database: database}
+		plan, ok := p.queryPlanCache.Get(planKey)
 		// Check membership again before opening a connection. The SQL predicate
 		// already restricts the rows, but EXPLAIN is the one place the receiver
 		// connects to a database named by the data rather than by
@@ -783,7 +670,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 				}
 				// Cache the plan (empty or not) to avoid flooding errors on every scrape.
 				// The plan cache TTL controls when a re-attempt is made.
-				p.queryPlanCache.Add(queryID+"-plan", plan)
+				p.queryPlanCache.Add(planKey, plan)
 				if closeErr := dbClient.Close(); closeErr != nil {
 					logger.Error("failed to close db client after explain", zap.Error(closeErr))
 				}
@@ -812,21 +699,21 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			topComment,
 			tables,
 			rolname,
-			int64(sel.deltas[slotCalls]),
-			int64(sel.deltas[slotRows]),
-			int64(sel.deltas[slotSharedBlksDirtied]),
-			int64(sel.deltas[slotSharedBlksHit]),
-			int64(sel.deltas[slotSharedBlksRead]),
-			int64(sel.deltas[slotSharedBlksWritten]),
-			int64(sel.deltas[slotTempBlksRead]),
-			int64(sel.deltas[slotTempBlksWritten]),
+			sel.deltas.calls,
+			sel.deltas.rows,
+			sel.deltas.sharedBlksDirtied,
+			sel.deltas.sharedBlksHit,
+			sel.deltas.sharedBlksRead,
+			sel.deltas.sharedBlksWritten,
+			sel.deltas.tempBlksRead,
+			sel.deltas.tempBlksWritten,
 			queryID,
 			rolname,
-			sel.deltas[slotTotalExecTime],
-			sel.deltas[slotTotalPlanTime],
+			sel.deltas.totalExecTime,
+			sel.deltas.totalPlanTime,
 			plan,
-			sel.deltas[slotBlkReadTime],
-			sel.deltas[slotBlkWriteTime],
+			sel.deltas.blkReadTime,
+			sel.deltas.blkWriteTime,
 		)
 		count++
 	}

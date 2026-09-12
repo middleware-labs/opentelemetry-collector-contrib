@@ -1,0 +1,63 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: bug_fix
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Key top-query delta and query-plan state on the identity PostgreSQL itself uses
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  Two pieces of per-statement state were keyed on less than identifies the thing they describe.
+
+  pg_stat_statements identifies an entry by `(userid, dbid, queryid, toplevel)`. The delta cache
+  was keyed on the joined database and role names plus the queryid, so `toplevel` was not part of
+  the key at all and a statement executed at top level shared a baseline with the same statement
+  called from inside a function. A database dropped and re-created under the same name also
+  inherited the old one's counters, and a database or role rename lost the baseline and skipped an
+  interval. The cache now keys on the OIDs the row already projects.
+
+  The query-plan cache was keyed on `queryid + "-plan"` with no database. A queryid names a
+  normalized statement, not a plan: the same text against two databases sees different tables,
+  statistics and indexes and plans differently. Whichever database was EXPLAINed first therefore
+  supplied the plan reported for every other database's copy of that statement, and the result was
+  plausible SQL either way, so nothing indicated it. The key now includes the database.
+
+  Alongside the identity fix, a statement's twelve counters become one cache entry rather than
+  twelve. Eviction can no longer take part of a statement's baseline and leave the rest — a state
+  none of the delta rules describe — and the cache size is now a number of statements rather than
+  a number of statements multiplied by a counter count. Counters are also differenced as integers
+  rather than through float64, which matters above 2^53 where two distinct bigint counters round to
+  the same float and the delta comes out as zero.
+
+  Where the extension is 1.11 or later the query now also projects each entry's `stats_since`, and
+  an entry whose `stats_since` moved forward is treated as deallocated and re-created: its baseline
+  is invalid regardless of what its counters show. This is the case the counter guards cannot catch,
+  because a re-created entry can climb past the remembered values between two scrapes, at which
+  point nothing decreased and calls advanced. Below 1.11 the column is selected as a literal NULL
+  and the existing counter-decrease and calls guards continue to apply unchanged.
+
+  Emitted telemetry is otherwise unchanged, which the existing golden-file scrape test verifies.
+
+  Measured on the receiver's benchmarks as a same-session A/B, 10 runs each, with the emitted record
+  count asserted equal before and after so the comparison is at equal work. A scrape allocates 43%
+  fewer objects and 27% fewer bytes at the defaults (top_n_query and max_rows_per_query both 1000),
+  and 89% fewer objects and 79% fewer bytes in a low-N configuration (50 of 1000 candidates). The
+  per-statement cache access itself goes from 544 B and 12 allocations to zero of both.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

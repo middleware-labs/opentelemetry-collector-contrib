@@ -28,9 +28,14 @@ SELECT
   pg_stat_statements.dbid,
   pg_stat_statements.userid,
 {{- if .hasTopLevel }}
-  pg_stat_statements.toplevel
+  pg_stat_statements.toplevel,
 {{- else }}
-  true AS toplevel
+  true AS toplevel,
+{{- end }}
+{{- if .hasStatsSince }}
+  pg_stat_statements.stats_since
+{{- else }}
+  NULL::timestamptz AS stats_since
 {{- end }}
 FROM
   {{ .statementsView }} as pg_stat_statements

@@ -207,32 +207,45 @@ func TestTopQueryPurgesCacheOnReset(t *testing.T) {
 	settings := receivertest.NewNopSettings(metadata.Type)
 	settings.Logger = zap.NewNop()
 
-	queryid := "114514"
-	row := map[string]string{
-		"calls": "5", "datname": "postgres",
-		"shared_blks_dirtied": "1", "shared_blks_hit": "1",
-		"shared_blks_read": "1", "shared_blks_written": "1",
-		"temp_blks_read": "1", "temp_blks_written": "1",
-		"query": "select * from pg_stat_activity where id = 32", "queryid": queryid,
-		"rolname": "master", "rows": "5",
-		"total_exec_time": "5000", "total_plan_time": "5000",
-		"blk_read_time": "1", "blk_write_time": "1",
-	}
-	cols := make([]string, 0, len(row))
-	vals := ""
-	for k, v := range row {
-		cols = append(cols, k)
-		vals += v + ","
+	// Column order matters: rows are scanned positionally, so the fixture
+	// lists the projection in template order rather than ranging a map, whose
+	// iteration order is random.
+	cols := append([]string(nil), benchmarkTopQueryColumns...)
+	// Typed values rather than a CSV string: stats_since is NULL here, and a
+	// CSV cell cannot express NULL.
+	vals := []driverValue{
+		int64(5),   // calls
+		"postgres", // datname
+		int64(1),   // shared_blks_dirtied
+		int64(1),   // shared_blks_hit
+		int64(1),   // shared_blks_read
+		int64(1),   // shared_blks_written
+		int64(1),   // temp_blks_read
+		int64(1),   // temp_blks_written
+		"select * from pg_stat_activity where id = 32",
+		int64(114514), // queryid
+		"master",      // rolname
+		int64(5),      // rows
+		5000.0,        // total_exec_time
+		5000.0,        // total_plan_time
+		1.0,           // blk_read_time
+		1.0,           // blk_write_time
+		int64(16384),  // dbid
+		int64(10),     // userid
+		true,          // toplevel
+		nil,           // stats_since, NULL below extension 1.11
 	}
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
+	// The identity the seeded counters live under: the tuple the row projects,
+	// not the names it joins to.
+	priorID := statementIdentity{queryID: 114514, dbID: 16384, userID: 10, topLevel: true}
 
-	// Seed the cache as a previous scrape would have, under the identity key.
-	priorKey := topQueryDeltaKey(map[string]any{
-		"db.namespace":                        "postgres",
-		dbAttributePrefix + rolnameColumnName: "master",
-	}, queryid)
-	scraper.cache.Add(priorKey+callsColumnName, 999999)
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(30), newTTLCache[queryPlanKey, string](1, time.Second))
+
+	// Seed the cache as a previous scrape would have.
+	scraper.statements.lru.Add(priorID, statementSnapshot{
+		counters: statementCounters{calls: 999999},
+	})
 
 	// Establish the reset baseline, then move it: this scrape sees a reset.
 	scraper.resetDetector.lastReset = time.Date(2026, 9, 7, 11, 0, 0, 0, time.UTC)
@@ -246,7 +259,7 @@ func TestTopQueryPurgesCacheOnReset(t *testing.T) {
 
 	expectPgStatStatementsVersion(mock, "1.9")
 	mock.ExpectQuery(expectedScrapeTopQuery).
-		WillReturnRows(sqlmock.NewRows(cols).FromCSVString(vals[:len(vals)-1]))
+		WillReturnRows(sqlmock.NewRows(cols).AddRow(vals...))
 	// The instance check runs first and must report no change here, so that
 	// this test exercises the reset path rather than passing because the
 	// instance check happened to fire.
@@ -263,7 +276,7 @@ func TestTopQueryPurgesCacheOnReset(t *testing.T) {
 
 	// The pre-reset value must be gone. If it survived, the next scrape would
 	// difference against 999999 and report nothing for hours.
-	stale, exists := scraper.cache.Get(priorKey + callsColumnName)
-	assert.False(t, exists && stale == 999999,
+	stale, exists := scraper.statements.lru.Get(priorID)
+	assert.False(t, exists && stale.counters.calls == 999999,
 		"cached pre-reset counters must be discarded when the server reports a reset")
 }

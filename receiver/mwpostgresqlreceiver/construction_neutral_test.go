@@ -153,6 +153,7 @@ func TestTopQueryTemplateRendersPerCall(t *testing.T) {
 			"limit":               limit,
 			"hasExecTimeColumns":  caps.hasExecTimeColumns(),
 			"hasTopLevel":         caps.hasTopLevel(),
+			"hasStatsSince":       caps.hasStatsSince(),
 			"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
 			"statementsView":      caps.qualify("pg_stat_statements"),
 			"orderByExecTimeCol":  "total_exec_time",
