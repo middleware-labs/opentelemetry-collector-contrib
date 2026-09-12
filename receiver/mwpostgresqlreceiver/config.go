@@ -25,9 +25,19 @@ const (
 	ErrNotSupported        = "invalid config: field '%s' not supported"
 	ErrTransportsSupported = "invalid config: 'transport' must be 'tcp' or 'unix'"
 	ErrHostPort            = "invalid config: 'endpoint' must be in the form <host>:<port> no matter what 'transport' is configured"
+	ErrIntervalNegative    = "invalid config: '%s' must not be negative"
+	ErrIntervalTooShort    = "invalid config: '%s' (%s) must not be shorter than 'collection_interval' (%s)"
 )
 
 type TopQueryCollection struct {
+	// Interval (`top_query_collection.collection_interval`) throttles the
+	// top-query scraper. The controller still invokes it every
+	// `collection_interval`; when this is longer, the scraper returns empty
+	// logs without touching the server until it is due. Zero means every
+	// scrape. The Go field is not named CollectionInterval because
+	// TopQueryCollection is embedded in Config beside ControllerConfig and the
+	// two promoted names would collide.
+	Interval               time.Duration `mapstructure:"collection_interval"`
 	MaxRowsPerQuery        int64         `mapstructure:"max_rows_per_query"`
 	TopNQuery              int64         `mapstructure:"top_n_query"`
 	MaxExplainEachInterval int64         `mapstructure:"max_explain_each_interval"`
@@ -58,6 +68,24 @@ type SchemaCollectionConfig struct {
 	_ struct{}
 }
 
+// RelationMetricsConfig governs the per-relation metric families: table
+// details and per-table block reads (pg_stat_user_tables, pg_statio), index
+// statistics and function statistics. These are the families whose cost grows
+// with the number of relations on the server, so they are the ones worth
+// running less often than the database-level and server-wide families.
+type RelationMetricsConfig struct {
+	// CollectionInterval is how often the relation families are collected. The
+	// metrics scraper still runs every `collection_interval`; on runs where the
+	// relation families are not yet due it issues none of their SQL and builds
+	// none of their resources. Zero means every scrape.
+	//
+	// postgresql.table.count is reported on every scrape regardless: it is
+	// refreshed when the relation families run and carried forward in between.
+	CollectionInterval time.Duration `mapstructure:"collection_interval"`
+	// prevent unkeyed literal initialization
+	_ struct{}
+}
+
 type Config struct {
 	scraperhelper.ControllerConfig `mapstructure:",squash"`
 	Username                       string                         `mapstructure:"username"`
@@ -73,6 +101,12 @@ type Config struct {
 	QuerySampleCollection          `mapstructure:"query_sample_collection,omitempty"`
 	TopQueryCollection             `mapstructure:"top_query_collection,omitempty"`
 	SchemaCollection               SchemaCollectionConfig `mapstructure:"schema_collection,omitempty"`
+	RelationMetrics                RelationMetricsConfig  `mapstructure:"relation_metrics,omitempty"`
+	// BloatCollectionInterval is how often postgresql.table_bloat and
+	// postgresql.index_bloat are collected. Their two estimator queries are the
+	// heaviest SQL the receiver runs and bloat moves slowly, so they are the
+	// first candidates for a coarser cadence. Zero means every scrape.
+	BloatCollectionInterval time.Duration `mapstructure:"bloat_collection_interval"`
 }
 
 // ConnectionTimeouts configures the per-connection guards applied through the
@@ -151,5 +185,23 @@ func (cfg *Config) Validate() error {
 		err = multierr.Append(err, errors.New(ErrTransportsSupported))
 	}
 
+	err = multierr.Append(err, cfg.validateFamilyInterval("relation_metrics.collection_interval", cfg.RelationMetrics.CollectionInterval))
+	err = multierr.Append(err, cfg.validateFamilyInterval("bloat_collection_interval", cfg.BloatCollectionInterval))
+	err = multierr.Append(err, cfg.validateFamilyInterval("top_query_collection.collection_interval", cfg.TopQueryCollection.Interval))
+
 	return err
+}
+
+// validateFamilyInterval checks one per-family cadence. A family cannot run
+// more often than the scraper that hosts it, so a set value must be at least
+// the receiver's own collection_interval; zero leaves the family on every
+// scrape.
+func (cfg *Config) validateFamilyInterval(name string, interval time.Duration) error {
+	switch {
+	case interval < 0:
+		return fmt.Errorf(ErrIntervalNegative, name)
+	case interval > 0 && interval < cfg.ControllerConfig.CollectionInterval:
+		return fmt.Errorf(ErrIntervalTooShort, name, interval, cfg.ControllerConfig.CollectionInterval)
+	}
+	return nil
 }

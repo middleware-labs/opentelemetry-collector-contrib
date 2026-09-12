@@ -5,6 +5,7 @@ package postgresqlreceiver
 
 import (
 	"context"
+	"runtime"
 	"strconv"
 	"testing"
 	"time"
@@ -170,6 +171,73 @@ func BenchmarkScrapeNoBloat(b *testing.B) {
 				m.PostgresqlTableBloat.Enabled = false
 				m.PostgresqlIndexBloat.Enabled = false
 			})
+		})
+	}
+}
+
+// benchScrapeCycle measures a sequence of cycle scrapes, stepping a fake clock
+// by the receiver's collection_interval between them, so a family whose
+// cadence is a multiple of the scrape interval runs on exactly the scrapes it
+// would run on in production. One benchmark op is one full cycle, so B/op and
+// allocs/op are per cycle; B/scrape and allocs/scrape are the same figures
+// divided by the scrapes in the cycle, which is the number to compare against
+// the single-scrape benchmarks above.
+func benchScrapeCycle(b *testing.B, objects, cycle int, mutate func(*Config)) {
+	b.Helper()
+
+	cfg := createDefaultConfig().(*Config)
+	mutate(cfg)
+
+	c := &benchClient{countingClient: newCountingClient(), objects: objects}
+	factory := &benchClientFactory{c: c}
+	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
+	clock := time.Unix(0, 0)
+	scraper.now = func() time.Time { return clock }
+
+	var before, after runtime.MemStats
+	b.ReportAllocs()
+	runtime.ReadMemStats(&before)
+	for b.Loop() {
+		for i := 0; i < cycle; i++ {
+			if _, err := scraper.scrape(b.Context()); err != nil {
+				b.Fatal(err)
+			}
+			clock = clock.Add(cfg.CollectionInterval)
+		}
+	}
+	runtime.ReadMemStats(&after)
+	scrapes := float64(b.N * cycle)
+	b.ReportMetric(float64(after.TotalAlloc-before.TotalAlloc)/scrapes, "B/scrape")
+	b.ReportMetric(float64(after.Mallocs-before.Mallocs)/scrapes, "allocs/scrape")
+}
+
+// BenchmarkScrapeCadence is the shipped configuration at 1000 objects with the
+// cadence knobs set so the relation families run on one scrape in six and the
+// bloat families on one in sixty, against the same cycles unthrottled. The
+// cycle length matches the cadence so the average is over exactly one period.
+func BenchmarkScrapeCadence(b *testing.B) {
+	const objects = 1000
+	variants := []struct {
+		cycle  int
+		name   string
+		mutate func(*Config)
+	}{
+		{cycle: 6, name: "none", mutate: func(*Config) {}},
+		{cycle: 6, name: "relation-60s", mutate: func(cfg *Config) {
+			cfg.RelationMetrics.CollectionInterval = 6 * cfg.CollectionInterval
+		}},
+		{cycle: 60, name: "none", mutate: func(*Config) {}},
+		{cycle: 60, name: "bloat-600s", mutate: func(cfg *Config) {
+			cfg.BloatCollectionInterval = 60 * cfg.CollectionInterval
+		}},
+		{cycle: 60, name: "relation-60s-bloat-600s", mutate: func(cfg *Config) {
+			cfg.RelationMetrics.CollectionInterval = 6 * cfg.CollectionInterval
+			cfg.BloatCollectionInterval = 60 * cfg.CollectionInterval
+		}},
+	}
+	for _, v := range variants {
+		b.Run("cycle="+strconv.Itoa(v.cycle)+"/cadence="+v.name, func(b *testing.B) {
+			benchScrapeCycle(b, objects, v.cycle, v.mutate)
 		})
 	}
 }

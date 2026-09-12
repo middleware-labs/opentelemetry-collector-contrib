@@ -86,6 +86,22 @@ type postgreSQLScraper struct {
 	seenQuerySamples  map[string]struct{}
 	serviceInstanceID string
 	lastSchemaCheck   time.Time
+	// now is the clock the cadence decisions read. It exists so tests can
+	// step through a scrape sequence without sleeping; data point timestamps
+	// still come from time.Now directly.
+	now func() time.Time
+	// lastRelationRun, lastBloatRun and lastTopQueryRun are the per-family
+	// last-run timestamps behind relation_metrics.collection_interval,
+	// bloat_collection_interval and top_query_collection.collection_interval.
+	// See cadence.go.
+	lastRelationRun time.Time
+	lastBloatRun    time.Time
+	lastTopQueryRun time.Time
+	// tableCounts remembers, per database, the row count of the last
+	// successful table enumeration, so postgresql.table.count can be reported
+	// on scrapes where the relation families are not due without re-running
+	// the enumeration query.
+	tableCounts map[string]int64
 	// schemaServer caches the server-level facts schema collection needs —
 	// version and cloud platform — which do not change for the life of the
 	// process. Detecting them costs several queries; doing so once rather
@@ -156,6 +172,8 @@ func newPostgreSQLScraper(
 		separateSchemaAttr: separateSchemaAttr,
 		seenQuerySamples:   make(map[string]struct{}),
 		serviceInstanceID:  getInstanceID(config.Endpoint, settings.Logger),
+		now:                time.Now,
+		tableCounts:        make(map[string]int64),
 	}
 }
 
@@ -202,8 +220,12 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	}
 	p.retrieveDBMetrics(ctx, listClient, p.selection, r, &errs)
 
+	// Decided once here, after discovery has succeeded, so a scrape that fails
+	// before doing any work does not consume a family's interval, and so every
+	// database in this scrape gets the same answer.
+	due := p.familiesDue()
 	for _, database := range databases {
-		p.collectDatabaseMetrics(ctx, now, database, r, &errs)
+		p.collectDatabaseMetrics(ctx, now, database, r, &errs, due)
 	}
 
 	// Active connections emit one resource per database, and EmitForResource
@@ -278,13 +300,16 @@ func (p *postgreSQLScraper) collectDatabaseMetrics(
 	database string,
 	r *dbRetrieval,
 	errs *errsMux,
+	due familiesDue,
 ) {
-	// With every per-database collector disabled there is nothing this
-	// connection would be used for, so do not open it. The database still gets
-	// its resource and whatever data points the maintenance-connection queries
-	// produced for it.
-	if !p.plan.needsDatabaseClient() {
-		p.recordDatabase(now, database, r, 0)
+	// With every per-database collector disabled, or every enabled one not
+	// due on this scrape, there is nothing this connection would be used for,
+	// so do not open it. The database still gets its resource, whatever data
+	// points the maintenance-connection queries produced for it, and the table
+	// count remembered from the last enumeration (zero when tables are not
+	// collected at all, exactly as before).
+	if !p.needsDatabaseClientFor(database, due) {
+		p.recordDatabase(now, database, r, p.tableCounts[database])
 		return
 	}
 
@@ -298,21 +323,35 @@ func (p *postgreSQLScraper) collectDatabaseMetrics(
 
 	var numTables int64
 	if p.plan.tables {
-		numTables = p.collectTables(ctx, now, dbClient, database, errs)
+		if due.relations {
+			numTables = p.collectTables(ctx, now, dbClient, database, errs)
+		} else if remembered, ok := p.tableCounts[database]; ok {
+			// The connection was opened for another family (bloat); the
+			// count is still served from the last enumeration.
+			numTables = remembered
+		} else {
+			// Relation families are throttled and this database has no
+			// remembered count, so read it without the per-table output.
+			numTables = p.countTables(ctx, dbClient, database, errs)
+		}
 	}
 
 	p.recordDatabase(now, database, r, numTables)
-	if p.plan.indexes {
-		p.collectIndexes(ctx, now, dbClient, database, errs)
+	if due.relations {
+		if p.plan.indexes {
+			p.collectIndexes(ctx, now, dbClient, database, errs)
+		}
+		if p.plan.functions {
+			p.collectFunctions(ctx, now, dbClient, database, errs)
+		}
 	}
-	if p.plan.functions {
-		p.collectFunctions(ctx, now, dbClient, database, errs)
-	}
-	if p.plan.tableBloat {
-		p.collectTableBloat(ctx, now, dbClient, database, errs)
-	}
-	if p.plan.indexBloat {
-		p.collectIndexBloat(ctx, now, dbClient, database, errs)
+	if due.bloat {
+		if p.plan.tableBloat {
+			p.collectTableBloat(ctx, now, dbClient, database, errs)
+		}
+		if p.plan.indexBloat {
+			p.collectIndexBloat(ctx, now, dbClient, database, errs)
+		}
 	}
 }
 
@@ -354,6 +393,13 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 
 func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (retLogs plog.Logs, retErr error) {
 	defer recoverScrape(p.logger, "top_query", &retErr)
+
+	// Throttle to top_query_collection.collection_interval the same way schema
+	// collection throttles to its own interval: the controller still calls this
+	// every collection_interval, and a run that is not due costs no SQL.
+	if !p.topQueryDue() {
+		return plog.NewLogs(), nil
+	}
 
 	var errs errsMux
 
@@ -799,7 +845,23 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
+// countTables runs the table enumeration for its row count alone, which is all
+// postgresql.table.count needs. No per-table data point or resource is built.
+func (p *postgreSQLScraper) countTables(ctx context.Context, dbClient client, db string, errs *errsMux) int64 {
+	tableMetrics, err := dbClient.getDatabaseTableMetrics(ctx, db)
+	if err != nil {
+		errs.addPartial(err)
+	}
+	return p.rememberTableCount(db, len(tableMetrics), err)
+}
+
 func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Timestamp, dbClient client, db string, errs *errsMux) (numTables int64) {
+	// When no per-table metric is enabled, skip the conversion and the
+	// resource per table entirely.
+	if !p.plan.tableDetails && !p.plan.blocksReadByTable {
+		return p.countTables(ctx, dbClient, db, errs)
+	}
+
 	var blockReads map[tableIdentifier]tableIOStats
 	if p.plan.blocksReadByTable {
 		var brErr error
@@ -813,12 +875,7 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 	if err != nil {
 		errs.addPartial(err)
 	}
-
-	// postgresql.table.count needs only the row count. When no per-table metric
-	// is enabled, skip the conversion and the resource per table entirely.
-	if !p.plan.tableDetails && !p.plan.blocksReadByTable {
-		return int64(len(tableMetrics))
-	}
+	numTables = p.rememberTableCount(db, len(tableMetrics), err)
 
 	for tableKey := range tableMetrics {
 		tm := tableMetrics[tableKey]
@@ -861,7 +918,7 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), db, schemaName, tableName, "")
 		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
-	return int64(len(tableMetrics))
+	return numTables
 }
 
 func (p *postgreSQLScraper) collectIndexes(

@@ -90,6 +90,51 @@ func TestValidate(t *testing.T) {
 			},
 		},
 		{
+			desc: "negative family intervals",
+			defaultConfigModifier: func(cfg *Config) {
+				cfg.Username = "otel"
+				cfg.Password = "otel"
+				cfg.RelationMetrics.CollectionInterval = -time.Second
+				cfg.BloatCollectionInterval = -time.Second
+				cfg.TopQueryCollection.Interval = -time.Second
+			},
+			expected: []error{
+				fmt.Errorf(ErrIntervalNegative, "relation_metrics.collection_interval"),
+				fmt.Errorf(ErrIntervalNegative, "bloat_collection_interval"),
+				fmt.Errorf(ErrIntervalNegative, "top_query_collection.collection_interval"),
+			},
+		},
+		{
+			// A family cannot run more often than the scraper that hosts it.
+			desc: "family intervals shorter than the scrape interval",
+			defaultConfigModifier: func(cfg *Config) {
+				cfg.Username = "otel"
+				cfg.Password = "otel"
+				cfg.CollectionInterval = 30 * time.Second
+				cfg.RelationMetrics.CollectionInterval = 29 * time.Second
+				cfg.BloatCollectionInterval = time.Second
+				cfg.TopQueryCollection.Interval = 10 * time.Second
+			},
+			expected: []error{
+				fmt.Errorf(ErrIntervalTooShort, "relation_metrics.collection_interval", 29*time.Second, 30*time.Second),
+				fmt.Errorf(ErrIntervalTooShort, "bloat_collection_interval", time.Second, 30*time.Second),
+				fmt.Errorf(ErrIntervalTooShort, "top_query_collection.collection_interval", 10*time.Second, 30*time.Second),
+			},
+		},
+		{
+			// Equal to the scrape interval is the lower bound, and zero means
+			// "every scrape" rather than "shorter than the scrape interval".
+			desc: "family intervals at the bound or unset",
+			defaultConfigModifier: func(cfg *Config) {
+				cfg.Username = "otel"
+				cfg.Password = "otel"
+				cfg.RelationMetrics.CollectionInterval = cfg.CollectionInterval
+				cfg.BloatCollectionInterval = 0
+				cfg.TopQueryCollection.Interval = 10 * cfg.CollectionInterval
+			},
+			expected: nil,
+		},
+		{
 			desc: "no error",
 			defaultConfigModifier: func(cfg *Config) {
 				cfg.Username = "otel"
@@ -108,6 +153,8 @@ func TestValidate(t *testing.T) {
 				for _, err := range tC.expected {
 					require.ErrorContains(t, actual, err.Error())
 				}
+			} else {
+				require.NoError(t, actual)
 			}
 		})
 	}
@@ -211,6 +258,26 @@ func TestLoadConfig(t *testing.T) {
 		}
 
 		require.Equal(t, expected, cfg)
+	})
+
+	cfg = factory.CreateDefaultConfig()
+
+	t.Run("postgresql/cadence", func(t *testing.T) {
+		sub, err := cm.Sub(component.NewIDWithName(metadata.Type, "cadence").String())
+		require.NoError(t, err)
+		require.NoError(t, sub.Unmarshal(cfg))
+
+		expected := factory.CreateDefaultConfig().(*Config)
+		expected.Endpoint = "localhost:5432"
+		expected.Username = "otel"
+		expected.Password = "${env:POSTGRESQL_PASSWORD}"
+		expected.CollectionInterval = 10 * time.Second
+		expected.RelationMetrics.CollectionInterval = time.Minute
+		expected.BloatCollectionInterval = 10 * time.Minute
+		expected.TopQueryCollection.Interval = time.Minute
+
+		require.Equal(t, expected, cfg)
+		require.NoError(t, xconfmap.Validate(cfg))
 	})
 
 }
