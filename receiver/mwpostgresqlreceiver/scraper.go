@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -205,6 +206,17 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 		p.collectDatabaseMetrics(ctx, now, database, r, &errs)
 	}
 
+	// Active connections emit one resource per database, and EmitForResource
+	// flushes every data point recorded since the previous emit into that
+	// resource. Run it first, while nothing server-wide is pending: recorded
+	// after it, the server-wide families below all reach the final resource
+	// with no database name. Ordered after it, they were swept into whichever
+	// database's connection resource happened to be emitted first, which is a
+	// map iteration and therefore a different database on different scrapes.
+	if p.plan.activeConnections {
+		p.collectActiveConnections(ctx, now, listClient, &errs)
+	}
+
 	p.mb.RecordPostgresqlDatabaseCountDataPoint(now, int64(len(databases)))
 	if p.plan.bgWriter {
 		p.collectBGWriterStats(ctx, now, listClient, &errs)
@@ -217,9 +229,6 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	}
 	if p.plan.maxConnections {
 		p.collectMaxConnections(ctx, now, listClient, &errs)
-	}
-	if p.plan.activeConnections {
-		p.collectActiveConnections(ctx, now, listClient, &errs)
 	}
 	// These two read database-local catalogs (pg_locks joined to pg_class, and
 	// pg_stat_all_tables) but run only on the maintenance connection, so their
@@ -1011,11 +1020,18 @@ func (p *postgreSQLScraper) collectActiveConnections(
 		return
 	}
 
-	for dbName, connStats := range stats {
-		for _, s := range connStats {
+	// Emit in a fixed order so a scrape's output does not depend on map
+	// iteration; the resources are independent, so only determinism is gained.
+	names := make([]string, 0, len(stats))
+	for dbName := range stats {
+		names = append(names, string(dbName))
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		for _, s := range stats[databaseName(name)] {
 			p.mb.RecordPostgresqlConnectionCountDataPoint(now, s.count, s.state, s.app, s.user)
 		}
-		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), string(dbName), "", "", "")
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), name, "", "", "")
 		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
 }
