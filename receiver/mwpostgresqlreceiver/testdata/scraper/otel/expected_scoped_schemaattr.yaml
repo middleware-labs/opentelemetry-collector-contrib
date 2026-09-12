@@ -6,39 +6,6 @@ resourceMetrics:
             stringValue: arjun-Latitude-3540:5432
     scopeMetrics:
       - metrics:
-          - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
-            gauge:
-              dataPoints:
-                - asInt: "2148"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: ""
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "9053"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: postgres
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "0"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: template0
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "8527"
-                  attributes:
-                    - key: dbname
-                      value:
-                        stringValue: template1
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.buffer_hit
-            unit: '{hit}/s'
           - description: Number of times the statement was executed.
             name: postgresql.query.count
             sum:

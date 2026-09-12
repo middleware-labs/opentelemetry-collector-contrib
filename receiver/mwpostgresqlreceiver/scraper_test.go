@@ -1043,7 +1043,30 @@ func (m *mockClient) getQueryTexts(ctx context.Context, keys []queryStatsKey) (m
 
 func (m *mockClient) getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]BufferHit), args.Error(1)
+	hits := args.Get(0).([]BufferHit)
+	// Honour the selection like the other collectors' mocks do. Returning a
+	// fixed list regardless of scope left the scoped golden files unable to
+	// falsify anything for this metric: they matched whether or not filtering
+	// worked.
+	//
+	// This mirrors datnamePredicate rather than inventing its own rule, because
+	// the golden files record what the real SQL would return. An empty dbName
+	// stands for a NULL datname -- pg_stat_database carries a row for shared
+	// objects that belong to no database -- and NULL survives an exclusion
+	// predicate while an allowlist drops it.
+	filtered := make([]BufferHit, 0, len(hits))
+	for _, hit := range hits {
+		if hit.dbName == "" {
+			if !sel.isRestricted() {
+				filtered = append(filtered, hit)
+			}
+			continue
+		}
+		if sel.includes(hit.dbName) {
+			filtered = append(filtered, hit)
+		}
+	}
+	return filtered, args.Error(1)
 }
 
 func (m *mockClient) getRowStats(ctx context.Context) ([]RowStats, error) {
