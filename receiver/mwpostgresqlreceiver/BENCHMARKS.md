@@ -164,6 +164,46 @@ similar share of CPU, so enabling its cache should show up in
 `GetTopQueryRepeatedSQL` specifically, and barely at all in the all-distinct
 benchmarks.
 
+## What dominates at the rig's shape
+
+The Step 6 rig run was flat because the decode path is only 1.35% of the
+receiver's allocation at 58 candidate rows. That left an obvious question
+unanswered - what the other 98% is - and answering it before Step 7 turned out
+to matter, because the benchmark profile everything was targeted from does not
+describe this shape.
+
+The host agent does not register `pprofextension` (only `kubeagent.go` does), so
+rather than modify the binary under test, this is an `alloc_space` profile of
+`BenchmarkCollectTopQuerySmallServer` - 50 candidates, all emitted, which is
+within a couple of rows of the rig's 58. 63.8 MB profiled over 200 iterations:
+
+| Cost | Share | Where |
+|---|---:|---|
+| pdata attribute construction | **44.7%** | `Map.PutDouble` 22.7%, `PutStr` 7.1%, `PutInt` 7.1%, plus `NewLogRecord`/`NewAnyValue*` |
+| `deltaKey + columnName` | **24.3%** | `scraper.go:679,701,710,712` - 15.5 MB of collectTopQuery's 16.5 MB flat |
+| regexp (trace-context parse) | 8.7% | `FindAllStringSubmatch` on emitted rows |
+
+Two things follow, and they point in different directions.
+
+**Step 7's target is real and confirmed at this shape.** The concatenated
+per-counter cache key is 24.3% of allocation here, and it is 94% of what
+`collectTopQuery` allocates on its own. A single typed snapshot per statement
+removes it. That is worth doing and the profile supports it.
+
+**But the larger cost is one nothing in the plan targets.** Building the emitted
+attribute map - `Map.PutDouble` and friends - is 44.7%, nearly twice Step 7's
+target, and it is inherent to emitting 12 counters plus identity attributes per
+statement as pdata. It is not waste in the sense the earlier steps addressed; it
+is the cost of the output contract. Reducing it means emitting fewer attributes
+or emitting them differently, which is a product decision rather than a
+refactor, and the plan's deferred-scope section is the right place for it.
+
+The practical consequence for sequencing: Step 7 should be expected to move the
+rig's whole-receiver number by roughly a quarter of the top-query path's share,
+not by the 90%-shaped figures the 1000-row benchmarks produce. Predicting a
+specific end-to-end delta from a benchmark measured at 20x the row count is what
+made Step 6's flat result surprising; it should not be surprising twice.
+
 ## Step 6 full-agent run: no measurable effect, and why
 
 Same-session A/B on the 52-database rig, 20 minutes per build, 71 steady-state
