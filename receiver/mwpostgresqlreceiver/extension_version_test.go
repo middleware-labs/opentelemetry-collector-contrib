@@ -4,6 +4,7 @@
 package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
 
 import (
+	"errors"
 	"regexp"
 	"testing"
 	"time"
@@ -309,5 +310,37 @@ func TestGetQueryTextsQualifiesStatementsView(t *testing.T) {
 	}})
 	require.NoError(t, err)
 	require.Len(t, texts, 1)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+// TestStatementCapabilitiesRetriesAfterFailure pins that a failed catalog read
+// is not remembered.
+//
+// The failures this lookup can see are transient -- a scrape context deadline,
+// a dropped connection -- not verdicts about the server. Caching one would
+// outlive its cause by the life of the process, because the client pool holds
+// a client indefinitely and never evicts the default database's, so a single
+// unlucky first scrape would leave the statement paths dark until restart.
+func TestStatementCapabilitiesRetriesAfterFailure(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	require.NoError(t, err)
+	defer db.Close()
+
+	client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+
+	mock.ExpectQuery(pgStatStatementsVersionSQL).
+		WillReturnError(errors.New("context deadline exceeded"))
+	expectPgStatStatementsVersion(mock, "1.11")
+
+	_, err = client.statementCapabilities(t.Context())
+	require.Error(t, err)
+
+	// The retry succeeds, and the success is cached: a third call queues no
+	// further query, so an unmet-expectation check would catch a repeat read.
+	for range 2 {
+		caps, err := client.statementCapabilities(t.Context())
+		require.NoError(t, err)
+		assert.True(t, caps.hasSharedBlkTimings())
+	}
 	require.NoError(t, mock.ExpectationsWereMet())
 }

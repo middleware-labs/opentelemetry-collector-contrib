@@ -145,17 +145,32 @@ func parseExtensionVersion(s string) (extensionVersion, error) {
 // is bound to one database on one server, so the answer cannot change beneath
 // it except by an ALTER EXTENSION, which is rare enough to be worth a
 // reconnect.
+// Only a successful read is remembered. A sync.Once here would cache the
+// first failure as well, and the failures available to this lookup are
+// transient ones -- a scrape context deadline, a dropped connection -- rather
+// than statements about the server. Since the client pool holds a client for
+// the life of the process and never evicts the default database's, one
+// unlucky first scrape would otherwise disable the statement paths on that
+// connection until the collector restarted.
 type extensionCapabilityCache struct {
-	err   error
-	once  sync.Once
-	value pgStatStatementsCapabilities
+	mu       sync.Mutex
+	value    pgStatStatementsCapabilities
+	resolved bool
 }
 
 func (c *extensionCapabilityCache) get(ctx context.Context, q rowQuerier) (pgStatStatementsCapabilities, error) {
-	c.once.Do(func() {
-		c.value, c.err = readPgStatStatementsCapabilities(ctx, q)
-	})
-	return c.value, c.err
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.resolved {
+		return c.value, nil
+	}
+	value, err := readPgStatStatementsCapabilities(ctx, q)
+	if err != nil {
+		return pgStatStatementsCapabilities{}, err
+	}
+	c.value = value
+	c.resolved = true
+	return c.value, nil
 }
 
 // rowQuerier is the subset of *IgnoredDB the lookup needs, so it can be
