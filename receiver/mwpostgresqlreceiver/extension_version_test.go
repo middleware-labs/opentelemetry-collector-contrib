@@ -344,3 +344,78 @@ func TestStatementCapabilitiesRetriesAfterFailure(t *testing.T) {
 	}
 	require.NoError(t, mock.ExpectationsWereMet())
 }
+
+// TestGetTopQuerySkipsUndecodableRow covers the per-row branch of the scan
+// loop: a row whose value will not decode is dropped with a warning rather than
+// failing the scrape, and the rows around it still arrive.
+//
+// The distinction matters because the two failure modes are handled opposite
+// ways -- one row is survivable, a truncated result set is not -- and neither
+// branch had a test.
+func TestGetTopQuerySkipsUndecodableRow(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+	require.NoError(t, err)
+	defer db.Close()
+
+	client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+
+	good := func(queryID int64) []driverValue {
+		return []driverValue{
+			int64(1), "postgres", int64(0), int64(0), int64(0), int64(0),
+			int64(0), int64(0), "SELECT 1", queryID, "master", int64(0),
+			1.0, 1.0, 0.0, 0.0, int64(16384), int64(10), true, nil,
+		}
+	}
+	// calls arrives as a string that is not a number: the destination is an
+	// integer, so this row alone fails to scan.
+	bad := good(2)
+	bad[0] = "not-an-integer"
+
+	expectPgStatStatementsVersionRegexp(mock, "1.9")
+	mock.ExpectQuery(`FROM\s+public\.pg_stat_statements`).
+		WillReturnRows(sqlmock.NewRows(benchmarkTopQueryColumns).
+			AddRow(good(1)...).
+			AddRow(bad...).
+			AddRow(good(3)...))
+
+	rows, err := client.getTopQuery(t.Context(), 10, databaseSelection{}, zap.NewNop())
+	require.NoError(t, err, "one undecodable row must not fail the scrape")
+	require.Len(t, rows, 2, "the undecodable row is skipped and its neighbours kept")
+	assert.Equal(t, int64(1), rows[0].queryID.Int64)
+	assert.Equal(t, int64(3), rows[1].queryID.Int64)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
+
+// TestGetTopQueryFailsOnRowError covers the other branch: an error that ends
+// iteration part way through.
+//
+// sql.Rows.Next returns false for a failure exactly as it does for a completed
+// result set, so without the Err check a driver or network failure mid-read is
+// a silent short read -- a scrape that looks successful while reporting a
+// fraction of the statements, which is worse than a scrape that fails.
+func TestGetTopQueryFailsOnRowError(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+	require.NoError(t, err)
+	defer db.Close()
+
+	client := &postgreSQLClient{client: WrapDBWithIgnore(db), closeFn: func() error { return nil }}
+
+	rowValues := []driverValue{
+		int64(1), "postgres", int64(0), int64(0), int64(0), int64(0),
+		int64(0), int64(0), "SELECT 1", int64(1), "master", int64(0),
+		1.0, 1.0, 0.0, 0.0, int64(16384), int64(10), true, nil,
+	}
+
+	expectPgStatStatementsVersionRegexp(mock, "1.9")
+	mock.ExpectQuery(`FROM\s+public\.pg_stat_statements`).
+		WillReturnRows(sqlmock.NewRows(benchmarkTopQueryColumns).
+			AddRow(rowValues...).
+			AddRow(rowValues...).
+			RowError(1, errors.New("connection reset by peer")))
+
+	rows, err := client.getTopQuery(t.Context(), 10, databaseSelection{}, zap.NewNop())
+	require.Error(t, err, "a truncated result set must fail rather than report a short read")
+	assert.ErrorContains(t, err, "failed iterating log rows")
+	assert.Nil(t, rows)
+	require.NoError(t, mock.ExpectationsWereMet())
+}
