@@ -1,3 +1,19 @@
+# Regenerating this package requires two hand edits afterwards. mdatagen cannot
+# produce either, and both are silent: the tree either fails to compile or ships
+# a user-visible regression that only the scrape tests catch.
+#
+#   1. Package name. mdatagen derives it from the directory, so it writes
+#      `package mwpostgresqlreceiver` into generated_component_test.go and
+#      generated_package_test.go, while every hand-written file here is
+#      `package postgresqlreceiver`. Restore the package clause in both.
+#
+#   2. Log body. Re-add `dp.Body().SetStr(dbQueryTextAttributeValue)` after the
+#      db.query.text attribute in BOTH event recorders in
+#      internal/metadata/generated_logs.go. This is a fork-local customization
+#      with no expression in this file, and without it query-sample and
+#      top-query records are emitted with an empty body.
+#      TestScrapeQuerySample and TestScrapeTopQueries fail when it is missing.
+#
 type: postgresql
 status:
   class: receiver
