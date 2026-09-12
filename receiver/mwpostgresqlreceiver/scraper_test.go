@@ -1598,3 +1598,93 @@ type fakeQuerySamplesClient struct {
 func (f *fakeQuerySamplesClient) getQuerySamples(_ context.Context, _ int64, newest float64, _ databaseSelection, _ *zap.Logger) ([]map[string]any, float64, error) {
 	return f.rows, newest, nil
 }
+
+// recordingClientFactory notes every database a caller asked for a connection
+// to, so a test can assert on connections that were never opened.
+type recordingClientFactory struct {
+	db        *sql.DB
+	requested []string
+}
+
+func (f *recordingClientFactory) getClient(database string) (client, error) {
+	f.requested = append(f.requested, database)
+	return &postgreSQLClient{
+		client:  WrapDBWithIgnore(f.db),
+		closeFn: func() error { return nil },
+	}, nil
+}
+
+func (*recordingClientFactory) close() error { return nil }
+
+// TestScrapeTopQuerySkipsExplainOutsideSelection pins the membership check that
+// guards EXPLAIN.
+//
+// EXPLAIN is the one place this receiver connects to a database named by the
+// data rather than by its own configuration, so the row's datname decides where
+// a connection opens. The SQL predicate already restricts which rows come back,
+// which is exactly why the second check is easy to delete as redundant: nothing
+// else fails if it goes. It is defence in depth for a row that arrives out of
+// scope anyway -- a dbid that resolved to a database the operator did not
+// select -- and an unselected database must never see a connection.
+func TestScrapeTopQuerySkipsExplainOutsideSelection(t *testing.T) {
+	cfg := createDefaultConfig().(*Config)
+	// The row below reports datname "unselected". The selection names only
+	// "otherdb", so that row is out of scope.
+	//
+	// The row's database must also not be `postgres`: that one is connected to
+	// regardless of the selection, as the control connection that reads the
+	// server-wide view, so a row naming it could not distinguish the EXPLAIN
+	// connection from the listing connection.
+	cfg.Databases = []string{"otherdb"}
+	cfg.Events.DbServerTopQuery.Enabled = true
+
+	// Regexp matching: a restricted selection renders a dbid predicate into the
+	// top-query SQL, so the unrestricted fixture the other tests embed does not
+	// apply here. The rendered text is not what this test is about.
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+	require.NoError(t, err)
+	defer db.Close()
+
+	factory := &recordingClientFactory{db: db}
+
+	settings := receivertest.NewNopSettings(metadata.Type)
+	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
+
+	scraper := newPostgreSQLScraper(settings, cfg, factory,
+		newStatementStateCache(30), newTTLCache[queryPlanKey, string](1, time.Second))
+
+	expectedValues := []driverValue{
+		int64(123), "unselected", int64(1111), int64(1112), int64(1113), int64(1114),
+		int64(1115), int64(1116), "select * from pg_stat_activity where id = 32",
+		int64(114514), "master", int64(30), 11000.0, 12000.0, 100.0, 200.0,
+		int64(16384), int64(10), true, nil,
+	}
+
+	// Seed the previous scrape's counters under this row's identity. Without a
+	// baseline the row is a first observation, which is not reportable, and it
+	// would never reach the EXPLAIN branch this test is about -- the test would
+	// then pass with the guard deleted.
+	scraper.statements.lru.Add(
+		statementIdentity{queryID: 114514, dbID: 16384, userID: 10, topLevel: true},
+		statementSnapshot{counters: statementCounters{
+			calls: 120, rows: 20,
+			sharedBlksDirtied: 1110, sharedBlksHit: 1110,
+			sharedBlksRead: 1110, sharedBlksWritten: 1110,
+			tempBlksRead: 1110, tempBlksWritten: 1110,
+			totalExecTimeMS: 10000, totalPlanTimeMS: 11000,
+		}})
+
+	expectPgStatStatementsVersionRegexp(mock, "1.9")
+	mock.ExpectQuery(`FROM\s+public\.pg_stat_statements`).
+		WillReturnRows(sqlmock.NewRows(benchmarkTopQueryColumns).AddRow(expectedValues...))
+	// No EXPLAIN is queued: issuing one fails ExpectationsWereMet below.
+
+	_, err = scraper.scrapeTopQuery(t.Context(), 31, 32, 33)
+	require.NoError(t, err)
+
+	// The listing connection is expected; a connection to the row's own
+	// database is the thing under test.
+	assert.NotContains(t, factory.requested, "unselected",
+		"EXPLAIN must not open a connection to a database outside the selection")
+	require.NoError(t, mock.ExpectationsWereMet())
+}
