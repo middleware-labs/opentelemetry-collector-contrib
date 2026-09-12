@@ -584,6 +584,7 @@ func (m *metricPostgresqlAnalyzed) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlAnalyzed(cfg MetricConfig) metricPostgresqlAnalyzed {
 	m := metricPostgresqlAnalyzed{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -635,6 +636,7 @@ func (m *metricPostgresqlAutoanalyzed) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlAutoanalyzed(cfg MetricConfig) metricPostgresqlAutoanalyzed {
 	m := metricPostgresqlAutoanalyzed{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -686,6 +688,7 @@ func (m *metricPostgresqlAutovacuumed) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlAutovacuumed(cfg MetricConfig) metricPostgresqlAutovacuumed {
 	m := metricPostgresqlAutovacuumed{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -737,6 +740,7 @@ func (m *metricPostgresqlBackends) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBackends(cfg MetricConfig) metricPostgresqlBackends {
 	m := metricPostgresqlBackends{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -788,6 +792,7 @@ func (m *metricPostgresqlBgwriterBuffersAllocated) emit(metrics pmetric.MetricSl
 
 func newMetricPostgresqlBgwriterBuffersAllocated(cfg MetricConfig) metricPostgresqlBgwriterBuffersAllocated {
 	m := metricPostgresqlBgwriterBuffersAllocated{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -841,6 +846,7 @@ func (m *metricPostgresqlBgwriterBuffersWrites) emit(metrics pmetric.MetricSlice
 
 func newMetricPostgresqlBgwriterBuffersWrites(cfg MetricConfig) metricPostgresqlBgwriterBuffersWrites {
 	m := metricPostgresqlBgwriterBuffersWrites{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -894,6 +900,7 @@ func (m *metricPostgresqlBgwriterCheckpointCount) emit(metrics pmetric.MetricSli
 
 func newMetricPostgresqlBgwriterCheckpointCount(cfg MetricConfig) metricPostgresqlBgwriterCheckpointCount {
 	m := metricPostgresqlBgwriterCheckpointCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -947,6 +954,7 @@ func (m *metricPostgresqlBgwriterDuration) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBgwriterDuration(cfg MetricConfig) metricPostgresqlBgwriterDuration {
 	m := metricPostgresqlBgwriterDuration{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -998,6 +1006,7 @@ func (m *metricPostgresqlBgwriterMaxwritten) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBgwriterMaxwritten(cfg MetricConfig) metricPostgresqlBgwriterMaxwritten {
 	m := metricPostgresqlBgwriterMaxwritten{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1049,6 +1058,7 @@ func (m *metricPostgresqlBlkReadTime) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBlkReadTime(cfg MetricConfig) metricPostgresqlBlkReadTime {
 	m := metricPostgresqlBlkReadTime{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1100,6 +1110,7 @@ func (m *metricPostgresqlBlkWriteTime) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBlkWriteTime(cfg MetricConfig) metricPostgresqlBlkWriteTime {
 	m := metricPostgresqlBlkWriteTime{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1151,6 +1162,7 @@ func (m *metricPostgresqlBlksHit) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBlksHit(cfg MetricConfig) metricPostgresqlBlksHit {
 	m := metricPostgresqlBlksHit{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1202,6 +1214,7 @@ func (m *metricPostgresqlBlksRead) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBlksRead(cfg MetricConfig) metricPostgresqlBlksRead {
 	m := metricPostgresqlBlksRead{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1255,6 +1268,7 @@ func (m *metricPostgresqlBlocksRead) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBlocksRead(cfg MetricConfig) metricPostgresqlBlocksRead {
 	m := metricPostgresqlBlocksRead{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1306,6 +1320,7 @@ func (m *metricPostgresqlBufferHit) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlBufferHit(cfg MetricConfig) metricPostgresqlBufferHit {
 	m := metricPostgresqlBufferHit{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1357,6 +1372,7 @@ func (m *metricPostgresqlCommits) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlCommits(cfg MetricConfig) metricPostgresqlCommits {
 	m := metricPostgresqlCommits{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1410,6 +1426,7 @@ func (m *metricPostgresqlConnectionCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlConnectionCount(cfg MetricConfig) metricPostgresqlConnectionCount {
 	m := metricPostgresqlConnectionCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1459,6 +1476,7 @@ func (m *metricPostgresqlConnectionMax) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlConnectionMax(cfg MetricConfig) metricPostgresqlConnectionMax {
 	m := metricPostgresqlConnectionMax{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1510,6 +1528,7 @@ func (m *metricPostgresqlDatabaseCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlDatabaseCount(cfg MetricConfig) metricPostgresqlDatabaseCount {
 	m := metricPostgresqlDatabaseCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1563,6 +1582,7 @@ func (m *metricPostgresqlDatabaseLocks) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlDatabaseLocks(cfg MetricConfig) metricPostgresqlDatabaseLocks {
 	m := metricPostgresqlDatabaseLocks{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1614,6 +1634,7 @@ func (m *metricPostgresqlDbSize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlDbSize(cfg MetricConfig) metricPostgresqlDbSize {
 	m := metricPostgresqlDbSize{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1665,6 +1686,7 @@ func (m *metricPostgresqlDeadlocks) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlDeadlocks(cfg MetricConfig) metricPostgresqlDeadlocks {
 	m := metricPostgresqlDeadlocks{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1718,6 +1740,7 @@ func (m *metricPostgresqlFunctionCalls) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlFunctionCalls(cfg MetricConfig) metricPostgresqlFunctionCalls {
 	m := metricPostgresqlFunctionCalls{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1771,6 +1794,7 @@ func (m *metricPostgresqlIndexBlocksRead) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlIndexBlocksRead(cfg MetricConfig) metricPostgresqlIndexBlocksRead {
 	m := metricPostgresqlIndexBlocksRead{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1822,6 +1846,7 @@ func (m *metricPostgresqlIndexRowsRead) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlIndexRowsRead(cfg MetricConfig) metricPostgresqlIndexRowsRead {
 	m := metricPostgresqlIndexRowsRead{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1873,6 +1898,7 @@ func (m *metricPostgresqlIndexScans) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlIndexScans(cfg MetricConfig) metricPostgresqlIndexScans {
 	m := metricPostgresqlIndexScans{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1922,6 +1948,7 @@ func (m *metricPostgresqlIndexSize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlIndexSize(cfg MetricConfig) metricPostgresqlIndexSize {
 	m := metricPostgresqlIndexSize{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -1971,6 +1998,7 @@ func (m *metricPostgresqlIndexBloat) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlIndexBloat(cfg MetricConfig) metricPostgresqlIndexBloat {
 	m := metricPostgresqlIndexBloat{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2022,6 +2050,7 @@ func (m *metricPostgresqlLiveRows) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlLiveRows(cfg MetricConfig) metricPostgresqlLiveRows {
 	m := metricPostgresqlLiveRows{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2075,6 +2104,7 @@ func (m *metricPostgresqlOperations) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlOperations(cfg MetricConfig) metricPostgresqlOperations {
 	m := metricPostgresqlOperations{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2129,6 +2159,7 @@ func (m *metricPostgresqlQueryCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlQueryCount(cfg MetricConfig) metricPostgresqlQueryCount {
 	m := metricPostgresqlQueryCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2183,6 +2214,7 @@ func (m *metricPostgresqlQueryTotalExecTime) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlQueryTotalExecTime(cfg MetricConfig) metricPostgresqlQueryTotalExecTime {
 	m := metricPostgresqlQueryTotalExecTime{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2234,6 +2266,7 @@ func (m *metricPostgresqlReplicationDataDelay) emit(metrics pmetric.MetricSlice)
 
 func newMetricPostgresqlReplicationDataDelay(cfg MetricConfig) metricPostgresqlReplicationDataDelay {
 	m := metricPostgresqlReplicationDataDelay{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2285,6 +2318,7 @@ func (m *metricPostgresqlRollbacks) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlRollbacks(cfg MetricConfig) metricPostgresqlRollbacks {
 	m := metricPostgresqlRollbacks{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2338,6 +2372,7 @@ func (m *metricPostgresqlRows) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlRows(cfg MetricConfig) metricPostgresqlRows {
 	m := metricPostgresqlRows{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2389,6 +2424,7 @@ func (m *metricPostgresqlRowsDeleted) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlRowsDeleted(cfg MetricConfig) metricPostgresqlRowsDeleted {
 	m := metricPostgresqlRowsDeleted{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2440,6 +2476,7 @@ func (m *metricPostgresqlRowsFetched) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlRowsFetched(cfg MetricConfig) metricPostgresqlRowsFetched {
 	m := metricPostgresqlRowsFetched{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2491,6 +2528,7 @@ func (m *metricPostgresqlRowsInserted) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlRowsInserted(cfg MetricConfig) metricPostgresqlRowsInserted {
 	m := metricPostgresqlRowsInserted{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2542,6 +2580,7 @@ func (m *metricPostgresqlRowsUpdated) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlRowsUpdated(cfg MetricConfig) metricPostgresqlRowsUpdated {
 	m := metricPostgresqlRowsUpdated{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2593,6 +2632,7 @@ func (m *metricPostgresqlSequentialScans) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlSequentialScans(cfg MetricConfig) metricPostgresqlSequentialScans {
 	m := metricPostgresqlSequentialScans{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2644,6 +2684,7 @@ func (m *metricPostgresqlTableCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTableCount(cfg MetricConfig) metricPostgresqlTableCount {
 	m := metricPostgresqlTableCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2695,6 +2736,7 @@ func (m *metricPostgresqlTableSize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTableSize(cfg MetricConfig) metricPostgresqlTableSize {
 	m := metricPostgresqlTableSize{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2746,6 +2788,7 @@ func (m *metricPostgresqlTableVacuumCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTableVacuumCount(cfg MetricConfig) metricPostgresqlTableVacuumCount {
 	m := metricPostgresqlTableVacuumCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2795,6 +2838,7 @@ func (m *metricPostgresqlTableBloat) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTableBloat(cfg MetricConfig) metricPostgresqlTableBloat {
 	m := metricPostgresqlTableBloat{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2846,6 +2890,7 @@ func (m *metricPostgresqlTempIo) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTempIo(cfg MetricConfig) metricPostgresqlTempIo {
 	m := metricPostgresqlTempIo{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2897,6 +2942,7 @@ func (m *metricPostgresqlTempFiles) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTempFiles(cfg MetricConfig) metricPostgresqlTempFiles {
 	m := metricPostgresqlTempFiles{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2948,6 +2994,7 @@ func (m *metricPostgresqlToastBlocksHit) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlToastBlocksHit(cfg MetricConfig) metricPostgresqlToastBlocksHit {
 	m := metricPostgresqlToastBlocksHit{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -2999,6 +3046,7 @@ func (m *metricPostgresqlToastIndexBlocksRead) emit(metrics pmetric.MetricSlice)
 
 func newMetricPostgresqlToastIndexBlocksRead(cfg MetricConfig) metricPostgresqlToastIndexBlocksRead {
 	m := metricPostgresqlToastIndexBlocksRead{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3048,6 +3096,7 @@ func (m *metricPostgresqlToastSize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlToastSize(cfg MetricConfig) metricPostgresqlToastSize {
 	m := metricPostgresqlToastSize{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3097,6 +3146,7 @@ func (m *metricPostgresqlTransactionsDurationMax) emit(metrics pmetric.MetricSli
 
 func newMetricPostgresqlTransactionsDurationMax(cfg MetricConfig) metricPostgresqlTransactionsDurationMax {
 	m := metricPostgresqlTransactionsDurationMax{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3146,6 +3196,7 @@ func (m *metricPostgresqlTransactionsDurationSum) emit(metrics pmetric.MetricSli
 
 func newMetricPostgresqlTransactionsDurationSum(cfg MetricConfig) metricPostgresqlTransactionsDurationSum {
 	m := metricPostgresqlTransactionsDurationSum{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3197,6 +3248,7 @@ func (m *metricPostgresqlTupDeleted) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTupDeleted(cfg MetricConfig) metricPostgresqlTupDeleted {
 	m := metricPostgresqlTupDeleted{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3248,6 +3300,7 @@ func (m *metricPostgresqlTupFetched) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTupFetched(cfg MetricConfig) metricPostgresqlTupFetched {
 	m := metricPostgresqlTupFetched{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3299,6 +3352,7 @@ func (m *metricPostgresqlTupInserted) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTupInserted(cfg MetricConfig) metricPostgresqlTupInserted {
 	m := metricPostgresqlTupInserted{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3350,6 +3404,7 @@ func (m *metricPostgresqlTupReturned) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTupReturned(cfg MetricConfig) metricPostgresqlTupReturned {
 	m := metricPostgresqlTupReturned{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3401,6 +3456,7 @@ func (m *metricPostgresqlTupUpdated) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlTupUpdated(cfg MetricConfig) metricPostgresqlTupUpdated {
 	m := metricPostgresqlTupUpdated{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3450,6 +3506,7 @@ func (m *metricPostgresqlWalAge) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlWalAge(cfg MetricConfig) metricPostgresqlWalAge {
 	m := metricPostgresqlWalAge{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3499,6 +3556,7 @@ func (m *metricPostgresqlWalCount) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlWalCount(cfg MetricConfig) metricPostgresqlWalCount {
 	m := metricPostgresqlWalCount{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3551,6 +3609,7 @@ func (m *metricPostgresqlWalDelay) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlWalDelay(cfg MetricConfig) metricPostgresqlWalDelay {
 	m := metricPostgresqlWalDelay{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3603,6 +3662,7 @@ func (m *metricPostgresqlWalLag) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlWalLag(cfg MetricConfig) metricPostgresqlWalLag {
 	m := metricPostgresqlWalLag{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
@@ -3652,6 +3712,7 @@ func (m *metricPostgresqlWalSize) emit(metrics pmetric.MetricSlice) {
 
 func newMetricPostgresqlWalSize(cfg MetricConfig) metricPostgresqlWalSize {
 	m := metricPostgresqlWalSize{config: cfg}
+
 	if cfg.Enabled {
 		m.data = pmetric.NewMetric()
 		m.init()
