@@ -271,6 +271,9 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metr
 	if p.plan.queryPerf {
 		p.collectQueryPerfStats(ctx, now, listClient, &errs)
 	}
+	if p.plan.deallocations {
+		p.collectStatementDeallocations(ctx, now, listClient, &errs)
+	}
 	if p.plan.bufferHit {
 		p.collectBufferHits(ctx, now, listClient, &errs)
 	}
@@ -1302,6 +1305,36 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryID)
 		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryID)
 	}
+}
+
+// collectStatementDeallocations records pg_stat_statements_info.dealloc as a
+// server-wide cumulative counter. It is off by default: the value only means
+// something to an operator sizing pg_stat_statements.max, and every other
+// query-performance metric here is on by default, so an enabled-by-default
+// addition would change output for every deployment without anyone opting in.
+//
+// The read needs the extension's version and schema, which only the real
+// client resolves; the fakes used by the unit tests do not implement it and
+// are skipped, as the reset detector's capability read is.
+func (p *postgreSQLScraper) collectStatementDeallocations(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	pgClient, ok := client.(*postgreSQLClient)
+	if !ok {
+		return
+	}
+	value, supported, err := pgClient.getStatementDeallocations(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	if !supported {
+		return
+	}
+	p.mb.RecordPostgresqlQueryDeallocationsDataPoint(now, value)
 }
 
 func (p *postgreSQLScraper) collectBufferHits(

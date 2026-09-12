@@ -380,6 +380,9 @@ var MetricsInfo = metricsInfo{
 	PostgresqlQueryCount: metricInfo{
 		Name: "postgresql.query.count",
 	},
+	PostgresqlQueryDeallocations: metricInfo{
+		Name: "postgresql.query.deallocations",
+	},
 	PostgresqlQueryTotalExecTime: metricInfo{
 		Name: "postgresql.query.total_exec_time",
 	},
@@ -504,6 +507,7 @@ type metricsInfo struct {
 	PostgresqlLiveRows                 metricInfo
 	PostgresqlOperations               metricInfo
 	PostgresqlQueryCount               metricInfo
+	PostgresqlQueryDeallocations       metricInfo
 	PostgresqlQueryTotalExecTime       metricInfo
 	PostgresqlReplicationDataDelay     metricInfo
 	PostgresqlRollbacks                metricInfo
@@ -2167,6 +2171,58 @@ func newMetricPostgresqlQueryCount(cfg MetricConfig) metricPostgresqlQueryCount 
 	return m
 }
 
+type metricPostgresqlQueryDeallocations struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	config   MetricConfig   // metric config provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills postgresql.query.deallocations metric with initial data.
+func (m *metricPostgresqlQueryDeallocations) init() {
+	m.data.SetName("postgresql.query.deallocations")
+	m.data.SetDescription("Number of times pg_stat_statements discarded entries for its least-executed statements because more distinct statements were observed than pg_stat_statements.max allows. A rising value means the statement table is too small for the workload and top-query and query-performance data are losing statements.")
+	m.data.SetUnit("{deallocations}")
+	m.data.SetEmptySum()
+	m.data.Sum().SetIsMonotonic(true)
+	m.data.Sum().SetAggregationTemporality(pmetric.AggregationTemporalityCumulative)
+}
+
+func (m *metricPostgresqlQueryDeallocations) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64) {
+	if !m.config.Enabled {
+		return
+	}
+	dp := m.data.Sum().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricPostgresqlQueryDeallocations) updateCapacity() {
+	if m.data.Sum().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Sum().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricPostgresqlQueryDeallocations) emit(metrics pmetric.MetricSlice) {
+	if m.config.Enabled && m.data.Sum().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricPostgresqlQueryDeallocations(cfg MetricConfig) metricPostgresqlQueryDeallocations {
+	m := metricPostgresqlQueryDeallocations{config: cfg}
+
+	if cfg.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricPostgresqlQueryTotalExecTime struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	config   MetricConfig   // metric config provided by user.
@@ -3761,6 +3817,7 @@ type MetricsBuilder struct {
 	metricPostgresqlLiveRows                 metricPostgresqlLiveRows
 	metricPostgresqlOperations               metricPostgresqlOperations
 	metricPostgresqlQueryCount               metricPostgresqlQueryCount
+	metricPostgresqlQueryDeallocations       metricPostgresqlQueryDeallocations
 	metricPostgresqlQueryTotalExecTime       metricPostgresqlQueryTotalExecTime
 	metricPostgresqlReplicationDataDelay     metricPostgresqlReplicationDataDelay
 	metricPostgresqlRollbacks                metricPostgresqlRollbacks
@@ -3847,6 +3904,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 		metricPostgresqlLiveRows:                 newMetricPostgresqlLiveRows(mbc.Metrics.PostgresqlLiveRows),
 		metricPostgresqlOperations:               newMetricPostgresqlOperations(mbc.Metrics.PostgresqlOperations),
 		metricPostgresqlQueryCount:               newMetricPostgresqlQueryCount(mbc.Metrics.PostgresqlQueryCount),
+		metricPostgresqlQueryDeallocations:       newMetricPostgresqlQueryDeallocations(mbc.Metrics.PostgresqlQueryDeallocations),
 		metricPostgresqlQueryTotalExecTime:       newMetricPostgresqlQueryTotalExecTime(mbc.Metrics.PostgresqlQueryTotalExecTime),
 		metricPostgresqlReplicationDataDelay:     newMetricPostgresqlReplicationDataDelay(mbc.Metrics.PostgresqlReplicationDataDelay),
 		metricPostgresqlRollbacks:                newMetricPostgresqlRollbacks(mbc.Metrics.PostgresqlRollbacks),
@@ -4016,6 +4074,7 @@ func (mb *MetricsBuilder) EmitForResource(options ...ResourceMetricsOption) {
 	mb.metricPostgresqlLiveRows.emit(ils.Metrics())
 	mb.metricPostgresqlOperations.emit(ils.Metrics())
 	mb.metricPostgresqlQueryCount.emit(ils.Metrics())
+	mb.metricPostgresqlQueryDeallocations.emit(ils.Metrics())
 	mb.metricPostgresqlQueryTotalExecTime.emit(ils.Metrics())
 	mb.metricPostgresqlReplicationDataDelay.emit(ils.Metrics())
 	mb.metricPostgresqlRollbacks.emit(ils.Metrics())
@@ -4230,6 +4289,11 @@ func (mb *MetricsBuilder) RecordPostgresqlOperationsDataPoint(ts pcommon.Timesta
 // RecordPostgresqlQueryCountDataPoint adds a data point to postgresql.query.count metric.
 func (mb *MetricsBuilder) RecordPostgresqlQueryCountDataPoint(ts pcommon.Timestamp, val int64, queryTextAttributeValue string, queryIDAttributeValue string) {
 	mb.metricPostgresqlQueryCount.recordDataPoint(mb.startTime, ts, val, queryTextAttributeValue, queryIDAttributeValue)
+}
+
+// RecordPostgresqlQueryDeallocationsDataPoint adds a data point to postgresql.query.deallocations metric.
+func (mb *MetricsBuilder) RecordPostgresqlQueryDeallocationsDataPoint(ts pcommon.Timestamp, val int64) {
+	mb.metricPostgresqlQueryDeallocations.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordPostgresqlQueryTotalExecTimeDataPoint adds a data point to postgresql.query.total_exec_time metric.

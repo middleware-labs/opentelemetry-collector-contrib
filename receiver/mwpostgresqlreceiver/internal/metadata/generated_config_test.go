@@ -119,6 +119,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 					PostgresqlQueryCount: MetricConfig{
 						Enabled: true,
 					},
+					PostgresqlQueryDeallocations: MetricConfig{
+						Enabled: true,
+					},
 					PostgresqlQueryTotalExecTime: MetricConfig{
 						Enabled: true,
 					},
@@ -315,6 +318,9 @@ func TestMetricsBuilderConfig(t *testing.T) {
 						Enabled: false,
 					},
 					PostgresqlQueryCount: MetricConfig{
+						Enabled: false,
+					},
+					PostgresqlQueryDeallocations: MetricConfig{
 						Enabled: false,
 					},
 					PostgresqlQueryTotalExecTime: MetricConfig{

@@ -1586,6 +1586,28 @@ func parseQueryID(value string) int64 {
 	return queryID
 }
 
+// getStatementDeallocations reads pg_stat_statements_info.dealloc: how many
+// times the extension discarded its least-executed entries because more
+// distinct statements were observed than pg_stat_statements.max allows.
+//
+// The view arrived with extension 1.9, so below that supported is false and
+// nothing is queried. The name is schema-qualified for the same reason the
+// other statement queries are.
+func (c *postgreSQLClient) getStatementDeallocations(ctx context.Context) (value int64, supported bool, err error) {
+	caps, err := c.statementCapabilities(ctx)
+	if err != nil {
+		return 0, false, err
+	}
+	if !caps.hasTopLevel() {
+		return 0, false, nil
+	}
+	query := `SELECT dealloc FROM ` + caps.qualify("pg_stat_statements_info")
+	if err := c.client.QueryRowContext(ctx, query).Scan(&value); err != nil {
+		return 0, true, fmt.Errorf("unable to read pg_stat_statements_info.dealloc: %w", err)
+	}
+	return value, true, nil
+}
+
 // getQueryTexts resolves representative text only for cache misses from the
 // lightweight pg_stat_statements(false) pass. Calling the view (rather than
 // the false-valued function) is intentional here: PostgreSQL loads its text

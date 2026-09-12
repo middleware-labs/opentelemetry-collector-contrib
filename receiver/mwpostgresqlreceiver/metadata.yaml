@@ -836,6 +836,15 @@ metrics:
       monotonic: false
       aggregation_temporality: cumulative
     attributes: [query_text, query_id]
+  postgresql.query.deallocations:
+    enabled: false
+    description: Number of times pg_stat_statements discarded entries for its least-executed statements because more distinct statements were observed than pg_stat_statements.max allows. A rising value means the statement table is too small for the workload and top-query and query-performance data are losing statements.
+    unit: "{deallocations}"
+    stability: development
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
   #DBM METRICS:
   postgresql.query.total_exec_time:
     enabled: true

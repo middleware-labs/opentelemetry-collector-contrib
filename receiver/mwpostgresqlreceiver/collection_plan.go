@@ -52,6 +52,9 @@ type collectionPlan struct {
 	// queryPerf covers getQueryStats plus its getQueryStatsMax sizing probe and
 	// its getQueryTexts follow-up lookups.
 	queryPerf bool
+	// deallocations covers postgresql.query.deallocations, read from
+	// pg_stat_statements_info on the maintenance connection.
+	deallocations bool
 
 	// rowStats covers getRowStats.
 	rowStats bool
@@ -106,6 +109,8 @@ func newCollectionPlan(m metadata.MetricsConfig) collectionPlan {
 		indexBloat: m.PostgresqlIndexBloat.Enabled,
 
 		databaseLocks: m.PostgresqlDatabaseLocks.Enabled,
+
+		deallocations: m.PostgresqlQueryDeallocations.Enabled,
 
 		queryPerf: m.PostgresqlQueryCount.Enabled ||
 			m.PostgresqlQueryTotalExecTime.Enabled,

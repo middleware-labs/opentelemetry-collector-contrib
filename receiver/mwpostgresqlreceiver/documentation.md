@@ -579,6 +579,14 @@ The number of calls made to a function. Requires `track_functions=pl|all` in Pos
 | ---- | ----------- | ------ | ----------------- | ------------------- |
 | function | The name of the function. | Any Str | Recommended | - |
 
+### postgresql.query.deallocations
+
+Number of times pg_stat_statements discarded entries for its least-executed statements because more distinct statements were observed than pg_stat_statements.max allows. A rising value means the statement table is too small for the workload and top-query and query-performance data are losing statements.
+
+| Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
+| ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
+| {deallocations} | Sum | Int | Cumulative | true | Development |
+
 ### postgresql.sequential_scans
 
 The number of sequential scans.

@@ -221,6 +221,13 @@ $defs:
           enabled:
             type: boolean
             default: true
+      postgresql.query.deallocations:
+        description: "PostgresqlQueryDeallocationsMetricConfig provides config for the postgresql.query.deallocations metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: false
       postgresql.query.total_exec_time:
         description: "PostgresqlQueryTotalExecTimeMetricConfig provides config for the postgresql.query.total_exec_time metric."
         type: object

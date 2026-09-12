@@ -80,7 +80,7 @@ func createDefaultConfig() component.Config {
 			Insecure:           false,
 			InsecureSkipVerify: true,
 		},
-		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+		MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 		LogsBuilderConfig:    metadata.DefaultLogsBuilderConfig(),
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,

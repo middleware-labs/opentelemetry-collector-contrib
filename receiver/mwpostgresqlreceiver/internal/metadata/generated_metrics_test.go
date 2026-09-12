@@ -184,6 +184,9 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordPostgresqlQueryCountDataPoint(ts, 1, "query_text-val", "query_id-val")
 
+			allMetricsCount++
+			mb.RecordPostgresqlQueryDeallocationsDataPoint(ts, 1)
+
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueryTotalExecTimeDataPoint(ts, 1, "query_text-val", "query_id-val")
@@ -801,6 +804,20 @@ func TestMetricsBuilder(t *testing.T) {
 					queryIDAttrVal, ok := dp.Attributes().Get("query_id")
 					assert.True(t, ok)
 					assert.Equal(t, "query_id-val", queryIDAttrVal.Str())
+				case "postgresql.query.deallocations":
+					assert.False(t, validatedMetrics["postgresql.query.deallocations"], "Found a duplicate in the metrics slice: postgresql.query.deallocations")
+					validatedMetrics["postgresql.query.deallocations"] = true
+					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+					assert.Equal(t, "Number of times pg_stat_statements discarded entries for its least-executed statements because more distinct statements were observed than pg_stat_statements.max allows. A rising value means the statement table is too small for the workload and top-query and query-performance data are losing statements.", mi.Description())
+					assert.Equal(t, "{deallocations}", mi.Unit())
+					assert.True(t, mi.Sum().IsMonotonic())
+					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+					dp := mi.Sum().DataPoints().At(0)
+					assert.Equal(t, start, dp.StartTimestamp())
+					assert.Equal(t, ts, dp.Timestamp())
+					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.query.total_exec_time":
 					assert.False(t, validatedMetrics["postgresql.query.total_exec_time"], "Found a duplicate in the metrics slice: postgresql.query.total_exec_time")
 					validatedMetrics["postgresql.query.total_exec_time"] = true
