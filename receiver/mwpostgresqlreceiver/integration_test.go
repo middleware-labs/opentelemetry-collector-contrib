@@ -146,8 +146,34 @@ func integrationTest(name string, databases []string, pgVersion string) func(*te
 				"postgresql.wal.age",
 				"postgresql.wal.delay",
 				"postgresql.wal.lag",
+				// Added by this fork after the list above was written; their
+				// values are live server state and differ run to run.
+				"postgresql.analyzed",
+				"postgresql.autoanalyzed",
+				"postgresql.autovacuumed",
+				"postgresql.blk_read_time",
+				"postgresql.blk_write_time",
+				"postgresql.buffer_hit",
+				"postgresql.connection.count",
+				"postgresql.index.blocks_read",
+				"postgresql.index.rows_read",
+				"postgresql.live_rows",
+				"postgresql.rows_deleted",
+				"postgresql.rows_fetched",
+				"postgresql.rows_inserted",
+				"postgresql.rows_updated",
+				"postgresql.temp_files",
+				"postgresql.temp.io",
+				"postgresql.toast.size",
+				"postgresql.transactions.duration.max",
+				"postgresql.transactions.duration.sum",
+				"postgresql.wal.count",
+				"postgresql.wal.size",
 			),
 			pmetrictest.IgnoreSubsequentDataPoints("postgresql.backends"),
+			// connection.count is keyed by state, application and user, and
+			// which backends exist at scrape time is not deterministic.
+			pmetrictest.IgnoreSubsequentDataPoints("postgresql.connection.count"),
 			pmetrictest.IgnoreMetricDataPointsOrder(),
 			pmetrictest.IgnoreStartTimestamp(),
 			pmetrictest.IgnoreTimestamp(),
@@ -184,9 +210,14 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 					"-c",
 					"shared_preload_libraries=pg_stat_statements",
 				},
+				// The official image starts a bootstrap server during
+				// initdb, then stops it and starts the real one, so the
+				// "port 5432" line is logged twice. Waiting for the first
+				// occurrence let the test connect to the bootstrap server
+				// and fail with "the database system is starting up".
 				WaitingFor: wait.ForLog(".*port 5432").
 					AsRegexp().
-					WithOccurrence(1),
+					WithOccurrence(2),
 			},
 		})
 	assert.NoError(t, err)
