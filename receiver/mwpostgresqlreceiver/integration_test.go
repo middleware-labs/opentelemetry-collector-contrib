@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"github.com/tj/assert"
@@ -204,7 +205,14 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 	defer db.Close()
 
 	cfg := Config{
-		Databases: []string{"postgres"},
+		// Both databases are named deliberately. The test executes its
+		// statements against otel2 and asserts on them, while pg_stat_statements
+		// lives in postgres and is reached through the maintenance connection.
+		// Naming only postgres made Step 4's selection filter otel2 out - the
+		// correct behaviour - so both scrapes returned nothing and the
+		// assertions below indexed an empty slice. The test needs otel2 in
+		// scope because otel2 is what it is testing.
+		Databases: []string{"postgres", "otel2"},
 		Username:  "otelu",
 		Password:  "otelp",
 		ControllerConfig: scraperhelper.ControllerConfig{
@@ -233,6 +241,13 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 		newTTLCache[queryPlanKey, string](1000, time.Second))
 	plogs, err := ns.scrapeQuerySamples(t.Context(), 30)
 	assert.NoError(t, err)
+	// require, not assert: an empty result must fail here with a readable
+	// message rather than continue and panic indexing At(0). This test is
+	// gated behind the integration build tag, so a panic here is invisible
+	// until someone runs it with a container runtime - which is how a broken
+	// fixture survived from Step 4 to Step 7 unnoticed.
+	require.Positive(t, plogs.ResourceLogs().Len(),
+		"query sample scrape produced no resource logs")
 	logRecords := plogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
 	found := false
 	for _, record := range logRecords.All() {
@@ -265,7 +280,7 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 
 	secondTimeTopQueryPLogs, err := ns.scrapeTopQuery(t.Context(), 30, 30, 30)
 	assert.NoError(t, err)
-	assert.Greater(t, secondTimeTopQueryPLogs.ResourceLogs().Len(), 0,
+	require.Positive(t, secondTimeTopQueryPLogs.ResourceLogs().Len(),
 		"the second scrape has baselines to difference against and must emit top queries")
 	logRecords = secondTimeTopQueryPLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
 	found = false
