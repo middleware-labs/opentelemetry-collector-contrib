@@ -498,3 +498,57 @@ the counter under test, and the emit path independently drops a row whose
 exec-time delta is not positive. Each fixture now moves exec time in the
 direction that only the named guard can account for, and both mutations then
 fail as they should.
+
+## Cadence defaults: full-agent run on the 52-database rig
+
+Same-session A/B on September 12, 2026, one binary built from `5c07a4c7144`,
+two receiver configurations: `control.yaml` pins `relation_metrics.collection_interval`
+and `bloat_collection_interval` to `0` (every family on every scrape, the
+behaviour before the cadence defaults), `defaults.yaml` leaves them at the
+receiver defaults of 60s and 10m. Everything else identical to the Step 2 and
+Step 6 runs: 52 databases, `pg_stat_statements` 1.10 on one of them, all
+metrics and events enabled, the query load generator running throughout,
+20 minutes per configuration, the first 120 seconds discarded. Artifacts and
+method in `~/pg-leak-test/measure-2026-09-12-cadence/`.
+
+| Measure | Control (every scrape) | Defaults (60s / 10m) | Change |
+|---|---:|---:|---|
+| Allocation rate | 2.49 MB/s (9.0 GB/hour) | 0.58 MB/s (2.1 GB/hour) | **-77%** |
+| CPU | 11.5% of one core | 5.7% of one core | **-50%** |
+| Heap mean / max | 33.1 / 52.6 MB | 30.1 / 43.1 MB | -3.0 / -9.5 MB |
+| PostgreSQL connections, max | 12 | 12 | unchanged |
+| Metric data points per scrape, median | 45,997 | 1,667 | relation scrapes still emit 46,077 once a minute |
+| Metric data points per scrape, mean over the cycle | 45,997 | 9,217 | -80% |
+| Receiver errors | 190 | 0 | see below |
+
+The control run today matches the earlier record (2.58 MB/s at Step 6, 2.49
+today), so the baseline is sound. The saving lands where the benchmark said it
+would: the per-relation output is the receiver's cost, and emitting it once a
+minute instead of every ten seconds removes most of it. The remaining 0.58 MB/s
+is the database-level and server-wide output every ten seconds, the relation
+output once a minute, and the log scrapers.
+
+This is not an equal-work comparison by design: the defaults do less work, and
+the table reports that reduction (data points per scrape) alongside the
+resource numbers rather than hiding it. Nothing else differs: same metrics,
+same resources, same attributes; the relation scrapes emit the same 46k
+points they always did.
+
+### The control run's 190 errors
+
+The control configuration failed schema collection for the same ten databases
+on every pass with `postgresql connection budget exhausted: 10 connections
+already in use`. The metrics factory, cycling through 52 databases every ten
+seconds, kept the shared ten-pool budget full with pools it holds warm, and a
+factory could only evict its own idle pools, so the logs factory's schema
+collector could not open those databases at all. Under the defaults the
+metrics factory opens per-database pools only once a minute and the budget is
+never saturated, which is why the defaults run logged nothing; the underlying
+defect is in the budget, not the cadence, and is fixed separately (the budget
+now reclaims the idlest pool across both factories). Earlier rig runs at the
+same configuration happened not to hit it; which factory wins the budget is a
+startup race between the two scrapers, and once lost it persists for the life
+of the process. Three-minute diagnostics on September 13 confirm the shape: the
+same unfixed binary under the same configuration won the race and logged
+nothing, the pre-branch Step 6 binary likewise, and the fixed binary logged
+nothing as well; the fix removes the race rather than changing its odds.
