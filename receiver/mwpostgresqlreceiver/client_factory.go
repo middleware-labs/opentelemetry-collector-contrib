@@ -133,7 +133,7 @@ func newPoolClientFactory(cfg *Config, budget *connectionBudget) *poolClientFact
 	if poolCfg.MaxDatabases != nil && *poolCfg.MaxDatabases > 0 {
 		maxPooled = *poolCfg.MaxDatabases
 	}
-	return &poolClientFactory{
+	p := &poolClientFactory{
 		baseConfig: postgreSQLConfig{
 			username: cfg.Username,
 			password: string(cfg.Password),
@@ -148,46 +148,82 @@ func newPoolClientFactory(cfg *Config, budget *connectionBudget) *poolClientFact
 		budget:             budget,
 		now:                time.Now,
 	}
+	budget.register(p)
+	return p
 }
 
 func (p *poolClientFactory) getClient(database string) (client, error) {
 	p.Lock()
-	defer p.Unlock()
-
 	if p.closed {
+		p.Unlock()
 		return nil, errFactoryClosed
 	}
-
-	entry, ok := p.pool[database]
-	if !ok {
-		// Opening a pool for a new database costs budget. Try to make room by
-		// closing an idle pool before giving up, so a steady rotation through
-		// many databases keeps working instead of stalling once the budget is
-		// first reached.
-		if !p.budget.tryAcquire() {
-			p.evictIdleLocked(1)
-			if !p.budget.tryAcquire() {
-				return nil, fmt.Errorf(
-					"%w: %d connections already in use", errConnectionBudgetExhausted, p.budget.used())
-			}
-		}
-
-		db, err := getDB(p.baseConfig, database)
-		if err != nil {
-			p.budget.release()
-			return nil, err
-		}
-		p.setPoolSettings(db, database)
-		entry = &pooledDB{db: db}
-		p.pool[database] = entry
+	if entry, ok := p.pool[database]; ok {
+		return p.leaseLocked(database, entry)
 	}
+	p.Unlock()
+
+	// Opening a pool for a new database costs budget. The budget is acquired
+	// without this factory's lock held: when it is exhausted the budget evicts
+	// the idlest pool of whichever factory holds one, and locking that factory
+	// while holding this one is how two factories deadlock on each other.
+	if !p.budget.acquireOrEvict() {
+		return nil, fmt.Errorf(
+			"%w: %d connections already in use", errConnectionBudgetExhausted, p.budget.used())
+	}
+
+	p.Lock()
+	if p.closed {
+		p.Unlock()
+		p.budget.release()
+		return nil, errFactoryClosed
+	}
+	if entry, ok := p.pool[database]; ok {
+		// Another caller opened this pool while the lock was dropped; the
+		// unit acquired above is surplus.
+		p.budget.release()
+		return p.leaseLocked(database, entry)
+	}
+	db, err := getDB(p.baseConfig, database)
+	if err != nil {
+		p.Unlock()
+		p.budget.release()
+		return nil, err
+	}
+	p.setPoolSettings(db, database)
+	entry := &pooledDB{db: db}
+	p.pool[database] = entry
+	return p.leaseLocked(database, entry)
+}
+
+// leaseLocked hands out a client for an existing pool and releases the lock.
+// Callers must hold the lock.
+func (p *poolClientFactory) leaseLocked(database string, entry *pooledDB) (client, error) {
 	entry.refs++
 	p.evictLocked()
-
+	p.Unlock()
 	return &postgreSQLClient{
 		client:  WrapDBWithIgnore(entry.db),
 		closeFn: func() error { p.release(database); return nil },
 	}, nil
+}
+
+// oldestIdle implements idleEvictor.
+func (p *poolClientFactory) oldestIdle() (time.Time, bool) {
+	p.Lock()
+	defer p.Unlock()
+	victim := p.idlestVictimLocked()
+	if victim == "" {
+		return time.Time{}, false
+	}
+	return p.pool[victim].releasedAt, true
+}
+
+// evictOldestIdle implements idleEvictor.
+func (p *poolClientFactory) evictOldestIdle() bool {
+	p.Lock()
+	defer p.Unlock()
+	return p.evictIdleLocked(1) == 1
 }
 
 // release records that a client for database has been closed. It does not close
@@ -296,6 +332,7 @@ func (p *poolClientFactory) close() error {
 
 	p.pool = make(map[string]*pooledDB)
 	p.closed = true
+	p.budget.unregister(p)
 	return err
 }
 

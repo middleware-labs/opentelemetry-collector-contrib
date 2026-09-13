@@ -5,6 +5,7 @@ package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-co
 
 import (
 	"sync"
+	"time"
 )
 
 // defaultMaxTotalConnections caps how many server connections this receiver may
@@ -57,6 +58,34 @@ type connectionBudget struct {
 	mu    sync.Mutex
 	max   int
 	inUse int
+
+	// factories are the pools sharing this budget, registered so that a
+	// factory that finds the budget exhausted can reclaim a unit held idle by
+	// another. Without that, one factory's retained idle pools can occupy the
+	// whole budget and starve the other signal's scraper indefinitely: the
+	// metrics factory cycles through every database and keeps its idlest
+	// pools warm, and the schema collector on the logs factory then fails to
+	// open any database at all. Guarded by mu.
+	factories []idleEvictor
+
+	// arbiter serialises acquisitions that may have to evict. A unit freed by
+	// evicting another factory's pool must go to the factory that asked for
+	// it, not to whichever caller reaches tryAcquire next; holding this for
+	// the whole evict-then-acquire sequence guarantees that, since every pool
+	// creation goes through acquireOrEvict. Never held while waiting on a
+	// factory lock that could itself be waiting here: factories call in
+	// without holding their own lock.
+	arbiter sync.Mutex
+}
+
+// idleEvictor is what a pool factory exposes to the budget so an exhausted
+// budget can be replenished from any factory's idle pools, oldest first.
+type idleEvictor interface {
+	// oldestIdle reports when the factory's idlest evictable pool was released.
+	oldestIdle() (time.Time, bool)
+	// evictOldestIdle closes that pool and returns its unit to the budget,
+	// reporting whether there was one to close.
+	evictOldestIdle() bool
 }
 
 func newConnectionBudget(maxTotal int) *connectionBudget {
@@ -82,6 +111,57 @@ func (b *connectionBudget) tryAcquire() bool {
 	}
 	b.inUse++
 	return true
+}
+
+// register adds a factory to the set the budget may evict from.
+func (b *connectionBudget) register(f idleEvictor) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.factories = append(b.factories, f)
+}
+
+// unregister removes a factory, for a factory that is closing.
+func (b *connectionBudget) unregister(f idleEvictor) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	for i, g := range b.factories {
+		if g == f {
+			b.factories = append(b.factories[:i], b.factories[i+1:]...)
+			return
+		}
+	}
+}
+
+// acquireOrEvict claims one unit, evicting the idlest pool across every
+// registered factory first when the budget is exhausted. It reports false only
+// when no factory has an evictable pool: everything is in use or is a default
+// database pool.
+func (b *connectionBudget) acquireOrEvict() bool {
+	b.arbiter.Lock()
+	defer b.arbiter.Unlock()
+
+	if b.tryAcquire() {
+		return true
+	}
+	b.mu.Lock()
+	factories := append([]idleEvictor(nil), b.factories...)
+	b.mu.Unlock()
+
+	var victim idleEvictor
+	var victimAt time.Time
+	for _, f := range factories {
+		at, ok := f.oldestIdle()
+		if !ok {
+			continue
+		}
+		if victim == nil || at.Before(victimAt) {
+			victim, victimAt = f, at
+		}
+	}
+	if victim == nil || !victim.evictOldestIdle() {
+		return false
+	}
+	return b.tryAcquire()
 }
 
 // release returns one unit to the budget. It is safe to call more times than
