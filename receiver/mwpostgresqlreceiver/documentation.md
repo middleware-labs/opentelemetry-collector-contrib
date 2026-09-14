@@ -730,7 +730,7 @@ query sample
 | postgresql.blocking_pids | List of PIDs of sessions that are blocking this backend. Populated when wait_event_type = 'Lock'; empty otherwise. | Any Slice | - |
 | postgresql.backend_xid | Top-level transaction identifier of this backend, if any. | Any Int | - |
 | postgresql.query_id | Identifier of this backend's most recent query. If state is active this field shows the identifier of the currently executing query. In all other states, it shows the identifier of last query that was executed. | Any Str | - |
-| postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double | - |
+| postgresql.total_exec_time | Execution time of the statement. On db.server.top_query events this is the time spent executing the statement since the previous collection, in seconds. On db.server.query_sample events it is how long the sampled statement has been running, in milliseconds. | Any Double | - |
 
 ### db.server.schema_collection
 
@@ -844,11 +844,11 @@ top query
 | postgresql.temp_blks_written | Total number of temp blocks written by the statement, reported in delta value. | Any Int | - |
 | postgresql.queryid | Hash code to identify identical normalized queries. | Any Str | - |
 | postgresql.rolname | The name of the PostgreSQL role that executed the query. | Any Str | - |
-| postgresql.total_exec_time | Total time spent executing the statement, in delta milliseconds. | Any Double | - |
-| postgresql.total_plan_time | Total time spent planning the statement, in delta milliseconds. | Any Double | - |
+| postgresql.total_exec_time | Execution time of the statement. On db.server.top_query events this is the time spent executing the statement since the previous collection, in seconds. On db.server.query_sample events it is how long the sampled statement has been running, in milliseconds. | Any Double | - |
+| postgresql.total_plan_time | Time spent planning the statement since the previous collection, in seconds. | Any Double | - |
 | postgresql.query_plan | The execution plan used by PostgreSQL for the query. | Any Str | - |
-| postgresql.blk_read_time | Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double | - |
-| postgresql.blk_write_time | Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on. | Any Double | - |
+| postgresql.blk_read_time | Time the statement spent reading blocks since the previous collection, in seconds. Requires track_io_timing = on. | Any Double | - |
+| postgresql.blk_write_time | Time the statement spent writing blocks since the previous collection, in seconds. Requires track_io_timing = on. | Any Double | - |
 
 ## Resource Attributes
 

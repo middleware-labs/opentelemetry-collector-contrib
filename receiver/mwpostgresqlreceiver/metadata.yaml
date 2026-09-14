@@ -194,10 +194,10 @@ attributes:
     description: Top-level transaction identifier of this backend, if any.
     type: int
   postgresql.blk_read_time:
-    description: Total time spent reading blocks by the statement, in milliseconds. Requires track_io_timing = on.
+    description: Time the statement spent reading blocks since the previous collection, in seconds. Requires track_io_timing = on.
     type: double
   postgresql.blk_write_time:
-    description: Total time spent writing blocks by the statement, in milliseconds. Requires track_io_timing = on.
+    description: Time the statement spent writing blocks since the previous collection, in seconds. Requires track_io_timing = on.
     type: double
   postgresql.blocking_pids:
     description: List of PIDs of sessions that are blocking this backend. Populated when wait_event_type = 'Lock'; empty otherwise.
@@ -254,10 +254,10 @@ attributes:
     description: Total number of temp blocks written by the statement, reported in delta value.
     type: int
   postgresql.total_exec_time:
-    description: Total time spent executing the statement, in delta milliseconds.
+    description: Execution time of the statement. On db.server.top_query events this is the time spent executing the statement since the previous collection, in seconds. On db.server.query_sample events it is how long the sampled statement has been running, in milliseconds.
     type: double
   postgresql.total_plan_time:
-    description: Total time spent planning the statement, in delta milliseconds.
+    description: Time spent planning the statement since the previous collection, in seconds.
     type: double
   postgresql.wait_event:
     description: Wait event name if backend is currently waiting, otherwise NULL.
