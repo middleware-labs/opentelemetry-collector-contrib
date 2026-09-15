@@ -1,0 +1,37 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: bug_fix
+
+# The name of the component, or a single word describing the area of concern, (e.g. filelogreceiver)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Stop schema collection failing with "connection budget exhausted" when the metrics scraper holds the budget in idle pools
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  The metrics and logs signals each keep their own per-database connection pools and share one
+  connection budget (`connection_pool.max_total_connections`, default 10). A signal that found the
+  budget exhausted could only reclaim its own idle pools, so once the metrics scraper had filled the
+  budget with pools it keeps warm, the schema collector on the logs signal could not open any
+  database: it logged `failed to connect to database ...: postgresql connection budget exhausted`
+  for the first databases of every pass, and those databases never received a schema snapshot.
+  On a 52-database server the same ten databases were skipped on every pass.
+  The budget now reclaims the idlest pool across both signals, oldest release first, never a pool
+  with a client outstanding and never a default-database pool, and hands the freed unit to the
+  signal that asked for it.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

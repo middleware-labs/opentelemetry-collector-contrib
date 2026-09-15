@@ -26,10 +26,59 @@ receivers:
 | `transport` | No | `tcp` or `unix` | `tcp` (default) |
 | `username` | Yes | Database user | `otelu` |
 | `password` | Yes | Database password | `otelp` |
-| `databases` | No | List of databases to scrape. If empty, all databases are discovered (except those in `exclude_databases`). | `[demo, appdb]` |
-| `exclude_databases` | No | Databases to skip when using auto-discovery | `[template0, template1]` |
+| `databases` | No | List of databases to collect from. If empty, databases are discovered automatically. See [Database selection](#database-selection). | `[demo, appdb]` |
+| `exclude_databases` | No | Databases to skip. Applies to both auto-discovery and an explicit `databases` list. | `[template0, template1]` |
 | `tls.insecure` | No | Use TLS | `false` (default) |
 | `tls.insecure_skip_verify` | No | Skip TLS server certificate verification | `true` (default) |
+
+---
+
+## Database selection
+
+`databases` and `exclude_databases` together decide which databases the
+receiver collects from. The selection applies to **every** database-specific
+signal: per-database metrics, schema collection, query samples, top-query
+events, query-performance metrics, and the databases `EXPLAIN` may run in.
+
+```yaml
+databases: [orders, billing]
+exclude_databases: [billing]
+```
+
+This collects from `orders` only.
+
+| Configuration | Result |
+|---|---|
+| Neither set | All databases are discovered and collected from |
+| `databases` set | Only the named databases; duplicates are collapsed |
+| `exclude_databases` set | Everything except the named databases |
+| A database in both | Exclusion wins; it is not collected |
+| Every name in `databases` also excluded | Configuration error at startup — the receiver will not start, rather than silently collecting nothing |
+| A named database is unreachable | Reported as an error; scope is never widened to compensate |
+| Discovery fails | Reported as an error; scope is never widened to compensate |
+
+### Behavior change
+
+Before this release, `databases` and `exclude_databases` were applied to
+per-database metrics and schema collection, but **not** to query samples,
+top-query events or query-performance metrics. A receiver configured for one
+database still reported query telemetry from every database on the server.
+
+They are now applied consistently. If you relied on the previous broader query
+telemetry, remove the `databases` restriction or add the databases you want to
+keep seeing.
+
+### The maintenance connection
+
+The receiver always connects to the `postgres` database to read server-wide
+statistics (background writer, WAL, replication, connection counts) and to
+discover databases. It does this even when `postgres` is not in the selection:
+it is a control connection, not data scope.
+
+Its own database-specific telemetry is **not** collected when it is out of
+scope. In particular `postgresql.database.locks` and the `postgresql.rows_*`
+family are read through that connection but describe only the `postgres`
+database, so they are collected only when `postgres` is itself selected.
 
 ---
 
@@ -38,6 +87,17 @@ receivers:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `collection_interval` | `10s` | How often the receiver runs (metrics and all log scrapers). Schema collection then throttles internally using `schema_collection.collection_interval`. |
+| `relation_metrics.collection_interval` | `60s` | How often the per-relation metric families run: per-table statistics and block reads, per-index statistics and per-function statistics. Database-level and server-wide metrics still run every scrape. `postgresql.table.count` is reported every scrape and refreshed at this cadence. |
+| `bloat_collection_interval` | `10m` | How often `postgresql.table_bloat` and `postgresql.index_bloat` run. Their two estimator queries are the heaviest SQL the receiver issues. |
+
+A family runs on the first scrape at or after its interval has elapsed since it last ran, so an interval that is not a multiple of `collection_interval` rounds up to the next scrape, and an interval shorter than `collection_interval` (including `0`) means every scrape. Set `relation_metrics.collection_interval: 0` and `bloat_collection_interval: 0` to restore per-scrape collection of those families. Between runs the family issues no SQL and emits no data points; cumulative metrics keep their start timestamp across the gap, so rates computed from them stay correct. When every per-database family is throttled and not due, no connection is opened to the individual databases on that scrape.
+
+```yaml
+collection_interval: 10s
+relation_metrics:
+  collection_interval: 60s
+bloat_collection_interval: 10m
+```
 
 ---
 
@@ -106,6 +166,7 @@ events:
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `top_query_collection.collection_interval` | unset (every scrape) | How often top-query events are collected. Must be at least `collection_interval` when set; the scraper still runs every `collection_interval` and returns nothing when not due. Statement deltas then cover the longer window. |
 | `top_query_collection.max_rows_per_query` | `1000` | Max rows per query |
 | `top_query_collection.top_n_query` | `1000` | Number of top queries to collect |
 | `top_query_collection.max_explain_each_interval` | `1000` | Max explains per interval |

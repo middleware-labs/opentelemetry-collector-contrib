@@ -1,31 +1,51 @@
 SELECT
   calls,
   datname,
-  shared_blks_dirtied, 
+  shared_blks_dirtied,
   shared_blks_hit,
   shared_blks_read,
   shared_blks_written,
   temp_blks_read,
   temp_blks_written,
   query,
-  queryid::TEXT,
+  queryid,
   rolname,
-  rows::TEXT,
-{{- if .hasPG13Columns }}
+  rows,
+{{- if .hasExecTimeColumns }}
   total_exec_time,
   total_plan_time,
 {{- else }}
   total_time AS total_exec_time,
   0::float8 AS total_plan_time,
 {{- end }}
+{{- if .hasSharedBlkTimings }}
+  shared_blk_read_time AS blk_read_time,
+  shared_blk_write_time AS blk_write_time
+{{- else }}
   blk_read_time,
   blk_write_time
+{{- end }},
+  pg_stat_statements.dbid,
+  pg_stat_statements.userid,
+{{- if .hasTopLevel }}
+  pg_stat_statements.toplevel,
+{{- else }}
+  true AS toplevel,
+{{- end }}
+{{- if .hasStatsSince }}
+  pg_stat_statements.stats_since
+{{- else }}
+  NULL::timestamptz AS stats_since
+{{- end }}
 FROM
-  pg_stat_statements as pg_stat_statements
+  {{ .statementsView }} as pg_stat_statements
   LEFT JOIN pg_roles ON pg_stat_statements.userid = pg_roles.oid
   LEFT JOIN pg_database ON pg_stat_statements.dbid = pg_database.oid
 WHERE
   query != '<insufficient privilege>'
   AND query NOT LIKE '/* otel-collector-ignore */%'
+{{- if .databasePredicate }}
+  AND {{ .databasePredicate }}
+{{- end }}
 ORDER BY {{ .orderByExecTimeCol }} DESC
 LIMIT {{ .limit }};

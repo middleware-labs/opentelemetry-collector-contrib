@@ -39,6 +39,7 @@ func (cl DbSQLClient) QueryRows(ctx context.Context, args ...any) ([]StringMap, 
 	if err != nil {
 		return nil, err
 	}
+	defer sqlRows.Close()
 	var out []StringMap
 	colTypes, err := sqlRows.ColumnTypes()
 	if err != nil {
@@ -56,6 +57,12 @@ func (cl DbSQLClient) QueryRows(ctx context.Context, args ...any) ([]StringMap, 
 			warnings = append(warnings, scanErr)
 		}
 		out = append(out, sm)
+	}
+	// An error that ends iteration leaves Next returning false exactly as a
+	// completed result set does, so without this check a driver or network
+	// failure part way through is indistinguishable from a short result.
+	if err := sqlRows.Err(); err != nil {
+		return nil, err
 	}
 	return out, errors.Join(warnings...)
 }
