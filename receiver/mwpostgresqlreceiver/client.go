@@ -19,6 +19,8 @@ import (
 	"text/template"
 	"time"
 
+	lru "github.com/hashicorp/golang-lru/v2"
+	"github.com/lib/pq"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configtls"
 	"go.opentelemetry.io/collector/featuregate"
@@ -100,6 +102,13 @@ func isExplainPermissionError(errStr string) bool {
 }
 
 // sqlCommentPattern matches both block (/* ... */) and line (-- ...) SQL comments.
+//
+// Every alternative begins with a literal two-byte marker, and hasCommentMarker
+// in query_log_rows.go relies on exactly that: it skips this regex entirely for
+// text containing neither "/*" nor "--". Widening this pattern to a form that
+// can match without one of those markers - a dollar-quoted or nested-comment
+// syntax, say - silently breaks that guard. TestCommentPrefilterMatchesRegex
+// asserts the two agree, so update the guard and that test together.
 var sqlCommentPattern = regexp.MustCompile(`/\*.*?\*/|--[^\n]*`)
 var traceparentInCommentPattern = regexp.MustCompile(`(?i)\btraceparent\s*=\s*['"]?([^'" ]+)['"]?`)
 
@@ -176,11 +185,11 @@ var errNoLastArchive = errors.New("no last archive found, not able to calculate 
 
 type client interface {
 	Close() error
-	getDatabaseStats(ctx context.Context, databases []string) (map[databaseName]databaseStats, error)
+	getDatabaseStats(ctx context.Context, sel databaseSelection) (map[databaseName]databaseStats, error)
 	getDatabaseLocks(ctx context.Context) ([]databaseLocks, error)
 	getBGWriterStats(ctx context.Context) (*bgStat, error)
-	getBackends(ctx context.Context, databases []string) (map[databaseName]int64, error)
-	getDatabaseSize(ctx context.Context, databases []string) (map[databaseName]int64, error)
+	getBackends(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error)
+	getDatabaseSize(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error)
 	getDatabaseTableMetrics(ctx context.Context, db string) (map[tableIdentifier]tableStats, error)
 	getBlocksReadByTable(ctx context.Context, db string) (map[tableIdentifier]tableIOStats, error)
 	getReplicationStats(ctx context.Context) ([]replicationStats, error)
@@ -191,23 +200,35 @@ type client interface {
 	getActiveConnections(ctx context.Context) (int64, error)
 	listDatabases(ctx context.Context) ([]string, error)
 	getVersion(ctx context.Context) (string, error)
-	getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, logger *zap.Logger) ([]map[string]any, float64, error)
-	getTopQuery(ctx context.Context, limit int64, logger *zap.Logger) ([]map[string]any, error)
+	getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, float64, error)
+	getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]topQueryStatRow, error)
 	explainQuery(query, queryID string, logger *zap.Logger) (string, error)
 	getRowStats(ctx context.Context) ([]RowStats, error)
-	getQueryStats(ctx context.Context) ([]queryStats, error)
-	getBufferHit(ctx context.Context) ([]BufferHit, error)
+	getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error)
+	getQueryStatsMax(ctx context.Context) (int, error)
+	getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error)
+	getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error)
 	getVersionString(ctx context.Context) (string, error)
 	getTableBloatStats(ctx context.Context, db string) (map[tableIdentifier]tableBloatStats, error)
 	getIndexBloatStats(ctx context.Context, db string) (map[indexIdentifer]indexBloatStats, error)
 	getWALStats(ctx context.Context) (int64, int64, error)
 	getTransactionsStats(ctx context.Context) (float64, float64, error)
-	getConnectionStats(ctx context.Context, databases []string) (map[databaseName][]connectionStat, error)
+	getConnectionStats(ctx context.Context, sel databaseSelection) (map[databaseName][]connectionStat, error)
 }
 
 type postgreSQLClient struct {
 	client  *IgnoredDB
 	closeFn func() error
+
+	// statementExtension resolves the installed pg_stat_statements version and
+	// schema once per connection. The zero value is ready to use.
+	statementExtension extensionCapabilityCache
+}
+
+// statementCapabilities returns what this connection's pg_stat_statements
+// extension supports, reading the catalog on first use.
+func (c *postgreSQLClient) statementCapabilities(ctx context.Context) (pgStatStatementsCapabilities, error) {
+	return c.statementExtension.get(ctx, c.client)
 }
 
 // explainQuery implements client.
@@ -364,6 +385,77 @@ type postgreSQLConfig struct {
 	database string
 	address  confignet.AddrConfig
 	tls      configtls.ClientConfig
+	// timeouts are applied as connection parameters in the DSN rather than as
+	// SET statements after connecting. See connectionOptions for why.
+	timeouts connectionTimeouts
+}
+
+// connectionTimeouts bounds what a single monitoring connection may do, so that
+// a pathological query cannot hold a server backend open indefinitely and a
+// lock conflict cannot stall the customer's application.
+//
+// These are delivered through libpq's "options" DSN parameter, which passes
+// command-line options to the backend at startup, instead of by issuing SET
+// after connecting. Two reasons:
+//
+//  1. A SET is a session mutation. Transaction poolers — notably AWS RDS Proxy
+//     and PgBouncer in transaction mode — respond to session-state changes by
+//     pinning the client to a backend for the rest of the session, which
+//     defeats the pooling the customer is paying for. Startup options carry no
+//     such penalty because they are part of establishing the session.
+//  2. A SET is a round trip that must be repeated on every new physical
+//     connection, and easy to omit when a pool opens a connection lazily.
+//     Putting it in the DSN makes it a property of the connection itself, so
+//     every connection the pool ever opens has it, with no extra round trip.
+type connectionTimeouts struct {
+	// statement bounds any single statement. Guards against a catalog query on
+	// a very large database running unboundedly.
+	statement time.Duration
+	// lock bounds how long a statement waits to acquire a lock. This is the
+	// value that protects the customer: it caps how long we can sit in a lock
+	// queue that their queries are queued behind. It is deliberately much
+	// smaller than statement.
+	lock time.Duration
+	// idleSession terminates a session left idle outside a transaction.
+	// PostgreSQL 14+ only; ignored by older servers, which is safe because an
+	// unknown GUC in startup options is an error, so it is version-gated at the
+	// call site rather than sent blindly.
+	idleSession time.Duration
+}
+
+// defaultConnectionTimeouts are the values used when the user configures none.
+//
+// statement 30s: comfortably above the slowest legitimate catalog query
+// measured on the 52-database rig, far below any human-noticeable stall.
+// lock 2s: short on purpose. Waiting on a lock is never useful to us — the data
+// will still be there next cycle — and every second we wait is a second the
+// customer's queries may spend queued behind us.
+var defaultConnectionTimeouts = connectionTimeouts{
+	statement: 30 * time.Second,
+	lock:      2 * time.Second,
+}
+
+// connectionOptions renders the timeouts as a libpq "options" parameter.
+//
+// Values are rendered in milliseconds with an explicit unit. Backslash and
+// space are the only characters libpq treats specially inside options, and
+// since every value here is a generated integer, no user-controlled text
+// reaches this string.
+func (t connectionTimeouts) connectionOptions() string {
+	var opts []string
+	if t.statement > 0 {
+		opts = append(opts, fmt.Sprintf("-c statement_timeout=%dms", t.statement.Milliseconds()))
+	}
+	if t.lock > 0 {
+		opts = append(opts, fmt.Sprintf("-c lock_timeout=%dms", t.lock.Milliseconds()))
+	}
+	if t.idleSession > 0 {
+		opts = append(opts, fmt.Sprintf("-c idle_session_timeout=%dms", t.idleSession.Milliseconds()))
+	}
+	if len(opts) == 0 {
+		return ""
+	}
+	return strings.Join(opts, " ")
 }
 
 func sslConnectionString(tls configtls.ClientConfig) string {
@@ -412,7 +504,21 @@ func (c postgreSQLConfig) ConnectionString() (string, error) {
 		host = "/" + host
 	}
 
-	return fmt.Sprintf("port=%s host=%s user=%s password=%s dbname=%s %s", port, host, c.username, c.password, database, sslConnectionString(c.tls)), nil
+	dsn := fmt.Sprintf("port=%s host=%s user=%s password=%s dbname=%s %s",
+		port, host, c.username, c.password, database, sslConnectionString(c.tls))
+
+	// application_name identifies our backends in pg_stat_activity. It is what
+	// lets a DBA see which connections are ours, lets us count our own
+	// connections against the role's limit, and lets the customer target us in
+	// a pg_terminate_backend if we ever misbehave.
+	dsn += fmt.Sprintf(" application_name=%s", monitoringApplicationName)
+
+	if opts := c.timeouts.connectionOptions(); opts != "" {
+		// Single-quoted because the value contains spaces.
+		dsn += fmt.Sprintf(" options='%s'", opts)
+	}
+
+	return dsn, nil
 }
 
 func (c *postgreSQLClient) Close() error {
@@ -447,14 +553,12 @@ type databaseStats struct {
 	blkWriteTime         float64
 }
 
-func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []string) (map[databaseName]databaseStats, error) {
-	query := filterQueryByDatabases(
+func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, sel databaseSelection) (map[databaseName]databaseStats, error) {
+	query, args := sel.appendDatnameFilter(
 		"SELECT datname, xact_commit, xact_rollback, deadlocks, temp_files, temp_bytes, tup_updated, tup_returned, tup_fetched, tup_inserted, tup_deleted, blks_hit, blks_read, blk_read_time, blk_write_time FROM pg_stat_database",
-		databases,
-		false,
-	)
+		"datname", false)
 
-	rows, err := c.client.QueryContext(ctx, query)
+	rows, err := c.client.QueryContext(ctx, query+";", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -464,7 +568,12 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 	dbStats := map[databaseName]databaseStats{}
 
 	for rows.Next() {
-		var datname string
+		// pg_stat_database carries one row with a NULL datname holding the
+		// statistics for shared objects, which belong to no database. Scanning
+		// it into a plain string fails, so the column is read as nullable and
+		// the row is skipped below; previously this row was filtered out
+		// incidentally by the WHERE clause the old helper always added.
+		var datname sql.NullString
 		var transactionCommitted, transactionRollback, deadlocks, tempIo, tempFiles, tupUpdated, tupReturned, tupFetched, tupInserted, tupDeleted, blksHit, blksRead int64
 		var blkReadTime, blkWriteTime float64
 		err = rows.Scan(&datname, &transactionCommitted, &transactionRollback, &deadlocks, &tempFiles, &tempIo, &tupUpdated, &tupReturned, &tupFetched, &tupInserted, &tupDeleted, &blksHit, &blksRead, &blkReadTime, &blkWriteTime)
@@ -472,8 +581,8 @@ func (c *postgreSQLClient) getDatabaseStats(ctx context.Context, databases []str
 			errs = multierr.Append(errs, err)
 			continue
 		}
-		if datname != "" {
-			dbStats[databaseName(datname)] = databaseStats{
+		if datname.Valid && datname.String != "" {
+			dbStats[databaseName(datname.String)] = databaseStats{
 				transactionCommitted: transactionCommitted,
 				transactionRollback:  transactionRollback,
 				deadlocks:            deadlocks,
@@ -533,9 +642,10 @@ func (c *postgreSQLClient) getDatabaseLocks(ctx context.Context) ([]databaseLock
 }
 
 // getBackends returns a map of database names to the number of active connections
-func (c *postgreSQLClient) getBackends(ctx context.Context, databases []string) (map[databaseName]int64, error) {
-	query := filterQueryByDatabases("SELECT datname, count(*) as count from pg_stat_activity", databases, true)
-	rows, err := c.client.QueryContext(ctx, query)
+func (c *postgreSQLClient) getBackends(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	query, args := sel.appendDatnameFilter(
+		"SELECT datname, count(*) as count from pg_stat_activity", "datname", false)
+	rows, err := c.client.QueryContext(ctx, query+" GROUP BY datname;", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -543,32 +653,30 @@ func (c *postgreSQLClient) getBackends(ctx context.Context, databases []string) 
 	ars := map[databaseName]int64{}
 	var errors error
 	for rows.Next() {
-		var datname string
+		// pg_stat_activity rows for background workers (autovacuum launcher,
+		// walwriter, checkpointer) have a NULL datname: they belong to no
+		// database. They are skipped rather than failing the scan.
+		var datname sql.NullString
 		var count int64
 		err = rows.Scan(&datname, &count)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 			continue
 		}
-		if datname != "" {
-			ars[databaseName(datname)] = count
+		if datname.Valid && datname.String != "" {
+			ars[databaseName(datname.String)] = count
 		}
 	}
 	return ars, errors
 }
 
-func (c *postgreSQLClient) getConnectionStats(ctx context.Context, databases []string) (map[databaseName][]connectionStat, error) {
-	query := "SELECT datname, usename, application_name, state, count(*) FROM pg_stat_activity"
-	if len(databases) > 0 {
-		var queryDatabases []string
-		for _, db := range databases {
-			queryDatabases = append(queryDatabases, fmt.Sprintf("'%s'", db))
-		}
-		query += fmt.Sprintf(" WHERE datname IN (%s)", strings.Join(queryDatabases, ","))
-	}
+func (c *postgreSQLClient) getConnectionStats(ctx context.Context, sel databaseSelection) (map[databaseName][]connectionStat, error) {
+	query, args := sel.appendDatnameFilter(
+		"SELECT datname, usename, application_name, state, count(*) FROM pg_stat_activity",
+		"datname", false)
 	query += " GROUP BY 1, 2, 3, 4;"
 
-	rows, err := c.client.QueryContext(ctx, query)
+	rows, err := c.client.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -599,9 +707,11 @@ func (c *postgreSQLClient) getConnectionStats(ctx context.Context, databases []s
 	return stats, multierr.Combine(errs)
 }
 
-func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, databases []string) (map[databaseName]int64, error) {
-	query := filterQueryByDatabases("SELECT datname, pg_database_size(datname) FROM pg_catalog.pg_database WHERE datistemplate = false", databases, false)
-	rows, err := c.client.QueryContext(ctx, query)
+func (c *postgreSQLClient) getDatabaseSize(ctx context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	query, args := sel.appendDatnameFilter(
+		"SELECT datname, pg_database_size(datname) FROM pg_catalog.pg_database WHERE datistemplate = false",
+		"datname", true)
+	rows, err := c.client.QueryContext(ctx, query+";", args...)
 	if err != nil {
 		return nil, err
 	}
@@ -1350,40 +1460,83 @@ func (c *postgreSQLClient) getRowStats(ctx context.Context) ([]RowStats, error) 
 }
 
 type queryStats struct {
+	key           queryStatsKey
 	queryID       string
 	queryText     string
 	queryCount    int64
 	queryExecTime int64
 }
 
-func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
-	version, err := c.getVersion(ctx)
+// queryStatsKey is PostgreSQL's statement identity. Query IDs alone are not
+// unique: the same normalized statement can have separate rows for different
+// databases, roles, and top-level status.
+type queryStatsKey struct {
+	queryID     int64
+	database    int64
+	user        int64
+	topLevel    bool
+	hasTopLevel bool
+}
+
+// excludedQueryText is not a valid PostgreSQL text value. Caching it prevents
+// the receiver from resolving its own ignored statements on every scrape.
+const excludedQueryText = "\x00"
+
+func newQueryTextCache(size int) *lru.Cache[queryStatsKey, string] {
+	cache, _ := lru.New[queryStatsKey, string](size)
+	return cache
+}
+
+func (c *postgreSQLClient) getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error) {
+	// Gate on the extension's own version, not the server's. pg_upgrade leaves
+	// the extension at whatever version the old cluster had, so a PG14+ server
+	// can still be on pg_stat_statements 1.8 with no toplevel column at all;
+	// selecting it there fails the whole query-metrics path.
+	caps, err := c.statementCapabilities(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PostgreSQL version: %w", err)
-	}
-	major, err := parseMajorVersion(version)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse PostgreSQL version: %w", err)
+		return nil, err
 	}
 
-	// total_exec_time was renamed from total_time in PG13
+	// total_exec_time replaced total_time in extension 1.8.
 	execTimeCol := "total_exec_time"
-	if major < 13 {
+	if !caps.hasExecTimeColumns() {
 		execTimeCol = "total_time AS total_exec_time"
+	}
+
+	// toplevel arrived in extension 1.9. Selecting a literal keeps the result
+	// shape, and therefore the scan destinations, constant across versions.
+	hasTopLevel := caps.hasTopLevel()
+	topLevelCol := "false"
+	if hasTopLevel {
+		topLevelCol = "toplevel"
+	}
+
+	// pg_stat_statements is keyed on dbid, not on a database name, so the
+	// selection is resolved to OIDs in the server rather than in Go. A
+	// subquery against pg_database keeps this a single round trip and avoids a
+	// separate name-to-OID cache with its own staleness and failure semantics:
+	// a database dropped between the two halves simply matches nothing.
+	//
+	// Rows whose dbid no longer resolves are dropped under an allowlist -
+	// they cannot be shown to belong to a selected database - and kept
+	// otherwise, matching databaseSelection.includes.
+	dbPredicate, args := sel.dbidPredicate("dbid", 1)
+	if dbPredicate != "" {
+		dbPredicate = " AND " + dbPredicate
 	}
 
 	query := fmt.Sprintf(`
     SELECT
-      queryid,
-      regexp_replace(
-          regexp_replace(query, '/\*.*?\*/', '', 'g'),
-          '--.*$', '', 'gm'
-      ) AS query,
+      queryid::TEXT,
+      dbid::BIGINT,
+      userid::BIGINT,
+      %s AS toplevel,
       calls,
       %s
-    FROM pg_stat_statements;
-	`, execTimeCol)
-	rows, err := c.client.QueryContext(ctx, query)
+	    FROM %s(false)
+	    WHERE queryid IS NOT NULL%s;
+	`, topLevelCol, execTimeCol, caps.qualify("pg_stat_statements"), dbPredicate)
+	rows, err := c.client.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_statements: %w", err)
 	}
@@ -1391,17 +1544,25 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 	var qs []queryStats
 	var errors error
 	for rows.Next() {
-		var queryID, queryText string
+		var queryID string
+		var databaseID, userID int64
+		var topLevel bool
 		var queryCount int64
 		var queryExecTime float64
-		err = rows.Scan(&queryID, &queryText, &queryCount, &queryExecTime)
+		err = rows.Scan(&queryID, &databaseID, &userID, &topLevel, &queryCount, &queryExecTime)
 		if err != nil {
 			errors = multierr.Append(errors, err)
 		}
 		queryExectimeNS := int64(queryExecTime * 1000000)
 		qs = append(qs, queryStats{
+			key: queryStatsKey{
+				queryID:     parseQueryID(queryID),
+				database:    databaseID,
+				user:        userID,
+				topLevel:    topLevel,
+				hasTopLevel: hasTopLevel,
+			},
 			queryID:       queryID,
-			queryText:     queryText,
 			queryCount:    queryCount,
 			queryExecTime: queryExectimeNS,
 		})
@@ -1409,15 +1570,150 @@ func (c *postgreSQLClient) getQueryStats(ctx context.Context) ([]queryStats, err
 	return qs, errors
 }
 
+func (c *postgreSQLClient) getQueryStatsMax(ctx context.Context) (int, error) {
+	var max int
+	if err := c.client.QueryRowContext(ctx, "SHOW pg_stat_statements.max").Scan(&max); err != nil {
+		return 0, fmt.Errorf("unable to read pg_stat_statements.max: %w", err)
+	}
+	return max, nil
+}
+
+func parseQueryID(value string) int64 {
+	queryID, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return queryID
+}
+
+// getStatementDeallocations reads pg_stat_statements_info.dealloc: how many
+// times the extension discarded its least-executed entries because more
+// distinct statements were observed than pg_stat_statements.max allows.
+//
+// The view arrived with extension 1.9, so below that supported is false and
+// nothing is queried. The name is schema-qualified for the same reason the
+// other statement queries are.
+func (c *postgreSQLClient) getStatementDeallocations(ctx context.Context) (value int64, supported bool, err error) {
+	caps, err := c.statementCapabilities(ctx)
+	if err != nil {
+		return 0, false, err
+	}
+	if !caps.hasTopLevel() {
+		return 0, false, nil
+	}
+	query := `SELECT dealloc FROM ` + caps.qualify("pg_stat_statements_info")
+	if err := c.client.QueryRowContext(ctx, query).Scan(&value); err != nil {
+		return 0, true, fmt.Errorf("unable to read pg_stat_statements_info.dealloc: %w", err)
+	}
+	return value, true, nil
+}
+
+// getQueryTexts resolves representative text only for cache misses from the
+// lightweight pg_stat_statements(false) pass. Calling the view (rather than
+// the false-valued function) is intentional here: PostgreSQL loads its text
+// file only when there are unseen statement identities to resolve.
+func (c *postgreSQLClient) getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error) {
+	if len(keys) == 0 {
+		return map[queryStatsKey]string{}, nil
+	}
+
+	// Qualify the view for the same reason getQueryStats does: an extension
+	// installed outside search_path (Supabase uses "extensions") is only
+	// reachable by its schema. Leaving this bare resolved counters but never
+	// text on those installs, so every statement arrived unnamed.
+	caps, err := c.statementCapabilities(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	queryIDs := make([]int64, 0, len(keys))
+	databaseIDs := make([]int64, 0, len(keys))
+	userIDs := make([]int64, 0, len(keys))
+	topLevels := make([]bool, 0, len(keys))
+	for _, key := range keys {
+		queryIDs = append(queryIDs, key.queryID)
+		databaseIDs = append(databaseIDs, key.database)
+		userIDs = append(userIDs, key.user)
+		topLevels = append(topLevels, key.topLevel)
+	}
+
+	hasTopLevel := keys[0].hasTopLevel
+	query := `
+    SELECT
+      s.queryid::TEXT,
+      s.dbid::BIGINT,
+      s.userid::BIGINT,
+      %s AS toplevel,
+      s.query AS raw_query,
+      regexp_replace(
+          regexp_replace(s.query, '/\*.*?\*/', '', 'g'),
+          '--.*$', '', 'gm'
+      ) AS query
+    FROM %s AS s
+    INNER JOIN unnest(%s)
+      AS wanted(queryid, dbid, userid%s)
+      ON s.queryid = wanted.queryid
+      AND s.dbid = wanted.dbid
+	      AND s.userid = wanted.userid%s
+    WHERE s.query != '<insufficient privilege>';`
+	args := []any{pq.Array(queryIDs), pq.Array(databaseIDs), pq.Array(userIDs)}
+	selectTopLevel := "false"
+	unnestArgs := "$1::BIGINT[], $2::OID[], $3::OID[]"
+	unnestColumns := ""
+	joinTopLevel := ""
+	if hasTopLevel {
+		selectTopLevel = "s.toplevel"
+		unnestArgs += ", $4::BOOL[]"
+		unnestColumns = ", toplevel"
+		joinTopLevel = "\n      AND s.toplevel = wanted.toplevel"
+		args = append(args, pq.Array(topLevels))
+	}
+	query = fmt.Sprintf(query, selectTopLevel, caps.qualify("pg_stat_statements"), unnestArgs, unnestColumns, joinTopLevel)
+	rows, err := c.client.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("unable to resolve pg_stat_statements query text: %w", err)
+	}
+	defer rows.Close()
+
+	texts := make(map[queryStatsKey]string, len(keys))
+	for rows.Next() {
+		var queryID, rawQuery, queryText string
+		var databaseID, userID int64
+		var topLevel bool
+		if err := rows.Scan(&queryID, &databaseID, &userID, &topLevel, &rawQuery, &queryText); err != nil {
+			return nil, fmt.Errorf("unable to scan pg_stat_statements query text: %w", err)
+		}
+		key := queryStatsKey{
+			queryID:     parseQueryID(queryID),
+			database:    databaseID,
+			user:        userID,
+			topLevel:    topLevel,
+			hasTopLevel: hasTopLevel,
+		}
+		if strings.HasPrefix(rawQuery, otelIgnorePrefix) {
+			texts[key] = excludedQueryText
+			continue
+		}
+		texts[key] = queryText
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("unable to iterate pg_stat_statements query text: %w", err)
+	}
+	return texts, nil
+}
+
 type BufferHit struct {
 	dbName string
 	hits   int64
 }
 
-func (c *postgreSQLClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
-	query := `SELECT datname, blks_hit FROM pg_stat_database;`
+func (c *postgreSQLClient) getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error) {
+	// pg_stat_database has one row per database, so this must respect the
+	// selection: it previously emitted a point for every database on the
+	// server regardless of `databases` and `exclude_databases`.
+	query, args := sel.appendDatnameFilter("SELECT datname, blks_hit FROM pg_stat_database", "datname", false)
 
-	rows, err := c.client.QueryContext(ctx, query)
+	rows, err := c.client.QueryContext(ctx, query+";", args...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to query pg_stat_database:: %w", err)
 	}
@@ -1476,8 +1772,24 @@ func (c *postgreSQLClient) getLatestWalAgeSeconds(ctx context.Context) (int64, e
 }
 
 func (c *postgreSQLClient) listDatabases(ctx context.Context) ([]string, error) {
+	// Only databases this role can actually open a connection to.
+	//
+	// datallowconn alone is not enough. On AWS RDS the rdsadmin database has
+	// datallowconn = true and is blocked by ACL instead, so a filter on
+	// datallowconn still returns it and every per-database connection attempt
+	// fails, once per database per scrape, filling the customer's server log
+	// with authentication rejections. has_database_privilege is the predicate
+	// that actually matches what the server will permit, and it covers the
+	// equivalent databases on other platforms - azure_maintenance,
+	// cloudsqladmin, alloydbadmin - without hardcoding a list of vendor names
+	// that would need extending for every new provider.
+	//
+	// Filtering here rather than after the fact also means these databases
+	// never consume connection budget.
 	query := `SELECT datname FROM pg_database
-	WHERE datistemplate = false;`
+	WHERE datistemplate = false
+	  AND datallowconn
+	  AND has_database_privilege(oid, 'CONNECT');`
 	rows, err := c.client.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -1513,25 +1825,6 @@ func parseMajorVersion(ver string) (int, error) {
 	return strconv.Atoi(parts[0])
 }
 
-func filterQueryByDatabases(baseQuery string, databases []string, groupBy bool) string {
-	if len(databases) > 0 {
-		var queryDatabases []string
-		for _, db := range databases {
-			queryDatabases = append(queryDatabases, fmt.Sprintf("'%s'", db))
-		}
-		if strings.Contains(baseQuery, "WHERE") {
-			baseQuery += fmt.Sprintf(" AND datname IN (%s)", strings.Join(queryDatabases, ","))
-		} else {
-			baseQuery += fmt.Sprintf(" WHERE datname IN (%s)", strings.Join(queryDatabases, ","))
-		}
-	}
-	if groupBy {
-		baseQuery += " GROUP BY datname"
-	}
-
-	return baseQuery + ";"
-}
-
 func tableKey(database, schema, table string) tableIdentifier {
 	return tableIdentifier(fmt.Sprintf("%s|%s|%s", database, schema, table))
 }
@@ -1547,7 +1840,14 @@ func functionKey(database, schema, function string) functionIdentifer {
 //go:embed templates/querySampleTemplate.tmpl
 var querySampleTemplate string
 
-func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, logger *zap.Logger) ([]map[string]any, float64, error) {
+// Parsed once at startup rather than on every scrape. The template text is a
+// compile-time constant, so re-parsing it per scrape rebuilt the same parse
+// tree every ten seconds. The per-scrape conditionals remain template
+// variables, so the rendered SQL is unaffected.
+var querySampleTemplateParsed = template.Must(
+	template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
+
+func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, newestQueryTimestamp float64, sel databaseSelection, logger *zap.Logger) ([]map[string]any, float64, error) {
 	version, err := c.getVersion(ctx)
 	if err != nil {
 		return nil, newestQueryTimestamp, fmt.Errorf("failed to get PostgreSQL version: %w", err)
@@ -1557,13 +1857,19 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		return nil, newestQueryTimestamp, fmt.Errorf("failed to parse PostgreSQL version: %w", err)
 	}
 
-	tmpl := template.Must(template.New("querySample").Option("missingkey=error").Parse(querySampleTemplate))
 	buf := bytes.Buffer{}
 
-	if err := tmpl.Execute(&buf, map[string]any{
+	// Applied before LIMIT for the same reason as the top-query path. The
+	// sample query has no ORDER BY, so which rows survive the cap is already
+	// planner-dependent; filtering first at least ensures the surviving rows
+	// are in scope.
+	databasePredicate, args := sel.datnamePredicate("datname", 1)
+
+	if err := querySampleTemplateParsed.Execute(&buf, map[string]any{
 		"limit":                limit,
 		"newestQueryTimestamp": newestQueryTimestamp,
 		"hasQueryID":           major >= 14,
+		"databasePredicate":    databasePredicate,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
 		return []map[string]any{}, newestQueryTimestamp, fmt.Errorf("failed executing template: %w", err)
@@ -1572,7 +1878,7 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 	// Prepend the ignore prefix manually since we unwrap the DB here
 	wrappedDb := sqlquery.NewDbClient(sqlquery.DbWrapper{Db: c.client.Unwrap()}, otelIgnorePrefix+buf.String(), logger, sqlquery.TelemetryConfig{})
 
-	rows, err := wrappedDb.QueryRows(ctx)
+	rows, err := wrappedDb.QueryRows(ctx, args...)
 	if err != nil {
 		if !errors.Is(err, sqlquery.ErrNullValueWarning) {
 			logger.Error("failed getting log rows", zap.Error(err))
@@ -1675,7 +1981,9 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 		rawQuery := row[querySampleColumnQuery]
 
 		// Extract comments before obfuscation (obfuscation strips them).
-		comments := extractSQLComments(rawQuery)
+		// The marker pre-check keeps the regex off statements that cannot
+		// contain a comment; see hasCommentMarker.
+		comments := extractSQLCommentsFast(rawQuery)
 		if len(comments) > 0 {
 			currentAttributes["db.query.comment"] = strings.Join(comments, "; ")
 			// If no trace context was found in application_name, try SQL comments.
@@ -1721,30 +2029,6 @@ func (c *postgreSQLClient) getQuerySamples(ctx context.Context, limit int64, new
 	return finalAttributes, newestQueryTimestamp, errors.Join(errs...)
 }
 
-func convertMillisecondToSecond(column, value string, logger *zap.Logger) (any, error) {
-	result := float64(0)
-	var err error
-	if value != "" {
-		result, err = strconv.ParseFloat(value, 64)
-		if err != nil {
-			logger.Error("failed to parse float", zap.String("column", column), zap.String("value", value), zap.Error(err))
-		}
-	}
-	return result / 1000.0, err
-}
-
-func convertToInt(column, value string, logger *zap.Logger) (any, error) {
-	result := 0
-	var err error
-	if value != "" {
-		result, err = strconv.Atoi(value)
-		if err != nil {
-			logger.Error("failed to parse int", zap.String("column", column), zap.String("value", value), zap.Error(err))
-		}
-	}
-	return int64(result), err
-}
-
 // parseBlockingPids converts a Postgres int[] textual representation
 // (e.g. "{12345,67890}", "{}", or "") into a sorted []any of int64 values.
 // The result is sorted ascending so callers can build deterministic dedup keys.
@@ -1787,123 +2071,146 @@ func parseBlockingPids(value string, logger *zap.Logger) []any {
 //go:embed templates/topQueryTemplate.tmpl
 var topQueryTemplate string
 
+// Parsed once at startup; see querySampleTemplateParsed.
+var topQueryTemplateParsed = template.Must(
+	template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
+
 // getTopQuery implements client.
-func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, logger *zap.Logger) ([]map[string]any, error) {
-	version, err := c.getVersion(ctx)
+//
+// Rows are scanned into typed fields rather than the generic string-map
+// scanner, and enrichment that only the emitted rows need - obfuscation,
+// comment extraction and trace-context parsing - is left to the caller to
+// apply after candidate selection. See query_log_rows.go for why.
+func (c *postgreSQLClient) getTopQuery(ctx context.Context, limit int64, sel databaseSelection, logger *zap.Logger) ([]topQueryStatRow, error) {
+	// The column names here follow the extension version, not the server
+	// version. Extension 1.11, which CREATE EXTENSION installs on PostgreSQL
+	// 17, renamed blk_read_time/blk_write_time to shared_blk_read_time and
+	// shared_blk_write_time; selecting the old names there fails the entire
+	// top-query path with `column "blk_read_time" does not exist`.
+	caps, err := c.statementCapabilities(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get PostgreSQL version: %w", err)
-	}
-	major, err := parseMajorVersion(version)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse PostgreSQL version: %w", err)
+		return nil, err
 	}
 
-	tmpl := template.Must(template.New("topQuery").Option("missingkey=error").Parse(topQueryTemplate))
 	buf := bytes.Buffer{}
 
 	orderByExecTimeCol := "total_time"
-	if major >= 13 {
+	if caps.hasExecTimeColumns() {
 		orderByExecTimeCol = "total_exec_time"
 	}
 
-	if err := tmpl.Execute(&buf, map[string]any{
-		"limit":              limit,
-		"hasPG13Columns":     major >= 13,
-		"orderByExecTimeCol": orderByExecTimeCol,
+	// The predicate goes inside WHERE, before ORDER BY and LIMIT, so an
+	// unselected database with high query volume cannot consume the candidate
+	// limit before selected rows are considered.
+	//
+	// The column is pg_database.datname from the LEFT JOIN, which is NULL for a
+	// statement whose database has been dropped.
+	databasePredicate, args := sel.datnamePredicate("pg_database.datname", 1)
+
+	if err := topQueryTemplateParsed.Execute(&buf, map[string]any{
+		"limit":               limit,
+		"hasExecTimeColumns":  caps.hasExecTimeColumns(),
+		"hasSharedBlkTimings": caps.hasSharedBlkTimings(),
+		"hasTopLevel":         caps.hasTopLevel(),
+		"hasStatsSince":       caps.hasStatsSince(),
+		"statementsView":      caps.qualify("pg_stat_statements"),
+		"orderByExecTimeCol":  orderByExecTimeCol,
+		"databasePredicate":   databasePredicate,
 	}); err != nil {
 		logger.Error("failed to execute template", zap.Error(err))
-		return []map[string]any{}, fmt.Errorf("failed executing template: %w", err)
+		return nil, fmt.Errorf("failed executing template: %w", err)
 	}
 
-	wrappedDb := sqlquery.NewDbClient(sqlquery.DbWrapper{Db: c.client.Unwrap()}, otelIgnorePrefix+buf.String(), logger, sqlquery.TelemetryConfig{})
-
-	rows, err := wrappedDb.QueryRows(ctx)
+	// c.client is the IgnoredDB wrapper, which prepends the ignore prefix
+	// itself, so the statement is passed through unprefixed here.
+	sqlRows, err := c.client.QueryContext(ctx, buf.String(), args...)
 	if err != nil {
-		if !errors.Is(err, sqlquery.ErrNullValueWarning) {
-			logger.Error("failed getting log rows", zap.Error(err))
-			return []map[string]any{}, fmt.Errorf("getTopQuery failed getting log rows: %w", err)
+		logger.Error("failed getting log rows", zap.Error(err))
+		return nil, fmt.Errorf("getTopQuery failed getting log rows: %w", err)
+	}
+	defer sqlRows.Close()
+
+	// One row struct and one destination slice for the whole result set. Every
+	// scan overwrites the same fields, and each row is copied into the output
+	// slice by value, so no destination is shared between retained rows.
+	var scratch topQueryStatRow
+	dest := scratch.scanDest()
+
+	// The server never returns more than LIMIT rows, so the candidate slice can
+	// be sized exactly once instead of growing by repeated append.
+	rows := make([]topQueryStatRow, 0, limit)
+	for sqlRows.Next() {
+		if err := sqlRows.Scan(dest...); err != nil {
+			// A row that cannot be decoded is skipped rather than failing the
+			// scrape, matching the previous behavior where a bad value became
+			// a warning and a zero.
+			logger.Warn("failed to scan top query row", zap.Error(err))
+			continue
 		}
-		// in case the sql returned rows contains null value, we just log a warning and continue
-		logger.Warn("problems encountered getting log rows", zap.Error(err))
+		rows = append(rows, scratch)
+	}
+	// An error that ends iteration leaves Next returning false exactly as a
+	// completed result set does, so without this check a driver or network
+	// failure part way through is a silent short read.
+	if err := sqlRows.Err(); err != nil {
+		logger.Error("failed iterating top query rows", zap.Error(err))
+		return nil, fmt.Errorf("getTopQuery failed iterating log rows: %w", err)
 	}
 
-	errs := make([]error, 0)
-	finalAttributes := make([]map[string]any, 0)
+	return rows, nil
+}
 
-	for _, row := range rows {
-		hasConvention := map[string]string{
-			"datname": string(semconv.DBNamespaceKey),
-			"query":   string(semconv.DBQueryTextKey),
-		}
+// topQueryEnrichment is everything a selected top-query row needs that is not
+// a counter delta or a plain column: the obfuscated text, the raw text EXPLAIN
+// needs, the comment string and any trace context parsed out of it.
+type topQueryEnrichment struct {
+	obfuscated string
+	rawQuery   string
+	comment    string
+	traceCtx   context.Context
+}
 
-		needConversion := map[string]func(string, string, *zap.Logger) (any, error){
-			callsColumnName:             convertToInt,
-			rowsColumnName:              convertToInt,
-			sharedBlksDirtiedColumnName: convertToInt,
-			sharedBlksHitColumnName:     convertToInt,
-			sharedBlksReadColumnName:    convertToInt,
-			sharedBlksWrittenColumnName: convertToInt,
-			tempBlksReadColumnName:      convertToInt,
-			tempBlksWrittenColumnName:   convertToInt,
-			totalExecTimeColumnName:     convertMillisecondToSecond,
-			totalPlanTimeColumnName:     convertMillisecondToSecond,
-			blkReadTimeAttributeName:    convertMillisecondToSecond,
-			blkWriteTimeAttributeName:   convertMillisecondToSecond,
-		}
-		currentAttributes := make(map[string]any)
+// enrichTopQueryRow performs the work that only emitted rows need: obfuscating
+// the statement, scanning it for comments and parsing a W3C trace context out
+// of them.
+//
+// This used to run during decoding, for every candidate row, whether or not the
+// row was ever emitted. At the defaults, where top_n_query equals
+// max_rows_per_query, every candidate is selected and it runs as often as
+// before - the saving there comes from the comment pre-check, not from the
+// deferral. In a low-N configuration it runs for N rows instead of
+// max_rows_per_query of them.
+//
+// The result is a struct rather than an attribute map: the caller passes each
+// field to a positional emit call, so building a map would allocate the map
+// plus a key string per entry for values that are read once, immediately.
+func enrichTopQueryRow(row *topQueryStatRow, logger *zap.Logger) topQueryEnrichment {
+	out := topQueryEnrichment{rawQuery: row.query.String}
 
-		// Store raw query before obfuscation (needed for EXPLAIN with $N placeholders)
-		if rawQuery, ok := row["query"]; ok {
-			currentAttributes[dbAttributePrefix+"raw_query"] = rawQuery
-
-			comments := extractSQLComments(rawQuery)
-			if len(comments) > 0 {
-				currentAttributes["db.query.comment"] = strings.Join(comments, "; ")
-				propagator := propagation.TraceContext{}
-				for _, c := range comments {
-					tp := extractTraceparentValue(c)
-					if tp == "" {
-						continue
-					}
-					ctxFromComment := propagator.Extract(context.Background(), propagation.MapCarrier{
-						traceparentCarrierKey: tp,
-					})
-					if trace.SpanContextFromContext(ctxFromComment).IsValid() {
-						currentAttributes[querySampleTraceContextKey] = ctxFromComment
-						break
-					}
-				}
+	if comments := extractSQLCommentsFast(out.rawQuery); len(comments) > 0 {
+		out.comment = strings.Join(comments, "; ")
+		propagator := propagation.TraceContext{}
+		for _, comment := range comments {
+			tp := extractTraceparentValue(comment)
+			if tp == "" {
+				continue
+			}
+			ctxFromComment := propagator.Extract(context.Background(), propagation.MapCarrier{
+				traceparentCarrierKey: tp,
+			})
+			if trace.SpanContextFromContext(ctxFromComment).IsValid() {
+				out.traceCtx = ctxFromComment
+				break
 			}
 		}
-
-		for col := range row {
-			var val any
-			var err error
-			converter, ok := needConversion[col]
-			switch {
-			case ok:
-				val, err = converter(col, row[col], logger)
-				if err != nil {
-					logger.Warn("failed to convert column to int", zap.String("column", col), zap.Error(err))
-					errs = append(errs, err)
-				}
-			case col == "query":
-				val, err = obfuscateSQL(row[col])
-				if err != nil {
-					logger.Error("failed to obfuscate query", zap.String("query", row[col]))
-					val = ""
-				}
-			default:
-				val = row[col]
-			}
-			if hasConvention[col] != "" {
-				currentAttributes[hasConvention[col]] = val
-			} else {
-				currentAttributes[dbAttributePrefix+col] = val
-			}
-		}
-		finalAttributes = append(finalAttributes, currentAttributes)
 	}
 
-	return finalAttributes, errors.Join(errs...)
+	obfuscated, err := obfuscateSQL(out.rawQuery)
+	if err != nil {
+		logger.Error("failed to obfuscate query", zap.String("query", out.rawQuery))
+		obfuscated = ""
+	}
+	out.obfuscated = obfuscated
+
+	return out
 }

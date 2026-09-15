@@ -1,5 +1,9 @@
 resourceMetrics:
-  - resource: {}
+  - resource:
+      attributes:
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
           - description: Number of buffers allocated.
@@ -7,7 +11,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "627"
+                - asInt: "1149"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -17,7 +21,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "5"
+                - asInt: "14"
                   attributes:
                     - key: source
                       value:
@@ -38,7 +42,7 @@ resourceMetrics:
                         stringValue: bgwriter
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "60"
+                - asInt: "67"
                   attributes:
                     - key: source
                       value:
@@ -73,14 +77,14 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asDouble: 7
+                - asDouble: 85
                   attributes:
                     - key: type
                       value:
                         stringValue: sync
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 5
+                - asDouble: 16
                   attributes:
                     - key: type
                       value:
@@ -99,6 +103,53 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: "1"
+          - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
+            gauge:
+              dataPoints:
+                - asInt: "381"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: ""
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "11066"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: otel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "13130"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: otel2
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "11224"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: postgres
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: template0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: template1
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.buffer_hit
+            unit: '{hit}/s'
           - description: Configured maximum number of client connections allowed
             gauge:
               dataPoints:
@@ -106,7 +157,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: postgresql.connection.max
-            unit: '{connections}'
+            unit: '{connection}'
           - description: Number of user databases.
             name: postgresql.database.count
             sum:
@@ -186,6 +237,3703 @@ resourceMetrics:
                   timeUnixNano: "2000000"
             name: postgresql.database.locks
             unit: '{lock}'
+          - description: The approximate number of live rows, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_aggregate
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_am
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amop
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amproc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attrdef
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attribute
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_auth_members
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_authid
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_cast
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_class
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_collation
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_constraint
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_conversion
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_database
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_db_role_setting
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_default_acl
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_depend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_description
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_enum
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_event_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_extension
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_data_wrapper
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_server
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_index
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_inherits
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_init_privs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_language
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject_metadata
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_namespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opclass
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_operator
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opfamily
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_partitioned_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_policy
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_proc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_range
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_replication_origin
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_rewrite
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_seclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_sequence
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdepend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdescription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shseclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext_data
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_tablespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1213
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1247
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1255
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1260
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1262
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13318
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13323
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13333
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1417
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1418
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2396
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2604
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2606
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2609
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2612
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2615
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2618
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2619
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2620
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2964
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3079
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3118
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3256
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3350
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3381
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3394
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3429
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3456
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3466
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3592
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3596
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6000
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6100
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_826
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_transform
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config_map
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_dict
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_parser
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_template
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_type
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_user_mapping
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_features
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_implementation_info
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_parts
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_sizing
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.live_rows
+            unit: '{row}'
+          - description: Rows deleted by queries in this db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_aggregate
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_am
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amop
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amproc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attrdef
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attribute
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_auth_members
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_authid
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_cast
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_class
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_collation
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_constraint
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_conversion
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_database
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_db_role_setting
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_default_acl
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_depend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_description
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_enum
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_event_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_extension
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_data_wrapper
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_server
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_index
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_inherits
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_init_privs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_language
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject_metadata
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_namespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opclass
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_operator
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opfamily
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_partitioned_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_policy
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_proc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_range
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_replication_origin
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_rewrite
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_seclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_sequence
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdepend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdescription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shseclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext_data
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_tablespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1213
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1247
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1255
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1260
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1262
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13318
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13323
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13333
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1417
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1418
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2396
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2604
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2606
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2609
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2612
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2615
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2618
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2619
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2620
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2964
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3079
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3118
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3256
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3350
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3381
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3394
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3429
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3456
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3466
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3592
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3596
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6000
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6100
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_826
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_transform
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config_map
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_dict
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_parser
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_template
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_type
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_user_mapping
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_features
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_implementation_info
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_parts
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_sizing
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_deleted
+            unit: '{row}/s'
+          - description: Rows fetched by queries in this db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_aggregate
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_am
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amop
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amproc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attrdef
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attribute
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_auth_members
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_authid
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_cast
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_class
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_collation
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_constraint
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_conversion
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_database
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_db_role_setting
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_default_acl
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_depend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_description
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_enum
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_event_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_extension
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_data_wrapper
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_server
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_index
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_inherits
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_init_privs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_language
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject_metadata
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_namespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opclass
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_operator
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opfamily
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_partitioned_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_policy
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_proc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_range
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_replication_origin
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_rewrite
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_seclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_sequence
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdepend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdescription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shseclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "385"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext_data
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_tablespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1213
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1247
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1255
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1260
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1262
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13318
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13323
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13333
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1417
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1418
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2396
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2604
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2606
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2609
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2612
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2615
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2618
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2619
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2620
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2964
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3079
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3118
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3256
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3350
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3381
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3394
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3429
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3456
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3466
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3592
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3596
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6000
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6100
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_826
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_transform
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config_map
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_dict
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_parser
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_template
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_type
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_user_mapping
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_features
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_implementation_info
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_parts
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_sizing
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_fetched
+            unit: '{row}/s'
+          - description: Rows inserted by queries in the db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_aggregate
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_am
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amop
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amproc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attrdef
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attribute
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_auth_members
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_authid
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_cast
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_class
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_collation
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_constraint
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_conversion
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_database
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_db_role_setting
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_default_acl
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_depend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_description
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_enum
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_event_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_extension
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_data_wrapper
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_server
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_index
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_inherits
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_init_privs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_language
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject_metadata
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_namespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opclass
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_operator
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opfamily
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_partitioned_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_policy
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_proc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_range
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_replication_origin
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_rewrite
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_seclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_sequence
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdepend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdescription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shseclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext_data
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_tablespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1213
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1247
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1255
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1260
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1262
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13318
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13323
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13333
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1417
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1418
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2396
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2604
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2606
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2609
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2612
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2615
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2618
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2619
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2620
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2964
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3079
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3118
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3256
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3350
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3381
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3394
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3429
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3456
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3466
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3592
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3596
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6000
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6100
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_826
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_transform
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config_map
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_dict
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_parser
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_template
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_type
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_user_mapping
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_features
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_implementation_info
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_parts
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_sizing
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_inserted
+            unit: '{row}/s'
+          - description: Rows updated by queries in the db, tagged with relation name.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_aggregate
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_am
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amop
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_amproc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attrdef
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_attribute
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_auth_members
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_authid
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_cast
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_class
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_collation
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_constraint
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_conversion
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_database
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_db_role_setting
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_default_acl
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_depend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_description
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_enum
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_event_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_extension
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_data_wrapper
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_server
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_foreign_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_index
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_inherits
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_init_privs
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_language
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_largeobject_metadata
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_namespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opclass
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_operator
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_opfamily
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_partitioned_table
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_policy
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_proc
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_publication_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_range
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_replication_origin
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_rewrite
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_seclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_sequence
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdepend
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shdescription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_shseclabel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_statistic_ext_data
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_subscription_rel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_tablespace
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1213
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1247
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1255
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1260
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1262
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13318
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13323
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_13333
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1417
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_1418
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2328
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2396
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2604
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2606
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2609
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2612
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2615
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2618
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2619
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2620
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_2964
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3079
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3118
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3256
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3350
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3381
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3394
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3429
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3456
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3466
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3592
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3596
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_3600
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6000
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_6100
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_toast_826
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_transform
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_trigger
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_config_map
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_dict
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_parser
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_ts_template
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_type
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: pg_user_mapping
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_features
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_implementation_info
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_parts
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: relation_name
+                      value:
+                        stringValue: sql_sizing
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.rows_updated
+            unit: '{row}/s'
+          - description: Max duration of active transactions.
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.transactions.duration.max
+            unit: ms
+          - description: Sum of duration of active transactions.
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.transactions.duration.sum
+            unit: ms
+          - description: Number of WAL files.
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.wal.count
+            unit: "1"
+          - description: Total size of WAL files.
+            gauge:
+              dataPoints:
+                - asInt: "16777216"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.wal.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -194,34 +3942,37 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: otel
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "2330"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "190"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'      
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "6"
+                - asInt: "7"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -231,7 +3982,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "7176708"
+                - asInt: "8028675"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By
@@ -293,47 +4044,47 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'  
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1014"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_fetched}'  
+            unit: '{tup_fetched}'
           - description: Number of rows inserted by queries in the database.
             name: postgresql.tup_inserted
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "74"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'    
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1097"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_returned}'                                        
+            unit: '{tup_returned}'
           - description: Number of rows updated by queries in the database.
             name: postgresql.tup_updated
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "5"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'             
+            unit: '{tup_updated}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -342,34 +4093,37 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: otel2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "4340"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "276"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'      
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "7"
+                - asInt: "11"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -379,7 +4133,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "7217668"
+                - asInt: "8094211"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By
@@ -437,51 +4191,51 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "42"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'  
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1849"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_fetched}'  
+            unit: '{tup_fetched}'
           - description: Number of rows inserted by queries in the database.
             name: postgresql.tup_inserted
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "181"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'    
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1965"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_returned}'                                        
+            unit: '{tup_returned}'
           - description: Number of rows updated by queries in the database.
             name: postgresql.tup_updated
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "18"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'             
+            unit: '{tup_updated}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -490,6 +4244,9 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: postgres
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
           - description: The number of backends.
@@ -497,36 +4254,36 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "1"
+                - asInt: "3"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: "1"
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "3026"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "164"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'            
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "8"
+                - asInt: "5"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -536,7 +4293,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "7232024"
+                - asInt: "8098351"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By
@@ -598,17 +4355,17 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'  
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1542"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_fetched}'  
+            unit: '{tup_fetched}'
           - description: Number of rows inserted by queries in the database.
             name: postgresql.tup_inserted
             sum:
@@ -618,17 +4375,17 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'    
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1703"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_returned}'                                        
+            unit: '{tup_returned}'
           - description: Number of rows updated by queries in the database.
             name: postgresql.tup_updated
             sum:
@@ -638,7 +4395,51 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'             
+            unit: '{tup_updated}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: postgres
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
+    scopeMetrics:
+      - metrics:
+          - description: The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: postgresql.application_name
+                      value:
+                        stringValue: mw-otel-collector
+                    - key: postgresql.state
+                      value:
+                        stringValue: active
+                    - key: user.name
+                      value:
+                        stringValue: otelu
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: postgresql.application_name
+                      value:
+                        stringValue: mw-otel-collector
+                    - key: postgresql.state
+                      value:
+                        stringValue: idle
+                    - key: user.name
+                      value:
+                        stringValue: otelu
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.connection.count
+            unit: '{connection}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -653,8 +4454,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -802,6 +4636,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -816,8 +4658,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -965,6 +4840,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -979,8 +4862,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: test1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -1128,6 +5044,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -1142,8 +5066,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: test2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -1163,7 +5120,7 @@ resourceMetrics:
                         stringValue: heap_read
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "2"
+                - asInt: "4"
                   attributes:
                     - key: source
                       value:
@@ -1291,6 +5248,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -1308,8 +5273,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1345,8 +5344,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1382,8 +5415,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: test2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "2"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1419,8 +5486,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: test1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1456,8 +5557,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: test1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -1493,8 +5628,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: test2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "2"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "2"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:

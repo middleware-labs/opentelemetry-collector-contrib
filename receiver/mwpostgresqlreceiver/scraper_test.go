@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -37,7 +38,7 @@ func TestUnsuccessfulScrape(t *testing.T) {
 	cfg := factory.CreateDefaultConfig().(*Config)
 	cfg.Endpoint = "fake:11111"
 
-	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, newDefaultClientFactory(cfg), newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, newDefaultClientFactory(cfg), newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	actualMetrics, err := scraper.scrape(t.Context())
 	require.Error(t, err)
@@ -68,7 +69,7 @@ func TestScraper(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -81,8 +82,12 @@ func TestScraper(t *testing.T) {
 			pmetrictest.IgnoreMetricDataPointsOrder(), pmetrictest.IgnoreStartTimestamp(), pmetrictest.IgnoreTimestamp()))
 	}
 
-	runTest(true, "expected_schemaattr.yaml")
-	runTest(false, "expected.yaml")
+	// These expectations omit postgresql.database.locks and the postgresql.rows_*
+	// family. Both are read from the maintenance connection but describe only
+	// the `postgres` database, which this configuration does not select, so they
+	// are no longer collected. The unrestricted tests below still expect them.
+	runTest(true, "expected_scoped_schemaattr.yaml")
+	runTest(false, "expected_scoped.yaml")
 }
 
 func TestScraperNoDatabaseSingle(t *testing.T) {
@@ -122,7 +127,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
 
@@ -147,7 +152,7 @@ func TestScraperNoDatabaseSingle(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = false
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = false
 
-		scraper = newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper = newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		actualMetrics, err = scraper.scrape(t.Context())
 		require.NoError(t, err)
 
@@ -199,7 +204,7 @@ func TestScraperNoDatabaseMultipleWithoutPreciseLag(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -252,7 +257,7 @@ func TestScraperNoDatabaseMultiple(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -306,7 +311,7 @@ func TestScraperWithResourceAttributeFeatureGate(t *testing.T) {
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -359,7 +364,7 @@ func TestScraperWithResourceAttributeFeatureGateSingle(t *testing.T) {
 		cfg.Metrics.PostgresqlSequentialScans.Enabled = true
 		require.False(t, cfg.Metrics.PostgresqlDatabaseLocks.Enabled)
 		cfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -386,7 +391,7 @@ func TestScraperExcludeDatabase(t *testing.T) {
 		cfg := createDefaultConfig().(*Config)
 		cfg.ExcludeDatabases = []string{"open"}
 
-		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newCache(1), newTTLCache[string](1, time.Second))
+		scraper := newPostgreSQLScraper(receivertest.NewNopSettings(metadata.Type), cfg, &factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 		actualMetrics, err := scraper.scrape(t.Context())
 		require.NoError(t, err)
@@ -459,7 +464,7 @@ func TestScrapeQuerySample(t *testing.T) {
 	settings.TelemetrySettings = component.TelemetrySettings{
 		Logger: logger,
 	}
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 	scraper.newestQueryTimestamp = 123440.111
 	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
 		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
@@ -510,7 +515,7 @@ func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
 		Logger: logger,
 	}
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 	scraper.newestQueryTimestamp = 123440.111
 
 	traceparent := "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
@@ -553,6 +558,27 @@ func TestScrapeQuerySampleWithTraceparent(t *testing.T) {
 //go:embed testdata/scraper/top-query/expectedSql.sql
 var expectedScrapeTopQuery string
 
+//go:embed testdata/scraper/top-query/expectedSqlExtension111.sql
+var expectedScrapeTopQueryExtension111 string
+
+// expectPgStatStatementsVersion queues the catalog lookup that resolves the
+// installed extension version. The statement paths read this instead of the
+// server version, because pg_upgrade leaves the extension behind and the two
+// can disagree by several releases.
+func expectPgStatStatementsVersion(mock sqlmock.Sqlmock, version string) {
+	mock.ExpectQuery(pgStatStatementsVersionSQL).
+		WillReturnRows(sqlmock.NewRows([]string{"extversion", "quote_ident"}).AddRow(version, "public"))
+}
+
+// expectPgStatStatementsVersionRegexp is the same expectation for mocks using
+// sqlmock's regexp matcher.
+func expectPgStatStatementsVersionRegexp(mock sqlmock.Sqlmock, version string) {
+	mock.ExpectQuery(regexp.QuoteMeta(pgStatStatementsVersionSQL)).
+		WillReturnRows(sqlmock.NewRows([]string{"extversion", "quote_ident"}).AddRow(version, "public"))
+}
+
+const pgStatStatementsVersionSQL = "/* otel-collector-ignore */ SELECT e.extversion, quote_ident(n.nspname)\n\tFROM pg_extension e\n\tJOIN pg_namespace n ON n.oid = e.extnamespace\n\tWHERE e.extname = 'pg_stat_statements'"
+
 //go:embed testdata/scraper/top-query/expectedExplain.sql
 var expectedExplain string
 
@@ -576,50 +602,78 @@ func TestScrapeTopQueries(t *testing.T) {
 		Logger: logger,
 	}
 
-	queryid := "114514"
-	expectedReturnedValue := map[string]string{
-		"calls":               "123",
-		"datname":             "postgres",
-		"shared_blks_dirtied": "1111",
-		"shared_blks_hit":     "1112",
-		"shared_blks_read":    "1113",
-		"shared_blks_written": "1114",
-		"temp_blks_read":      "1115",
-		"temp_blks_written":   "1116",
-		"query":               "select * from pg_stat_activity where id = 32",
-		"queryid":             queryid,
-		"rolname":             "master",
-		"rows":                "30",
-		"total_exec_time":     "11000",
-		"total_plan_time":     "12000",
-		"blk_read_time":       "100",
-		"blk_write_time":      "200",
-	}
-
-	expectedRows := make([]string, 0, len(expectedReturnedValue))
-	expectedValues := ""
-	for k, v := range expectedReturnedValue {
-		expectedRows = append(expectedRows, k)
-		expectedValues += fmt.Sprintf("%s,", v)
-	}
-
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(30), newTTLCache[string](1, time.Second))
-	scraper.cache.Add(queryid+totalExecTimeColumnName, 10)
-	scraper.cache.Add(queryid+totalPlanTimeColumnName, 11)
-	scraper.cache.Add(queryid+callsColumnName, 120)
-	scraper.cache.Add(queryid+rowsColumnName, 20)
-
-	scraper.cache.Add(queryid+sharedBlksDirtiedColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksHitColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+sharedBlksWrittenColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksReadColumnName, 1110)
-	scraper.cache.Add(queryid+tempBlksWrittenColumnName, 1110)
-
-	mock.ExpectQuery("/* otel-collector-ignore */ SHOW server_version;").WillReturnRows(
-		sqlmock.NewRows([]string{"server_version"}).AddRow("14.0"),
+	// The queryid, as the fixture reports it and as the identity keys on it.
+	const queryid = int64(114514)
+	const (
+		topQueryDatname = "postgres"
+		topQueryRolname = "master"
 	)
-	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).FromCSVString(expectedValues[:len(expectedValues)-1]))
+
+	// Column order matters now: rows are scanned positionally into typed
+	// fields, so the fixture lists the projection in template order rather
+	// than iterating a map, whose order is random.
+	expectedRows := append([]string(nil), benchmarkTopQueryColumns...)
+	// Typed values rather than a CSV string: stats_since is NULL on this
+	// extension version, and a CSV cell cannot express NULL - it produces an
+	// empty string, which fails to scan into a nullable timestamp.
+	expectedValues := []driverValue{
+		int64(123), // calls
+		topQueryDatname,
+		int64(1111), // shared_blks_dirtied
+		int64(1112), // shared_blks_hit
+		int64(1113), // shared_blks_read
+		int64(1114), // shared_blks_written
+		int64(1115), // temp_blks_read
+		int64(1116), // temp_blks_written
+		"select * from pg_stat_activity where id = 32",
+		queryid, // queryid
+		topQueryRolname,
+		int64(30),    // rows
+		11000.0,      // total_exec_time, milliseconds
+		12000.0,      // total_plan_time, milliseconds
+		100.0,        // blk_read_time, milliseconds
+		200.0,        // blk_write_time, milliseconds
+		int64(16384), // dbid
+		int64(10),    // userid
+		true,         // toplevel
+		nil,          // stats_since, NULL below extension 1.11
+	}
+
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(30), newTTLCache[queryPlanKey, string](1, time.Second))
+
+	// The delta cache is keyed on the identity pg_stat_statements itself uses:
+	// the (userid, dbid, queryid, toplevel) tuple the row projects, not the
+	// names it joins to and not queryid alone. Seed the previous scrape's
+	// cumulative values under that identity so this scrape emits deltas.
+	//
+	// One entry holds all twelve counters, so there is no way to seed a
+	// statement partially: the state is present or it is not.
+	priorID := statementIdentity{queryID: queryid, dbID: 16384, userID: 10, topLevel: true}
+	scraper.statements.lru.Add(priorID, statementSnapshot{
+		counters: statementCounters{
+			calls:             120,
+			rows:              20,
+			sharedBlksDirtied: 1110,
+			sharedBlksHit:     1110,
+			sharedBlksRead:    1110,
+			sharedBlksWritten: 1110,
+			tempBlksRead:      1110,
+			tempBlksWritten:   1110,
+			// Milliseconds, as pg_stat_statements reports them and as the
+			// cache now stores them. This scrape reads 11000 and 12000, so the
+			// deltas are 1.0 s and 1.0 s.
+			totalExecTimeMS: 10000,
+			totalPlanTimeMS: 11000,
+			// Seeded at zero: the previous scrape saw this statement having
+			// done no block I/O, so the whole of this scrape's timing is the
+			// interval delta.
+			blkReadTimeMS:  0,
+			blkWriteTimeMS: 0,
+		},
+	})
+
+	expectPgStatStatementsVersion(mock, "1.9")
+	mock.ExpectQuery(expectedScrapeTopQuery).WillReturnRows(sqlmock.NewRows(expectedRows).AddRow(expectedValues...))
 	// Non-parameterized query: explainQuery runs direct EXPLAIN (no version check)
 	mock.ExpectQuery(expectedExplain).WillReturnRows(sqlmock.NewRows([]string{"QUERY PLAN"}).AddRow("[{\"Plan\":{\"Node Type\":\"Merge Join\",\"Parallel Aware\":false,\"Async Capable\":false,\"Join Type\":\"Inner\",\"Startup Cost\":0.43,\"Total Cost\":55.27,\"Plan Rows\":290,\"Plan Width\":1675,\"Inner Unique\":\"?\",\"Merge Cond\":\"( e.businessentityid = p.businessentityid )\",\"Plans\":[{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Outer\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Employee_BusinessEntityID\",\"Relation Name\":\"employee\",\"Alias\":\"e\",\"Startup Cost\":0.15,\"Total Cost\":21.5,\"Plan Rows\":290,\"Plan Width\":112},{\"Node Type\":\"Index Scan\",\"Parent Relationship\":\"Inner\",\"Parallel Aware\":false,\"Async Capable\":false,\"Scan Direction\":\"Forward\",\"Index Name\":\"PK_Person_BusinessEntityID\",\"Relation Name\":\"person\",\"Alias\":\"p\",\"Startup Cost\":0.29,\"Total Cost\":2261.87,\"Plan Rows\":19972,\"Plan Width\":1563}]}}]"))
 	actualLogs, err := scraper.scrapeTopQuery(t.Context(), 31, 32, 33)
@@ -631,17 +685,31 @@ func TestScrapeTopQueries(t *testing.T) {
 	errs := plogtest.CompareLogs(expectedLogs, actualLogs, plogtest.IgnoreResourceAttributeValue("service.instance.id"), plogtest.IgnoreTimestamp())
 	assert.NoError(t, errs)
 
-	// Verify the cache has updated with latest counter
+	// Verify the cache has updated with the latest counters, under the full
+	// identity tuple and as a single entry.
+	updated, exists := scraper.statements.lru.Get(priorID)
+	assert.True(t, exists)
+	assert.Equal(t, int64(123), updated.counters.calls)
+	assert.InDelta(t, 11000.0, updated.counters.totalExecTimeMS, 0.001)
+	assert.InDelta(t, 12000.0, updated.counters.totalPlanTimeMS, 0.001)
 
-	calls, callsExists := scraper.cache.Get(queryid + callsColumnName)
-	assert.True(t, callsExists)
-	assert.Equal(t, float64(123), calls)
-	execTime, execTimeExists := scraper.cache.Get(queryid + totalExecTimeColumnName)
-	assert.True(t, execTimeExists)
-	assert.Equal(t, float64(11), execTime)
-	planTime, planTimeExists := scraper.cache.Get(queryid + totalPlanTimeColumnName)
-	assert.True(t, planTimeExists)
-	assert.Equal(t, float64(12), planTime)
+	// Identity is the tuple, so a key that differs in any one component must
+	// not resolve to this statement's state. Keyed on queryid alone - which is
+	// what allowed rows for the same query under different roles, databases or
+	// top-level status to collide - every one of these would have hit.
+	for name, other := range map[string]statementIdentity{
+		"different database":     {queryID: queryid, dbID: 99999, userID: 10, topLevel: true},
+		"different role":         {queryID: queryid, dbID: 16384, userID: 99999, topLevel: true},
+		"nested rather than top": {queryID: queryid, dbID: 16384, userID: 10, topLevel: false},
+		"queryid alone":          {queryID: queryid},
+	} {
+		_, hit := scraper.statements.lru.Get(other)
+		assert.False(t, hit, "%s must be a distinct cache entry", name)
+	}
+
+	// The whole statement is one entry, so a scrape of one statement leaves
+	// exactly one.
+	assert.Equal(t, 1, scraper.statements.len())
 }
 
 func TestCanExplainQuery(t *testing.T) {
@@ -843,8 +911,14 @@ func TestExplainQuery(t *testing.T) {
 }
 
 type (
-	mockClientFactory       struct{ mock.Mock }
-	mockClient              struct{ mock.Mock }
+	mockClientFactory struct{ mock.Mock }
+	mockClient        struct {
+		mock.Mock
+		// discoverable is what listDatabases returns for this mock, used to
+		// render an unrestricted selection back to the name list the
+		// expectations are written against.
+		discoverable []string
+	}
 	mockSimpleClientFactory struct {
 		db *sql.DB
 	}
@@ -856,7 +930,7 @@ func (*mockClient) explainQuery(string, string, *zap.Logger) (string, error) {
 }
 
 // getTopQuery implements client.
-func (*mockClient) getTopQuery(context.Context, int64, *zap.Logger) ([]map[string]any, error) {
+func (*mockClient) getTopQuery(context.Context, int64, databaseSelection, *zap.Logger) ([]topQueryStatRow, error) {
 	panic("unimplemented")
 }
 
@@ -868,7 +942,7 @@ func (*mockClient) getTransactionsStats(context.Context) (float64, float64, erro
 	return 100.0, 500.0, nil
 }
 
-func (*mockClient) getConnectionStats(context.Context, []string) (map[databaseName][]connectionStat, error) {
+func (*mockClient) getConnectionStats(context.Context, databaseSelection) (map[databaseName][]connectionStat, error) {
 	return map[databaseName][]connectionStat{
 		"otel": {
 			{database: "otel", user: "otel", app: "otel", state: "active", count: 1},
@@ -890,7 +964,7 @@ func (m mockSimpleClientFactory) getClient(string) (client, error) {
 }
 
 // getQuerySamples implements client.
-func (*mockClient) getQuerySamples(context.Context, int64, float64, *zap.Logger) ([]map[string]any, float64, error) {
+func (*mockClient) getQuerySamples(context.Context, int64, float64, databaseSelection, *zap.Logger) ([]map[string]any, float64, error) {
 	panic("this should not be invoked")
 }
 
@@ -901,8 +975,12 @@ func (m *mockClient) Close() error {
 	return args.Error(0)
 }
 
-func (m *mockClient) getDatabaseStats(_ context.Context, databases []string) (map[databaseName]databaseStats, error) {
-	args := m.Called(databases)
+func (m *mockClient) getDatabaseStats(_ context.Context, sel databaseSelection) (map[databaseName]databaseStats, error) {
+	// Expectations are registered against the database name list these tests
+	// were written with. A restricted selection carries that list; an
+	// unrestricted one is satisfied by whatever discovery returned, which for
+	// these mocks is the same list, so it is substituted here.
+	args := m.Called(m.selectionNames(sel))
 	return args.Get(0).(map[databaseName]databaseStats), args.Error(1)
 }
 
@@ -911,13 +989,21 @@ func (m *mockClient) getDatabaseLocks(ctx context.Context) ([]databaseLocks, err
 	return args.Get(0).([]databaseLocks), args.Error(1)
 }
 
-func (m *mockClient) getBackends(_ context.Context, databases []string) (map[databaseName]int64, error) {
-	args := m.Called(databases)
+func (m *mockClient) getBackends(_ context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	// Expectations are registered against the database name list these tests
+	// were written with. A restricted selection carries that list; an
+	// unrestricted one is satisfied by whatever discovery returned, which for
+	// these mocks is the same list, so it is substituted here.
+	args := m.Called(m.selectionNames(sel))
 	return args.Get(0).(map[databaseName]int64), args.Error(1)
 }
 
-func (m *mockClient) getDatabaseSize(_ context.Context, databases []string) (map[databaseName]int64, error) {
-	args := m.Called(databases)
+func (m *mockClient) getDatabaseSize(_ context.Context, sel databaseSelection) (map[databaseName]int64, error) {
+	// Expectations are registered against the database name list these tests
+	// were written with. A restricted selection carries that list; an
+	// unrestricted one is satisfied by whatever discovery returned, which for
+	// these mocks is the same list, so it is substituted here.
+	args := m.Called(m.selectionNames(sel))
 	return args.Get(0).(map[databaseName]int64), args.Error(1)
 }
 
@@ -941,14 +1027,46 @@ func (m *mockClient) getFunctionStats(ctx context.Context, database string) (map
 	return args.Get(0).(map[functionIdentifer]functionStat), args.Error(1)
 }
 
-func (m *mockClient) getQueryStats(ctx context.Context) ([]queryStats, error) {
+func (m *mockClient) getQueryStats(ctx context.Context, sel databaseSelection) ([]queryStats, error) {
 	args := m.Called(ctx)
 	return args.Get(0).([]queryStats), args.Error(1)
 }
 
-func (m *mockClient) getBufferHit(ctx context.Context) ([]BufferHit, error) {
+func (*mockClient) getQueryStatsMax(context.Context) (int, error) {
+	return defaultQueryTextCacheSize, nil
+}
+
+func (m *mockClient) getQueryTexts(ctx context.Context, keys []queryStatsKey) (map[queryStatsKey]string, error) {
+	args := m.Called(ctx, keys)
+	return args.Get(0).(map[queryStatsKey]string), args.Error(1)
+}
+
+func (m *mockClient) getBufferHit(ctx context.Context, sel databaseSelection) ([]BufferHit, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]BufferHit), args.Error(1)
+	hits := args.Get(0).([]BufferHit)
+	// Honour the selection like the other collectors' mocks do. Returning a
+	// fixed list regardless of scope left the scoped golden files unable to
+	// falsify anything for this metric: they matched whether or not filtering
+	// worked.
+	//
+	// This mirrors datnamePredicate rather than inventing its own rule, because
+	// the golden files record what the real SQL would return. An empty dbName
+	// stands for a NULL datname -- pg_stat_database carries a row for shared
+	// objects that belong to no database -- and NULL survives an exclusion
+	// predicate while an allowlist drops it.
+	filtered := make([]BufferHit, 0, len(hits))
+	for _, hit := range hits {
+		if hit.dbName == "" {
+			if !sel.isRestricted() {
+				filtered = append(filtered, hit)
+			}
+			continue
+		}
+		if sel.includes(hit.dbName) {
+			filtered = append(filtered, hit)
+		}
+	}
+	return filtered, args.Error(1)
 }
 
 func (m *mockClient) getRowStats(ctx context.Context) ([]RowStats, error) {
@@ -1028,7 +1146,17 @@ func (m *mockClientFactory) initMocks(databases []string) {
 	}
 }
 
+// selectionNames renders a selection back to the database-name list the
+// expectations in these tests are written against.
+func (m *mockClient) selectionNames(sel databaseSelection) []string {
+	if sel.isRestricted() {
+		return sel.effectiveDatabases(nil)
+	}
+	return sel.apply(m.discoverable)
+}
+
 func (m *mockClient) initMocks(database, schema string, databases []string, index int) {
+	m.discoverable = databases
 	m.On("Close").Return(nil)
 
 	if database == defaultPostgreSQLDatabase {
@@ -1427,7 +1555,7 @@ func TestQuerySampleDedupKeyIncludesBlockingPids(t *testing.T) {
 	settings := receivertest.NewNopSettings(metadata.Type)
 	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
 
-	scraper := newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, mockSimpleClientFactory{}, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	baseRow := func() map[string]any {
 		return map[string]any{
@@ -1490,6 +1618,96 @@ type fakeQuerySamplesClient struct {
 	rows []map[string]any
 }
 
-func (f *fakeQuerySamplesClient) getQuerySamples(_ context.Context, _ int64, newest float64, _ *zap.Logger) ([]map[string]any, float64, error) {
+func (f *fakeQuerySamplesClient) getQuerySamples(_ context.Context, _ int64, newest float64, _ databaseSelection, _ *zap.Logger) ([]map[string]any, float64, error) {
 	return f.rows, newest, nil
+}
+
+// recordingClientFactory notes every database a caller asked for a connection
+// to, so a test can assert on connections that were never opened.
+type recordingClientFactory struct {
+	db        *sql.DB
+	requested []string
+}
+
+func (f *recordingClientFactory) getClient(database string) (client, error) {
+	f.requested = append(f.requested, database)
+	return &postgreSQLClient{
+		client:  WrapDBWithIgnore(f.db),
+		closeFn: func() error { return nil },
+	}, nil
+}
+
+func (*recordingClientFactory) close() error { return nil }
+
+// TestScrapeTopQuerySkipsExplainOutsideSelection pins the membership check that
+// guards EXPLAIN.
+//
+// EXPLAIN is the one place this receiver connects to a database named by the
+// data rather than by its own configuration, so the row's datname decides where
+// a connection opens. The SQL predicate already restricts which rows come back,
+// which is exactly why the second check is easy to delete as redundant: nothing
+// else fails if it goes. It is defence in depth for a row that arrives out of
+// scope anyway -- a dbid that resolved to a database the operator did not
+// select -- and an unselected database must never see a connection.
+func TestScrapeTopQuerySkipsExplainOutsideSelection(t *testing.T) {
+	cfg := createDefaultConfig().(*Config)
+	// The row below reports datname "unselected". The selection names only
+	// "otherdb", so that row is out of scope.
+	//
+	// The row's database must also not be `postgres`: that one is connected to
+	// regardless of the selection, as the control connection that reads the
+	// server-wide view, so a row naming it could not distinguish the EXPLAIN
+	// connection from the listing connection.
+	cfg.Databases = []string{"otherdb"}
+	cfg.Events.DbServerTopQuery.Enabled = true
+
+	// Regexp matching: a restricted selection renders a dbid predicate into the
+	// top-query SQL, so the unrestricted fixture the other tests embed does not
+	// apply here. The rendered text is not what this test is about.
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+	require.NoError(t, err)
+	defer db.Close()
+
+	factory := &recordingClientFactory{db: db}
+
+	settings := receivertest.NewNopSettings(metadata.Type)
+	settings.TelemetrySettings = component.TelemetrySettings{Logger: zap.NewNop()}
+
+	scraper := newPostgreSQLScraper(settings, cfg, factory,
+		newStatementStateCache(30), newTTLCache[queryPlanKey, string](1, time.Second))
+
+	expectedValues := []driverValue{
+		int64(123), "unselected", int64(1111), int64(1112), int64(1113), int64(1114),
+		int64(1115), int64(1116), "select * from pg_stat_activity where id = 32",
+		int64(114514), "master", int64(30), 11000.0, 12000.0, 100.0, 200.0,
+		int64(16384), int64(10), true, nil,
+	}
+
+	// Seed the previous scrape's counters under this row's identity. Without a
+	// baseline the row is a first observation, which is not reportable, and it
+	// would never reach the EXPLAIN branch this test is about -- the test would
+	// then pass with the guard deleted.
+	scraper.statements.lru.Add(
+		statementIdentity{queryID: 114514, dbID: 16384, userID: 10, topLevel: true},
+		statementSnapshot{counters: statementCounters{
+			calls: 120, rows: 20,
+			sharedBlksDirtied: 1110, sharedBlksHit: 1110,
+			sharedBlksRead: 1110, sharedBlksWritten: 1110,
+			tempBlksRead: 1110, tempBlksWritten: 1110,
+			totalExecTimeMS: 10000, totalPlanTimeMS: 11000,
+		}})
+
+	expectPgStatStatementsVersionRegexp(mock, "1.9")
+	mock.ExpectQuery(`FROM\s+public\.pg_stat_statements`).
+		WillReturnRows(sqlmock.NewRows(benchmarkTopQueryColumns).AddRow(expectedValues...))
+	// No EXPLAIN is queued: issuing one fails ExpectationsWereMet below.
+
+	_, err = scraper.scrapeTopQuery(t.Context(), 31, 32, 33)
+	require.NoError(t, err)
+
+	// The listing connection is expected; a connection to the row's own
+	// database is the thing under test.
+	assert.NotContains(t, factory.requested, "unselected",
+		"EXPLAIN must not open a connection to a database outside the selection")
+	require.NoError(t, mock.ExpectationsWereMet())
 }

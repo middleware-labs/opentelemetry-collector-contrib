@@ -9,8 +9,7 @@ import (
 
 // MetricConfig provides common config for a particular metric.
 type MetricConfig struct {
-	Enabled bool `mapstructure:"enabled"`
-
+	Enabled          bool `mapstructure:"enabled"`
 	enabledSetByUser bool
 }
 
@@ -18,10 +17,12 @@ func (ms *MetricConfig) Unmarshal(parser *confmap.Conf) error {
 	if parser == nil {
 		return nil
 	}
+
 	err := parser.Unmarshal(ms)
 	if err != nil {
 		return err
 	}
+
 	ms.enabledSetByUser = parser.IsSet("enabled")
 	return nil
 }
@@ -59,6 +60,7 @@ type MetricsConfig struct {
 	PostgresqlLiveRows                 MetricConfig `mapstructure:"postgresql.live_rows"`
 	PostgresqlOperations               MetricConfig `mapstructure:"postgresql.operations"`
 	PostgresqlQueryCount               MetricConfig `mapstructure:"postgresql.query.count"`
+	PostgresqlQueryDeallocations       MetricConfig `mapstructure:"postgresql.query.deallocations"`
 	PostgresqlQueryTotalExecTime       MetricConfig `mapstructure:"postgresql.query.total_exec_time"`
 	PostgresqlReplicationDataDelay     MetricConfig `mapstructure:"postgresql.replication.data_delay"`
 	PostgresqlRollbacks                MetricConfig `mapstructure:"postgresql.rollbacks"`
@@ -185,6 +187,9 @@ func DefaultMetricsConfig() MetricsConfig {
 		},
 		PostgresqlQueryCount: MetricConfig{
 			Enabled: true,
+		},
+		PostgresqlQueryDeallocations: MetricConfig{
+			Enabled: false,
 		},
 		PostgresqlQueryTotalExecTime: MetricConfig{
 			Enabled: true,
@@ -399,11 +404,16 @@ type MetricsBuilderConfig struct {
 	ResourceAttributes ResourceAttributesConfig `mapstructure:"resource_attributes"`
 }
 
-func DefaultMetricsBuilderConfig() MetricsBuilderConfig {
+func NewDefaultMetricsBuilderConfig() MetricsBuilderConfig {
 	return MetricsBuilderConfig{
 		Metrics:            DefaultMetricsConfig(),
 		ResourceAttributes: DefaultResourceAttributesConfig(),
 	}
+}
+
+// Deprecated: Use NewDefaultMetricsBuilderConfig.
+func DefaultMetricsBuilderConfig() MetricsBuilderConfig {
+	return NewDefaultMetricsBuilderConfig()
 }
 
 // LogsBuilderConfig is a configuration for postgresql logs builder.

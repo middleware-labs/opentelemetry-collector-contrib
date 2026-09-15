@@ -125,31 +125,38 @@ type ConstraintDefinition struct {
 
 // TableDefinition represents a database table
 type TableDefinition struct {
-	OID             uint32
-	SchemaName      string
-	Name            string
-	Type            string // r=table, t=toast, v=view, m=materialized view, p=partitioned
-	Owner           string
-	Description     string
-	Tablespace      uint32
-	Xmin            uint32
-	HasOids         bool
-	Columns         []*ColumnDefinition
-	Indexes         []*IndexDefinition
-	Constraints     []*ConstraintDefinition
-	LiveTuples      int64
-	DeadTuples      int64
-	ModSinceAnalyze int64
-	LastVacuum      *time.Time
-	LastAutovacuum  *time.Time
-	LastAnalyze     *time.Time
-	LastAutoanalyze *time.Time
-	SeqScans        int64
-	SeqTupRead      int64
-	IndexScans      int64
-	IndexTupFetch   int64
-	SizeBytes       int64
-	TotalSizeBytes  int64
+	OID         uint32
+	SchemaName  string
+	Name        string
+	Type        string // r=table, t=toast, v=view, m=materialized view, p=partitioned
+	Owner       string
+	Description string
+	Tablespace  uint32
+	Xmin        uint32
+	HasOids     bool
+	// ExclusivelyLocked marks a table that was under (or awaiting) an ACCESS
+	// EXCLUSIVE lock when this snapshot ran, so its definition was deliberately
+	// not introspected. The table is still emitted, with the identity fields
+	// gathered from the lock-free catalog scan, so consumers see that it exists
+	// rather than concluding it was dropped. Its columns, indexes and
+	// constraints are empty and must not be read as authoritative.
+	ExclusivelyLocked bool
+	Columns           []*ColumnDefinition
+	Indexes           []*IndexDefinition
+	Constraints       []*ConstraintDefinition
+	LiveTuples        int64
+	DeadTuples        int64
+	ModSinceAnalyze   int64
+	LastVacuum        *time.Time
+	LastAutovacuum    *time.Time
+	LastAnalyze       *time.Time
+	LastAutoanalyze   *time.Time
+	SeqScans          int64
+	SeqTupRead        int64
+	IndexScans        int64
+	IndexTupFetch     int64
+	SizeBytes         int64
+	TotalSizeBytes    int64
 
 	// View-specific
 	ViewDefinition string
@@ -192,8 +199,13 @@ type CollectionStatistics struct {
 	HasErrors            bool
 	ErrorCount           int32
 	CompletionRatio      float64
-	TotalSizeBytes       int64
-	TotalRowCount        int64 // Sum of table.live_tuples across all tables (estimate from pg_stat or reltuples)
+	// SkippedLockedTables counts tables skipped this cycle because they were
+	// under an ACCESS EXCLUSIVE lock. Non-zero is normal and healthy during
+	// customer DDL; persistently non-zero means a relation is permanently
+	// locked and its schema is going stale.
+	SkippedLockedTables int32
+	TotalSizeBytes      int64
+	TotalRowCount       int64 // Sum of table.live_tuples across all tables (estimate from pg_stat or reltuples)
 }
 
 // SchemaCollectionEvent represents a complete schema collection snapshot
@@ -266,14 +278,14 @@ type CloudMetadata struct {
 
 // CollectorConfig represents the schema collector configuration
 type CollectorConfig struct {
-	DatabaseName      string
-	DatabaseOID       uint32
-	ContinueOnError   bool
-	CollectExtensions bool
-	CollectSettings   bool
+	DatabaseName       string
+	DatabaseOID        uint32
+	ContinueOnError    bool
+	CollectExtensions  bool
+	CollectSettings    bool
 	CollectColumnStats bool
-	ExcludeSchemas    map[string]bool
-	IncludeSchemas    map[string]bool
+	ExcludeSchemas     map[string]bool
+	IncludeSchemas     map[string]bool
 }
 
 // FilterConfig represents table/schema filtering

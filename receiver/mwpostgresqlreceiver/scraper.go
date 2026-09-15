@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -35,6 +36,11 @@ const (
 	separateSchemaAttrID = "receiver.postgresql.separateSchemaAttr"
 
 	defaultPostgreSQLDatabase = "postgres"
+	// defaultQueryTextCacheSize matches PostgreSQL's default
+	// pg_stat_statements.max. Query text is retrieved only for cache misses, so
+	// this bounds the receiver's retained text while avoiding a full reload on
+	// every scrape for the usual server configuration.
+	defaultQueryTextCacheSize = 5000
 )
 
 var separateSchemaAttrGate = featuregate.GlobalRegistry().MustRegister(
@@ -50,19 +56,65 @@ type postgreSQLScraper struct {
 	clientFactory postgreSQLClientFactory
 	mb            *metadata.MetricsBuilder
 	lb            *metadata.LogsBuilder
-	excludes      map[string]struct{}
-	cache         *lru.Cache[string, float64]
-	changeTracker *XminChangeTracker
+	// selection is the immutable include/exclude policy every collection path
+	// consults, so metrics, schema and query telemetry cannot disagree about
+	// which databases are in scope.
+	selection databaseSelection
+	// plan records which query families any enabled metric still needs. It is
+	// derived from config.Metrics once at construction so the per-scrape path
+	// only reads booleans.
+	plan               collectionPlan
+	statements         *statementStateCache
+	queryTextCache     *lru.Cache[queryStatsKey, string]
+	queryTextCacheOnce sync.Once
+	changeTracker      *XminChangeTracker
 	// if enabled, uses a separated attribute for the schema
 	separateSchemaAttr   bool
-	queryPlanCache       *expirable.LRU[string, string]
+	queryPlanCache       *expirable.LRU[queryPlanKey, string]
 	newestQueryTimestamp float64
 	topQueryDisabled     bool
+	// resetDetector notices when the server discards the counters that cache
+	// holds previous values for. It lives beside the cache because its only
+	// purpose is deciding when that cache has become meaningless.
+	resetDetector *resetDetector
+	// instanceTracker notices when the server on the other end of the
+	// connection is no longer the same running process, which invalidates the
+	// same cache for a different reason.
+	instanceTracker *instanceTracker
 	// seenQuerySamples tracks (pid:query_start) keys for queries already
 	// emitted, so the same execution is never sent twice across scrapes.
 	seenQuerySamples  map[string]struct{}
 	serviceInstanceID string
 	lastSchemaCheck   time.Time
+	// now is the clock the cadence decisions read. It exists so tests can
+	// step through a scrape sequence without sleeping; data point timestamps
+	// still come from time.Now directly.
+	now func() time.Time
+	// lastRelationRun, lastBloatRun and lastTopQueryRun are the per-family
+	// last-run timestamps behind relation_metrics.collection_interval,
+	// bloat_collection_interval and top_query_collection.collection_interval.
+	// See cadence.go.
+	lastRelationRun time.Time
+	lastBloatRun    time.Time
+	lastTopQueryRun time.Time
+	// tableCounts remembers, per database, the row count of the last
+	// successful table enumeration, so postgresql.table.count can be reported
+	// on scrapes where the relation families are not due without re-running
+	// the enumeration query.
+	tableCounts map[string]int64
+	// schemaServer caches the server-level facts schema collection needs —
+	// version and cloud platform — which do not change for the life of the
+	// process. Detecting them costs several queries; doing so once rather
+	// than every cycle keeps the unchanged-schema cycle to one query per
+	// database.
+	schemaServer *schemaServerInfo
+}
+
+// schemaServerInfo is what schema collection learns about the server once.
+type schemaServerInfo struct {
+	version       *VersionInfo
+	cloudProvider CloudProvider
+	cloudMetadata *CloudMetadata
 }
 
 type errsMux struct {
@@ -92,13 +144,9 @@ func newPostgreSQLScraper(
 	settings receiver.Settings,
 	config *Config,
 	clientFactory postgreSQLClientFactory,
-	cache *lru.Cache[string, float64],
-	queryPlanCache *expirable.LRU[string, string],
+	statements *statementStateCache,
+	queryPlanCache *expirable.LRU[queryPlanKey, string],
 ) *postgreSQLScraper {
-	excludes := make(map[string]struct{})
-	for _, db := range config.ExcludeDatabases {
-		excludes[db] = struct{}{}
-	}
 	separateSchemaAttr := separateSchemaAttrGate.IsEnabled()
 
 	if !separateSchemaAttr {
@@ -113,13 +161,19 @@ func newPostgreSQLScraper(
 		clientFactory:      clientFactory,
 		mb:                 metadata.NewMetricsBuilder(config.MetricsBuilderConfig, settings),
 		lb:                 metadata.NewLogsBuilder(config.LogsBuilderConfig, settings),
-		excludes:           excludes,
-		cache:              cache,
+		selection:          newDatabaseSelection(config.Databases, config.ExcludeDatabases),
+		plan:               newCollectionPlan(config.Metrics),
+		statements:         statements,
+		queryTextCache:     newQueryTextCache(defaultQueryTextCacheSize),
+		resetDetector:      newResetDetector(),
+		instanceTracker:    newInstanceTracker(),
 		changeTracker:      NewXminChangeTracker(1000), // Maintain state across scrapes
 		queryPlanCache:     queryPlanCache,
 		separateSchemaAttr: separateSchemaAttr,
 		seenQuerySamples:   make(map[string]struct{}),
 		serviceInstanceID:  getInstanceID(config.Endpoint, settings.Logger),
+		now:                time.Now,
+		tableCounts:        make(map[string]int64),
 	}
 }
 
@@ -131,8 +185,9 @@ type dbRetrieval struct {
 }
 
 // scrape scrapes the metric stats, transforms them and attributes them into a metric slices.
-func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error) {
-	databases := p.config.Databases
+func (p *postgreSQLScraper) scrape(ctx context.Context) (retMetrics pmetric.Metrics, retErr error) {
+	defer recoverScrape(p.logger, "metrics", &retErr)
+
 	listClient, err := p.clientFactory.getClient(defaultPostgreSQLDatabase)
 	if err != nil {
 		p.logger.Error("Failed to initialize connection to postgres", zap.Error(err))
@@ -140,21 +195,20 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 	}
 	defer listClient.Close()
 
-	if len(databases) == 0 {
+	// Discovery runs only when there is no allowlist. An allowlist is
+	// authoritative: a named database that is not currently connectable is a
+	// failure to report, not a reason to widen scope, and a discovery failure
+	// must never be resolved by collecting from everything.
+	var discovered []string
+	if !p.selection.isRestricted() {
 		dbList, dbErr := listClient.listDatabases(ctx)
 		if dbErr != nil {
 			p.logger.Error("Failed to request list of databases from postgres", zap.Error(dbErr))
 			return pmetric.NewMetrics(), dbErr
 		}
-		databases = dbList
+		discovered = dbList
 	}
-	var filteredDatabases []string
-	for _, db := range databases {
-		if _, ok := p.excludes[db]; !ok {
-			filteredDatabases = append(filteredDatabases, db)
-		}
-	}
-	databases = filteredDatabases
+	databases := p.selection.effectiveDatabases(discovered)
 
 	now := pcommon.NewTimestampFromTime(time.Now())
 
@@ -164,43 +218,164 @@ func (p *postgreSQLScraper) scrape(ctx context.Context) (pmetric.Metrics, error)
 		dbSizeMap:   make(map[databaseName]int64),
 		dbStats:     make(map[databaseName]databaseStats),
 	}
-	p.retrieveDBMetrics(ctx, listClient, databases, r, &errs)
+	p.retrieveDBMetrics(ctx, listClient, p.selection, r, &errs)
 
+	// Decided once here, after discovery has succeeded, so a scrape that fails
+	// before doing any work does not consume a family's interval, and so every
+	// database in this scrape gets the same answer.
+	due := p.familiesDue()
 	for _, database := range databases {
-		dbClient, dbErr := p.clientFactory.getClient(database)
-		if dbErr != nil {
-			errs.add(dbErr)
-			p.logger.Error("Failed to initialize connection to postgres", zap.String("database", database), zap.Error(dbErr))
-			continue
-		}
-		defer dbClient.Close()
-		numTables := p.collectTables(ctx, now, dbClient, database, &errs)
+		p.collectDatabaseMetrics(ctx, now, database, r, &errs, due)
+	}
 
-		p.recordDatabase(now, database, r, numTables)
-		p.collectIndexes(ctx, now, dbClient, database, &errs)
-		p.collectFunctions(ctx, now, dbClient, database, &errs)
-		p.collectTableBloat(ctx, now, dbClient, database, &errs)
-		p.collectIndexBloat(ctx, now, dbClient, database, &errs)
+	// Active connections emit one resource per database, and EmitForResource
+	// flushes every data point recorded since the previous emit into that
+	// resource. Run it first, while nothing server-wide is pending: recorded
+	// after it, the server-wide families below all reach the final resource
+	// with no database name. Ordered after it, they were swept into whichever
+	// database's connection resource happened to be emitted first, which is a
+	// map iteration and therefore a different database on different scrapes.
+	if p.plan.activeConnections {
+		p.collectActiveConnections(ctx, now, listClient, &errs)
 	}
 
 	p.mb.RecordPostgresqlDatabaseCountDataPoint(now, int64(len(databases)))
-	p.collectBGWriterStats(ctx, now, listClient, &errs)
-	p.collectWalAge(ctx, now, listClient, &errs)
-	p.collectReplicationStats(ctx, now, listClient, &errs)
-	p.collectMaxConnections(ctx, now, listClient, &errs)
-	p.collectActiveConnections(ctx, now, listClient, &errs)
-	p.collectDatabaseLocks(ctx, now, listClient, &errs)
-	p.collectRowStats(ctx, now, listClient, &errs)
-	p.collectQueryPerfStats(ctx, now, listClient, &errs)
-	p.collectBufferHits(ctx, now, listClient, &errs)
-	p.collectWALStats(ctx, now, listClient, &errs)
-	p.collectTransactionsStats(ctx, now, listClient, &errs)
+	if p.plan.bgWriter {
+		p.collectBGWriterStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.walAge {
+		p.collectWalAge(ctx, now, listClient, &errs)
+	}
+	if p.plan.replication {
+		p.collectReplicationStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.maxConnections {
+		p.collectMaxConnections(ctx, now, listClient, &errs)
+	}
+	// These two read database-local catalogs (pg_locks joined to pg_class, and
+	// pg_stat_all_tables) but run only on the maintenance connection, so their
+	// values describe `postgres` alone while their resource identity does not
+	// say so. Moving them into the per-database loop would change that identity
+	// and collide with existing series, which the plan defers to a separately
+	// reviewed change. Until then the honest behavior is to stop collecting
+	// them when `postgres` itself is out of scope, rather than reporting one
+	// database's locks as though they were the server's.
+	if p.selection.includes(defaultPostgreSQLDatabase) {
+		if p.plan.databaseLocks {
+			p.collectDatabaseLocks(ctx, now, listClient, &errs)
+		}
+		if p.plan.rowStats {
+			p.collectRowStats(ctx, now, listClient, &errs)
+		}
+	}
+	if p.plan.queryPerf {
+		p.collectQueryPerfStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.deallocations {
+		p.collectStatementDeallocations(ctx, now, listClient, &errs)
+	}
+	if p.plan.bufferHit {
+		p.collectBufferHits(ctx, now, listClient, &errs)
+	}
+	if p.plan.walStats {
+		p.collectWALStats(ctx, now, listClient, &errs)
+	}
+	if p.plan.transactions {
+		p.collectTransactionsStats(ctx, now, listClient, &errs)
+	}
 
 	rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), "", "", "", "")
 	return p.mb.Emit(metadata.WithResource(rb.Emit())), errs.combine()
 }
 
-func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQuery int64) (plog.Logs, error) {
+// collectDatabaseMetrics collects the per-database metrics for a single
+// database.
+//
+// This is a separate function so that the client is closed when the database is
+// finished with, rather than when the whole scrape returns. A deferred Close
+// inside the scrape loop would be function-scoped, holding one connection open
+// per database for the duration of the scrape — with enough databases that
+// exhausts the role's connection limit and the server starts refusing new
+// connections mid-scrape.
+func (p *postgreSQLScraper) collectDatabaseMetrics(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	database string,
+	r *dbRetrieval,
+	errs *errsMux,
+	due familiesDue,
+) {
+	// With every per-database collector disabled, or every enabled one not
+	// due on this scrape, there is nothing this connection would be used for,
+	// so do not open it. The database still gets its resource, whatever data
+	// points the maintenance-connection queries produced for it, and the table
+	// count remembered from the last enumeration (zero when tables are not
+	// collected at all, exactly as before).
+	if !p.needsDatabaseClientFor(database, due) {
+		p.recordDatabase(now, database, r, p.tableCounts[database])
+		return
+	}
+
+	dbClient, dbErr := p.clientFactory.getClient(database)
+	if dbErr != nil {
+		errs.add(dbErr)
+		p.logger.Error("Failed to initialize connection to postgres", zap.String("database", database), zap.Error(dbErr))
+		return
+	}
+	defer dbClient.Close()
+
+	var numTables int64
+	if p.plan.tables {
+		if due.relations {
+			numTables = p.collectTables(ctx, now, dbClient, database, errs)
+		} else if remembered, ok := p.tableCounts[database]; ok {
+			// The connection was opened for another family (bloat); the
+			// count is still served from the last enumeration.
+			numTables = remembered
+		} else {
+			// Relation families are throttled and this database has no
+			// remembered count, so read it without the per-table output.
+			numTables = p.countTables(ctx, dbClient, database, errs)
+		}
+	}
+
+	p.recordDatabase(now, database, r, numTables)
+	if due.relations {
+		if p.plan.indexes {
+			p.collectIndexes(ctx, now, dbClient, database, errs)
+		}
+		if p.plan.functions {
+			p.collectFunctions(ctx, now, dbClient, database, errs)
+		}
+	}
+	if due.bloat {
+		if p.plan.tableBloat {
+			p.collectTableBloat(ctx, now, dbClient, database, errs)
+		}
+		if p.plan.indexBloat {
+			p.collectIndexBloat(ctx, now, dbClient, database, errs)
+		}
+	}
+}
+
+// recoverScrape converts a panic on a scrape goroutine into an error. The
+// collector runs each scraper on its own goroutine with no recover of its own,
+// so an unexpected panic here terminates the entire agent process — taking down
+// host metrics, logs and every other integration along with this receiver. A
+// malformed row in one receiver should not have that blast radius.
+func recoverScrape(logger *zap.Logger, path string, err *error) {
+	if r := recover(); r != nil {
+		logger.Error("recovered from panic during scrape",
+			zap.String("path", path),
+			zap.Any("panic", r),
+			zap.Stack("stack"))
+		*err = fmt.Errorf("panic during %s scrape: %v", path, r)
+	}
+}
+
+func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQuery int64) (retLogs plog.Logs, retErr error) {
+	defer recoverScrape(p.logger, "query_samples", &retErr)
+
 	dbClient, err := p.clientFactory.getClient(defaultPostgreSQLDatabase)
 	if err != nil {
 		p.logger.Error("Failed to initialize connection to postgres", zap.Error(err))
@@ -219,7 +394,16 @@ func (p *postgreSQLScraper) scrapeQuerySamples(ctx context.Context, maxRowsPerQu
 	return logs, nil
 }
 
-func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (plog.Logs, error) {
+func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery, topNQuery, maxExplainEachInterval int64) (retLogs plog.Logs, retErr error) {
+	defer recoverScrape(p.logger, "top_query", &retErr)
+
+	// Throttle to top_query_collection.collection_interval the same way schema
+	// collection throttles to its own interval: the controller still calls this
+	// every collection_interval, and a run that is not due costs no SQL.
+	if !p.topQueryDue() {
+		return plog.NewLogs(), nil
+	}
+
 	var errs errsMux
 
 	p.collectTopQuery(ctx, p.clientFactory, maxRowsPerQuery, topNQuery, maxExplainEachInterval, &errs, p.logger)
@@ -233,7 +417,7 @@ func (p *postgreSQLScraper) scrapeTopQuery(ctx context.Context, maxRowsPerQuery,
 func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient client, limit int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 
-	attributes, newestQueryTimestamp, err := dbClient.getQuerySamples(ctx, limit, p.newestQueryTimestamp, logger)
+	attributes, newestQueryTimestamp, err := dbClient.getQuerySamples(ctx, limit, p.newestQueryTimestamp, p.selection, logger)
 	p.newestQueryTimestamp = newestQueryTimestamp
 	if err != nil {
 		mux.addPartial(err)
@@ -248,9 +432,9 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 	currentSeen := make(map[string]struct{}, len(attributes))
 
 	for _, atts := range attributes {
-		state := atts[dbAttributePrefix+querySampleColumnState].(string)
-		pid := atts[dbAttributePrefix+querySampleColumnPID].(int64)
-		queryStart := atts[dbAttributePrefix+querySampleColumnQueryStart].(string)
+		state := attrString(atts, dbAttributePrefix+querySampleColumnState)
+		pid := attrInt64(atts, dbAttributePrefix+querySampleColumnPID)
+		queryStart := attrString(atts, dbAttributePrefix+querySampleColumnQueryStart)
 		blockingPids, _ := atts[dbAttributePrefix+querySampleColumnBlockingPids].([]any)
 
 		key := fmt.Sprintf("%d:%s:%s", pid, queryStart, blockingPidsToKey(blockingPids))
@@ -270,28 +454,28 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 		p.lb.RecordDbServerQuerySampleEvent(logCtx,
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
-			atts[string(semconv.DBNamespaceKey)].(string),
-			atts["event.type"].(string),
-			atts[string(semconv.DBQueryTextKey)].(string),
+			attrString(atts, string(semconv.DBNamespaceKey)),
+			attrString(atts, "event.type"),
+			attrString(atts, string(semconv.DBQueryTextKey)),
 			comment,
-			atts["db.query.tables"].(string),
-			atts[string(semconv.UserNameKey)].(string),
+			attrString(atts, "db.query.tables"),
+			attrString(atts, string(semconv.UserNameKey)),
 			state,
 			pid,
-			atts[dbAttributePrefix+querySampleColumnApplicationName].(string),
-			atts[string(semconv.NetworkPeerAddressKey)].(string),
-			atts[string(semconv.NetworkPeerPortKey)].(int64),
-			atts[dbAttributePrefix+querySampleColumnClientHostname].(string),
-			atts[dbAttributePrefix+querySampleColumnBackendType].(string),
-			atts[dbAttributePrefix+querySampleColumnXactStart].(string),
+			attrString(atts, dbAttributePrefix+querySampleColumnApplicationName),
+			attrString(atts, string(semconv.NetworkPeerAddressKey)),
+			attrInt64(atts, string(semconv.NetworkPeerPortKey)),
+			attrString(atts, dbAttributePrefix+querySampleColumnClientHostname),
+			attrString(atts, dbAttributePrefix+querySampleColumnBackendType),
+			attrString(atts, dbAttributePrefix+querySampleColumnXactStart),
 			queryStart,
-			atts[dbAttributePrefix+querySampleColumnStateChange].(string),
-			atts[dbAttributePrefix+querySampleColumnWaitEvent].(string),
-			atts[dbAttributePrefix+querySampleColumnWaitEventType].(string),
+			attrString(atts, dbAttributePrefix+querySampleColumnStateChange),
+			attrString(atts, dbAttributePrefix+querySampleColumnWaitEvent),
+			attrString(atts, dbAttributePrefix+querySampleColumnWaitEventType),
 			blockingPids,
-			atts[dbAttributePrefix+querySampleColumnBackendXid].(int64),
-			atts[dbAttributePrefix+querySampleColumnQueryID].(string),
-			atts[postgresqlTotalExecTimeAttributeName].(float64),
+			attrInt64(atts, dbAttributePrefix+querySampleColumnBackendXid),
+			attrString(atts, dbAttributePrefix+querySampleColumnQueryID),
+			attrFloat64(atts, postgresqlTotalExecTimeAttributeName),
 		)
 	}
 
@@ -301,6 +485,29 @@ func (p *postgreSQLScraper) collectQuerySamples(ctx context.Context, dbClient cl
 	p.seenQuerySamples = currentSeen
 }
 
+// topQueryCounterColumns names the twelve cumulative pg_stat_statements
+// counters the receiver differences and reports as per-interval deltas.
+//
+// The delta arithmetic itself lives in statementCounters, whose fields are
+// named and typed, so nothing looks a counter up by name at runtime. This list
+// exists so a test can assert that the struct and the emitted attributes cover
+// exactly the same set: adding a counter to the SQL and the row without adding
+// it here, or the reverse, is the mistake worth catching.
+var topQueryCounterColumns = []string{
+	callsColumnName,
+	rowsColumnName,
+	sharedBlksDirtiedColumnName,
+	sharedBlksHitColumnName,
+	sharedBlksReadColumnName,
+	sharedBlksWrittenColumnName,
+	tempBlksReadColumnName,
+	tempBlksWrittenColumnName,
+	totalExecTimeColumnName,
+	totalPlanTimeColumnName,
+	blkReadTimeAttributeName,
+	blkWriteTimeAttributeName,
+}
+
 func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory postgreSQLClientFactory, limit, topNQuery, maxExplainEachInterval int64, mux *errsMux, logger *zap.Logger) {
 	timestamp := pcommon.NewTimestampFromTime(time.Now())
 
@@ -308,23 +515,34 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		return
 	}
 
-	candidateDatabases := make([]string, 0, len(p.config.Databases)+1)
-	seen := make(map[string]struct{}, len(p.config.Databases)+1)
-	for _, db := range p.config.Databases {
-		if _, excluded := p.excludes[db]; excluded {
-			continue
-		}
+	// Candidates for the *extension* connection, not for data scope.
+	//
+	// pg_stat_statements reports statistics for the whole server regardless of
+	// which database the extension is installed in, so this list only decides
+	// where to connect to read the view. The rows it returns are filtered to the
+	// configured selection separately, below.
+	//
+	// `postgres` is appended even when it is outside the selection: it is a
+	// control connection used to reach server-wide statistics, not permission
+	// to collect that database's telemetry. This exception is documented in
+	// Configuration.md.
+	// `postgres` is tried first because it is where pg_stat_statements is
+	// installed on the large majority of servers, and every candidate that does
+	// not have the extension costs a failed connection and a logged error
+	// before the next one is tried.
+	allowed := p.selection.effectiveDatabases(nil)
+	candidateDatabases := make([]string, 0, len(allowed)+1)
+	seen := map[string]struct{}{defaultPostgreSQLDatabase: {}}
+	candidateDatabases = append(candidateDatabases, defaultPostgreSQLDatabase)
+	for _, db := range allowed {
 		if _, ok := seen[db]; ok {
 			continue
 		}
 		seen[db] = struct{}{}
 		candidateDatabases = append(candidateDatabases, db)
 	}
-	if _, ok := seen[defaultPostgreSQLDatabase]; !ok {
-		candidateDatabases = append(candidateDatabases, defaultPostgreSQLDatabase)
-	}
 
-	var rows []map[string]any
+	var rows []topQueryStatRow
 	extensionMissing := false
 	var lastErr error
 	scrapedTopQuery := false
@@ -336,7 +554,39 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 			continue
 		}
 
-		rows, err = dbClient.getTopQuery(ctx, limit, logger)
+		rows, err = dbClient.getTopQuery(ctx, limit, p.selection, logger)
+		if err == nil {
+			// Ask the same connection that just read the counters whether they
+			// were discarded since last scrape. pg_stat_statements_reset()
+			// zeroes every counter, so the cached previous values describe a
+			// series that no longer exists; differencing against them reports
+			// the new absolute values as if they were one interval's work.
+			//
+			// This is checked here, on a successful read, so a reset is only
+			// acted on when there are fresh counters to re-baseline against.
+			if pgClient, ok := dbClient.(*postgreSQLClient); ok {
+				// Two independent reasons the cached counters may no longer
+				// describe the same series, checked on the connection that
+				// just read them.
+				if p.instanceTracker.check(ctx, pgClient.client) {
+					// A restart zeroed the counters, or a failover pointed us
+					// at a different server that has been counting on its own.
+					// The second case is why this check exists: a promoted
+					// standby can report counters HIGHER than the cached ones,
+					// so the delta comes out positive and plausible while
+					// describing a different machine entirely. Nothing else
+					// notices that.
+					logger.Info("postgres instance changed, discarding cached counters",
+						zap.String("database", database))
+					p.statements.purge()
+				} else if caps, capsErr := pgClient.statementCapabilities(ctx); capsErr == nil &&
+					p.resetDetector.check(ctx, pgClient.client, caps) {
+					logger.Info("pg_stat_statements was reset, discarding cached counters",
+						zap.String("database", database))
+					p.statements.purge()
+				}
+			}
+		}
 		closeErr := dbClient.Close()
 		if closeErr != nil {
 			logger.Error("failed to close", zap.Error(closeErr))
@@ -365,71 +615,48 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		return
 	}
 
-	type updatedOnlyInfo struct {
-		finalConverter func(float64) any
-	}
+	// Selection works on the typed rows, and a row's text is obfuscated and
+	// scanned for comments only once it has been selected for emission. The
+	// queue therefore carries an index into rows plus the deltas computed for
+	// it, rather than a decorated attribute map per candidate.
+	pq := make(priorityqueue.PriorityQueue[topQuerySelection, float64], 0)
 
-	convertToInt := func(f float64) any {
-		return int64(f)
-	}
+	for i := range rows {
+		row := &rows[i]
 
-	updatedOnly := map[string]updatedOnlyInfo{
-		totalExecTimeColumnName:     {},
-		totalPlanTimeColumnName:     {},
-		blkReadTimeAttributeName:    {},
-		blkWriteTimeAttributeName:   {},
-		rowsColumnName:              {finalConverter: convertToInt},
-		callsColumnName:             {finalConverter: convertToInt},
-		sharedBlksDirtiedColumnName: {finalConverter: convertToInt},
-		sharedBlksHitColumnName:     {finalConverter: convertToInt},
-		sharedBlksReadColumnName:    {finalConverter: convertToInt},
-		sharedBlksWrittenColumnName: {finalConverter: convertToInt},
-		tempBlksReadColumnName:      {finalConverter: convertToInt},
-		tempBlksWrittenColumnName:   {finalConverter: convertToInt},
-	}
-
-	pq := make(priorityqueue.PriorityQueue[map[string]any, float64], 0)
-
-	for i, row := range rows {
-		queryID := row[dbAttributePrefix+queryidColumnName]
-
-		if queryID == nil {
+		if !row.queryID.Valid {
 			// this should not happen, but in case
-			logger.Error("queryid is nil", zap.Any("atts", row))
+			logger.Error("queryid is nil", zap.Int("row", i))
 			mux.addPartial(errors.New("queryid is nil"))
 			continue
 		}
+		queryID := strconv.FormatInt(row.queryID.Int64, 10)
 
-		for columnName, info := range updatedOnly {
-			var valInAtts float64
-			_val := row[dbAttributePrefix+columnName]
-			if i, ok := _val.(int64); ok {
-				valInAtts = float64(i)
-			} else {
-				valInAtts = _val.(float64)
-			}
-			valInCache, exist := p.cache.Get(queryID.(string) + columnName)
-			valDelta := valInAtts
-			if exist {
-				valDelta = valInAtts - valInCache
-			}
-			finalValue := float64(0)
-			if valDelta > 0 {
-				p.cache.Add(queryID.(string)+columnName, valInAtts)
-				finalValue = valDelta
-			}
-			if info.finalConverter != nil {
-				row[dbAttributePrefix+columnName] = info.finalConverter(finalValue)
-			} else {
-				row[dbAttributePrefix+columnName] = finalValue
-			}
-		}
-		if row[dbAttributePrefix+totalExecTimeColumnName] == 0.0 {
+		// pg_stat_statements keys its entries on (userid, dbid, queryid,
+		// toplevel), not on queryid alone: the same normalized query executed
+		// by two roles, or in two databases, is two separate rows with
+		// independent counters. Keying the delta cache on queryid alone merges
+		// them, so each row is differenced against whichever of its siblings
+		// was seen last and the emitted deltas are meaningless - typically
+		// oscillating between a large positive value and zero as the rows take
+		// turns. Key on the same tuple the server does, taken from the OIDs the
+		// row projects rather than from the names they join to.
+		//
+		// The cache holds one entry per statement, so the twelve counters are
+		// stored, read and evicted together, and no key string is built: the
+		// identity is a comparable struct used as the map key directly.
+		// observe applies the first-observation, re-entry, decrease and
+		// calls-did-not-advance rules and stores the new baseline in every case.
+		deltas, reportable := p.statements.observe(row.identity(), row.snapshot())
+		if !reportable {
 			continue
 		}
-		item := priorityqueue.QueueItem[map[string]any, float64]{
-			Value:    row,
-			Priority: row[dbAttributePrefix+totalExecTimeColumnName].(float64),
+		if deltas.totalExecTime == 0.0 {
+			continue
+		}
+		item := priorityqueue.QueueItem[topQuerySelection, float64]{
+			Value:    topQuerySelection{index: i, queryID: queryID, deltas: deltas},
+			Priority: deltas.totalExecTime,
 			Index:    i,
 		}
 		pq.Push(&item)
@@ -438,15 +665,55 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 	heap.Init(&pq)
 	explained := int64(0)
 	count := 0
+	// Counted rather than logged per row: on a server with churn a large share
+	// of pg_stat_statements rows can be orphaned, so a per-row log would itself
+	// become a significant source of allocation.
+	unresolvedDatabases := 0
 	for pq.Len() > 0 && count < int(topNQuery) {
-		item := heap.Pop(&pq).(*priorityqueue.QueueItem[map[string]any, float64])
-		query := item.Value[string(semconv.DBQueryTextKey)].(string)
-		queryID := item.Value[dbAttributePrefix+queryidColumnName].(string)
+		item := heap.Pop(&pq).(*priorityqueue.QueueItem[topQuerySelection, float64])
+		sel := item.Value
+		row := &rows[sel.index]
+
+		// Enrichment happens here, for selected rows only: obfuscation, comment
+		// extraction and trace-context parsing used to run for every candidate
+		// during decoding, whether or not the row was ever emitted.
+		enriched := enrichTopQueryRow(row, logger)
+
+		query := enriched.obfuscated
+		queryID := sel.queryID
 		// Use raw query (with $1, $2 placeholders) for EXPLAIN, not the obfuscated one (with ?)
-		rawQuery, _ := item.Value[dbAttributePrefix+"raw_query"].(string)
-		plan, ok := p.queryPlanCache.Get(queryID + "-plan")
-		if !ok && explained < maxExplainEachInterval {
-			database := item.Value[string(semconv.DBNamespaceKey)].(string)
+		rawQuery := enriched.rawQuery
+
+		// pg_stat_statements rows outlive the databases they came from: once a
+		// database is dropped, its dbid no longer joins to pg_database and
+		// datname comes back NULL, which leaves db.namespace absent from the
+		// row. Such a row cannot be EXPLAINed (there is no database to connect
+		// to), but it is still a real query worth reporting, so it is emitted
+		// under a placeholder rather than dropped.
+		database := row.datname.String
+		if database == "" {
+			unresolvedDatabases++
+			database = unknownDatabaseName
+		}
+
+		// The plan cache is keyed on the database as well as the statement.
+		// A queryid identifies a normalized statement, not a plan: the same
+		// text against two databases has two different sets of tables,
+		// statistics and indexes, so it plans differently. Keyed on queryid
+		// alone, whichever database was EXPLAINed first supplied the plan
+		// reported for every other database's copy of that statement - and
+		// silently, since the plan is plausible SQL either way. The key is a
+		// comparable struct, so no key string is built per row either.
+		planKey := queryPlanKey{queryID: row.queryID.Int64, database: database}
+		plan, ok := p.queryPlanCache.Get(planKey)
+		// Check membership again before opening a connection. The SQL predicate
+		// already restricts the rows, but EXPLAIN is the one place the receiver
+		// connects to a database named by the data rather than by
+		// configuration, so it gets an independent check: a row that reached
+		// here out of scope must not cause a connection to an unselected
+		// database.
+		if !ok && explained < maxExplainEachInterval && database != unknownDatabaseName &&
+			p.selection.includes(database) {
 			dbClient, err := clientFactory.getClient(database)
 			if err != nil {
 				logger.Warn("skipping explain: failed to get db client",
@@ -462,7 +729,7 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 				}
 				// Cache the plan (empty or not) to avoid flooding errors on every scrape.
 				// The plan cache TTL controls when a re-attempt is made.
-				p.queryPlanCache.Add(queryID+"-plan", plan)
+				p.queryPlanCache.Add(planKey, plan)
 				if closeErr := dbClient.Close(); closeErr != nil {
 					logger.Error("failed to close db client after explain", zap.Error(closeErr))
 				}
@@ -473,43 +740,47 @@ func (p *postgreSQLScraper) collectTopQuery(ctx context.Context, clientFactory p
 		// Extract table names from raw query for db.query.tables enrichment
 		tables := strings.Join(extractTablesFromQuery(rawQuery), ",")
 		// user.name is aliased from rolname
-		rolname, _ := item.Value[dbAttributePrefix+"rolname"].(string)
+		rolname := row.rolname.String
 
 		logCtx := context.Background()
-		if ctxFromQuery, ok := item.Value[querySampleTraceContextKey]; ok {
-			if c, ok := ctxFromQuery.(context.Context); ok {
-				logCtx = c
-			}
+		if enriched.traceCtx != nil {
+			logCtx = enriched.traceCtx
 		}
 
-		topComment, _ := item.Value["db.query.comment"].(string)
+		topComment := enriched.comment
 		p.lb.RecordDbServerTopQueryEvent(
 			logCtx,
 			timestamp,
 			metadata.AttributeDbSystemNamePostgresql,
-			item.Value[string(semconv.DBNamespaceKey)].(string),
+			database,
 			"top_query",
 			query,
 			topComment,
 			tables,
 			rolname,
-			item.Value[dbAttributePrefix+callsColumnName].(int64),
-			item.Value[dbAttributePrefix+rowsColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksDirtiedColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksHitColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksReadColumnName].(int64),
-			item.Value[dbAttributePrefix+sharedBlksWrittenColumnName].(int64),
-			item.Value[dbAttributePrefix+tempBlksReadColumnName].(int64),
-			item.Value[dbAttributePrefix+tempBlksWrittenColumnName].(int64),
+			sel.deltas.calls,
+			sel.deltas.rows,
+			sel.deltas.sharedBlksDirtied,
+			sel.deltas.sharedBlksHit,
+			sel.deltas.sharedBlksRead,
+			sel.deltas.sharedBlksWritten,
+			sel.deltas.tempBlksRead,
+			sel.deltas.tempBlksWritten,
 			queryID,
 			rolname,
-			item.Value[dbAttributePrefix+totalExecTimeColumnName].(float64),
-			item.Value[dbAttributePrefix+totalPlanTimeColumnName].(float64),
+			sel.deltas.totalExecTime,
+			sel.deltas.totalPlanTime,
 			plan,
-			item.Value[postgresqlBlkReadTimeAttributeName].(float64),
-			item.Value[postgresqlBlkWriteTimeAttributeName].(float64),
+			sel.deltas.blkReadTime,
+			sel.deltas.blkWriteTime,
 		)
 		count++
+	}
+
+	if unresolvedDatabases > 0 {
+		logger.Debug("top query rows had no resolvable database, reported as unknown",
+			zap.Int("count", unresolvedDatabases),
+			zap.Int("emitted", count))
 	}
 }
 
@@ -523,16 +794,27 @@ func (p *postgreSQLScraper) shutdown(_ context.Context) error {
 func (p *postgreSQLScraper) retrieveDBMetrics(
 	ctx context.Context,
 	listClient client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	wg := &sync.WaitGroup{}
 
-	wg.Add(3)
-	go p.retrieveBackends(ctx, wg, listClient, databases, r, errs)
-	go p.retrieveDatabaseSize(ctx, wg, listClient, databases, r, errs)
-	go p.retrieveDatabaseStats(ctx, wg, listClient, databases, r, errs)
+	// Each of these three is one query on the maintenance connection feeding one
+	// group of per-database data points; a group with nothing enabled leaves its
+	// map empty and recordDatabase simply finds no entry for it.
+	if p.plan.backends {
+		wg.Add(1)
+		go p.retrieveBackends(ctx, wg, listClient, sel, r, errs)
+	}
+	if p.plan.databaseSize {
+		wg.Add(1)
+		go p.retrieveDatabaseSize(ctx, wg, listClient, sel, r, errs)
+	}
+	if p.plan.databaseStats {
+		wg.Add(1)
+		go p.retrieveDatabaseStats(ctx, wg, listClient, sel, r, errs)
+	}
 
 	wg.Wait()
 }
@@ -566,16 +848,37 @@ func (p *postgreSQLScraper) recordDatabase(now pcommon.Timestamp, db string, r *
 	p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 }
 
-func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Timestamp, dbClient client, db string, errs *errsMux) (numTables int64) {
-	blockReads, err := dbClient.getBlocksReadByTable(ctx, db)
+// countTables runs the table enumeration for its row count alone, which is all
+// postgresql.table.count needs. No per-table data point or resource is built.
+func (p *postgreSQLScraper) countTables(ctx context.Context, dbClient client, db string, errs *errsMux) int64 {
+	tableMetrics, err := dbClient.getDatabaseTableMetrics(ctx, db)
 	if err != nil {
 		errs.addPartial(err)
+	}
+	return p.rememberTableCount(db, len(tableMetrics), err)
+}
+
+func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Timestamp, dbClient client, db string, errs *errsMux) (numTables int64) {
+	// When no per-table metric is enabled, skip the conversion and the
+	// resource per table entirely.
+	if !p.plan.tableDetails && !p.plan.blocksReadByTable {
+		return p.countTables(ctx, dbClient, db, errs)
+	}
+
+	var blockReads map[tableIdentifier]tableIOStats
+	if p.plan.blocksReadByTable {
+		var brErr error
+		blockReads, brErr = dbClient.getBlocksReadByTable(ctx, db)
+		if brErr != nil {
+			errs.addPartial(brErr)
+		}
 	}
 
 	tableMetrics, err := dbClient.getDatabaseTableMetrics(ctx, db)
 	if err != nil {
 		errs.addPartial(err)
 	}
+	numTables = p.rememberTableCount(db, len(tableMetrics), err)
 
 	for tableKey := range tableMetrics {
 		tm := tableMetrics[tableKey]
@@ -618,7 +921,7 @@ func (p *postgreSQLScraper) collectTables(ctx context.Context, now pcommon.Times
 		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), db, schemaName, tableName, "")
 		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
-	return int64(len(tableMetrics))
+	return numTables
 }
 
 func (p *postgreSQLScraper) collectIndexes(
@@ -769,17 +1072,26 @@ func (p *postgreSQLScraper) collectActiveConnections(
 	client client,
 	errs *errsMux,
 ) {
-	stats, err := client.getConnectionStats(ctx, nil)
+	// Server-wide: active connections are a property of the instance, not of
+	// any one database, so this deliberately passes an unrestricted selection.
+	stats, err := client.getConnectionStats(ctx, databaseSelection{})
 	if err != nil {
 		errs.addPartial(err)
 		return
 	}
 
-	for dbName, connStats := range stats {
-		for _, s := range connStats {
+	// Emit in a fixed order so a scrape's output does not depend on map
+	// iteration; the resources are independent, so only determinism is gained.
+	names := make([]string, 0, len(stats))
+	for dbName := range stats {
+		names = append(names, string(dbName))
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		for _, s := range stats[databaseName(name)] {
 			p.mb.RecordPostgresqlConnectionCountDataPoint(now, s.count, s.state, s.app, s.user)
 		}
-		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), string(dbName), "", "", "")
+		rb := p.setupResourceBuilder(p.mb.NewResourceBuilder(), name, "", "", "")
 		p.mb.EmitForResource(metadata.WithResource(rb.Emit()))
 	}
 }
@@ -934,16 +1246,95 @@ func (p *postgreSQLScraper) collectQueryPerfStats(
 	client client,
 	errs *errsMux,
 ) {
-	queryStats, err := client.getQueryStats(ctx)
+	p.queryTextCacheOnce.Do(func() {
+		max, err := client.getQueryStatsMax(ctx)
+		if err != nil {
+			p.logger.Debug("using default query text cache size", zap.Error(err))
+			return
+		}
+		if max > 0 {
+			p.queryTextCache.Resize(max)
+		}
+	})
+
+	queryStats, err := client.getQueryStats(ctx, p.selection)
 	if err != nil {
 		errs.addPartial(err)
 		return
 	}
 
+	missing := make([]queryStatsKey, 0)
+	for i := range queryStats {
+		stat := &queryStats[i]
+		if stat.queryText != "" {
+			// Keep this path for test clients and for callers that already
+			// resolved text. Production clients intentionally leave it empty.
+			p.queryTextCache.Add(stat.key, stat.queryText)
+			continue
+		}
+		if text, ok := p.queryTextCache.Get(stat.key); ok {
+			stat.queryText = text
+			continue
+		}
+		missing = append(missing, stat.key)
+	}
+
+	if len(missing) > 0 {
+		texts, textErr := client.getQueryTexts(ctx, missing)
+		if textErr != nil {
+			errs.addPartial(textErr)
+			return
+		}
+		for key, text := range texts {
+			p.queryTextCache.Add(key, text)
+		}
+		for i := range queryStats {
+			if queryStats[i].queryText == "" {
+				queryStats[i].queryText, _ = p.queryTextCache.Get(queryStats[i].key)
+			}
+		}
+	}
+
 	for _, s := range queryStats {
+		if s.queryText == "" || s.queryText == excludedQueryText {
+			// Text can be unavailable after pg_stat_statements garbage-collects
+			// its external query-text file, or until a DBA grants access. Keep
+			// retrying on later scrapes rather than caching that absence.
+			continue
+		}
 		p.mb.RecordPostgresqlQueryCountDataPoint(now, s.queryCount, s.queryText, s.queryID)
 		p.mb.RecordPostgresqlQueryTotalExecTimeDataPoint(now, s.queryExecTime, s.queryText, s.queryID)
 	}
+}
+
+// collectStatementDeallocations records pg_stat_statements_info.dealloc as a
+// server-wide cumulative counter. It is off by default: the value only means
+// something to an operator sizing pg_stat_statements.max, and every other
+// query-performance metric here is on by default, so an enabled-by-default
+// addition would change output for every deployment without anyone opting in.
+//
+// The read needs the extension's version and schema, which only the real
+// client resolves; the fakes used by the unit tests do not implement it and
+// are skipped, as the reset detector's capability read is.
+func (p *postgreSQLScraper) collectStatementDeallocations(
+	ctx context.Context,
+	now pcommon.Timestamp,
+	client client,
+	errs *errsMux,
+) {
+	pgClient, ok := client.(*postgreSQLClient)
+	if !ok {
+		return
+	}
+	value, supported, err := pgClient.getStatementDeallocations(ctx)
+	if err != nil {
+		errs.addPartial(err)
+		return
+	}
+	if !supported {
+		return
+	}
+	p.mb.RecordPostgresqlQueryDeallocationsDataPoint(now, value)
 }
 
 func (p *postgreSQLScraper) collectBufferHits(
@@ -952,7 +1343,7 @@ func (p *postgreSQLScraper) collectBufferHits(
 	client client,
 	errs *errsMux,
 ) {
-	bhs, err := client.getBufferHit(ctx)
+	bhs, err := client.getBufferHit(ctx, p.selection)
 	if err != nil {
 		errs.addPartial(err)
 		return
@@ -967,12 +1358,12 @@ func (p *postgreSQLScraper) retrieveDatabaseStats(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	client client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	defer wg.Done()
-	dbStats, err := client.getDatabaseStats(ctx, databases)
+	dbStats, err := client.getDatabaseStats(ctx, sel)
 	if err != nil {
 		p.logger.Error("Errors encountered while fetching commits and rollbacks", zap.Error(err))
 		errs.addPartial(err)
@@ -987,12 +1378,12 @@ func (p *postgreSQLScraper) retrieveDatabaseSize(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	client client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	defer wg.Done()
-	databaseSizeMetrics, err := client.getDatabaseSize(ctx, databases)
+	databaseSizeMetrics, err := client.getDatabaseSize(ctx, sel)
 	if err != nil {
 		p.logger.Error("Errors encountered while fetching database size", zap.Error(err))
 		errs.addPartial(err)
@@ -1007,12 +1398,12 @@ func (*postgreSQLScraper) retrieveBackends(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	client client,
-	databases []string,
+	sel databaseSelection,
 	r *dbRetrieval,
 	errs *errsMux,
 ) {
 	defer wg.Done()
-	activityByDB, err := client.getBackends(ctx, databases)
+	activityByDB, err := client.getBackends(ctx, sel)
 	if err != nil {
 		errs.addPartial(err)
 		return

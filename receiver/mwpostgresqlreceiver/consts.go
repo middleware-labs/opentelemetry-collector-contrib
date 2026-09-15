@@ -47,6 +47,13 @@ const (
 const (
 	insufficientPrivilegeQuerySampleText = "<insufficient privilege>"
 	traceparentCarrierKey                = "traceparent"
+
+	// unknownDatabaseName stands in for db.namespace when a pg_stat_statements
+	// row cannot be resolved to a database. This happens when the row's dbid
+	// refers to a dropped database, so the join to pg_database yields NULL.
+	// Emitting the row with a placeholder keeps the query visible; dropping it
+	// would silently lose top queries for whichever database is churning most.
+	unknownDatabaseName = "unknown"
 )
 
 const (
@@ -54,3 +61,13 @@ const (
 	postgresqlBlkReadTimeAttributeName   = dbAttributePrefix + blkReadTimeAttributeName
 	postgresqlBlkWriteTimeAttributeName  = dbAttributePrefix + blkWriteTimeAttributeName
 )
+
+// monitoringApplicationName is set as application_name on every connection this
+// receiver opens. It appears in pg_stat_activity and in the server log, so the
+// customer's DBA can always tell which backends belong to the collector.
+const monitoringApplicationName = "mw-otel-collector"
+
+// rolnameColumnName is the role that executed the query, joined from pg_roles
+// on pg_stat_statements.userid. Part of the identity of a pg_stat_statements
+// entry, so part of the delta cache key.
+const rolnameColumnName = "rolname"

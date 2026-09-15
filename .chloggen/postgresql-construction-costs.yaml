@@ -1,0 +1,47 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: enhancement
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Reduce per-scrape construction cost of query log collection without changing emitted telemetry
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  Three changes, none of which alter emitted telemetry or the SQL sent to the server:
+
+  - Enable the SQL obfuscator's query cache, bounded at 4 MB. It was constructed without a cache
+    configured, so every statement was re-obfuscated on every scrape even though pg_stat_statements
+    returns a largely unchanged set of statements every collection interval.
+  - Hoist the two per-row conversion maps out of the top-query row loop. They were rebuilt for every
+    row of every scrape despite being constant.
+  - Parse the query-sample and top-query SQL templates once at startup rather than on every scrape.
+
+  Measured on the receiver's benchmarks as a same-session A/B, 8 runs each: bytes allocated per
+  scrape fell 26% (geomean), wall time 22%, and allocation count 6%. The largest single improvement
+  is a 68% reduction in bytes for scrapes dominated by long statement text.
+
+  Allocation count rises slightly (~5%) in two shapes where bytes and time both fall, because the
+  obfuscator cache does its own bookkeeping allocations. That is a deliberate trade of many small
+  allocations for fewer large ones.
+
+  The obfuscator is a process-wide singleton, so its cache goroutines live for the life of the
+  process. The cache is bounded by bytes rather than entry count, so statement text of unbounded
+  length cannot grow it without limit.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

@@ -48,7 +48,7 @@ func TestScrapeSchemaCollection_Snapshot(t *testing.T) {
 	logger := zap.New(core)
 	settings.Logger = logger
 
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	// --- VersionDetector ---
 	mock.ExpectQuery(`SELECT version\(\), current_setting`).
@@ -61,9 +61,9 @@ func TestScrapeSchemaCollection_Snapshot(t *testing.T) {
 	mock.ExpectQuery(`SELECT oid FROM pg_database`).
 		WillReturnRows(sqlmock.NewRows([]string{"oid"}).AddRow(16384))
 
-	// --- probeSizeFunctions: pg_total_size available ---
-	mock.ExpectQuery(`SELECT pg_total_size`).
-		WillReturnRows(sqlmock.NewRows([]string{"pg_total_size"}).AddRow(0))
+	// --- probeSizeFunctions: pg_total_relation_size available ---
+	mock.ExpectQuery(`SELECT pg_total_relation_size`).
+		WillReturnRows(sqlmock.NewRows([]string{"pg_total_relation_size"}).AddRow(0))
 
 	// --- TablesQuery (PG14 builder: 10 columns including total_size_bytes) ---
 	mock.ExpectQuery("SELECT.*pg_class.*pg_namespace").WillReturnRows(sqlmock.NewRows([]string{
@@ -71,25 +71,29 @@ func TestScrapeSchemaCollection_Snapshot(t *testing.T) {
 	}).AddRow(16385, "public", "test_table", "r", false, 0, nil, "postgres", 100, 2048))
 
 	// --- ColumnsQuery ---
+	// Lock guard: runs once per collection, between the table list and the
+	// per-table queries. Empty result = nothing is exclusively locked.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
 	mock.ExpectQuery("SELECT.*pg_attribute").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
 		"attnum", "name", "type", "typeoid", "mod", "notnull", "hasdef", "def", "desc", "coll", "xmin",
 	}).AddRow(1, "id", "integer", 23, -1, true, false, nil, nil, 0, 100))
 
-	// --- IndexesQuery (12 columns: includes index_size_bytes) ---
-	// Returns empty: no indexes → collectIndexColumns and collectIndexStats are skipped
+	// --- IndexesQuery (13 columns: includes index_size_bytes and column_names) ---
+	// Returns empty: no indexes → index statistics are skipped
 	mock.ExpectQuery("SELECT.*pg_index").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
 		"oid", "name", "table", "primary", "unique", "valid", "exclusion", "type", "def", "partial", "xmin", "size",
 	}))
 
 	// --- ConstraintsQuery ---
 	mock.ExpectQuery("SELECT.*pg_constraint").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
-		"oid", "name", "type", "table", "def", "deferrable", "deferred", "validated",
-	}).AddRow(1, "pk_test", "p", 16385, "PRIMARY KEY (id)", true, false, true))
+		"oid", "name", "type", "table", "def", "deferrable", "deferred", "validated", "ref_table", "columns", "ref_columns",
+	}).AddRow(1, "pk_test", "p", 16385, "PRIMARY KEY (id)", true, false, true, 0, "{}", "{}"))
 
-	// --- TableStatsQuery (13 columns: includes total_size_bytes) ---
-	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
-		"live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
-	}).AddRow(100, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
+	// --- TableStatsQuery (14 columns: includes relid and total_size_bytes) ---
+	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(sqlmock.AnyArg()).WillReturnRows(sqlmock.NewRows([]string{
+		"relid", "live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
+	}).AddRow(16385, 100, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
 
 	// --- XminDetectionQuery (for UpdateSnapshot) ---
 	// Already handled inside Collect() via changeTracker.UpdateSnapshot
@@ -223,7 +227,7 @@ func TestScrapeSchemaCollection_ExcludeTable(t *testing.T) {
 	cfg.SchemaCollection.ExcludeTables = []string{"public.test_table"}
 
 	settings := receivertest.NewNopSettings(metadata.Type)
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	// Version Detector
 	mock.ExpectQuery(`SELECT version\(\), current_setting`).
@@ -236,14 +240,19 @@ func TestScrapeSchemaCollection_ExcludeTable(t *testing.T) {
 	mock.ExpectQuery(`SELECT oid FROM pg_database`).
 		WillReturnRows(sqlmock.NewRows([]string{"oid"}).AddRow(16384))
 
-	// probeSizeFunctions: pg_total_size available
-	mock.ExpectQuery(`SELECT pg_total_size`).
-		WillReturnRows(sqlmock.NewRows([]string{"pg_total_size"}).AddRow(0))
+	// probeSizeFunctions: pg_total_relation_size available
+	mock.ExpectQuery(`SELECT pg_total_relation_size`).
+		WillReturnRows(sqlmock.NewRows([]string{"pg_total_relation_size"}).AddRow(0))
 
 	// Tables Query (table gets excluded by filter)
 	mock.ExpectQuery("SELECT.*pg_class.*pg_namespace").WillReturnRows(sqlmock.NewRows([]string{
 		"oid", "schema", "table", "type", "hasoids", "tablespace", "desc", "owner", "xmin", "total_size",
 	}).AddRow(16385, "public", "test_table", "r", false, 0, nil, "postgres", 100, 1024))
+
+	// The lock guard still runs: it is per collection, not per table, so it is
+	// issued even when every table is filtered out.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
 
 	// No column/index/constraint/stats queries expected because the table is excluded
 
@@ -278,7 +287,7 @@ func TestScrapeSchemaCollection_ReltupplesFallback(t *testing.T) {
 	cfg.Databases = []string{"postgres"}
 
 	settings := receivertest.NewNopSettings(metadata.Type)
-	scraper := newPostgreSQLScraper(settings, cfg, factory, newCache(1), newTTLCache[string](1, time.Second))
+	scraper := newPostgreSQLScraper(settings, cfg, factory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 
 	// --- VersionDetector ---
 	mock.ExpectQuery(`SELECT version\(\), current_setting`).
@@ -292,8 +301,8 @@ func TestScrapeSchemaCollection_ReltupplesFallback(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"oid"}).AddRow(16384))
 
 	// --- probeSizeFunctions ---
-	mock.ExpectQuery(`SELECT pg_total_size`).
-		WillReturnRows(sqlmock.NewRows([]string{"pg_total_size"}).AddRow(0))
+	mock.ExpectQuery(`SELECT pg_total_relation_size`).
+		WillReturnRows(sqlmock.NewRows([]string{"pg_total_relation_size"}).AddRow(0))
 
 	// --- TablesQuery ---
 	mock.ExpectQuery("SELECT.*pg_class.*pg_namespace").WillReturnRows(sqlmock.NewRows([]string{
@@ -301,6 +310,10 @@ func TestScrapeSchemaCollection_ReltupplesFallback(t *testing.T) {
 	}).AddRow(16385, "public", "test_table", "r", false, 0, nil, "postgres", 100, 2048))
 
 	// --- ColumnsQuery ---
+	// Lock guard: runs once per collection, between the table list and the
+	// per-table queries. Empty result = nothing is exclusively locked.
+	mock.ExpectQuery("SELECT l.relation FROM pg_locks").
+		WillReturnRows(sqlmock.NewRows([]string{"relation"}))
 	mock.ExpectQuery("SELECT.*pg_attribute").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
 		"attnum", "name", "type", "typeoid", "mod", "notnull", "hasdef", "def", "desc", "coll", "xmin",
 	}).AddRow(1, "id", "integer", 23, -1, true, false, nil, nil, 0, 100))
@@ -316,13 +329,13 @@ func TestScrapeSchemaCollection_ReltupplesFallback(t *testing.T) {
 	}))
 
 	// --- TableStatsQuery: n_live_tup = 0 (ANALYZE hasn't run) ---
-	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(uint32(16385)).WillReturnRows(sqlmock.NewRows([]string{
-		"live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
-	}).AddRow(0, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
+	mock.ExpectQuery("SELECT.*pg_stat_user_tables").WithArgs(sqlmock.AnyArg()).WillReturnRows(sqlmock.NewRows([]string{
+		"relid", "live", "dead", "mod", "vac", "autovac", "ana", "autoana", "seq", "seq_read", "idx", "idx_fetch", "size", "total_size",
+	}).AddRow(16385, 0, 0, 0, nil, nil, nil, nil, 0, 0, 0, 0, 1024, 2048))
 
 	// --- fillLiveTuplesFromReltuples: fallback query returns reltuples = 3260 ---
-	mock.ExpectQuery("SELECT c.reltuples FROM pg_class").WithArgs(uint32(16385)).WillReturnRows(
-		sqlmock.NewRows([]string{"reltuples"}).AddRow(3260.0))
+	mock.ExpectQuery("SELECT c.oid, c.reltuples FROM pg_class").WithArgs(sqlmock.AnyArg()).WillReturnRows(
+		sqlmock.NewRows([]string{"oid", "reltuples"}).AddRow(16385, 3260.0))
 
 	// --- Execute ---
 	logs, err := scraper.scrapeSchemaCollection(context.Background())

@@ -5,9 +5,9 @@ package postgresqlreceiver // import "github.com/open-telemetry/opentelemetry-co
 
 import (
 	"context"
+	"sync"
 	"time"
 
-	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confignet"
@@ -21,24 +21,40 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
 
-// newCache creates a new cache with the given size.
-// If the size is less or equal to 0, it will be set to 1.
-// It will never return an error.
-func newCache(size int) *lru.Cache[string, float64] {
+func newTTLCache[k comparable, v any](size int, ttl time.Duration) *expirable.LRU[k, v] {
 	if size <= 0 {
 		size = 1
 	}
-	// lru will only return error when the size is less than 0
-	cache, _ := lru.New[string, float64](size)
+	cache := expirable.NewLRU[k, v](size, nil, ttl)
 	return cache
 }
 
-func newTTLCache[v any](size int, ttl time.Duration) *expirable.LRU[string, v] {
-	if size <= 0 {
-		size = 1
+// sharedBudgets hands the metrics and logs receivers built from the same
+// configuration the same connection budget.
+//
+// The collector calls createMetricsReceiver and createLogsReceiver separately,
+// each building its own client factory, so without this the two would hold
+// independent budgets and the receiver could open twice what the operator
+// configured — against a role limit that PostgreSQL enforces cluster-wide
+// across both.
+//
+// Keyed by the *Config pointer, which the collector creates once per configured
+// receiver instance and passes to both calls. Two receiver instances pointed at
+// the same server therefore get separate budgets, which is correct: they are
+// separately configured and each is entitled to its own allowance.
+//
+// Entries are never removed. One small struct per configured receiver lives for
+// the process lifetime; receivers are created at startup, not per scrape, so
+// this does not grow.
+var sharedBudgets sync.Map
+
+func budgetFor(cfg *Config) *connectionBudget {
+	maxTotal := defaultMaxTotalConnections
+	if cfg.ConnectionPool.MaxTotalConnections != nil && *cfg.ConnectionPool.MaxTotalConnections > 0 {
+		maxTotal = *cfg.ConnectionPool.MaxTotalConnections
 	}
-	cache := expirable.NewLRU[string, v](size, nil, ttl)
-	return cache
+	budget, _ := sharedBudgets.LoadOrStore(cfg, newConnectionBudget(maxTotal))
+	return budget.(*connectionBudget)
 }
 
 func NewFactory() receiver.Factory {
@@ -64,11 +80,26 @@ func createDefaultConfig() component.Config {
 			Insecure:           false,
 			InsecureSkipVerify: true,
 		},
-		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+		MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 		LogsBuilderConfig:    metadata.DefaultLogsBuilderConfig(),
 		QuerySampleCollection: QuerySampleCollection{
 			MaxRowsPerQuery: 1000,
 		},
+		// Per-relation families run once a minute and bloat once every ten
+		// minutes by default. The receiver's cost is proportional to the number
+		// of tables and indexes times the enabled per-relation families divided
+		// by their interval, and nothing in the product depends on a ten-second
+		// resolution for per-table or per-index series; database-level and
+		// server-wide metrics stay on every scrape. Bloat estimates move slowly
+		// and their two estimator queries are the heaviest SQL the receiver
+		// issues. Both are the most conservative cadences among comparable
+		// agents (pgwatch2 tables 300s, indexes 900s, bloat 7200s; pganalyze
+		// schema and bloat in a 600s snapshot; Percona PMM relation views on
+		// its 60s tier; Datadog bloat off by default).
+		RelationMetrics: RelationMetricsConfig{
+			CollectionInterval: time.Minute,
+		},
+		BloatCollectionInterval: 10 * time.Minute,
 		TopQueryCollection: TopQueryCollection{
 			TopNQuery:              1000,
 			MaxRowsPerQuery:        1000,
@@ -89,12 +120,12 @@ func createMetricsReceiver(
 
 	var clientFactory postgreSQLClientFactory
 	if connectionPoolGate.IsEnabled() {
-		clientFactory = newPoolClientFactory(cfg)
+		clientFactory = newPoolClientFactory(cfg, budgetFor(cfg))
 	} else {
 		clientFactory = newDefaultClientFactory(cfg)
 	}
 
-	ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+	ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 	s, err := scraper.NewMetrics(ns.scrape, scraper.WithShutdown(ns.shutdown))
 	if err != nil {
 		return nil, err
@@ -117,7 +148,7 @@ func createLogsReceiver(
 
 	var clientFactory postgreSQLClientFactory
 	if connectionPoolGate.IsEnabled() {
-		clientFactory = newPoolClientFactory(cfg)
+		clientFactory = newPoolClientFactory(cfg, budgetFor(cfg))
 	} else {
 		clientFactory = newDefaultClientFactory(cfg)
 	}
@@ -127,7 +158,7 @@ func createLogsReceiver(
 	if cfg.Events.DbServerQuerySample.Enabled {
 		// query sample collection does not need cache, but we do not want to make it
 		// nil, so create one size 1 cache as a placeholder.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeQuerySamples(ctx, cfg.QuerySampleCollection.MaxRowsPerQuery)
 		}, scraper.WithShutdown(ns.shutdown))
@@ -143,8 +174,19 @@ func createLogsReceiver(
 	}
 
 	if cfg.Events.DbServerTopQuery.Enabled {
-		// we have 10 updated only attributes. so we set the cache size accordingly.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(int(cfg.TopNQuery*10*2)), newTTLCache[string](cfg.QueryPlanCacheSize, cfg.QueryPlanCacheTTL))
+		// The cache holds one entry per candidate statement, and every
+		// candidate row is traversed on every scrape - not just the
+		// top_n_query rows that are emitted. Sizing it from the output count
+		// makes a small top_n_query evict the whole candidate set each scrape,
+		// so every row looks like a first observation and never produces a
+		// delta. Size it from the candidate count instead.
+		//
+		// The unit is statements. It was previously statements times a counter
+		// count, because each counter occupied its own entry; one entry now
+		// holds all twelve, which also means eviction can no longer take part
+		// of a statement's state and leave the rest. The factor of 2 remains as
+		// headroom for the candidate set shifting between scrapes.
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(int(cfg.TopQueryCollection.MaxRowsPerQuery*2)), newTTLCache[queryPlanKey, string](cfg.QueryPlanCacheSize, cfg.QueryPlanCacheTTL))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeTopQuery(ctx, cfg.TopQueryCollection.MaxRowsPerQuery, cfg.TopNQuery, cfg.MaxExplainEachInterval)
 		}, scraper.WithShutdown(ns.shutdown))
@@ -162,7 +204,7 @@ func createLogsReceiver(
 	if cfg.SchemaCollection.Enabled {
 		// schema collection does not need cache, but we do not want to make it
 		// nil, so create one size 1 cache as a placeholder.
-		ns := newPostgreSQLScraper(params, cfg, clientFactory, newCache(1), newTTLCache[string](1, time.Second))
+		ns := newPostgreSQLScraper(params, cfg, clientFactory, newStatementStateCache(1), newTTLCache[queryPlanKey, string](1, time.Second))
 		s, err := scraper.NewLogs(func(ctx context.Context) (plog.Logs, error) {
 			return ns.scrapeSchemaCollection(ctx)
 		}, scraper.WithShutdown(ns.shutdown))

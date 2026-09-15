@@ -8,5 +8,5 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	goleak.VerifyTestMain(m, goleak.IgnoreTopFunction("github.com/snowflakedb/gosnowflake.initOCSPCacheClearer.func1"), goleak.IgnoreAnyFunction("github.com/cihub/seelog.(*asyncLoopLogger).processQueue"), goleak.IgnoreAnyFunction("github.com/godbus/dbus.(*Conn).inWorker"), goleak.IgnoreAnyFunction("github.com/hashicorp/golang-lru/v2/expirable.NewLRU[...].func1"))
+	goleak.VerifyTestMain(m, goleak.IgnoreTopFunction("github.com/snowflakedb/gosnowflake.initOCSPCacheClearer.func1"), goleak.IgnoreAnyFunction("github.com/cihub/seelog.(*asyncLoopLogger).processQueue"), goleak.IgnoreAnyFunction("github.com/godbus/dbus.(*Conn).inWorker"), goleak.IgnoreAnyFunction("github.com/hashicorp/golang-lru/v2/expirable.NewLRU[...].func1"), goleak.IgnoreAnyFunction("github.com/DataDog/datadog-agent/pkg/obfuscate.(*measuredCache).statsLoop"), goleak.IgnoreAnyFunction("github.com/outcaste-io/ristretto.(*Cache).processItems"), goleak.IgnoreAnyFunction("github.com/outcaste-io/ristretto.(*lfuPolicy).processItems"))
 }

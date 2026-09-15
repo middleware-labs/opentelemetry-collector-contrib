@@ -1,5 +1,9 @@
 resourceMetrics:
-  - resource: {}
+  - resource:
+      attributes:
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
           - description: Number of buffers allocated.
@@ -7,7 +11,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "289"
+                - asInt: "606"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -17,7 +21,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "5"
+                - asInt: "14"
                   attributes:
                     - key: source
                       value:
@@ -38,7 +42,7 @@ resourceMetrics:
                         stringValue: bgwriter
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "60"
+                - asInt: "67"
                   attributes:
                     - key: source
                       value:
@@ -73,14 +77,14 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asDouble: 7
+                - asDouble: 49
                   attributes:
                     - key: type
                       value:
                         stringValue: sync
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asDouble: 5
+                - asDouble: 9
                   attributes:
                     - key: type
                       value:
@@ -99,6 +103,18 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: "1"
+          - description: The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.
+            gauge:
+              dataPoints:
+                - asInt: "3601"
+                  attributes:
+                    - key: dbname
+                      value:
+                        stringValue: otel
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.buffer_hit
+            unit: '{hit}/s'
           - description: Configured maximum number of client connections allowed
             gauge:
               dataPoints:
@@ -106,7 +122,7 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             name: postgresql.connection.max
-            unit: '{connections}'
+            unit: '{connection}'
           - description: Number of user databases.
             name: postgresql.database.count
             sum:
@@ -116,76 +132,38 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: '{databases}'
-          - description: The number of database locks.
+          - description: Max duration of active transactions.
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.transactions.duration.max
+            unit: ms
+          - description: Sum of duration of active transactions.
+            gauge:
+              dataPoints:
+                - asDouble: 0
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.transactions.duration.sum
+            unit: ms
+          - description: Number of WAL files.
             gauge:
               dataPoints:
                 - asInt: "1"
-                  attributes:
-                    - key: lock_type
-                      value:
-                        stringValue: relation
-                    - key: mode
-                      value:
-                        stringValue: AccessShareLock
-                    - key: relation
-                      value:
-                        stringValue: pg_class
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "1"
-                  attributes:
-                    - key: lock_type
-                      value:
-                        stringValue: relation
-                    - key: mode
-                      value:
-                        stringValue: AccessShareLock
-                    - key: relation
-                      value:
-                        stringValue: pg_class_oid_index
+            name: postgresql.wal.count
+            unit: "1"
+          - description: Total size of WAL files.
+            gauge:
+              dataPoints:
+                - asInt: "16777216"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
-                - asInt: "1"
-                  attributes:
-                    - key: lock_type
-                      value:
-                        stringValue: relation
-                    - key: mode
-                      value:
-                        stringValue: AccessShareLock
-                    - key: relation
-                      value:
-                        stringValue: pg_class_relname_nsp_index
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1"
-                  attributes:
-                    - key: lock_type
-                      value:
-                        stringValue: relation
-                    - key: mode
-                      value:
-                        stringValue: AccessShareLock
-                    - key: relation
-                      value:
-                        stringValue: pg_class_tblspc_relfilenode_index
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-                - asInt: "1"
-                  attributes:
-                    - key: lock_type
-                      value:
-                        stringValue: relation
-                    - key: mode
-                      value:
-                        stringValue: AccessShareLock
-                    - key: relation
-                      value:
-                        stringValue: pg_locks
-                  startTimeUnixNano: "1000000"
-                  timeUnixNano: "2000000"
-            name: postgresql.database.locks
-            unit: '{lock}'
+            name: postgresql.wal.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -194,34 +172,37 @@ resourceMetrics:
         - key: postgresql.database.name
           value:
             stringValue: otel
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
-          - description: Number of times disk blocks were found already in the buffer cache. 
+          - description: Number of times disk blocks were found already in the buffer cache.
             name: postgresql.blks_hit
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "2330"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{blks_hit}'
-          - description: Number of disk blocks read in this database. 
+          - description: Number of disk blocks read in this database.
             name: postgresql.blks_read
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "190"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{blks_read}'      
+            unit: '{blks_read}'
           - description: The number of commits.
             name: postgresql.commits
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "6"
+                - asInt: "7"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
@@ -231,7 +212,7 @@ resourceMetrics:
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "7184900"
+                - asInt: "8028675"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
             unit: By
@@ -293,47 +274,91 @@ resourceMetrics:
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_deleted}'  
+            unit: '{tup_deleted}'
           - description: Number of rows fetched by queries in the database.
             name: postgresql.tup_fetched
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1014"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_fetched}'  
+            unit: '{tup_fetched}'
           - description: Number of rows inserted by queries in the database.
             name: postgresql.tup_inserted
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "74"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_inserted}'    
+            unit: '{tup_inserted}'
           - description: Number of rows returned by queries in the database.
             name: postgresql.tup_returned
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "1097"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_returned}'                                        
+            unit: '{tup_returned}'
           - description: Number of rows updated by queries in the database.
             name: postgresql.tup_updated
             sum:
               aggregationTemporality: 2
               dataPoints:
-                - asInt: "0"
+                - asInt: "5"
                   startTimeUnixNano: "1000000"
                   timeUnixNano: "2000000"
               isMonotonic: true
-            unit: '{tup_updated}'            
+            unit: '{tup_updated}'
+        scope:
+          name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
+          version: latest
+  - resource:
+      attributes:
+        - key: postgresql.database.name
+          value:
+            stringValue: postgres
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
+    scopeMetrics:
+      - metrics:
+          - description: The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user
+            gauge:
+              dataPoints:
+                - asInt: "1"
+                  attributes:
+                    - key: postgresql.application_name
+                      value:
+                        stringValue: mw-otel-collector
+                    - key: postgresql.state
+                      value:
+                        stringValue: active
+                    - key: user.name
+                      value:
+                        stringValue: otelu
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "1"
+                  attributes:
+                    - key: postgresql.application_name
+                      value:
+                        stringValue: mw-otel-collector
+                    - key: postgresql.state
+                      value:
+                        stringValue: idle
+                    - key: user.name
+                      value:
+                        stringValue: otelu
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.connection.count
+            unit: '{connection}'
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -348,8 +373,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -497,6 +555,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -511,8 +577,41 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: Number of times a table has been manually analyzed.
+            name: postgresql.analyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{analyze}'
+          - description: Number of times a table has been automatically analyzed.
+            name: postgresql.autoanalyzed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autoanalyze}'
+          - description: Number of times a table has been automatically vacuumed.
+            name: postgresql.autovacuumed
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{autovacuum}'
           - description: The number of blocks read.
             name: postgresql.blocks_read
             sum:
@@ -660,6 +759,14 @@ resourceMetrics:
                   timeUnixNano: "2000000"
               isMonotonic: true
             unit: '{vacuum}'
+          - description: Size of TOAST table.
+            gauge:
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+            name: postgresql.toast.size
+            unit: By
         scope:
           name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
           version: latest
@@ -677,8 +784,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table1
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:
@@ -714,8 +855,42 @@ resourceMetrics:
         - key: postgresql.table.name
           value:
             stringValue: table2
+        - key: service.instance.id
+          value:
+            stringValue: localhost:5432
     scopeMetrics:
       - metrics:
+          - description: The number of disk blocks read by this index.
+            name: postgresql.index.blocks_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_hit
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+                - asInt: "0"
+                  attributes:
+                    - key: source
+                      value:
+                        stringValue: idx_read
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: "1"
+          - description: The number of index entries returned by scans on this index.
+            name: postgresql.index.rows_read
+            sum:
+              aggregationTemporality: 2
+              dataPoints:
+                - asInt: "0"
+                  startTimeUnixNano: "1000000"
+                  timeUnixNano: "2000000"
+              isMonotonic: true
+            unit: '{rows}'
           - description: The number of index scans on a table.
             name: postgresql.index.scans
             sum:

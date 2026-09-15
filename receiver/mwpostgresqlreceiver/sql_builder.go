@@ -14,7 +14,6 @@ type SQLBuilder interface {
 	IndexesQueryQualified() string
 	IndexesQueryEstimate() string
 	ConstraintsQuery() string
-	ForeignKeyDetailsQuery() string
 
 	// Statistics queries: Direct / schema-qualified / relpages estimate
 	TableStatsQuery() string
@@ -33,9 +32,6 @@ type SQLBuilder interface {
 	ExtensionsQuery() string
 	SettingsQuery() string
 	DatabaseOIDQuery() string
-
-	// Index column names
-	IndexColumnsQuery() string
 
 	// Feature support
 	SupportsHelperFunctions() bool
@@ -72,7 +68,7 @@ func pg12PlusTablesQuery() string {
 			obj_description(c.oid, 'pg_class') AS description,
 			pg_roles.rolname AS owner_name,
 			c.xmin,
-			pg_total_size(c.oid) AS total_size_bytes
+			pg_total_relation_size(c.oid) AS total_size_bytes
 		FROM pg_class c
 		JOIN pg_namespace ns ON c.relnamespace = ns.oid
 		LEFT JOIN pg_roles ON c.relowner = pg_roles.oid
@@ -96,7 +92,7 @@ func pg12PlusTablesQueryQualified() string {
 			obj_description(c.oid, 'pg_class') AS description,
 			pg_roles.rolname AS owner_name,
 			c.xmin,
-			pg_catalog.pg_total_size(c.oid) AS total_size_bytes
+			pg_catalog.pg_total_relation_size(c.oid) AS total_size_bytes
 		FROM pg_class c
 		JOIN pg_namespace ns ON c.relnamespace = ns.oid
 		LEFT JOIN pg_roles ON c.relowner = pg_roles.oid
@@ -144,31 +140,20 @@ func commonConstraintsQuery() string {
 			pg_get_constraintdef(c.oid) AS definition,
 			c.condeferrable,
 			c.condeferred,
-			c.convalidated
-		FROM pg_constraint c
-		WHERE c.conrelid = $1
-		ORDER BY c.conname
-	`
-}
-
-func commonForeignKeyDetailsQuery() string {
-	return `
-		SELECT
-			c.oid,
-			c.conname,
-			c.conrelid AS table_oid,
+			c.convalidated,
 			c.confrelid AS referenced_table_oid,
-			(SELECT array_agg(a.attname ORDER BY x.n)
-			 FROM unnest(c.conkey) WITH ORDINALITY AS x(attnum, n)
-			 JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = x.attnum
-			) AS column_names,
-			(SELECT array_agg(a.attname ORDER BY x.n)
-			 FROM unnest(c.confkey) WITH ORDINALITY AS x(attnum, n)
-			 JOIN pg_attribute a ON a.attrelid = c.confrelid AND a.attnum = x.attnum
-			) AS referenced_columns
+			CASE WHEN c.contype = 'f' THEN COALESCE((
+				SELECT array_agg(a.attname ORDER BY x.n)
+				FROM unnest(c.conkey) WITH ORDINALITY AS x(attnum, n)
+				JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = x.attnum
+			), ARRAY[]::name[]) ELSE ARRAY[]::name[] END AS column_names,
+			CASE WHEN c.contype = 'f' THEN COALESCE((
+				SELECT array_agg(a.attname ORDER BY x.n)
+				FROM unnest(c.confkey) WITH ORDINALITY AS x(attnum, n)
+				JOIN pg_attribute a ON a.attrelid = c.confrelid AND a.attnum = x.attnum
+			), ARRAY[]::name[]) ELSE ARRAY[]::name[] END AS referenced_columns
 		FROM pg_constraint c
 		WHERE c.conrelid = $1
-		AND c.contype = 'f'
 		ORDER BY c.conname
 	`
 }
@@ -222,28 +207,13 @@ func commonDatabaseOIDQuery() string {
 
 func commonXminDetectionQuery() string {
 	return `
-		SELECT c.oid, c.xmin
+		SELECT c.oid, c.xmin, ns.nspname, c.relname
 		FROM pg_class c
 		JOIN pg_namespace ns ON c.relnamespace = ns.oid
 		WHERE c.relkind IN ('r', 't', 'v', 'm', 'p')
 		AND ns.nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
 		AND ns.nspname NOT LIKE 'pg_temp_%'
 		AND ns.nspname NOT LIKE 'pg_toast_temp_%'
-	`
-}
-
-func commonIndexColumnsQuery() string {
-	return `
-		SELECT
-			i.oid AS index_oid,
-			array_agg(a.attname ORDER BY x.n) AS column_names
-		FROM pg_index ix
-		JOIN pg_class i ON i.oid = ix.indexrelid
-		CROSS JOIN LATERAL unnest(ix.indkey) WITH ORDINALITY AS x(attnum, n)
-		JOIN pg_attribute a ON a.attrelid = ix.indrelid AND a.attnum = x.attnum
-		WHERE ix.indrelid = $1
-		AND x.attnum > 0
-		GROUP BY i.oid
 	`
 }
 
@@ -285,7 +255,13 @@ func commonIndexesQuery() string {
 			pg_get_indexdef(i.oid) AS index_definition,
 			pg_get_expr(ix.indpred, ix.indrelid) AS partial_predicate,
 			i.xmin,
-			pg_relation_size(i.oid) AS index_size_bytes
+			pg_relation_size(i.oid) AS index_size_bytes,
+			COALESCE((
+				SELECT array_agg(attr.attname ORDER BY key.n)
+				FROM unnest(ix.indkey) WITH ORDINALITY AS key(attnum, n)
+				JOIN pg_attribute attr ON attr.attrelid = ix.indrelid AND attr.attnum = key.attnum
+				WHERE key.attnum > 0
+			), ARRAY[]::name[]) AS column_names
 		FROM pg_class i
 		JOIN pg_index ix ON i.oid = ix.indexrelid
 		JOIN pg_am a ON i.relam = a.oid
@@ -308,7 +284,13 @@ func commonIndexesQueryQualified() string {
 			pg_get_indexdef(i.oid) AS index_definition,
 			pg_get_expr(ix.indpred, ix.indrelid) AS partial_predicate,
 			i.xmin,
-			pg_catalog.pg_relation_size(i.oid) AS index_size_bytes
+			pg_catalog.pg_relation_size(i.oid) AS index_size_bytes,
+			COALESCE((
+				SELECT array_agg(attr.attname ORDER BY key.n)
+				FROM unnest(ix.indkey) WITH ORDINALITY AS key(attnum, n)
+				JOIN pg_attribute attr ON attr.attrelid = ix.indrelid AND attr.attnum = key.attnum
+				WHERE key.attnum > 0
+			), ARRAY[]::name[]) AS column_names
 		FROM pg_class i
 		JOIN pg_index ix ON i.oid = ix.indexrelid
 		JOIN pg_am a ON i.relam = a.oid
@@ -331,7 +313,13 @@ func commonIndexesQueryEstimate() string {
 			pg_get_indexdef(i.oid) AS index_definition,
 			pg_get_expr(ix.indpred, ix.indrelid) AS partial_predicate,
 			i.xmin,
-			(i.relpages * current_setting('block_size')::bigint) AS index_size_bytes
+			(i.relpages * current_setting('block_size')::bigint) AS index_size_bytes,
+			COALESCE((
+				SELECT array_agg(attr.attname ORDER BY key.n)
+				FROM unnest(ix.indkey) WITH ORDINALITY AS key(attnum, n)
+				JOIN pg_attribute attr ON attr.attrelid = ix.indrelid AND attr.attnum = key.attnum
+				WHERE key.attnum > 0
+			), ARRAY[]::name[]) AS column_names
 		FROM pg_class i
 		JOIN pg_index ix ON i.oid = ix.indexrelid
 		JOIN pg_am a ON i.relam = a.oid
@@ -343,6 +331,7 @@ func commonIndexesQueryEstimate() string {
 func commonTableStatsQuery() string {
 	return `
 		SELECT
+			relid,
 			n_live_tup,
 			n_dead_tup,
 			n_mod_since_analyze,
@@ -355,15 +344,16 @@ func commonTableStatsQuery() string {
 			COALESCE(idx_scan, 0),
 			COALESCE(idx_tup_fetch, 0),
 			pg_table_size(relid) AS size_bytes,
-			pg_total_size(relid) AS total_size_bytes
+			pg_total_relation_size(relid) AS total_size_bytes
 		FROM pg_stat_user_tables
-		WHERE relid = $1
+		WHERE relid = ANY($1::oid[])
 	`
 }
 
 func commonTableStatsQueryQualified() string {
 	return `
 		SELECT
+			relid,
 			n_live_tup,
 			n_dead_tup,
 			n_mod_since_analyze,
@@ -376,15 +366,16 @@ func commonTableStatsQueryQualified() string {
 			COALESCE(idx_scan, 0),
 			COALESCE(idx_tup_fetch, 0),
 			pg_catalog.pg_table_size(relid) AS size_bytes,
-			pg_catalog.pg_total_size(relid) AS total_size_bytes
+			pg_catalog.pg_total_relation_size(relid) AS total_size_bytes
 		FROM pg_stat_user_tables
-		WHERE relid = $1
+		WHERE relid = ANY($1::oid[])
 	`
 }
 
 func commonTableStatsQueryEstimate() string {
 	return `
 		SELECT
+			sut.relid,
 			sut.n_live_tup,
 			sut.n_dead_tup,
 			sut.n_mod_since_analyze,
@@ -400,7 +391,7 @@ func commonTableStatsQueryEstimate() string {
 			(c.relpages * current_setting('block_size')::bigint) AS total_size_bytes
 		FROM pg_stat_user_tables sut
 		JOIN pg_class c ON c.oid = sut.relid
-		WHERE sut.relid = $1
+		WHERE sut.relid = ANY($1::oid[])
 	`
 }
 
@@ -440,7 +431,7 @@ func (b *PostgreSQL10Builder) TablesQuery() string {
 			obj_description(c.oid, 'pg_class') AS description,
 			pg_roles.rolname AS owner_name,
 			c.xmin,
-			pg_total_size(c.oid) AS total_size_bytes
+			pg_total_relation_size(c.oid) AS total_size_bytes
 		FROM pg_class c
 		JOIN pg_namespace ns ON c.relnamespace = ns.oid
 		LEFT JOIN pg_roles ON c.relowner = pg_roles.oid
@@ -464,7 +455,7 @@ func (b *PostgreSQL10Builder) TablesQueryQualified() string {
 			obj_description(c.oid, 'pg_class') AS description,
 			pg_roles.rolname AS owner_name,
 			c.xmin,
-			pg_catalog.pg_total_size(c.oid) AS total_size_bytes
+			pg_catalog.pg_total_relation_size(c.oid) AS total_size_bytes
 		FROM pg_class c
 		JOIN pg_namespace ns ON c.relnamespace = ns.oid
 		LEFT JOIN pg_roles ON c.relowner = pg_roles.oid
@@ -521,10 +512,6 @@ func (b *PostgreSQL10Builder) ConstraintsQuery() string {
 	return commonConstraintsQuery()
 }
 
-func (b *PostgreSQL10Builder) ForeignKeyDetailsQuery() string {
-	return commonForeignKeyDetailsQuery()
-}
-
 func (b *PostgreSQL10Builder) TableStatsQuery() string {
 	return commonTableStatsQuery()
 }
@@ -545,11 +532,12 @@ func (b *PostgreSQL10Builder) IndexStatsQuery() string {
 	// PG10-15: no last_idx_scan column
 	return `
 		SELECT
+			indexrelid,
 			idx_scan,
 			idx_tup_read,
 			idx_tup_fetch
 		FROM pg_stat_user_indexes
-		WHERE indexrelid = $1
+		WHERE indexrelid = ANY($1::oid[])
 	`
 }
 
@@ -571,10 +559,6 @@ func (b *PostgreSQL10Builder) SettingsQuery() string {
 
 func (b *PostgreSQL10Builder) DatabaseOIDQuery() string {
 	return commonDatabaseOIDQuery()
-}
-
-func (b *PostgreSQL10Builder) IndexColumnsQuery() string {
-	return commonIndexColumnsQuery()
 }
 
 func (b *PostgreSQL10Builder) SupportsHelperFunctions() bool {
@@ -621,10 +605,6 @@ func (b *PostgreSQL12Builder) ConstraintsQuery() string {
 	return commonConstraintsQuery()
 }
 
-func (b *PostgreSQL12Builder) ForeignKeyDetailsQuery() string {
-	return commonForeignKeyDetailsQuery()
-}
-
 func (b *PostgreSQL12Builder) TableStatsQuery() string {
 	return commonTableStatsQuery()
 }
@@ -645,11 +625,12 @@ func (b *PostgreSQL12Builder) IndexStatsQuery() string {
 	// PG12-13: no last_idx_scan column
 	return `
 		SELECT
+			indexrelid,
 			idx_scan,
 			idx_tup_read,
 			idx_tup_fetch
 		FROM pg_stat_user_indexes
-		WHERE indexrelid = $1
+		WHERE indexrelid = ANY($1::oid[])
 	`
 }
 
@@ -671,10 +652,6 @@ func (b *PostgreSQL12Builder) SettingsQuery() string {
 
 func (b *PostgreSQL12Builder) DatabaseOIDQuery() string {
 	return commonDatabaseOIDQuery()
-}
-
-func (b *PostgreSQL12Builder) IndexColumnsQuery() string {
-	return commonIndexColumnsQuery()
 }
 
 func (b *PostgreSQL12Builder) SupportsHelperFunctions() bool {
@@ -721,10 +698,6 @@ func (b *PostgreSQL14Builder) ConstraintsQuery() string {
 	return commonConstraintsQuery()
 }
 
-func (b *PostgreSQL14Builder) ForeignKeyDetailsQuery() string {
-	return commonForeignKeyDetailsQuery()
-}
-
 func (b *PostgreSQL14Builder) TableStatsQuery() string {
 	return commonTableStatsQuery()
 }
@@ -745,11 +718,12 @@ func (b *PostgreSQL14Builder) IndexStatsQuery() string {
 	// PG14-15: no last_idx_scan column
 	return `
 		SELECT
+			indexrelid,
 			idx_scan,
 			idx_tup_read,
 			idx_tup_fetch
 		FROM pg_stat_user_indexes
-		WHERE indexrelid = $1
+		WHERE indexrelid = ANY($1::oid[])
 	`
 }
 
@@ -771,10 +745,6 @@ func (b *PostgreSQL14Builder) SettingsQuery() string {
 
 func (b *PostgreSQL14Builder) DatabaseOIDQuery() string {
 	return commonDatabaseOIDQuery()
-}
-
-func (b *PostgreSQL14Builder) IndexColumnsQuery() string {
-	return commonIndexColumnsQuery()
 }
 
 func (b *PostgreSQL14Builder) SupportsHelperFunctions() bool {
@@ -821,13 +791,10 @@ func (b *PostgreSQL16Builder) ConstraintsQuery() string {
 	return commonConstraintsQuery()
 }
 
-func (b *PostgreSQL16Builder) ForeignKeyDetailsQuery() string {
-	return commonForeignKeyDetailsQuery()
-}
-
 func (b *PostgreSQL16Builder) TableStatsQuery() string {
 	return `
 		SELECT
+			sut.relid,
 			sut.n_live_tup,
 			sut.n_dead_tup,
 			sut.n_mod_since_analyze,
@@ -840,15 +807,16 @@ func (b *PostgreSQL16Builder) TableStatsQuery() string {
 			COALESCE(sut.idx_scan, 0),
 			COALESCE(sut.idx_tup_fetch, 0),
 			pg_table_size(sut.relid) AS size_bytes,
-			pg_total_size(sut.relid) AS total_size_bytes
+			pg_total_relation_size(sut.relid) AS total_size_bytes
 		FROM pg_stat_user_tables sut
-		WHERE sut.relid = $1
+		WHERE sut.relid = ANY($1::oid[])
 	`
 }
 
 func (b *PostgreSQL16Builder) TableStatsQueryQualified() string {
 	return `
 		SELECT
+			sut.relid,
 			sut.n_live_tup,
 			sut.n_dead_tup,
 			sut.n_mod_since_analyze,
@@ -861,15 +829,16 @@ func (b *PostgreSQL16Builder) TableStatsQueryQualified() string {
 			COALESCE(sut.idx_scan, 0),
 			COALESCE(sut.idx_tup_fetch, 0),
 			pg_catalog.pg_table_size(sut.relid) AS size_bytes,
-			pg_catalog.pg_total_size(sut.relid) AS total_size_bytes
+			pg_catalog.pg_total_relation_size(sut.relid) AS total_size_bytes
 		FROM pg_stat_user_tables sut
-		WHERE sut.relid = $1
+		WHERE sut.relid = ANY($1::oid[])
 	`
 }
 
 func (b *PostgreSQL16Builder) TableStatsQueryEstimate() string {
 	return `
 		SELECT
+			sut.relid,
 			sut.n_live_tup,
 			sut.n_dead_tup,
 			sut.n_mod_since_analyze,
@@ -885,7 +854,7 @@ func (b *PostgreSQL16Builder) TableStatsQueryEstimate() string {
 			(c.relpages * current_setting('block_size')::bigint) AS total_size_bytes
 		FROM pg_stat_user_tables sut
 		JOIN pg_class c ON c.oid = sut.relid
-		WHERE sut.relid = $1
+		WHERE sut.relid = ANY($1::oid[])
 	`
 }
 
@@ -897,12 +866,13 @@ func (b *PostgreSQL16Builder) IndexStatsQuery() string {
 	// PG16+: last_idx_scan is available
 	return `
 		SELECT
+			sui.indexrelid,
 			sui.idx_scan,
 			sui.idx_tup_read,
 			sui.idx_tup_fetch,
 			sui.last_idx_scan
 		FROM pg_stat_user_indexes sui
-		WHERE sui.indexrelid = $1
+		WHERE sui.indexrelid = ANY($1::oid[])
 	`
 }
 
@@ -924,10 +894,6 @@ func (b *PostgreSQL16Builder) SettingsQuery() string {
 
 func (b *PostgreSQL16Builder) DatabaseOIDQuery() string {
 	return commonDatabaseOIDQuery()
-}
-
-func (b *PostgreSQL16Builder) IndexColumnsQuery() string {
-	return commonIndexColumnsQuery()
 }
 
 func (b *PostgreSQL16Builder) SupportsHelperFunctions() bool {

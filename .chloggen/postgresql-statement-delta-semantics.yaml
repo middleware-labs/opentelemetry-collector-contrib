@@ -1,0 +1,53 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: bug_fix
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Stop reporting cumulative pg_stat_statements totals as one interval's work in top query events
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  pg_stat_statements counters are cumulative for the life of an entry, so a statement can only be
+  reported once there is a previous observation to difference against. Previously the first
+  observation of a statement emitted the whole cumulative counter as if it were one collection
+  interval's work, which could attribute months of execution time to a single 10-second interval.
+
+  Three cases now store a baseline and emit nothing for that statement for one interval:
+
+  - The first time a statement is seen, including the first scrape after collector start.
+  - The scrape following a pg_stat_statements reset or a change of server instance, where the
+    cached values describe a series that no longer exists. The cache was already purged in this
+    case, but the same scrape then emitted the new server's lifetime totals.
+  - A statement whose counters went backwards, meaning the entry was reset or deallocated and
+    re-created. Previously the higher cached value was left in place, which suppressed the
+    statement until it climbed past its former peak - on a busy server, potentially hours.
+
+  A statement is also no longer reported when its `calls` did not advance, so an entry that was
+  deallocated and re-inserted with unchanged counters is not reported as having done work.
+
+  Behavior change: there are no top query events for one collection interval after the collector
+  starts, after a pg_stat_statements reset, and after a failover. This is a one-interval delay,
+  not lost data, and it replaces values that were previously incorrect.
+
+  The delta cache is also now sized from `top_query_collection.max_rows_per_query` rather than
+  `top_n_query`. Every candidate row is traversed on each scrape, not just the emitted ones, so
+  sizing from the output count meant a small `top_n_query` evicted the entire candidate set every
+  scrape - leaving every row permanently on the first-observation path.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

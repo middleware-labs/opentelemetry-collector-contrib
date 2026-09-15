@@ -50,4 +50,7 @@ WHERE
       AND state = 'idle',
       false
     )
+{{- if .databasePredicate }}
+    AND {{ .databasePredicate }}
+{{- end }}
 LIMIT {{ .limit }};

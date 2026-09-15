@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"github.com/tj/assert"
@@ -106,6 +107,13 @@ func integrationTest(name string, databases []string, pgVersion string) func(*te
 				rCfg.Metrics.PostgresqlBlksRead.Enabled = true
 				rCfg.Metrics.PostgresqlSequentialScans.Enabled = true
 				rCfg.Metrics.PostgresqlDatabaseLocks.Enabled = true
+				// The goldens record a full scrape. The harness retries until a
+				// scrape matches, and under the default cadence every scrape after
+				// the first within a minute omits the relation families, so pin
+				// both knobs to every scrape here; the defaults are pinned by
+				// TestCadenceDefaultsThrottleRelationsAndBloat.
+				rCfg.RelationMetrics.CollectionInterval = 0
+				rCfg.BloatCollectionInterval = 0
 			}),
 		scraperinttest.WithExpectedFile(expectedFile),
 		scraperinttest.WithCompareOptions(
@@ -145,8 +153,34 @@ func integrationTest(name string, databases []string, pgVersion string) func(*te
 				"postgresql.wal.age",
 				"postgresql.wal.delay",
 				"postgresql.wal.lag",
+				// Added by this fork after the list above was written; their
+				// values are live server state and differ run to run.
+				"postgresql.analyzed",
+				"postgresql.autoanalyzed",
+				"postgresql.autovacuumed",
+				"postgresql.blk_read_time",
+				"postgresql.blk_write_time",
+				"postgresql.buffer_hit",
+				"postgresql.connection.count",
+				"postgresql.index.blocks_read",
+				"postgresql.index.rows_read",
+				"postgresql.live_rows",
+				"postgresql.rows_deleted",
+				"postgresql.rows_fetched",
+				"postgresql.rows_inserted",
+				"postgresql.rows_updated",
+				"postgresql.temp_files",
+				"postgresql.temp.io",
+				"postgresql.toast.size",
+				"postgresql.transactions.duration.max",
+				"postgresql.transactions.duration.sum",
+				"postgresql.wal.count",
+				"postgresql.wal.size",
 			),
 			pmetrictest.IgnoreSubsequentDataPoints("postgresql.backends"),
+			// connection.count is keyed by state, application and user, and
+			// which backends exist at scrape time is not deterministic.
+			pmetrictest.IgnoreSubsequentDataPoints("postgresql.connection.count"),
 			pmetrictest.IgnoreMetricDataPointsOrder(),
 			pmetrictest.IgnoreStartTimestamp(),
 			pmetrictest.IgnoreTimestamp(),
@@ -183,9 +217,14 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 					"-c",
 					"shared_preload_libraries=pg_stat_statements",
 				},
+				// The official image starts a bootstrap server during
+				// initdb, then stops it and starts the real one, so the
+				// "port 5432" line is logged twice. Waiting for the first
+				// occurrence let the test connect to the bootstrap server
+				// and fail with "the database system is starting up".
 				WaitingFor: wait.ForLog(".*port 5432").
 					AsRegexp().
-					WithOccurrence(1),
+					WithOccurrence(2),
 			},
 		})
 	assert.NoError(t, err)
@@ -204,7 +243,14 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 	defer db.Close()
 
 	cfg := Config{
-		Databases: []string{"postgres"},
+		// Both databases are named deliberately. The test executes its
+		// statements against otel2 and asserts on them, while pg_stat_statements
+		// lives in postgres and is reached through the maintenance connection.
+		// Naming only postgres made Step 4's selection filter otel2 out - the
+		// correct behaviour - so both scrapes returned nothing and the
+		// assertions below indexed an empty slice. The test needs otel2 in
+		// scope because otel2 is what it is testing.
+		Databases: []string{"postgres", "otel2"},
 		Username:  "otelu",
 		Password:  "otelp",
 		ControllerConfig: scraperhelper.ControllerConfig{
@@ -224,9 +270,22 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 		TelemetrySettings: component.TelemetrySettings{
 			Logger: zap.Must(zap.NewProduction()),
 		},
-	}, &cfg, clientFactory, newCache(1), newTTLCache[string](1000, time.Second))
+	}, &cfg, clientFactory,
+		// Sized the way the factory sizes it: from the candidate count, since
+		// every candidate is traversed each scrape and each occupies one entry
+		// per counter. A cache smaller than that evicts a statement's baseline
+		// before the next scrape can difference against it.
+		newStatementStateCache(30*2),
+		newTTLCache[queryPlanKey, string](1000, time.Second))
 	plogs, err := ns.scrapeQuerySamples(t.Context(), 30)
 	assert.NoError(t, err)
+	// require, not assert: an empty result must fail here with a readable
+	// message rather than continue and panic indexing At(0). This test is
+	// gated behind the integration build tag, so a panic here is invisible
+	// until someone runs it with a container runtime - which is how a broken
+	// fixture survived from Step 4 to Step 7 unnoticed.
+	require.Positive(t, plogs.ResourceLogs().Len(),
+		"query sample scrape produced no resource logs")
 	logRecords := plogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
 	found := false
 	for _, record := range logRecords.All() {
@@ -246,35 +305,21 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 	assert.True(t, found, "Expected to find a log record with the query text")
 	assert.True(t, ns.newestQueryTimestamp > 0)
 
+	// pg_stat_statements counters are cumulative, so the first scrape of a
+	// statement only records a baseline. Reporting anything here would attribute
+	// the statement's entire lifetime on this server to one interval.
 	firstTimeTopQueryPLogs, err := ns.scrapeTopQuery(t.Context(), 30, 30, 30)
 	assert.NoError(t, err)
-	logRecords = firstTimeTopQueryPLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
-	found = false
-	for _, record := range logRecords.All() {
-		attributes := record.Attributes().AsRaw()
-		queryAttribute, ok := attributes["db.query.text"]
-		query := strings.ToLower(queryAttribute.(string))
-		assert.True(t, ok)
-		if !strings.HasPrefix(query, "select * from test2 where") {
-			continue
-		}
-		assert.Equal(t, "select * from test2 where id = ?", query)
-		databaseAttribute, ok := attributes["db.namespace"]
-		assert.True(t, ok)
-		assert.Equal(t, "otel2", databaseAttribute.(string))
-		calls, ok := attributes["postgresql.calls"]
-		assert.True(t, ok)
-		assert.Equal(t, int64(1), calls.(int64))
-		assert.NotEmpty(t, attributes["postgresql.query_plan"])
-		found = true
-	}
-	assert.True(t, found, "Expected to find a log record with the query text from the first time top query")
+	assert.Zero(t, firstTimeTopQueryPLogs.LogRecordCount(),
+		"the first scrape establishes baselines and must emit nothing")
 
 	_, err = db.Exec("Select * from test2 where id = 67")
 	assert.NoError(t, err)
 
 	secondTimeTopQueryPLogs, err := ns.scrapeTopQuery(t.Context(), 30, 30, 30)
 	assert.NoError(t, err)
+	require.Positive(t, secondTimeTopQueryPLogs.ResourceLogs().Len(),
+		"the second scrape has baselines to difference against and must emit top queries")
 	logRecords = secondTimeTopQueryPLogs.ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
 	found = false
 	for _, record := range logRecords.All() {
@@ -291,8 +336,11 @@ func TestScrapeLogsFromContainer(t *testing.T) {
 		assert.Equal(t, "otel2", databaseAttribute.(string))
 		calls, ok := attributes["postgresql.calls"]
 		assert.True(t, ok)
-		assert.Equal(t, int64(2), calls.(int64))
+		// One execution happened between the two scrapes, so the reported
+		// value is that single call, not the cumulative two.
+		assert.Equal(t, int64(1), calls.(int64))
+		assert.NotEmpty(t, attributes["postgresql.query_plan"])
 		found = true
 	}
-	assert.True(t, found, "Expected to find a log record with the query text from the first time top query")
+	assert.True(t, found, "Expected to find a log record with the query text from the second top query scrape")
 }

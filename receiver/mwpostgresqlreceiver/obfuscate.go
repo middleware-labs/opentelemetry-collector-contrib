@@ -172,7 +172,26 @@ var defaultSQLPlanObfuscateSettings = obfuscate.JSONConfig{
 	ObfuscateSQLValues: defaultSQLPlanNormalizeSettings.ObfuscateSQLValues,
 }
 
+// obfuscatorCacheMaxBytes bounds the obfuscator's query cache.
+//
+// The cache is keyed on the raw statement text, which is exactly what repeats:
+// pg_stat_statements returns a largely unchanged set of statements every
+// collection interval, so without a cache the same text is re-obfuscated every
+// ten seconds for the life of the process.
+//
+// 4 MB is comparable to the existing query-text cache (5000 entries at
+// PostgreSQL's default pg_stat_statements.max) and is a bound on payload bytes
+// rather than entries, so a server with a few very long statements cannot grow
+// it without limit. The vendored cache is ristretto, which derives its internal
+// counter budget from this size.
+const obfuscatorCacheMaxBytes = 4 << 20
+
 // lazyInitObfuscator initializes the obfuscator the first time it is used.
+//
+// The obfuscator is a process-wide singleton, so the cache's background
+// goroutines live for the life of the process. That is acceptable for a bounded
+// cache that every scrape uses, but it is why the size is fixed here rather
+// than derived from per-receiver configuration.
 func lazyInitObfuscator() *obfuscate.Obfuscator {
 	obfuscatorLoader.Do(func() {
 		obfuscator = obfuscate.NewObfuscator(obfuscate.Config{
@@ -184,6 +203,10 @@ func lazyInitObfuscator() *obfuscate.Obfuscator {
 			},
 			SQLExecPlan:          defaultSQLPlanObfuscateSettings,
 			SQLExecPlanNormalize: defaultSQLPlanNormalizeSettings,
+			Cache: obfuscate.CacheConfig{
+				Enabled: true,
+				MaxSize: obfuscatorCacheMaxBytes,
+			},
 		})
 	})
 	return obfuscator

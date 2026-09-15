@@ -1,0 +1,55 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: bug_fix
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Apply `databases` and `exclude_databases` to query telemetry, not only to metrics and schema
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  `databases` and `exclude_databases` reached only per-database metrics and schema collection.
+  Query samples, top-query events and query-performance metrics had no database filter at all, so a
+  receiver configured for one database still reported query telemetry from every database on the
+  server - including databases the operator had explicitly excluded.
+
+  The selection is now built once and applied everywhere: per-database metrics, schema collection,
+  query samples, top-query events, query-performance metrics, buffer hits, and the databases
+  EXPLAIN may run in. Filters are applied in SQL as bound array parameters, before ORDER BY and
+  LIMIT, so an unselected database with high query volume can no longer consume the candidate limit
+  before selected rows are considered.
+
+  Behavior changes to be aware of:
+
+  - Query telemetry from unselected databases is no longer reported. If you relied on the previous
+    broader output, remove the `databases` restriction or add the databases you want to keep.
+  - `postgresql.database.locks` and the `postgresql.rows_*` family are read through the maintenance
+    connection but describe only the `postgres` database. They are now collected only when
+    `postgres` is itself in the selection, rather than always.
+  - A configuration whose `exclude_databases` cancels its entire `databases` list is now rejected at
+    startup. Previously the empty result was treated as "no filter" and the receiver collected from
+    every database on the server - the opposite of what was configured.
+
+  Two fixes fall out of this work. Database names now reach SQL as bound parameters rather than
+  being interpolated as quoted literals, so names containing quotes, commas or non-ASCII characters
+  are handled correctly. And rows with a NULL `datname` - the shared-objects row in
+  pg_stat_database, and background workers in pg_stat_activity - no longer fail a scrape; they were
+  previously filtered out incidentally by the interpolated WHERE clause and would have failed the
+  scan without it.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]

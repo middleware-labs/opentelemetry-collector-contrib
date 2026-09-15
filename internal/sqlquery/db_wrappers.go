@@ -18,6 +18,7 @@ type rows interface {
 	ColumnTypes() ([]colType, error)
 	Next() bool
 	Scan(dest ...any) error
+	Err() error
 	Close() error
 }
 
@@ -32,16 +33,6 @@ type DbWrapper struct {
 func (d DbWrapper) QueryContext(ctx context.Context, query string, args ...any) (rows, error) {
 	rows, err := d.Db.QueryContext(ctx, query, args...)
 	return rowsWrapper{rows}, err
-}
-
-// ConnWrapper wraps a dedicated *sql.Conn so a sequence of calls share one connection.
-type ConnWrapper struct {
-	Conn *sql.Conn
-}
-
-func (c ConnWrapper) QueryContext(ctx context.Context, query string, args ...any) (rows, error) {
-	r, err := c.Conn.QueryContext(ctx, query, args...)
-	return rowsWrapper{r}, err
 }
 
 type rowsWrapper struct {
@@ -66,6 +57,10 @@ func (r rowsWrapper) Next() bool {
 
 func (r rowsWrapper) Scan(dest ...any) error {
 	return r.rows.Scan(dest...)
+}
+
+func (r rowsWrapper) Err() error {
+	return r.rows.Err()
 }
 
 func (r rowsWrapper) Close() error {

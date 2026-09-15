@@ -1,0 +1,38 @@
+# Use this changelog template to create an entry for release notes.
+
+# One of 'breaking', 'deprecation', 'new_component', 'enhancement', 'bug_fix'
+change_type: bug_fix
+
+# The name of the component, or a single word describing the area of concern, (e.g. receiver/filelog)
+component: receiver/postgresql
+
+# A brief description of the change.  Surround your text with quotes ("") if it needs to start with a backtick (`).
+note: Retry the pg_stat_statements capability lookup instead of caching its first failure
+
+# Mandatory: One or more tracking issues related to the change. You can use the PR number here if no issue exists.
+issues: [45190]
+
+# (Optional) One or more lines of additional information to render under the primary note.
+# These lines will be padded with 2 spaces and then inserted directly into the document.
+# Use pipe (|) for multiline entries.
+subtext: |
+  The statement paths resolve the installed extension's version and schema once per connection and
+  reuse the answer. That lookup was memoised with a `sync.Once`, which remembers the first outcome
+  whether or not it was an answer.
+
+  The failures available to a single catalog read are transient — a scrape context deadline, a
+  connection dropped mid-read — rather than statements about the server. Caching one gave it a
+  lifetime far longer than its cause: the client pool holds a client for the life of the process and
+  never evicts the default database's, so one unlucky first scrape left query-performance metrics and
+  top queries failing on that connection until the collector was restarted.
+
+  Only a successful read is cached now, and a failed one is retried on the next scrape.
+
+# If your change doesn't affect end users or the exported elements of any package,
+# you should instead start your pull request title with [chore] or use the "Skip Changelog" label.
+# Optional: The change log or logs in which this entry should be included.
+# e.g. '[user]' or '[user, api]'
+# Include 'user' if the change is relevant to end users.
+# Include 'api' if there is a change to a library API.
+# Default: '[user]'
+change_logs: [user]
