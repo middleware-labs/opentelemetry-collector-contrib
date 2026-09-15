@@ -281,6 +281,49 @@ func TestCadenceDefaultsThrottleRelationsAndBloat(t *testing.T) {
 	}
 }
 
+// TestCadenceScrapeIntervalLongerThanFamilyRunsEveryScrape covers the
+// deployment that raises collection_interval above a family's cadence.
+// The family interval is then already satisfied on every tick, so the family
+// runs on every scrape and the effective cadence is the scrape interval
+// itself; a family whose interval is still longer rounds up to the next tick
+// as usual. That the shorter family interval passes validation is pinned in
+// config_test.go.
+func TestCadenceScrapeIntervalLongerThanFamilyRunsEveryScrape(t *testing.T) {
+	all := []int{1, 2, 3, 4, 5, 6, 7}
+
+	t.Run("longer than relations, shorter than bloat", func(t *testing.T) {
+		h := newCadenceHarness(t, newCountingClient(), func(cfg *Config) {
+			cfg.CollectionInterval = 5 * time.Minute
+			cfg.RelationMetrics.CollectionInterval = time.Minute
+			cfg.BloatCollectionInterval = 10 * time.Minute
+		})
+		records := h.run(t, 7, h.scraper.config.CollectionInterval)
+
+		assertRanOn(t, records, relationQueries, all...)
+		assertRanOn(t, records, bloatQueries, 1, 3, 5, 7)
+		assertRanOn(t, records, everyScrapeQueries, all...)
+		for i, r := range records {
+			scrape := i + 1
+			assert.True(t, hasMetric(r.metrics, "postgresql.rows"), "scrape %d: relation metrics on every scrape", scrape)
+			assert.Equal(t, scrape%2 == 1, hasMetric(r.metrics, "postgresql.table_bloat"), "scrape %d: bloat every second scrape", scrape)
+			assert.Equal(t, []string{defaultPostgreSQLDatabase, "otel"}, r.requests, "scrape %d", scrape)
+		}
+	})
+
+	t.Run("longer than every family", func(t *testing.T) {
+		h := newCadenceHarness(t, newCountingClient(), func(cfg *Config) {
+			cfg.CollectionInterval = time.Hour
+			cfg.RelationMetrics.CollectionInterval = time.Minute
+			cfg.BloatCollectionInterval = 10 * time.Minute
+		})
+		records := h.run(t, 7, h.scraper.config.CollectionInterval)
+
+		assertRanOn(t, records, relationQueries, all...)
+		assertRanOn(t, records, bloatQueries, all...)
+		assertRanOn(t, records, everyScrapeQueries, all...)
+	})
+}
+
 func TestCadenceUnsetRunsEveryFamilyEveryScrape(t *testing.T) {
 	h := newCadenceHarness(t, newCountingClient(), func(cfg *Config) {
 		enableAll(&cfg.Metrics)
