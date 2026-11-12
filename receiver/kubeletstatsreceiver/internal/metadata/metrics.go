@@ -11,6 +11,8 @@ type RecordIntDataPointFunc func(*MetricsBuilder, pcommon.Timestamp, int64)
 
 type RecordIntDataPointWithDirectionFunc func(*MetricsBuilder, pcommon.Timestamp, int64, string, AttributeDirection)
 
+type RecordIntDataPointWithFsTypeFunc func(*MetricsBuilder, pcommon.Timestamp, int64, AttributeFsType)
+
 type MetricsBuilders struct {
 	NodeMetricsBuilder      *MetricsBuilder
 	PodMetricsBuilder       *MetricsBuilder
@@ -111,6 +113,12 @@ type FilesystemMetrics struct {
 	Capacity    RecordIntDataPointFunc
 	Usage       RecordIntDataPointFunc
 	Utilization RecordDoubleDataPointFunc
+	Inodes      RecordIntDataPointFunc
+	InodesFree  RecordIntDataPointFunc
+}
+
+type EphemeralStorageMetrics struct {
+	Usage RecordIntDataPointWithFsTypeFunc
 }
 
 var NodeFilesystemMetrics = FilesystemMetrics{
@@ -118,6 +126,8 @@ var NodeFilesystemMetrics = FilesystemMetrics{
 	Capacity:    (*MetricsBuilder).RecordK8sNodeFilesystemCapacityDataPoint,
 	Usage:       (*MetricsBuilder).RecordK8sNodeFilesystemUsageDataPoint,
 	Utilization: (*MetricsBuilder).RecordK8sNodeFilesystemUtilizationDataPoint,
+	Inodes:      (*MetricsBuilder).RecordK8sNodeFilesystemInodeCountDataPoint,
+	InodesFree:  (*MetricsBuilder).RecordK8sNodeFilesystemInodeFreeDataPoint,
 }
 
 var PodFilesystemMetrics = FilesystemMetrics{
@@ -132,6 +142,10 @@ var ContainerFilesystemMetrics = FilesystemMetrics{
 	Capacity:    (*MetricsBuilder).RecordContainerFilesystemCapacityDataPoint,
 	Usage:       (*MetricsBuilder).RecordContainerFilesystemUsageDataPoint,
 	Utilization: (*MetricsBuilder).RecordContainerFilesystemUtilizationDataPoint,
+}
+
+var ContainerEphemeralStorageMetrics = EphemeralStorageMetrics{
+	Usage: (*MetricsBuilder).RecordK8sContainerEphemeralStorageUsageDataPoint,
 }
 
 type NetworkMetrics struct {

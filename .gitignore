@@ -58,3 +58,5 @@ go.work*
 /receiver/*/[a-z]*receiver.test
 /processor/*/[a-z]*processor.test
 /exporter/*/[a-z]*exporter.test
+# API compatibility snapshots
+/internal/data/apidiff/

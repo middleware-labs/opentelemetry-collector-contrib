@@ -119,7 +119,7 @@ func TestDetect(t *testing.T) {
 				}
 			}()
 
-			d, err := NewDetector(processor.Settings{}, CreateDefaultConfig())
+			d, err := NewDetector(processor.Settings{}, CreateDefaultConfig(), false)
 			require.NoError(t, err)
 			got, _, err := d.Detect(context.Background())
 			require.NoError(t, err)

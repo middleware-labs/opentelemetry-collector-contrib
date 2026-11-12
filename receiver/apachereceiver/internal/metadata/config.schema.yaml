@@ -4,13 +4,36 @@ $defs:
     description: MetricsConfig provides config for apache metrics.
     type: object
     properties:
-      apache.bytes_per_sec:
-        description: "ApacheBytesPerSecMetricConfig provides config for the apache.bytes_per_sec metric."
+      apache.connection.active:
+        description: "ApacheConnectionActiveMetricConfig provides config for the apache.connection.active metric."
         type: object
         properties:
           enabled:
             type: boolean
             default: true
+      apache.connection.status:
+        description: "ApacheConnectionStatusMetricConfig provides config for the apache.connection.status metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "apache.connection.state"
+            default:
+              - "apache.connection.state"
       apache.connections.async:
         description: "ApacheConnectionsAsyncMetricConfig provides config for the apache.connections.async metric."
         type: object
@@ -34,27 +57,6 @@ $defs:
                 - "connection_state"
             default:
               - "connection_state"
-      apache.conns_async_closing:
-        description: "ApacheConnsAsyncClosingMetricConfig provides config for the apache.conns_async_closing metric."
-        type: object
-        properties:
-          enabled:
-            type: boolean
-            default: true
-      apache.conns_async_keep_alive:
-        description: "ApacheConnsAsyncKeepAliveMetricConfig provides config for the apache.conns_async_keep_alive metric."
-        type: object
-        properties:
-          enabled:
-            type: boolean
-            default: true
-      apache.conns_async_writing:
-        description: "ApacheConnsAsyncWritingMetricConfig provides config for the apache.conns_async_writing metric."
-        type: object
-        properties:
-          enabled:
-            type: boolean
-            default: true
       apache.cpu.load:
         description: "ApacheCPULoadMetricConfig provides config for the apache.cpu.load metric."
         type: object
@@ -115,13 +117,20 @@ $defs:
           enabled:
             type: boolean
             default: true
-      apache.max_workers:
-        description: "ApacheMaxWorkersMetricConfig provides config for the apache.max_workers metric."
+      apache.request.count:
+        description: "ApacheRequestCountMetricConfig provides config for the apache.request.count metric."
         type: object
         properties:
           enabled:
             type: boolean
             default: true
+      apache.request.rate:
+        description: "ApacheRequestRateMetricConfig provides config for the apache.request.rate metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: false
       apache.request.time:
         description: "ApacheRequestTimeMetricConfig provides config for the apache.request.time metric."
         type: object
@@ -131,13 +140,6 @@ $defs:
             default: true
       apache.requests:
         description: "ApacheRequestsMetricConfig provides config for the apache.requests metric."
-        type: object
-        properties:
-          enabled:
-            type: boolean
-            default: true
-      apache.requests_per_sec:
-        description: "ApacheRequestsPerSecMetricConfig provides config for the apache.requests_per_sec metric."
         type: object
         properties:
           enabled:
@@ -173,6 +175,13 @@ $defs:
           enabled:
             type: boolean
             default: true
+      apache.traffic.rate:
+        description: "ApacheTrafficRateMetricConfig provides config for the apache.traffic.rate metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: false
       apache.uptime:
         description: "ApacheUptimeMetricConfig provides config for the apache.uptime metric."
         type: object
@@ -180,6 +189,50 @@ $defs:
           enabled:
             type: boolean
             default: true
+      apache.worker.active:
+        description: "ApacheWorkerActiveMetricConfig provides config for the apache.worker.active metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      apache.worker.idle:
+        description: "ApacheWorkerIdleMetricConfig provides config for the apache.worker.idle metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      apache.worker.limit:
+        description: "ApacheWorkerLimitMetricConfig provides config for the apache.worker.limit metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+      apache.worker.status:
+        description: "ApacheWorkerStatusMetricConfig provides config for the apache.worker.status metric."
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          aggregation_strategy:
+            type: string
+            enum:
+              - "sum"
+              - "avg"
+              - "min"
+              - "max"
+            default: "sum"
+          attributes:
+            type: array
+            items:
+              type: string
+              enum:
+                - "apache.worker.state"
+            default:
+              - "apache.worker.state"
       apache.workers:
         description: "ApacheWorkersMetricConfig provides config for the apache.workers metric."
         type: object

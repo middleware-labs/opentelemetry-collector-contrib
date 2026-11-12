@@ -39,7 +39,7 @@ func newNginxScraper(
 }
 
 func (r *nginxScraper) start(ctx context.Context, host component.Host) error {
-	httpClient, err := r.cfg.ToClient(ctx, host.GetExtensions(), r.settings)
+	httpClient, err := r.cfg.ClientConfig.ToClient(ctx, host.GetExtensions(), r.settings)
 	if err != nil {
 		return err
 	}

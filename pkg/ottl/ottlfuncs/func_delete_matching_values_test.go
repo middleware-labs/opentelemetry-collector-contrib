@@ -84,7 +84,7 @@ func Test_deleteMatchingValues_bad_input(t *testing.T) {
 		},
 	}
 
-	exprFunc, err := deleteMatchingKeys[any](target, "anything")
+	exprFunc, err := deleteMatchingValues[any](target, "anything")
 	assert.NoError(t, err)
 
 	_, err = exprFunc(nil, input)

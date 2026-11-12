@@ -800,7 +800,6 @@ events:
 Query sample collection enables monitoring of current running database statements.
 This provides real-time visibility into active queries, helping users monitor database activity and performance as part of their observability pipeline.
 
-
 #### Attributes
 
 | Name | Description | Values | Semantic Convention |
@@ -836,7 +835,6 @@ events:
 Top query collection enables monitoring of the queries that consumed the most CPU in the database.
 This provides insights into query performance and resource usage, helping users identify and optimize high-impact queries as part of their observability pipeline.
 
-
 #### Attributes
 
 | Name | Description | Values | Semantic Convention |
@@ -850,7 +848,7 @@ This provides insights into query performance and resource usage, helping users 
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled | Semantic Convention |
-| ---- | ----------- | ------ | ------- | ------------------- |
-| mysql.db.version | version of the mysql database | Any Str | true | - |
-| mysql.instance.endpoint | Endpoint of the MySQL instance. | Any Str | true | - |
+| Name | Description | Values | Enabled | Semantic Convention | Stability |
+| ---- | ----------- | ------ | ------- | ------------------- | --------- |
+| mysql.db.version | version of the mysql database | Any Str | true | - | - |
+| mysql.instance.endpoint | Endpoint of the MySQL instance. | Any Str | true | - | - |

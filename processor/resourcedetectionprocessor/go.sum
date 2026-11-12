@@ -450,6 +450,8 @@ go.opentelemetry.io/collector/receiver/receivertest v0.163.0 h1:KhM4t571zn+9O6pu
 go.opentelemetry.io/collector/receiver/receivertest v0.163.0/go.mod h1:You1UKh9N51AAwbcHT3dwp6M3+Zyla4Zoj+zNM6v9YM=
 go.opentelemetry.io/collector/receiver/xreceiver v0.163.0 h1:CRqBGzszjz9yrU5NbF4Ea6rll9gekaKuwccktv7jXjA=
 go.opentelemetry.io/collector/receiver/xreceiver v0.163.0/go.mod h1:gxvXr+KbhQNdGkcDU8sXh5Ir95X4aywttph7tBAPzb0=
+go.opentelemetry.io/collector/semconv v0.128.0 h1:MzYOz7Vgb3Kf5D7b49pqqgeUhEmOCuT10bIXb/Cc+k4=
+go.opentelemetry.io/collector/semconv v0.128.0/go.mod h1:OPXer4l43X23cnjLXIZnRj/qQOjSuq4TgBLI76P9hns=
 go.opentelemetry.io/contrib/detectors/aws/elasticbeanstalk v0.19.0 h1:U5lXYh/n93SXxBOvBp9B1e1AeC+Nc5j/VYna6cBP5qI=
 go.opentelemetry.io/contrib/detectors/aws/elasticbeanstalk v0.19.0/go.mod h1:jsVPMhQ3RildJe+CK9ntl7zDr5euA32RCNMJNhUob6M=
 go.opentelemetry.io/contrib/detectors/azure/azureappservice v0.19.0 h1:VKQWNR6IxVq9DyZxsGEciogNo8wQST3IeFw7Dp0jtV0=

@@ -223,7 +223,6 @@ Estimated index bloat ratio (actual pages / expected pages).
 A value of 1.0 indicates no bloat, higher values indicate wasted space.
 Based on pg_stats and pg_class estimates.
 
-
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | 1 | Gauge | Double | Development |
@@ -409,7 +408,6 @@ Estimated table bloat ratio (actual pages / expected pages).
 A value of 1.0 indicates no bloat, higher values indicate wasted space.
 Based on pg_stats and pg_class estimates.
 
-
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | 1 | Gauge | Double | Development |
@@ -460,7 +458,6 @@ Age of the oldest WAL file.
 
 This metric requires WAL to be enabled with at least one replica.
 
-
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
 | s | Gauge | Int | Development |
@@ -478,7 +475,6 @@ Number of WAL files.
 Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
 
 This metric requires WAL to be enabled with at least one replica.
-
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
@@ -656,7 +652,6 @@ Number of rows updated by queries in the database.
 Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.
 
 This metric requires WAL to be enabled with at least one replica.
-
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
@@ -852,11 +847,11 @@ top query
 
 ## Resource Attributes
 
-| Name | Description | Values | Enabled | Semantic Convention |
-| ---- | ----------- | ------ | ------- | ------------------- |
-| postgresql.database.name | The name of the database. | Any Str | true | - |
-| postgresql.db.version | The version of postgresql databse | Any Str | true | - |
-| postgresql.index.name | The name of the index on a table. | Any Str | true | - |
-| postgresql.schema.name | The schema name. | Any Str | true | - |
-| postgresql.table.name | The table name. | Any Str | true | - |
-| service.instance.id | A unique identifier of the PostgreSQL instance in the format host:port (defaults to 'unknown:5432' in case of error in generating this value). | Any Str | true | - |
+| Name | Description | Values | Enabled | Semantic Convention | Stability |
+| ---- | ----------- | ------ | ------- | ------------------- | --------- |
+| postgresql.database.name | The name of the database. | Any Str | true | - | - |
+| postgresql.db.version | The version of postgresql databse | Any Str | true | - | - |
+| postgresql.index.name | The name of the index on a table. | Any Str | true | - | - |
+| postgresql.schema.name | The schema name. | Any Str | true | - | - |
+| postgresql.table.name | The table name. | Any Str | true | - | - |
+| service.instance.id | A unique identifier of the PostgreSQL instance in the format host:port (defaults to 'unknown:5432' in case of error in generating this value). | Any Str | true | - | - |

@@ -7,92 +7,132 @@ all_set:
       enabled: true
     mongodb.asserts.msgps:
       enabled: true
+      attributes: ["database"]
     mongodb.asserts.regularps:
       enabled: true
+      attributes: ["database"]
     mongodb.asserts.rolloversps:
       enabled: true
+      attributes: ["database"]
     mongodb.asserts.userps:
       enabled: true
+      attributes: ["database"]
     mongodb.asserts.warningps:
       enabled: true
+      attributes: ["database"]
     mongodb.backgroundflushing.average_ms:
       enabled: true
+      attributes: ["database"]
     mongodb.backgroundflushing.flushesps:
       enabled: true
+      attributes: ["database"]
     mongodb.backgroundflushing.last_ms:
       enabled: true
+      attributes: ["database"]
     mongodb.backgroundflushing.total_ms:
       enabled: true
+      attributes: ["database"]
     mongodb.cache.operations:
       enabled: true
+      attributes: ["type"]
     mongodb.chunks.jumbo:
       enabled: true
+      attributes: ["database"]
     mongodb.chunks.total:
       enabled: true
+      attributes: ["database"]
     mongodb.collection.avgobjsize:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.capped:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.count:
       enabled: true
     mongodb.collection.indexsizes:
       enabled: true
+      attributes: ["database","collection","index"]
     mongodb.collection.max:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.maxsize:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.nindexes:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.objects:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.size:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.collection.storagesize:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.commands.rate:
       enabled: true
     mongodb.connection.count:
       enabled: true
+      attributes: ["type"]
     mongodb.connection_pool.numascopedconnections:
       enabled: true
+      attributes: ["database"]
     mongodb.connection_pool.numclientconnections:
       enabled: true
+      attributes: ["database"]
     mongodb.connection_pool.totalavailable:
       enabled: true
+      attributes: ["database"]
     mongodb.connection_pool.totalcreatedps:
       enabled: true
+      attributes: ["database"]
     mongodb.connection_pool.totalinuse:
       enabled: true
+      attributes: ["database"]
     mongodb.connection_pool.totalrefreshing:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.active:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.available:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.awaitingtopologychanges:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.current:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.exhausthello:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.exhaustismaster:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.loadbalanced:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.rejected:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.threaded:
       enabled: true
+      attributes: ["database"]
     mongodb.connections.totalcreated:
       enabled: true
+      attributes: ["database"]
     mongodb.cursor.count:
       enabled: true
     mongodb.cursor.timeout.count:
       enabled: true
     mongodb.cursors.timedout:
       enabled: true
+      attributes: ["database"]
     mongodb.cursors.totalopen:
       enabled: true
+      attributes: ["database"]
     mongodb.data.size:
       enabled: true
     mongodb.database.count:
@@ -101,364 +141,531 @@ all_set:
       enabled: true
     mongodb.document.operation.count:
       enabled: true
+      attributes: ["operation"]
     mongodb.dur.commits:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.commitsinwritelock:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.compression:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.earlycommits:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.journaledmb:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.commits:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.commitsinwritelock:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.dt:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.preplogbuffer:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.remapprivateview:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.writetodatafiles:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.timems.writetojournal:
       enabled: true
+      attributes: ["database"]
     mongodb.dur.writetodatafilesmb:
       enabled: true
+      attributes: ["database"]
     mongodb.extent.count:
       enabled: true
     mongodb.extra_info.heap_usage_bytesps:
       enabled: true
+      attributes: ["database"]
     mongodb.extra_info.page_faultsps:
       enabled: true
+      attributes: ["database"]
     mongodb.flushes.rate:
       enabled: true
     mongodb.fsynclocked:
       enabled: true
+      attributes: ["database"]
     mongodb.getmores.rate:
       enabled: true
     mongodb.global_lock.time:
       enabled: true
     mongodb.globallock.activeclients.readers:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.activeclients.total:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.activeclients.writers:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.currentqueue.readers:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.currentqueue.total:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.currentqueue.writers:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.locktime:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.ratio:
       enabled: true
+      attributes: ["database"]
     mongodb.globallock.totaltime:
       enabled: true
+      attributes: ["database"]
     mongodb.health:
       enabled: true
     mongodb.index.access.count:
       enabled: true
+      attributes: ["collection"]
     mongodb.index.count:
       enabled: true
     mongodb.index.size:
       enabled: true
     mongodb.indexcounters.accessesps:
       enabled: true
+      attributes: ["database"]
     mongodb.indexcounters.hitsps:
       enabled: true
+      attributes: ["database"]
     mongodb.indexcounters.missesps:
       enabled: true
+      attributes: ["database"]
     mongodb.indexcounters.missratio:
       enabled: true
+      attributes: ["database"]
     mongodb.indexcounters.resetsps:
       enabled: true
+      attributes: ["database"]
     mongodb.inserts.rate:
       enabled: true
     mongodb.lock.acquire.count:
       enabled: true
+      attributes: ["lock_type","lock_mode"]
     mongodb.lock.acquire.time:
       enabled: true
+      attributes: ["lock_type","lock_mode"]
     mongodb.lock.acquire.wait_count:
       enabled: true
+      attributes: ["lock_type","lock_mode"]
     mongodb.lock.deadlock.count:
       enabled: true
+      attributes: ["lock_type","lock_mode"]
     mongodb.locks.collection.acquirecount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.acquirecount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.acquirecount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.acquirecount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.acquirewaitcount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.acquirewaitcount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.timeacquiringmicros.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.collection.timeacquiringmicros.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.metadata.acquirecount.exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.metadata.acquirecount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirecount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirecount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirewaitcount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirewaitcount.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.timeacquiringmicros.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.timeacquiringmicros.intent_sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.oplog.acquirecount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.oplog.acquirecount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.oplog.acquirewaitcount.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.oplog.acquirewaitcount.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.oplog.timeacquiringmicros.intent_exclusiveps:
       enabled: true
+      attributes: ["database"]
     mongodb.locks.oplog.timeacquiringmicros.sharedps:
       enabled: true
+      attributes: ["database"]
     mongodb.mem.bits:
       enabled: true
+      attributes: ["database"]
     mongodb.mem.mapped:
       enabled: true
+      attributes: ["database"]
     mongodb.mem.mappedwithjournal:
       enabled: true
+      attributes: ["database"]
     mongodb.mem.resident:
       enabled: true
+      attributes: ["database"]
     mongodb.mem.virtual:
       enabled: true
+      attributes: ["database"]
     mongodb.memory.usage:
       enabled: true
+      attributes: ["type"]
     mongodb.metrics.commands.count.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.count.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.createindexes.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.createindexes.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.delete.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.delete.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.eval.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.eval.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.findandmodify.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.findandmodify.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.insert.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.insert.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.update.failedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.commands.update.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.cursor.open.notimeout:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.cursor.open.pinned:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.cursor.open.total:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.cursor.timedoutps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.document.deletedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.document.insertedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.document.returnedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.document.updatedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.getlasterror.wtime.numps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.getlasterror.wtime.totalmillisps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.getlasterror.wtimeoutsps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.operation.fastmodps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.operation.idhackps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.operation.scanandorderps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.operation.writeconflictsps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.queryexecutor.scannedobjectsps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.queryexecutor.scannedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.record.movesps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.apply.batches.numps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.apply.batches.totalmillisps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.apply.opsps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.buffer.count:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.buffer.maxsizebytes:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.buffer.sizebytes:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.network.bytesps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.network.getmores.numps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.network.getmores.totalmillisps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.network.opsps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.network.readerscreatedps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.preload.docs.numps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.preload.docs.totalmillisps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.preload.indexes.numps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.repl.preload.indexes.totalmillisps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.ttl.deleteddocumentsps:
       enabled: true
+      attributes: ["database"]
     mongodb.metrics.ttl.passesps:
       enabled: true
+      attributes: ["database"]
     mongodb.network.bytesinps:
       enabled: true
+      attributes: ["database"]
     mongodb.network.bytesoutps:
       enabled: true
+      attributes: ["database"]
     mongodb.network.io.receive:
       enabled: true
     mongodb.network.io.transmit:
       enabled: true
     mongodb.network.numrequestsps:
       enabled: true
+      attributes: ["database"]
     mongodb.network.request.count:
       enabled: true
     mongodb.object.count:
       enabled: true
     mongodb.opcounters.commandps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcounters.deleteps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcounters.getmoreps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcounters.insertps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcounters.queryps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcounters.updateps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcountersrepl.commandps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcountersrepl.deleteps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcountersrepl.getmoreps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcountersrepl.insertps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcountersrepl.queryps:
       enabled: true
+      attributes: ["database"]
     mongodb.opcountersrepl.updateps:
       enabled: true
+      attributes: ["database"]
     mongodb.operation.count:
       enabled: true
+      attributes: ["operation"]
     mongodb.operation.latency.time:
       enabled: true
+      attributes: ["operation"]
     mongodb.operation.repl.count:
       enabled: true
+      attributes: ["operation"]
     mongodb.operation.time:
       enabled: true
+      attributes: ["operation"]
     mongodb.oplatencies.commands.latency:
       enabled: true
+      attributes: ["database"]
     mongodb.oplatencies.commands.latencyps:
       enabled: true
+      attributes: ["database"]
     mongodb.oplatencies.reads.latency:
       enabled: true
+      attributes: ["database"]
     mongodb.oplatencies.reads.latencyps:
       enabled: true
+      attributes: ["database"]
     mongodb.oplatencies.writes.latency:
       enabled: true
+      attributes: ["database"]
     mongodb.oplatencies.writes.latencyps:
       enabled: true
+      attributes: ["database"]
     mongodb.oplog.logsizemb:
       enabled: true
+      attributes: ["database"]
     mongodb.oplog.timediff:
       enabled: true
+      attributes: ["database"]
     mongodb.oplog.usedsizemb:
       enabled: true
+      attributes: ["database"]
     mongodb.page_faults:
       enabled: true
     mongodb.profiling.level:
       enabled: true
+      attributes: ["database"]
     mongodb.profiling.slowms:
       enabled: true
+      attributes: ["database"]
     mongodb.queries.rate:
       enabled: true
     mongodb.repl_commands_per_sec:
@@ -475,184 +682,1228 @@ all_set:
       enabled: true
     mongodb.replset.health:
       enabled: true
+      attributes: ["database","replset","name","id","state"]
     mongodb.replset.optime_lag:
       enabled: true
+      attributes: ["database","replset","name","id"]
     mongodb.replset.replicationlag:
       enabled: true
+      attributes: ["database","replset","name","id"]
     mongodb.replset.state:
       enabled: true
+      attributes: ["database","replset","name","id","state"]
     mongodb.replset.votefraction:
       enabled: true
+      attributes: ["database","replset","name","id"]
     mongodb.replset.votes:
       enabled: true
+      attributes: ["database","replset","name","id"]
     mongodb.session.count:
       enabled: true
     mongodb.slow_operation.cpu_nanos:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.docs_examined:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.keys_examined:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.keys_inserted:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.ndeleted:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.ninserted:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.nmatched:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.nmodified:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.nreturned:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.num_yields:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.planning_time_micros:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.response_length:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.time:
       enabled: true
+      attributes: ["query_timestamp","database","operation","ns","plan_summary","query_signature","query_id","user","application","statement","raw_query","query_hash","query_shape_hash","plan_cache_key","query_framework","comment","mills","num_yields","response_length","nreturned","nmatched","nmodified","ninserted","ndeleted","keys_examined","docs_examined","keys_inserted","write_conflicts","cpu_nanos","planning_time_micros","cursor_exhausted","upsert","has_sort_stage","used_disk","from_multi_planner","replanned","replan_reason","client","cursor","lock_stats","flow_control_stats"]
     mongodb.slow_operation.write_conflicts:
       enabled: true
+      attributes: ["query_id","query_signature"]
     mongodb.stats.avgobjsize:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.collections:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.datasize:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.filesize:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.indexes:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.indexsize:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.numextents:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.objects:
       enabled: true
+      attributes: ["database"]
     mongodb.stats.storagesize:
       enabled: true
+      attributes: ["database"]
     mongodb.storage.size:
       enabled: true
     mongodb.tcmalloc.generic.current_allocated_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.generic.heap_size:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.aggressive_memory_decommit:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.central_cache_free_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.current_total_thread_cache_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.max_total_thread_cache_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.pageheap_free_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.pageheap_unmapped_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes:
       enabled: true
+      attributes: ["database"]
     mongodb.updates.rate:
       enabled: true
     mongodb.uptime:
       enabled: true
     mongodb.usage.commands.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.commands.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.commands.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.getmore.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.getmore.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.getmore.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.insert.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.insert.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.insert.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.queries.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.queries.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.queries.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.readlock.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.readlock.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.readlock.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.remove.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.remove.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.remove.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.total.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.total.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.total.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.update.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.update.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.update.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.writelock.count:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.writelock.countps:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.usage.writelock.time:
       enabled: true
+      attributes: ["database","collection"]
     mongodb.wiredtiger.cache.bytes_currently_in_cache:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.failed_eviction_of_pages_exceeding_the_in_memory_maximumps:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.in_memory_page_splits:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.maximum_bytes_configured:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.maximum_page_size_at_eviction:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.modified_pages_evicted:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_currently_held_in_cache:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_evicted_by_application_threadsps:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_evicted_exceeding_the_in_memory_maximumps:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_read_into_cache:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_written_from_cache:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.cache.unmodified_pages_evicted:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.read.available:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.read.out:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.read.totaltickets:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.write.available:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.write.out:
       enabled: true
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.write.totaltickets:
       enabled: true
+      attributes: ["database"]
+    mongodb.wtcache.bytes.read:
+      enabled: true
+  resource_attributes:
+    database:
+      enabled: true
+    mongodb.database.name:
+      enabled: true
+    server.address:
+      enabled: true
+    server.port:
+      enabled: true
+reaggregate_set:
+  metrics:
+    mongodb.active.reads:
+      enabled: true
+    mongodb.active.writes:
+      enabled: true
+    mongodb.asserts.msgps:
+      enabled: true
+      attributes: []
+    mongodb.asserts.regularps:
+      enabled: true
+      attributes: []
+    mongodb.asserts.rolloversps:
+      enabled: true
+      attributes: []
+    mongodb.asserts.userps:
+      enabled: true
+      attributes: []
+    mongodb.asserts.warningps:
+      enabled: true
+      attributes: []
+    mongodb.backgroundflushing.average_ms:
+      enabled: true
+      attributes: []
+    mongodb.backgroundflushing.flushesps:
+      enabled: true
+      attributes: []
+    mongodb.backgroundflushing.last_ms:
+      enabled: true
+      attributes: []
+    mongodb.backgroundflushing.total_ms:
+      enabled: true
+      attributes: []
+    mongodb.cache.operations:
+      enabled: true
+      attributes: []
+    mongodb.chunks.jumbo:
+      enabled: true
+      attributes: []
+    mongodb.chunks.total:
+      enabled: true
+      attributes: []
+    mongodb.collection.avgobjsize:
+      enabled: true
+      attributes: []
+    mongodb.collection.capped:
+      enabled: true
+      attributes: []
+    mongodb.collection.count:
+      enabled: true
+    mongodb.collection.indexsizes:
+      enabled: true
+      attributes: []
+    mongodb.collection.max:
+      enabled: true
+      attributes: []
+    mongodb.collection.maxsize:
+      enabled: true
+      attributes: []
+    mongodb.collection.nindexes:
+      enabled: true
+      attributes: []
+    mongodb.collection.objects:
+      enabled: true
+      attributes: []
+    mongodb.collection.size:
+      enabled: true
+      attributes: []
+    mongodb.collection.storagesize:
+      enabled: true
+      attributes: []
+    mongodb.commands.rate:
+      enabled: true
+    mongodb.connection.count:
+      enabled: true
+      attributes: []
+    mongodb.connection_pool.numascopedconnections:
+      enabled: true
+      attributes: []
+    mongodb.connection_pool.numclientconnections:
+      enabled: true
+      attributes: []
+    mongodb.connection_pool.totalavailable:
+      enabled: true
+      attributes: []
+    mongodb.connection_pool.totalcreatedps:
+      enabled: true
+      attributes: []
+    mongodb.connection_pool.totalinuse:
+      enabled: true
+      attributes: []
+    mongodb.connection_pool.totalrefreshing:
+      enabled: true
+      attributes: []
+    mongodb.connections.active:
+      enabled: true
+      attributes: []
+    mongodb.connections.available:
+      enabled: true
+      attributes: []
+    mongodb.connections.awaitingtopologychanges:
+      enabled: true
+      attributes: []
+    mongodb.connections.current:
+      enabled: true
+      attributes: []
+    mongodb.connections.exhausthello:
+      enabled: true
+      attributes: []
+    mongodb.connections.exhaustismaster:
+      enabled: true
+      attributes: []
+    mongodb.connections.loadbalanced:
+      enabled: true
+      attributes: []
+    mongodb.connections.rejected:
+      enabled: true
+      attributes: []
+    mongodb.connections.threaded:
+      enabled: true
+      attributes: []
+    mongodb.connections.totalcreated:
+      enabled: true
+      attributes: []
+    mongodb.cursor.count:
+      enabled: true
+    mongodb.cursor.timeout.count:
+      enabled: true
+    mongodb.cursors.timedout:
+      enabled: true
+      attributes: []
+    mongodb.cursors.totalopen:
+      enabled: true
+      attributes: []
+    mongodb.data.size:
+      enabled: true
+    mongodb.database.count:
+      enabled: true
+    mongodb.deletes.rate:
+      enabled: true
+    mongodb.document.operation.count:
+      enabled: true
+      attributes: []
+    mongodb.dur.commits:
+      enabled: true
+      attributes: []
+    mongodb.dur.commitsinwritelock:
+      enabled: true
+      attributes: []
+    mongodb.dur.compression:
+      enabled: true
+      attributes: []
+    mongodb.dur.earlycommits:
+      enabled: true
+      attributes: []
+    mongodb.dur.journaledmb:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.commits:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.commitsinwritelock:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.dt:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.preplogbuffer:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.remapprivateview:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.writetodatafiles:
+      enabled: true
+      attributes: []
+    mongodb.dur.timems.writetojournal:
+      enabled: true
+      attributes: []
+    mongodb.dur.writetodatafilesmb:
+      enabled: true
+      attributes: []
+    mongodb.extent.count:
+      enabled: true
+    mongodb.extra_info.heap_usage_bytesps:
+      enabled: true
+      attributes: []
+    mongodb.extra_info.page_faultsps:
+      enabled: true
+      attributes: []
+    mongodb.flushes.rate:
+      enabled: true
+    mongodb.fsynclocked:
+      enabled: true
+      attributes: []
+    mongodb.getmores.rate:
+      enabled: true
+    mongodb.global_lock.time:
+      enabled: true
+    mongodb.globallock.activeclients.readers:
+      enabled: true
+      attributes: []
+    mongodb.globallock.activeclients.total:
+      enabled: true
+      attributes: []
+    mongodb.globallock.activeclients.writers:
+      enabled: true
+      attributes: []
+    mongodb.globallock.currentqueue.readers:
+      enabled: true
+      attributes: []
+    mongodb.globallock.currentqueue.total:
+      enabled: true
+      attributes: []
+    mongodb.globallock.currentqueue.writers:
+      enabled: true
+      attributes: []
+    mongodb.globallock.locktime:
+      enabled: true
+      attributes: []
+    mongodb.globallock.ratio:
+      enabled: true
+      attributes: []
+    mongodb.globallock.totaltime:
+      enabled: true
+      attributes: []
+    mongodb.health:
+      enabled: true
+    mongodb.index.access.count:
+      enabled: true
+      attributes: []
+    mongodb.index.count:
+      enabled: true
+    mongodb.index.size:
+      enabled: true
+    mongodb.indexcounters.accessesps:
+      enabled: true
+      attributes: []
+    mongodb.indexcounters.hitsps:
+      enabled: true
+      attributes: []
+    mongodb.indexcounters.missesps:
+      enabled: true
+      attributes: []
+    mongodb.indexcounters.missratio:
+      enabled: true
+      attributes: []
+    mongodb.indexcounters.resetsps:
+      enabled: true
+      attributes: []
+    mongodb.inserts.rate:
+      enabled: true
+    mongodb.lock.acquire.count:
+      enabled: true
+      attributes: []
+    mongodb.lock.acquire.time:
+      enabled: true
+      attributes: []
+    mongodb.lock.acquire.wait_count:
+      enabled: true
+      attributes: []
+    mongodb.lock.deadlock.count:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.acquirecount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.acquirecount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.acquirecount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.acquirecount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.acquirewaitcount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.acquirewaitcount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.timeacquiringmicros.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.collection.timeacquiringmicros.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirecount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirecount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirecount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirecount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirewaitcount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirewaitcount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirewaitcount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.acquirewaitcount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.timeacquiringmicros.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.timeacquiringmicros.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.timeacquiringmicros.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.database.timeacquiringmicros.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirecount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirecount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirecount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirecount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirewaitcount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirewaitcount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirewaitcount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.acquirewaitcount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.timeacquiringmicros.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.timeacquiringmicros.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.timeacquiringmicros.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.global.timeacquiringmicros.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.metadata.acquirecount.exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.metadata.acquirecount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.mmapv1journal.acquirecount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.mmapv1journal.acquirecount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.mmapv1journal.acquirewaitcount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.mmapv1journal.acquirewaitcount.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.mmapv1journal.timeacquiringmicros.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.mmapv1journal.timeacquiringmicros.intent_sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.oplog.acquirecount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.oplog.acquirecount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.oplog.acquirewaitcount.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.oplog.acquirewaitcount.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.locks.oplog.timeacquiringmicros.intent_exclusiveps:
+      enabled: true
+      attributes: []
+    mongodb.locks.oplog.timeacquiringmicros.sharedps:
+      enabled: true
+      attributes: []
+    mongodb.mem.bits:
+      enabled: true
+      attributes: []
+    mongodb.mem.mapped:
+      enabled: true
+      attributes: []
+    mongodb.mem.mappedwithjournal:
+      enabled: true
+      attributes: []
+    mongodb.mem.resident:
+      enabled: true
+      attributes: []
+    mongodb.mem.virtual:
+      enabled: true
+      attributes: []
+    mongodb.memory.usage:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.count.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.count.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.createindexes.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.createindexes.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.delete.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.delete.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.eval.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.eval.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.findandmodify.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.findandmodify.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.insert.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.insert.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.update.failedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.commands.update.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.cursor.open.notimeout:
+      enabled: true
+      attributes: []
+    mongodb.metrics.cursor.open.pinned:
+      enabled: true
+      attributes: []
+    mongodb.metrics.cursor.open.total:
+      enabled: true
+      attributes: []
+    mongodb.metrics.cursor.timedoutps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.document.deletedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.document.insertedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.document.returnedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.document.updatedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.getlasterror.wtime.numps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.getlasterror.wtime.totalmillisps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.getlasterror.wtimeoutsps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.operation.fastmodps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.operation.idhackps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.operation.scanandorderps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.operation.writeconflictsps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.queryexecutor.scannedobjectsps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.queryexecutor.scannedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.record.movesps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.apply.batches.numps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.apply.batches.totalmillisps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.apply.opsps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.buffer.count:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.buffer.maxsizebytes:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.buffer.sizebytes:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.network.bytesps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.network.getmores.numps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.network.getmores.totalmillisps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.network.opsps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.network.readerscreatedps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.preload.docs.numps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.preload.docs.totalmillisps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.preload.indexes.numps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.repl.preload.indexes.totalmillisps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.ttl.deleteddocumentsps:
+      enabled: true
+      attributes: []
+    mongodb.metrics.ttl.passesps:
+      enabled: true
+      attributes: []
+    mongodb.network.bytesinps:
+      enabled: true
+      attributes: []
+    mongodb.network.bytesoutps:
+      enabled: true
+      attributes: []
+    mongodb.network.io.receive:
+      enabled: true
+    mongodb.network.io.transmit:
+      enabled: true
+    mongodb.network.numrequestsps:
+      enabled: true
+      attributes: []
+    mongodb.network.request.count:
+      enabled: true
+    mongodb.object.count:
+      enabled: true
+    mongodb.opcounters.commandps:
+      enabled: true
+      attributes: []
+    mongodb.opcounters.deleteps:
+      enabled: true
+      attributes: []
+    mongodb.opcounters.getmoreps:
+      enabled: true
+      attributes: []
+    mongodb.opcounters.insertps:
+      enabled: true
+      attributes: []
+    mongodb.opcounters.queryps:
+      enabled: true
+      attributes: []
+    mongodb.opcounters.updateps:
+      enabled: true
+      attributes: []
+    mongodb.opcountersrepl.commandps:
+      enabled: true
+      attributes: []
+    mongodb.opcountersrepl.deleteps:
+      enabled: true
+      attributes: []
+    mongodb.opcountersrepl.getmoreps:
+      enabled: true
+      attributes: []
+    mongodb.opcountersrepl.insertps:
+      enabled: true
+      attributes: []
+    mongodb.opcountersrepl.queryps:
+      enabled: true
+      attributes: []
+    mongodb.opcountersrepl.updateps:
+      enabled: true
+      attributes: []
+    mongodb.operation.count:
+      enabled: true
+      attributes: []
+    mongodb.operation.latency.time:
+      enabled: true
+      attributes: []
+    mongodb.operation.repl.count:
+      enabled: true
+      attributes: []
+    mongodb.operation.time:
+      enabled: true
+      attributes: []
+    mongodb.oplatencies.commands.latency:
+      enabled: true
+      attributes: []
+    mongodb.oplatencies.commands.latencyps:
+      enabled: true
+      attributes: []
+    mongodb.oplatencies.reads.latency:
+      enabled: true
+      attributes: []
+    mongodb.oplatencies.reads.latencyps:
+      enabled: true
+      attributes: []
+    mongodb.oplatencies.writes.latency:
+      enabled: true
+      attributes: []
+    mongodb.oplatencies.writes.latencyps:
+      enabled: true
+      attributes: []
+    mongodb.oplog.logsizemb:
+      enabled: true
+      attributes: []
+    mongodb.oplog.timediff:
+      enabled: true
+      attributes: []
+    mongodb.oplog.usedsizemb:
+      enabled: true
+      attributes: []
+    mongodb.page_faults:
+      enabled: true
+    mongodb.profiling.level:
+      enabled: true
+      attributes: []
+    mongodb.profiling.slowms:
+      enabled: true
+      attributes: []
+    mongodb.queries.rate:
+      enabled: true
+    mongodb.repl_commands_per_sec:
+      enabled: true
+    mongodb.repl_deletes_per_sec:
+      enabled: true
+    mongodb.repl_getmores_per_sec:
+      enabled: true
+    mongodb.repl_inserts_per_sec:
+      enabled: true
+    mongodb.repl_queries_per_sec:
+      enabled: true
+    mongodb.repl_updates_per_sec:
+      enabled: true
+    mongodb.replset.health:
+      enabled: true
+      attributes: []
+    mongodb.replset.optime_lag:
+      enabled: true
+      attributes: []
+    mongodb.replset.replicationlag:
+      enabled: true
+      attributes: []
+    mongodb.replset.state:
+      enabled: true
+      attributes: []
+    mongodb.replset.votefraction:
+      enabled: true
+      attributes: []
+    mongodb.replset.votes:
+      enabled: true
+      attributes: []
+    mongodb.session.count:
+      enabled: true
+    mongodb.slow_operation.cpu_nanos:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.docs_examined:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.keys_examined:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.keys_inserted:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.ndeleted:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.ninserted:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.nmatched:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.nmodified:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.nreturned:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.num_yields:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.planning_time_micros:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.response_length:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.time:
+      enabled: true
+      attributes: []
+    mongodb.slow_operation.write_conflicts:
+      enabled: true
+      attributes: []
+    mongodb.stats.avgobjsize:
+      enabled: true
+      attributes: []
+    mongodb.stats.collections:
+      enabled: true
+      attributes: []
+    mongodb.stats.datasize:
+      enabled: true
+      attributes: []
+    mongodb.stats.filesize:
+      enabled: true
+      attributes: []
+    mongodb.stats.indexes:
+      enabled: true
+      attributes: []
+    mongodb.stats.indexsize:
+      enabled: true
+      attributes: []
+    mongodb.stats.numextents:
+      enabled: true
+      attributes: []
+    mongodb.stats.objects:
+      enabled: true
+      attributes: []
+    mongodb.stats.storagesize:
+      enabled: true
+      attributes: []
+    mongodb.storage.size:
+      enabled: true
+    mongodb.tcmalloc.generic.current_allocated_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.generic.heap_size:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.aggressive_memory_decommit:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.central_cache_free_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.current_total_thread_cache_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.max_total_thread_cache_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.pageheap_free_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.pageheap_unmapped_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes:
+      enabled: true
+      attributes: []
+    mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes:
+      enabled: true
+      attributes: []
+    mongodb.updates.rate:
+      enabled: true
+    mongodb.uptime:
+      enabled: true
+    mongodb.usage.commands.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.commands.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.commands.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.getmore.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.getmore.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.getmore.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.insert.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.insert.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.insert.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.queries.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.queries.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.queries.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.readlock.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.readlock.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.readlock.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.remove.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.remove.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.remove.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.total.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.total.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.total.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.update.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.update.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.update.time:
+      enabled: true
+      attributes: []
+    mongodb.usage.writelock.count:
+      enabled: true
+      attributes: []
+    mongodb.usage.writelock.countps:
+      enabled: true
+      attributes: []
+    mongodb.usage.writelock.time:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.bytes_currently_in_cache:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.failed_eviction_of_pages_exceeding_the_in_memory_maximumps:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.in_memory_page_splits:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.maximum_bytes_configured:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.maximum_page_size_at_eviction:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.modified_pages_evicted:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.pages_currently_held_in_cache:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.pages_evicted_by_application_threadsps:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.pages_evicted_exceeding_the_in_memory_maximumps:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.pages_read_into_cache:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.pages_written_from_cache:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.cache.unmodified_pages_evicted:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.concurrenttransactions.read.available:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.concurrenttransactions.read.out:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.concurrenttransactions.read.totaltickets:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.concurrenttransactions.write.available:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.concurrenttransactions.write.out:
+      enabled: true
+      attributes: []
+    mongodb.wiredtiger.concurrenttransactions.write.totaltickets:
+      enabled: true
+      attributes: []
     mongodb.wtcache.bytes.read:
       enabled: true
   resource_attributes:
@@ -672,92 +1923,132 @@ none_set:
       enabled: false
     mongodb.asserts.msgps:
       enabled: false
+      attributes: ["database"]
     mongodb.asserts.regularps:
       enabled: false
+      attributes: ["database"]
     mongodb.asserts.rolloversps:
       enabled: false
+      attributes: ["database"]
     mongodb.asserts.userps:
       enabled: false
+      attributes: ["database"]
     mongodb.asserts.warningps:
       enabled: false
+      attributes: ["database"]
     mongodb.backgroundflushing.average_ms:
       enabled: false
+      attributes: ["database"]
     mongodb.backgroundflushing.flushesps:
       enabled: false
+      attributes: ["database"]
     mongodb.backgroundflushing.last_ms:
       enabled: false
+      attributes: ["database"]
     mongodb.backgroundflushing.total_ms:
       enabled: false
+      attributes: ["database"]
     mongodb.cache.operations:
       enabled: false
+      attributes: ["type"]
     mongodb.chunks.jumbo:
       enabled: false
+      attributes: ["database"]
     mongodb.chunks.total:
       enabled: false
+      attributes: ["database"]
     mongodb.collection.avgobjsize:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.capped:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.count:
       enabled: false
     mongodb.collection.indexsizes:
       enabled: false
+      attributes: ["database","collection","index"]
     mongodb.collection.max:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.maxsize:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.nindexes:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.objects:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.size:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.collection.storagesize:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.commands.rate:
       enabled: false
     mongodb.connection.count:
       enabled: false
+      attributes: ["type"]
     mongodb.connection_pool.numascopedconnections:
       enabled: false
+      attributes: ["database"]
     mongodb.connection_pool.numclientconnections:
       enabled: false
+      attributes: ["database"]
     mongodb.connection_pool.totalavailable:
       enabled: false
+      attributes: ["database"]
     mongodb.connection_pool.totalcreatedps:
       enabled: false
+      attributes: ["database"]
     mongodb.connection_pool.totalinuse:
       enabled: false
+      attributes: ["database"]
     mongodb.connection_pool.totalrefreshing:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.active:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.available:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.awaitingtopologychanges:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.current:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.exhausthello:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.exhaustismaster:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.loadbalanced:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.rejected:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.threaded:
       enabled: false
+      attributes: ["database"]
     mongodb.connections.totalcreated:
       enabled: false
+      attributes: ["database"]
     mongodb.cursor.count:
       enabled: false
     mongodb.cursor.timeout.count:
       enabled: false
     mongodb.cursors.timedout:
       enabled: false
+      attributes: ["database"]
     mongodb.cursors.totalopen:
       enabled: false
+      attributes: ["database"]
     mongodb.data.size:
       enabled: false
     mongodb.database.count:
@@ -766,364 +2057,531 @@ none_set:
       enabled: false
     mongodb.document.operation.count:
       enabled: false
+      attributes: ["operation"]
     mongodb.dur.commits:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.commitsinwritelock:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.compression:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.earlycommits:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.journaledmb:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.commits:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.commitsinwritelock:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.dt:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.preplogbuffer:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.remapprivateview:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.writetodatafiles:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.timems.writetojournal:
       enabled: false
+      attributes: ["database"]
     mongodb.dur.writetodatafilesmb:
       enabled: false
+      attributes: ["database"]
     mongodb.extent.count:
       enabled: false
     mongodb.extra_info.heap_usage_bytesps:
       enabled: false
+      attributes: ["database"]
     mongodb.extra_info.page_faultsps:
       enabled: false
+      attributes: ["database"]
     mongodb.flushes.rate:
       enabled: false
     mongodb.fsynclocked:
       enabled: false
+      attributes: ["database"]
     mongodb.getmores.rate:
       enabled: false
     mongodb.global_lock.time:
       enabled: false
     mongodb.globallock.activeclients.readers:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.activeclients.total:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.activeclients.writers:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.currentqueue.readers:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.currentqueue.total:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.currentqueue.writers:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.locktime:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.ratio:
       enabled: false
+      attributes: ["database"]
     mongodb.globallock.totaltime:
       enabled: false
+      attributes: ["database"]
     mongodb.health:
       enabled: false
     mongodb.index.access.count:
       enabled: false
+      attributes: ["collection"]
     mongodb.index.count:
       enabled: false
     mongodb.index.size:
       enabled: false
     mongodb.indexcounters.accessesps:
       enabled: false
+      attributes: ["database"]
     mongodb.indexcounters.hitsps:
       enabled: false
+      attributes: ["database"]
     mongodb.indexcounters.missesps:
       enabled: false
+      attributes: ["database"]
     mongodb.indexcounters.missratio:
       enabled: false
+      attributes: ["database"]
     mongodb.indexcounters.resetsps:
       enabled: false
+      attributes: ["database"]
     mongodb.inserts.rate:
       enabled: false
     mongodb.lock.acquire.count:
       enabled: false
+      attributes: ["lock_type","lock_mode"]
     mongodb.lock.acquire.time:
       enabled: false
+      attributes: ["lock_type","lock_mode"]
     mongodb.lock.acquire.wait_count:
       enabled: false
+      attributes: ["lock_type","lock_mode"]
     mongodb.lock.deadlock.count:
       enabled: false
+      attributes: ["lock_type","lock_mode"]
     mongodb.locks.collection.acquirecount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.acquirecount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.acquirecount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.acquirecount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.acquirewaitcount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.acquirewaitcount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.timeacquiringmicros.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.collection.timeacquiringmicros.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirecount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.acquirewaitcount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.database.timeacquiringmicros.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirecount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.acquirewaitcount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.global.timeacquiringmicros.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.metadata.acquirecount.exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.metadata.acquirecount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirecount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirecount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirewaitcount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.acquirewaitcount.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.timeacquiringmicros.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.mmapv1journal.timeacquiringmicros.intent_sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.oplog.acquirecount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.oplog.acquirecount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.oplog.acquirewaitcount.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.oplog.acquirewaitcount.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.oplog.timeacquiringmicros.intent_exclusiveps:
       enabled: false
+      attributes: ["database"]
     mongodb.locks.oplog.timeacquiringmicros.sharedps:
       enabled: false
+      attributes: ["database"]
     mongodb.mem.bits:
       enabled: false
+      attributes: ["database"]
     mongodb.mem.mapped:
       enabled: false
+      attributes: ["database"]
     mongodb.mem.mappedwithjournal:
       enabled: false
+      attributes: ["database"]
     mongodb.mem.resident:
       enabled: false
+      attributes: ["database"]
     mongodb.mem.virtual:
       enabled: false
+      attributes: ["database"]
     mongodb.memory.usage:
       enabled: false
+      attributes: ["type"]
     mongodb.metrics.commands.count.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.count.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.createindexes.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.createindexes.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.delete.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.delete.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.eval.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.eval.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.findandmodify.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.findandmodify.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.insert.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.insert.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.update.failedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.commands.update.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.cursor.open.notimeout:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.cursor.open.pinned:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.cursor.open.total:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.cursor.timedoutps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.document.deletedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.document.insertedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.document.returnedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.document.updatedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.getlasterror.wtime.numps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.getlasterror.wtime.totalmillisps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.getlasterror.wtimeoutsps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.operation.fastmodps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.operation.idhackps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.operation.scanandorderps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.operation.writeconflictsps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.queryexecutor.scannedobjectsps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.queryexecutor.scannedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.record.movesps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.apply.batches.numps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.apply.batches.totalmillisps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.apply.opsps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.buffer.count:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.buffer.maxsizebytes:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.buffer.sizebytes:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.network.bytesps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.network.getmores.numps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.network.getmores.totalmillisps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.network.opsps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.network.readerscreatedps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.preload.docs.numps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.preload.docs.totalmillisps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.preload.indexes.numps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.repl.preload.indexes.totalmillisps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.ttl.deleteddocumentsps:
       enabled: false
+      attributes: ["database"]
     mongodb.metrics.ttl.passesps:
       enabled: false
+      attributes: ["database"]
     mongodb.network.bytesinps:
       enabled: false
+      attributes: ["database"]
     mongodb.network.bytesoutps:
       enabled: false
+      attributes: ["database"]
     mongodb.network.io.receive:
       enabled: false
     mongodb.network.io.transmit:
       enabled: false
     mongodb.network.numrequestsps:
       enabled: false
+      attributes: ["database"]
     mongodb.network.request.count:
       enabled: false
     mongodb.object.count:
       enabled: false
     mongodb.opcounters.commandps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcounters.deleteps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcounters.getmoreps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcounters.insertps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcounters.queryps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcounters.updateps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcountersrepl.commandps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcountersrepl.deleteps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcountersrepl.getmoreps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcountersrepl.insertps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcountersrepl.queryps:
       enabled: false
+      attributes: ["database"]
     mongodb.opcountersrepl.updateps:
       enabled: false
+      attributes: ["database"]
     mongodb.operation.count:
       enabled: false
+      attributes: ["operation"]
     mongodb.operation.latency.time:
       enabled: false
+      attributes: ["operation"]
     mongodb.operation.repl.count:
       enabled: false
+      attributes: ["operation"]
     mongodb.operation.time:
       enabled: false
+      attributes: ["operation"]
     mongodb.oplatencies.commands.latency:
       enabled: false
+      attributes: ["database"]
     mongodb.oplatencies.commands.latencyps:
       enabled: false
+      attributes: ["database"]
     mongodb.oplatencies.reads.latency:
       enabled: false
+      attributes: ["database"]
     mongodb.oplatencies.reads.latencyps:
       enabled: false
+      attributes: ["database"]
     mongodb.oplatencies.writes.latency:
       enabled: false
+      attributes: ["database"]
     mongodb.oplatencies.writes.latencyps:
       enabled: false
+      attributes: ["database"]
     mongodb.oplog.logsizemb:
       enabled: false
+      attributes: ["database"]
     mongodb.oplog.timediff:
       enabled: false
+      attributes: ["database"]
     mongodb.oplog.usedsizemb:
       enabled: false
+      attributes: ["database"]
     mongodb.page_faults:
       enabled: false
     mongodb.profiling.level:
       enabled: false
+      attributes: ["database"]
     mongodb.profiling.slowms:
       enabled: false
+      attributes: ["database"]
     mongodb.queries.rate:
       enabled: false
     mongodb.repl_commands_per_sec:
@@ -1140,184 +2598,270 @@ none_set:
       enabled: false
     mongodb.replset.health:
       enabled: false
+      attributes: ["database","replset","name","id","state"]
     mongodb.replset.optime_lag:
       enabled: false
+      attributes: ["database","replset","name","id"]
     mongodb.replset.replicationlag:
       enabled: false
+      attributes: ["database","replset","name","id"]
     mongodb.replset.state:
       enabled: false
+      attributes: ["database","replset","name","id","state"]
     mongodb.replset.votefraction:
       enabled: false
+      attributes: ["database","replset","name","id"]
     mongodb.replset.votes:
       enabled: false
+      attributes: ["database","replset","name","id"]
     mongodb.session.count:
       enabled: false
     mongodb.slow_operation.cpu_nanos:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.docs_examined:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.keys_examined:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.keys_inserted:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.ndeleted:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.ninserted:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.nmatched:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.nmodified:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.nreturned:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.num_yields:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.planning_time_micros:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.response_length:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.slow_operation.time:
       enabled: false
+      attributes: ["query_timestamp","database","operation","ns","plan_summary","query_signature","query_id","user","application","statement","raw_query","query_hash","query_shape_hash","plan_cache_key","query_framework","comment","mills","num_yields","response_length","nreturned","nmatched","nmodified","ninserted","ndeleted","keys_examined","docs_examined","keys_inserted","write_conflicts","cpu_nanos","planning_time_micros","cursor_exhausted","upsert","has_sort_stage","used_disk","from_multi_planner","replanned","replan_reason","client","cursor","lock_stats","flow_control_stats"]
     mongodb.slow_operation.write_conflicts:
       enabled: false
+      attributes: ["query_id","query_signature"]
     mongodb.stats.avgobjsize:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.collections:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.datasize:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.filesize:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.indexes:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.indexsize:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.numextents:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.objects:
       enabled: false
+      attributes: ["database"]
     mongodb.stats.storagesize:
       enabled: false
+      attributes: ["database"]
     mongodb.storage.size:
       enabled: false
     mongodb.tcmalloc.generic.current_allocated_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.generic.heap_size:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.aggressive_memory_decommit:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.central_cache_free_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.current_total_thread_cache_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.max_total_thread_cache_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.pageheap_free_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.pageheap_unmapped_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes:
       enabled: false
+      attributes: ["database"]
     mongodb.updates.rate:
       enabled: false
     mongodb.uptime:
       enabled: false
     mongodb.usage.commands.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.commands.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.commands.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.getmore.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.getmore.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.getmore.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.insert.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.insert.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.insert.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.queries.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.queries.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.queries.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.readlock.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.readlock.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.readlock.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.remove.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.remove.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.remove.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.total.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.total.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.total.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.update.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.update.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.update.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.writelock.count:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.writelock.countps:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.usage.writelock.time:
       enabled: false
+      attributes: ["database","collection"]
     mongodb.wiredtiger.cache.bytes_currently_in_cache:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.failed_eviction_of_pages_exceeding_the_in_memory_maximumps:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.in_memory_page_splits:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.maximum_bytes_configured:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.maximum_page_size_at_eviction:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.modified_pages_evicted:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_currently_held_in_cache:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_evicted_by_application_threadsps:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_evicted_exceeding_the_in_memory_maximumps:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_read_into_cache:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.pages_written_from_cache:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.cache.unmodified_pages_evicted:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.read.available:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.read.out:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.read.totaltickets:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.write.available:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.write.out:
       enabled: false
+      attributes: ["database"]
     mongodb.wiredtiger.concurrenttransactions.write.totaltickets:
       enabled: false
+      attributes: ["database"]
     mongodb.wtcache.bytes.read:
       enabled: false
   resource_attributes:

@@ -393,7 +393,7 @@ func TestDetectError(t *testing.T) {
 	mdOSVersion.On("OSVersion").Return("", errors.New("err"))
 	mdOSVersion.On("HostID").Return("1", nil)
 	mdOSVersion.On("HostArch").Return("amd64", nil)
-	mdOSVersion.On("HostIPs").Return(testIPsAddresses, nil)
+	mdOSVersion.On("HostIPs").Return(testIPs, nil)
 	mdOSVersion.On("HostInterfaces").Return(testInterfaces, nil)
 
 	detector = newTestDetector(mdOSVersion, []string{"os"}, allEnabledConfig())
@@ -561,8 +561,8 @@ func newFullMock() *mockMetadata {
 	md.On("OSBuildID").Return("22H2", nil).Maybe()
 	md.On("HostID").Return("1", nil).Maybe()
 	md.On("HostArch").Return("amd64", nil).Maybe()
-	md.On("HostIPs").Return(testIPsAddresses, nil).Maybe()
-	md.On("HostMACs").Return(testMACsAddresses, nil).Maybe()
+	md.On("HostIPs").Return(testIPs, nil).Maybe()
+	md.On("HostMACs").Return(testMACs, nil).Maybe()
 	md.On("HostInterfaces").Return(testInterfaces, nil).Maybe()
 	md.On("CPUInfo").Return([]cpu.InfoStat{{VendorID: "GenuineIntel", Family: "6", ModelName: "Intel", Stepping: 1, CacheSize: 256}}, nil).Maybe()
 	return md
@@ -574,9 +574,9 @@ func newFailingMock(errMethod string, err error) *mockMetadata {
 	md := &mockMetadata{}
 	switch errMethod {
 	case "HostIPs":
-		md.On(errMethod).Return([]net.IP(nil), err)
+		md.On(errMethod).Return([]system.InterfaceIP(nil), err)
 	case "HostMACs":
-		md.On(errMethod).Return([]net.HardwareAddr(nil), err)
+		md.On(errMethod).Return([]system.InterfaceMAC(nil), err)
 	case "HostInterfaces":
 		md.On(errMethod).Return([]net.Interface(nil), err)
 	case "CPUInfo":

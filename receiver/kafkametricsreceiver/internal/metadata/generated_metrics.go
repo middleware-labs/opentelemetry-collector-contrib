@@ -3,15 +3,14 @@
 package metadata
 
 import (
-	"slices"
-	"time"
-
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/filter"
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/xpdata/xhash"
 	"go.opentelemetry.io/collector/receiver"
+	"slices"
+	"time"
 )
 
 const (
@@ -1651,17 +1650,17 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.Settings, opt
 	if mbc.ResourceAttributes.KafkaClusterAlias.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["kafka.cluster.alias"] = filter.CreateFilter(mbc.ResourceAttributes.KafkaClusterAlias.MetricsExclude)
 	}
-	if mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsInclude != nil {
-		mb.resourceAttributeIncludeFilter["runtime.metrics.kafka"] = filter.CreateFilter(mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsInclude)
-	}
-	if mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsExclude != nil {
-		mb.resourceAttributeExcludeFilter["runtime.metrics.kafka"] = filter.CreateFilter(mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsExclude)
-	}
 	if mbc.ResourceAttributes.KafkaClusterID.MetricsInclude != nil {
 		mb.resourceAttributeIncludeFilter["kafka.cluster.id"] = filter.CreateFilter(mbc.ResourceAttributes.KafkaClusterID.MetricsInclude)
 	}
 	if mbc.ResourceAttributes.KafkaClusterID.MetricsExclude != nil {
 		mb.resourceAttributeExcludeFilter["kafka.cluster.id"] = filter.CreateFilter(mbc.ResourceAttributes.KafkaClusterID.MetricsExclude)
+	}
+	if mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsInclude != nil {
+		mb.resourceAttributeIncludeFilter["runtime.metrics.kafka"] = filter.CreateFilter(mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsInclude)
+	}
+	if mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsExclude != nil {
+		mb.resourceAttributeExcludeFilter["runtime.metrics.kafka"] = filter.CreateFilter(mbc.ResourceAttributes.RuntimeMetricsKafka.MetricsExclude)
 	}
 
 	for _, op := range options {

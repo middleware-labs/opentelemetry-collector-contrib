@@ -14,8 +14,8 @@ import (
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configopaque"
 	"go.opentelemetry.io/collector/config/configtls"
+	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
-	"go.opentelemetry.io/collector/confmap/xconfmap"
 	"go.opentelemetry.io/collector/scraper/scraperhelper"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/mongodbreceiver/internal/metadata"
@@ -86,12 +86,13 @@ func TestValidate(t *testing.T) {
 			}
 
 			cfg := &Config{
-				Username:         tc.username,
-				Password:         configopaque.String(tc.password),
-				Hosts:            hosts,
-				ControllerConfig: scraperhelper.NewDefaultControllerConfig(),
+				Username:             tc.username,
+				Password:             configopaque.String(tc.password),
+				Hosts:                hosts,
+				ControllerConfig:     scraperhelper.NewDefaultControllerConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 			}
-			err := xconfmap.Validate(cfg)
+			err := confmap.Validate(cfg)
 			if tc.expected == nil {
 				require.NoError(t, err)
 			} else {
@@ -140,10 +141,11 @@ func TestBadTLSConfigs(t *testing.T) {
 						Endpoint: defaultEndpoint,
 					},
 				},
-				ControllerConfig: scraperhelper.NewDefaultControllerConfig(),
-				ClientConfig:     tc.tlsConfig,
+				ControllerConfig:     scraperhelper.NewDefaultControllerConfig(),
+				MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
+				ClientConfig:         tc.tlsConfig,
 			}
-			err := xconfmap.Validate(cfg)
+			err := confmap.Validate(cfg)
 			if tc.expectError {
 				require.Error(t, err)
 			} else {

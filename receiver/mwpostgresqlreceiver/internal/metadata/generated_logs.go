@@ -4,6 +4,7 @@ package metadata
 
 import (
 	"context"
+
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/filter"
 	"go.opentelemetry.io/collector/pdata/pcommon"
@@ -80,7 +81,6 @@ func (e *eventDbServerQuerySample) recordEvent(ctx context.Context, timestamp pc
 	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
 	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
 	dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
-	dp.Body().SetStr(dbQueryTextAttributeValue)
 	dp.Attributes().PutStr("db.query.comment", dbQueryCommentAttributeValue)
 	dp.Attributes().PutStr("db.query.tables", dbQueryTablesAttributeValue)
 	dp.Attributes().PutStr("user.name", userNameAttributeValue)
@@ -278,7 +278,6 @@ func (e *eventDbServerTopQuery) recordEvent(ctx context.Context, timestamp pcomm
 	dp.Attributes().PutStr("db.namespace", dbNamespaceAttributeValue)
 	dp.Attributes().PutStr("event.type", eventTypeAttributeValue)
 	dp.Attributes().PutStr("db.query.text", dbQueryTextAttributeValue)
-	dp.Body().SetStr(dbQueryTextAttributeValue)
 	dp.Attributes().PutStr("db.query.comment", dbQueryCommentAttributeValue)
 	dp.Attributes().PutStr("db.query.tables", dbQueryTablesAttributeValue)
 	dp.Attributes().PutStr("user.name", userNameAttributeValue)

@@ -26,187 +26,267 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					MysqlBufferPoolDataPages: MetricConfig{
+					MysqlBufferPoolDataPages: MysqlBufferPoolDataPagesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolDataPagesMetricAttributeKey{MysqlBufferPoolDataPagesMetricAttributeKeyBufferPoolData},
+					},
+					MysqlBufferPoolLimit: MysqlBufferPoolLimitMetricConfig{
 						Enabled: true,
 					},
-					MysqlBufferPoolLimit: MetricConfig{
+					MysqlBufferPoolOperations: MysqlBufferPoolOperationsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolOperationsMetricAttributeKey{MysqlBufferPoolOperationsMetricAttributeKeyBufferPoolOperations},
+					},
+					MysqlBufferPoolPageFlushes: MysqlBufferPoolPageFlushesMetricConfig{
 						Enabled: true,
 					},
-					MysqlBufferPoolOperations: MetricConfig{
+					MysqlBufferPoolPages: MysqlBufferPoolPagesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolPagesMetricAttributeKey{MysqlBufferPoolPagesMetricAttributeKeyBufferPoolPages},
+					},
+					MysqlBufferPoolUsage: MysqlBufferPoolUsageMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolUsageMetricAttributeKey{MysqlBufferPoolUsageMetricAttributeKeyBufferPoolData},
+					},
+					MysqlClientNetworkIo: MysqlClientNetworkIoMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlClientNetworkIoMetricAttributeKey{MysqlClientNetworkIoMetricAttributeKeyDirection},
+					},
+					MysqlCommands: MysqlCommandsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlCommandsMetricAttributeKey{MysqlCommandsMetricAttributeKeyCommand},
+					},
+					MysqlConnectionActiveCount: MysqlConnectionActiveCountMetricConfig{
 						Enabled: true,
 					},
-					MysqlBufferPoolPageFlushes: MetricConfig{
+					MysqlConnectionCount: MysqlConnectionCountMetricConfig{
 						Enabled: true,
 					},
-					MysqlBufferPoolPages: MetricConfig{
+					MysqlConnectionErrors: MysqlConnectionErrorsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlConnectionErrorsMetricAttributeKey{MysqlConnectionErrorsMetricAttributeKeyConnectionError},
+					},
+					MysqlDoubleWrites: MysqlDoubleWritesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlDoubleWritesMetricAttributeKey{MysqlDoubleWritesMetricAttributeKeyDoubleWrites},
+					},
+					MysqlHandlers: MysqlHandlersMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlHandlersMetricAttributeKey{MysqlHandlersMetricAttributeKeyHandler},
+					},
+					MysqlIndexIoWaitCount: MysqlIndexIoWaitCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlIndexIoWaitCountMetricAttributeKey{MysqlIndexIoWaitCountMetricAttributeKeyIoWaitsOperations, MysqlIndexIoWaitCountMetricAttributeKeyTableName, MysqlIndexIoWaitCountMetricAttributeKeySchema, MysqlIndexIoWaitCountMetricAttributeKeyIndexName},
+					},
+					MysqlIndexIoWaitTime: MysqlIndexIoWaitTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlIndexIoWaitTimeMetricAttributeKey{MysqlIndexIoWaitTimeMetricAttributeKeyIoWaitsOperations, MysqlIndexIoWaitTimeMetricAttributeKeyTableName, MysqlIndexIoWaitTimeMetricAttributeKeySchema, MysqlIndexIoWaitTimeMetricAttributeKeyIndexName},
+					},
+					MysqlInnodbRowsDeleted: MysqlInnodbRowsDeletedMetricConfig{
 						Enabled: true,
 					},
-					MysqlBufferPoolUsage: MetricConfig{
+					MysqlInnodbRowsInserted: MysqlInnodbRowsInsertedMetricConfig{
 						Enabled: true,
 					},
-					MysqlClientNetworkIo: MetricConfig{
+					MysqlInnodbRowsRead: MysqlInnodbRowsReadMetricConfig{
 						Enabled: true,
 					},
-					MysqlCommands: MetricConfig{
+					MysqlInnodbRowsUpdated: MysqlInnodbRowsUpdatedMetricConfig{
 						Enabled: true,
 					},
-					MysqlConnectionActiveCount: MetricConfig{
+					MysqlJoins: MysqlJoinsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlJoinsMetricAttributeKey{MysqlJoinsMetricAttributeKeyJoinKind},
+					},
+					MysqlLocks: MysqlLocksMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlLocksMetricAttributeKey{MysqlLocksMetricAttributeKeyLocks},
+					},
+					MysqlLogOperations: MysqlLogOperationsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlLogOperationsMetricAttributeKey{MysqlLogOperationsMetricAttributeKeyLogOperations},
+					},
+					MysqlMaxUsedConnections: MysqlMaxUsedConnectionsMetricConfig{
 						Enabled: true,
 					},
-					MysqlConnectionCount: MetricConfig{
+					MysqlMysqlxConnections: MysqlMysqlxConnectionsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlMysqlxConnectionsMetricAttributeKey{MysqlMysqlxConnectionsMetricAttributeKeyConnectionStatus},
+					},
+					MysqlMysqlxWorkerThreads: MysqlMysqlxWorkerThreadsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlMysqlxWorkerThreadsMetricAttributeKey{MysqlMysqlxWorkerThreadsMetricAttributeKeyMysqlxThreads},
+					},
+					MysqlOpenedResources: MysqlOpenedResourcesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlOpenedResourcesMetricAttributeKey{MysqlOpenedResourcesMetricAttributeKeyOpenedResources},
+					},
+					MysqlOperations: MysqlOperationsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlOperationsMetricAttributeKey{MysqlOperationsMetricAttributeKeyOperations},
+					},
+					MysqlPageOperations: MysqlPageOperationsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlPageOperationsMetricAttributeKey{MysqlPageOperationsMetricAttributeKeyPageOperations},
+					},
+					MysqlPageSize: MysqlPageSizeMetricConfig{
 						Enabled: true,
 					},
-					MysqlConnectionErrors: MetricConfig{
+					MysqlPerformanceRowsDeleted: MysqlPerformanceRowsDeletedMetricConfig{
 						Enabled: true,
 					},
-					MysqlDoubleWrites: MetricConfig{
+					MysqlPerformanceRowsInserted: MysqlPerformanceRowsInsertedMetricConfig{
 						Enabled: true,
 					},
-					MysqlHandlers: MetricConfig{
+					MysqlPerformanceRowsRead: MysqlPerformanceRowsReadMetricConfig{
 						Enabled: true,
 					},
-					MysqlIndexIoWaitCount: MetricConfig{
+					MysqlPerformanceRowsUpdated: MysqlPerformanceRowsUpdatedMetricConfig{
 						Enabled: true,
 					},
-					MysqlIndexIoWaitTime: MetricConfig{
+					MysqlPreparedStatements: MysqlPreparedStatementsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlPreparedStatementsMetricAttributeKey{MysqlPreparedStatementsMetricAttributeKeyPreparedStatementsCommand},
+					},
+					MysqlQueryClientCount: MysqlQueryClientCountMetricConfig{
 						Enabled: true,
 					},
-					MysqlInnodbRowsDeleted: MetricConfig{
+					MysqlQueryCount: MysqlQueryCountMetricConfig{
 						Enabled: true,
 					},
-					MysqlInnodbRowsInserted: MetricConfig{
+					MysqlQuerySlowCount: MysqlQuerySlowCountMetricConfig{
 						Enabled: true,
 					},
-					MysqlInnodbRowsRead: MetricConfig{
+					MysqlQueryTotalErrors: MysqlQueryTotalErrorsMetricConfig{
 						Enabled: true,
 					},
-					MysqlInnodbRowsUpdated: MetricConfig{
+					MysqlReplicaSQLDelay: MysqlReplicaSQLDelayMetricConfig{
 						Enabled: true,
 					},
-					MysqlJoins: MetricConfig{
+					MysqlReplicaTimeBehindSource: MysqlReplicaTimeBehindSourceMetricConfig{
 						Enabled: true,
 					},
-					MysqlLocks: MetricConfig{
-						Enabled: true,
+					MysqlRowLocks: MysqlRowLocksMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlRowLocksMetricAttributeKey{MysqlRowLocksMetricAttributeKeyRowLocks},
 					},
-					MysqlLogOperations: MetricConfig{
-						Enabled: true,
+					MysqlRowOperations: MysqlRowOperationsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlRowOperationsMetricAttributeKey{MysqlRowOperationsMetricAttributeKeyRowOperations},
 					},
-					MysqlMaxUsedConnections: MetricConfig{
-						Enabled: true,
+					MysqlSorts: MysqlSortsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlSortsMetricAttributeKey{MysqlSortsMetricAttributeKeySorts},
 					},
-					MysqlMysqlxConnections: MetricConfig{
-						Enabled: true,
+					MysqlStatementEventCount: MysqlStatementEventCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventCountMetricAttributeKey{MysqlStatementEventCountMetricAttributeKeySchema, MysqlStatementEventCountMetricAttributeKeyDigest, MysqlStatementEventCountMetricAttributeKeyDigestText, MysqlStatementEventCountMetricAttributeKeyEventState},
 					},
-					MysqlMysqlxWorkerThreads: MetricConfig{
-						Enabled: true,
+					MysqlStatementEventCountStars: MysqlStatementEventCountStarsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventCountStarsMetricAttributeKey{MysqlStatementEventCountStarsMetricAttributeKeySchema, MysqlStatementEventCountStarsMetricAttributeKeyDigest, MysqlStatementEventCountStarsMetricAttributeKeyDigestText},
 					},
-					MysqlOpenedResources: MetricConfig{
-						Enabled: true,
+					MysqlStatementEventErrors: MysqlStatementEventErrorsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventErrorsMetricAttributeKey{MysqlStatementEventErrorsMetricAttributeKeySchema, MysqlStatementEventErrorsMetricAttributeKeyDigest, MysqlStatementEventErrorsMetricAttributeKeyDigestText},
 					},
-					MysqlOperations: MetricConfig{
-						Enabled: true,
+					MysqlStatementEventWaitTime: MysqlStatementEventWaitTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventWaitTimeMetricAttributeKey{MysqlStatementEventWaitTimeMetricAttributeKeySchema, MysqlStatementEventWaitTimeMetricAttributeKeyDigest, MysqlStatementEventWaitTimeMetricAttributeKeyDigestText},
 					},
-					MysqlPageOperations: MetricConfig{
-						Enabled: true,
+					MysqlTableAverageRowLength: MysqlTableAverageRowLengthMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableAverageRowLengthMetricAttributeKey{MysqlTableAverageRowLengthMetricAttributeKeyTableName, MysqlTableAverageRowLengthMetricAttributeKeySchema},
 					},
-					MysqlPageSize: MetricConfig{
-						Enabled: true,
+					MysqlTableIoWaitCount: MysqlTableIoWaitCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableIoWaitCountMetricAttributeKey{MysqlTableIoWaitCountMetricAttributeKeyIoWaitsOperations, MysqlTableIoWaitCountMetricAttributeKeyTableName, MysqlTableIoWaitCountMetricAttributeKeySchema},
 					},
-					MysqlPerformanceRowsDeleted: MetricConfig{
-						Enabled: true,
+					MysqlTableIoWaitTime: MysqlTableIoWaitTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableIoWaitTimeMetricAttributeKey{MysqlTableIoWaitTimeMetricAttributeKeyIoWaitsOperations, MysqlTableIoWaitTimeMetricAttributeKeyTableName, MysqlTableIoWaitTimeMetricAttributeKeySchema},
 					},
-					MysqlPerformanceRowsInserted: MetricConfig{
-						Enabled: true,
+					MysqlTableLockWaitReadCount: MysqlTableLockWaitReadCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitReadCountMetricAttributeKey{MysqlTableLockWaitReadCountMetricAttributeKeySchema, MysqlTableLockWaitReadCountMetricAttributeKeyTableName, MysqlTableLockWaitReadCountMetricAttributeKeyReadLockType},
 					},
-					MysqlPerformanceRowsRead: MetricConfig{
-						Enabled: true,
+					MysqlTableLockWaitReadTime: MysqlTableLockWaitReadTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitReadTimeMetricAttributeKey{MysqlTableLockWaitReadTimeMetricAttributeKeySchema, MysqlTableLockWaitReadTimeMetricAttributeKeyTableName, MysqlTableLockWaitReadTimeMetricAttributeKeyReadLockType},
 					},
-					MysqlPerformanceRowsUpdated: MetricConfig{
-						Enabled: true,
+					MysqlTableLockWaitWriteCount: MysqlTableLockWaitWriteCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitWriteCountMetricAttributeKey{MysqlTableLockWaitWriteCountMetricAttributeKeySchema, MysqlTableLockWaitWriteCountMetricAttributeKeyTableName, MysqlTableLockWaitWriteCountMetricAttributeKeyWriteLockType},
 					},
-					MysqlPreparedStatements: MetricConfig{
-						Enabled: true,
+					MysqlTableLockWaitWriteTime: MysqlTableLockWaitWriteTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitWriteTimeMetricAttributeKey{MysqlTableLockWaitWriteTimeMetricAttributeKeySchema, MysqlTableLockWaitWriteTimeMetricAttributeKeyTableName, MysqlTableLockWaitWriteTimeMetricAttributeKeyWriteLockType},
 					},
-					MysqlQueryClientCount: MetricConfig{
-						Enabled: true,
+					MysqlTableRows: MysqlTableRowsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableRowsMetricAttributeKey{MysqlTableRowsMetricAttributeKeyTableName, MysqlTableRowsMetricAttributeKeySchema},
 					},
-					MysqlQueryCount: MetricConfig{
-						Enabled: true,
+					MysqlTableSize: MysqlTableSizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableSizeMetricAttributeKey{MysqlTableSizeMetricAttributeKeyTableName, MysqlTableSizeMetricAttributeKeySchema, MysqlTableSizeMetricAttributeKeyTableSizeType},
 					},
-					MysqlQuerySlowCount: MetricConfig{
-						Enabled: true,
+					MysqlTableOpenCache: MysqlTableOpenCacheMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableOpenCacheMetricAttributeKey{MysqlTableOpenCacheMetricAttributeKeyCacheStatus},
 					},
-					MysqlQueryTotalErrors: MetricConfig{
-						Enabled: true,
+					MysqlThreads: MysqlThreadsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlThreadsMetricAttributeKey{MysqlThreadsMetricAttributeKeyThreads},
 					},
-					MysqlReplicaSQLDelay: MetricConfig{
-						Enabled: true,
+					MysqlTmpResources: MysqlTmpResourcesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTmpResourcesMetricAttributeKey{MysqlTmpResourcesMetricAttributeKeyTmpResource},
 					},
-					MysqlReplicaTimeBehindSource: MetricConfig{
-						Enabled: true,
+					MysqlTotalRows: MysqlTotalRowsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MysqlTotalRowsMetricAttributeKey{MysqlTotalRowsMetricAttributeKeyDbname},
 					},
-					MysqlRowLocks: MetricConfig{
-						Enabled: true,
-					},
-					MysqlRowOperations: MetricConfig{
-						Enabled: true,
-					},
-					MysqlSorts: MetricConfig{
-						Enabled: true,
-					},
-					MysqlStatementEventCount: MetricConfig{
-						Enabled: true,
-					},
-					MysqlStatementEventCountStars: MetricConfig{
-						Enabled: true,
-					},
-					MysqlStatementEventErrors: MetricConfig{
-						Enabled: true,
-					},
-					MysqlStatementEventWaitTime: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableAverageRowLength: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableIoWaitCount: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableIoWaitTime: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableLockWaitReadCount: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableLockWaitReadTime: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableLockWaitWriteCount: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableLockWaitWriteTime: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableRows: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableSize: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTableOpenCache: MetricConfig{
-						Enabled: true,
-					},
-					MysqlThreads: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTmpResources: MetricConfig{
-						Enabled: true,
-					},
-					MysqlTotalRows: MetricConfig{
-						Enabled: true,
-					},
-					MysqlUptime: MetricConfig{
+					MysqlUptime: MysqlUptimeMetricConfig{
 						Enabled: true,
 					},
 				},
@@ -220,187 +300,267 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					MysqlBufferPoolDataPages: MetricConfig{
+					MysqlBufferPoolDataPages: MysqlBufferPoolDataPagesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolDataPagesMetricAttributeKey{MysqlBufferPoolDataPagesMetricAttributeKeyBufferPoolData},
+					},
+					MysqlBufferPoolLimit: MysqlBufferPoolLimitMetricConfig{
 						Enabled: false,
 					},
-					MysqlBufferPoolLimit: MetricConfig{
+					MysqlBufferPoolOperations: MysqlBufferPoolOperationsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolOperationsMetricAttributeKey{MysqlBufferPoolOperationsMetricAttributeKeyBufferPoolOperations},
+					},
+					MysqlBufferPoolPageFlushes: MysqlBufferPoolPageFlushesMetricConfig{
 						Enabled: false,
 					},
-					MysqlBufferPoolOperations: MetricConfig{
+					MysqlBufferPoolPages: MysqlBufferPoolPagesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolPagesMetricAttributeKey{MysqlBufferPoolPagesMetricAttributeKeyBufferPoolPages},
+					},
+					MysqlBufferPoolUsage: MysqlBufferPoolUsageMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlBufferPoolUsageMetricAttributeKey{MysqlBufferPoolUsageMetricAttributeKeyBufferPoolData},
+					},
+					MysqlClientNetworkIo: MysqlClientNetworkIoMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlClientNetworkIoMetricAttributeKey{MysqlClientNetworkIoMetricAttributeKeyDirection},
+					},
+					MysqlCommands: MysqlCommandsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlCommandsMetricAttributeKey{MysqlCommandsMetricAttributeKeyCommand},
+					},
+					MysqlConnectionActiveCount: MysqlConnectionActiveCountMetricConfig{
 						Enabled: false,
 					},
-					MysqlBufferPoolPageFlushes: MetricConfig{
+					MysqlConnectionCount: MysqlConnectionCountMetricConfig{
 						Enabled: false,
 					},
-					MysqlBufferPoolPages: MetricConfig{
+					MysqlConnectionErrors: MysqlConnectionErrorsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlConnectionErrorsMetricAttributeKey{MysqlConnectionErrorsMetricAttributeKeyConnectionError},
+					},
+					MysqlDoubleWrites: MysqlDoubleWritesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlDoubleWritesMetricAttributeKey{MysqlDoubleWritesMetricAttributeKeyDoubleWrites},
+					},
+					MysqlHandlers: MysqlHandlersMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlHandlersMetricAttributeKey{MysqlHandlersMetricAttributeKeyHandler},
+					},
+					MysqlIndexIoWaitCount: MysqlIndexIoWaitCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlIndexIoWaitCountMetricAttributeKey{MysqlIndexIoWaitCountMetricAttributeKeyIoWaitsOperations, MysqlIndexIoWaitCountMetricAttributeKeyTableName, MysqlIndexIoWaitCountMetricAttributeKeySchema, MysqlIndexIoWaitCountMetricAttributeKeyIndexName},
+					},
+					MysqlIndexIoWaitTime: MysqlIndexIoWaitTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlIndexIoWaitTimeMetricAttributeKey{MysqlIndexIoWaitTimeMetricAttributeKeyIoWaitsOperations, MysqlIndexIoWaitTimeMetricAttributeKeyTableName, MysqlIndexIoWaitTimeMetricAttributeKeySchema, MysqlIndexIoWaitTimeMetricAttributeKeyIndexName},
+					},
+					MysqlInnodbRowsDeleted: MysqlInnodbRowsDeletedMetricConfig{
 						Enabled: false,
 					},
-					MysqlBufferPoolUsage: MetricConfig{
+					MysqlInnodbRowsInserted: MysqlInnodbRowsInsertedMetricConfig{
 						Enabled: false,
 					},
-					MysqlClientNetworkIo: MetricConfig{
+					MysqlInnodbRowsRead: MysqlInnodbRowsReadMetricConfig{
 						Enabled: false,
 					},
-					MysqlCommands: MetricConfig{
+					MysqlInnodbRowsUpdated: MysqlInnodbRowsUpdatedMetricConfig{
 						Enabled: false,
 					},
-					MysqlConnectionActiveCount: MetricConfig{
+					MysqlJoins: MysqlJoinsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlJoinsMetricAttributeKey{MysqlJoinsMetricAttributeKeyJoinKind},
+					},
+					MysqlLocks: MysqlLocksMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlLocksMetricAttributeKey{MysqlLocksMetricAttributeKeyLocks},
+					},
+					MysqlLogOperations: MysqlLogOperationsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlLogOperationsMetricAttributeKey{MysqlLogOperationsMetricAttributeKeyLogOperations},
+					},
+					MysqlMaxUsedConnections: MysqlMaxUsedConnectionsMetricConfig{
 						Enabled: false,
 					},
-					MysqlConnectionCount: MetricConfig{
+					MysqlMysqlxConnections: MysqlMysqlxConnectionsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlMysqlxConnectionsMetricAttributeKey{MysqlMysqlxConnectionsMetricAttributeKeyConnectionStatus},
+					},
+					MysqlMysqlxWorkerThreads: MysqlMysqlxWorkerThreadsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlMysqlxWorkerThreadsMetricAttributeKey{MysqlMysqlxWorkerThreadsMetricAttributeKeyMysqlxThreads},
+					},
+					MysqlOpenedResources: MysqlOpenedResourcesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlOpenedResourcesMetricAttributeKey{MysqlOpenedResourcesMetricAttributeKeyOpenedResources},
+					},
+					MysqlOperations: MysqlOperationsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlOperationsMetricAttributeKey{MysqlOperationsMetricAttributeKeyOperations},
+					},
+					MysqlPageOperations: MysqlPageOperationsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlPageOperationsMetricAttributeKey{MysqlPageOperationsMetricAttributeKeyPageOperations},
+					},
+					MysqlPageSize: MysqlPageSizeMetricConfig{
 						Enabled: false,
 					},
-					MysqlConnectionErrors: MetricConfig{
+					MysqlPerformanceRowsDeleted: MysqlPerformanceRowsDeletedMetricConfig{
 						Enabled: false,
 					},
-					MysqlDoubleWrites: MetricConfig{
+					MysqlPerformanceRowsInserted: MysqlPerformanceRowsInsertedMetricConfig{
 						Enabled: false,
 					},
-					MysqlHandlers: MetricConfig{
+					MysqlPerformanceRowsRead: MysqlPerformanceRowsReadMetricConfig{
 						Enabled: false,
 					},
-					MysqlIndexIoWaitCount: MetricConfig{
+					MysqlPerformanceRowsUpdated: MysqlPerformanceRowsUpdatedMetricConfig{
 						Enabled: false,
 					},
-					MysqlIndexIoWaitTime: MetricConfig{
+					MysqlPreparedStatements: MysqlPreparedStatementsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlPreparedStatementsMetricAttributeKey{MysqlPreparedStatementsMetricAttributeKeyPreparedStatementsCommand},
+					},
+					MysqlQueryClientCount: MysqlQueryClientCountMetricConfig{
 						Enabled: false,
 					},
-					MysqlInnodbRowsDeleted: MetricConfig{
+					MysqlQueryCount: MysqlQueryCountMetricConfig{
 						Enabled: false,
 					},
-					MysqlInnodbRowsInserted: MetricConfig{
+					MysqlQuerySlowCount: MysqlQuerySlowCountMetricConfig{
 						Enabled: false,
 					},
-					MysqlInnodbRowsRead: MetricConfig{
+					MysqlQueryTotalErrors: MysqlQueryTotalErrorsMetricConfig{
 						Enabled: false,
 					},
-					MysqlInnodbRowsUpdated: MetricConfig{
+					MysqlReplicaSQLDelay: MysqlReplicaSQLDelayMetricConfig{
 						Enabled: false,
 					},
-					MysqlJoins: MetricConfig{
+					MysqlReplicaTimeBehindSource: MysqlReplicaTimeBehindSourceMetricConfig{
 						Enabled: false,
 					},
-					MysqlLocks: MetricConfig{
-						Enabled: false,
+					MysqlRowLocks: MysqlRowLocksMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlRowLocksMetricAttributeKey{MysqlRowLocksMetricAttributeKeyRowLocks},
 					},
-					MysqlLogOperations: MetricConfig{
-						Enabled: false,
+					MysqlRowOperations: MysqlRowOperationsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlRowOperationsMetricAttributeKey{MysqlRowOperationsMetricAttributeKeyRowOperations},
 					},
-					MysqlMaxUsedConnections: MetricConfig{
-						Enabled: false,
+					MysqlSorts: MysqlSortsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlSortsMetricAttributeKey{MysqlSortsMetricAttributeKeySorts},
 					},
-					MysqlMysqlxConnections: MetricConfig{
-						Enabled: false,
+					MysqlStatementEventCount: MysqlStatementEventCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventCountMetricAttributeKey{MysqlStatementEventCountMetricAttributeKeySchema, MysqlStatementEventCountMetricAttributeKeyDigest, MysqlStatementEventCountMetricAttributeKeyDigestText, MysqlStatementEventCountMetricAttributeKeyEventState},
 					},
-					MysqlMysqlxWorkerThreads: MetricConfig{
-						Enabled: false,
+					MysqlStatementEventCountStars: MysqlStatementEventCountStarsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventCountStarsMetricAttributeKey{MysqlStatementEventCountStarsMetricAttributeKeySchema, MysqlStatementEventCountStarsMetricAttributeKeyDigest, MysqlStatementEventCountStarsMetricAttributeKeyDigestText},
 					},
-					MysqlOpenedResources: MetricConfig{
-						Enabled: false,
+					MysqlStatementEventErrors: MysqlStatementEventErrorsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventErrorsMetricAttributeKey{MysqlStatementEventErrorsMetricAttributeKeySchema, MysqlStatementEventErrorsMetricAttributeKeyDigest, MysqlStatementEventErrorsMetricAttributeKeyDigestText},
 					},
-					MysqlOperations: MetricConfig{
-						Enabled: false,
+					MysqlStatementEventWaitTime: MysqlStatementEventWaitTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlStatementEventWaitTimeMetricAttributeKey{MysqlStatementEventWaitTimeMetricAttributeKeySchema, MysqlStatementEventWaitTimeMetricAttributeKeyDigest, MysqlStatementEventWaitTimeMetricAttributeKeyDigestText},
 					},
-					MysqlPageOperations: MetricConfig{
-						Enabled: false,
+					MysqlTableAverageRowLength: MysqlTableAverageRowLengthMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableAverageRowLengthMetricAttributeKey{MysqlTableAverageRowLengthMetricAttributeKeyTableName, MysqlTableAverageRowLengthMetricAttributeKeySchema},
 					},
-					MysqlPageSize: MetricConfig{
-						Enabled: false,
+					MysqlTableIoWaitCount: MysqlTableIoWaitCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableIoWaitCountMetricAttributeKey{MysqlTableIoWaitCountMetricAttributeKeyIoWaitsOperations, MysqlTableIoWaitCountMetricAttributeKeyTableName, MysqlTableIoWaitCountMetricAttributeKeySchema},
 					},
-					MysqlPerformanceRowsDeleted: MetricConfig{
-						Enabled: false,
+					MysqlTableIoWaitTime: MysqlTableIoWaitTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableIoWaitTimeMetricAttributeKey{MysqlTableIoWaitTimeMetricAttributeKeyIoWaitsOperations, MysqlTableIoWaitTimeMetricAttributeKeyTableName, MysqlTableIoWaitTimeMetricAttributeKeySchema},
 					},
-					MysqlPerformanceRowsInserted: MetricConfig{
-						Enabled: false,
+					MysqlTableLockWaitReadCount: MysqlTableLockWaitReadCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitReadCountMetricAttributeKey{MysqlTableLockWaitReadCountMetricAttributeKeySchema, MysqlTableLockWaitReadCountMetricAttributeKeyTableName, MysqlTableLockWaitReadCountMetricAttributeKeyReadLockType},
 					},
-					MysqlPerformanceRowsRead: MetricConfig{
-						Enabled: false,
+					MysqlTableLockWaitReadTime: MysqlTableLockWaitReadTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitReadTimeMetricAttributeKey{MysqlTableLockWaitReadTimeMetricAttributeKeySchema, MysqlTableLockWaitReadTimeMetricAttributeKeyTableName, MysqlTableLockWaitReadTimeMetricAttributeKeyReadLockType},
 					},
-					MysqlPerformanceRowsUpdated: MetricConfig{
-						Enabled: false,
+					MysqlTableLockWaitWriteCount: MysqlTableLockWaitWriteCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitWriteCountMetricAttributeKey{MysqlTableLockWaitWriteCountMetricAttributeKeySchema, MysqlTableLockWaitWriteCountMetricAttributeKeyTableName, MysqlTableLockWaitWriteCountMetricAttributeKeyWriteLockType},
 					},
-					MysqlPreparedStatements: MetricConfig{
-						Enabled: false,
+					MysqlTableLockWaitWriteTime: MysqlTableLockWaitWriteTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableLockWaitWriteTimeMetricAttributeKey{MysqlTableLockWaitWriteTimeMetricAttributeKeySchema, MysqlTableLockWaitWriteTimeMetricAttributeKeyTableName, MysqlTableLockWaitWriteTimeMetricAttributeKeyWriteLockType},
 					},
-					MysqlQueryClientCount: MetricConfig{
-						Enabled: false,
+					MysqlTableRows: MysqlTableRowsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableRowsMetricAttributeKey{MysqlTableRowsMetricAttributeKeyTableName, MysqlTableRowsMetricAttributeKeySchema},
 					},
-					MysqlQueryCount: MetricConfig{
-						Enabled: false,
+					MysqlTableSize: MysqlTableSizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableSizeMetricAttributeKey{MysqlTableSizeMetricAttributeKeyTableName, MysqlTableSizeMetricAttributeKeySchema, MysqlTableSizeMetricAttributeKeyTableSizeType},
 					},
-					MysqlQuerySlowCount: MetricConfig{
-						Enabled: false,
+					MysqlTableOpenCache: MysqlTableOpenCacheMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTableOpenCacheMetricAttributeKey{MysqlTableOpenCacheMetricAttributeKeyCacheStatus},
 					},
-					MysqlQueryTotalErrors: MetricConfig{
-						Enabled: false,
+					MysqlThreads: MysqlThreadsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlThreadsMetricAttributeKey{MysqlThreadsMetricAttributeKeyThreads},
 					},
-					MysqlReplicaSQLDelay: MetricConfig{
-						Enabled: false,
+					MysqlTmpResources: MysqlTmpResourcesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MysqlTmpResourcesMetricAttributeKey{MysqlTmpResourcesMetricAttributeKeyTmpResource},
 					},
-					MysqlReplicaTimeBehindSource: MetricConfig{
-						Enabled: false,
+					MysqlTotalRows: MysqlTotalRowsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MysqlTotalRowsMetricAttributeKey{MysqlTotalRowsMetricAttributeKeyDbname},
 					},
-					MysqlRowLocks: MetricConfig{
-						Enabled: false,
-					},
-					MysqlRowOperations: MetricConfig{
-						Enabled: false,
-					},
-					MysqlSorts: MetricConfig{
-						Enabled: false,
-					},
-					MysqlStatementEventCount: MetricConfig{
-						Enabled: false,
-					},
-					MysqlStatementEventCountStars: MetricConfig{
-						Enabled: false,
-					},
-					MysqlStatementEventErrors: MetricConfig{
-						Enabled: false,
-					},
-					MysqlStatementEventWaitTime: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableAverageRowLength: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableIoWaitCount: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableIoWaitTime: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableLockWaitReadCount: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableLockWaitReadTime: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableLockWaitWriteCount: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableLockWaitWriteTime: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableRows: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableSize: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTableOpenCache: MetricConfig{
-						Enabled: false,
-					},
-					MysqlThreads: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTmpResources: MetricConfig{
-						Enabled: false,
-					},
-					MysqlTotalRows: MetricConfig{
-						Enabled: false,
-					},
-					MysqlUptime: MetricConfig{
+					MysqlUptime: MysqlUptimeMetricConfig{
 						Enabled: false,
 					},
 				},
@@ -414,10 +574,489 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MysqlBufferPoolDataPagesMetricConfig{}, MysqlBufferPoolLimitMetricConfig{}, MysqlBufferPoolOperationsMetricConfig{}, MysqlBufferPoolPageFlushesMetricConfig{}, MysqlBufferPoolPagesMetricConfig{}, MysqlBufferPoolUsageMetricConfig{}, MysqlClientNetworkIoMetricConfig{}, MysqlCommandsMetricConfig{}, MysqlConnectionActiveCountMetricConfig{}, MysqlConnectionCountMetricConfig{}, MysqlConnectionErrorsMetricConfig{}, MysqlDoubleWritesMetricConfig{}, MysqlHandlersMetricConfig{}, MysqlIndexIoWaitCountMetricConfig{}, MysqlIndexIoWaitTimeMetricConfig{}, MysqlInnodbRowsDeletedMetricConfig{}, MysqlInnodbRowsInsertedMetricConfig{}, MysqlInnodbRowsReadMetricConfig{}, MysqlInnodbRowsUpdatedMetricConfig{}, MysqlJoinsMetricConfig{}, MysqlLocksMetricConfig{}, MysqlLogOperationsMetricConfig{}, MysqlMaxUsedConnectionsMetricConfig{}, MysqlMysqlxConnectionsMetricConfig{}, MysqlMysqlxWorkerThreadsMetricConfig{}, MysqlOpenedResourcesMetricConfig{}, MysqlOperationsMetricConfig{}, MysqlPageOperationsMetricConfig{}, MysqlPageSizeMetricConfig{}, MysqlPerformanceRowsDeletedMetricConfig{}, MysqlPerformanceRowsInsertedMetricConfig{}, MysqlPerformanceRowsReadMetricConfig{}, MysqlPerformanceRowsUpdatedMetricConfig{}, MysqlPreparedStatementsMetricConfig{}, MysqlQueryClientCountMetricConfig{}, MysqlQueryCountMetricConfig{}, MysqlQuerySlowCountMetricConfig{}, MysqlQueryTotalErrorsMetricConfig{}, MysqlReplicaSQLDelayMetricConfig{}, MysqlReplicaTimeBehindSourceMetricConfig{}, MysqlRowLocksMetricConfig{}, MysqlRowOperationsMetricConfig{}, MysqlSortsMetricConfig{}, MysqlStatementEventCountMetricConfig{}, MysqlStatementEventCountStarsMetricConfig{}, MysqlStatementEventErrorsMetricConfig{}, MysqlStatementEventWaitTimeMetricConfig{}, MysqlTableAverageRowLengthMetricConfig{}, MysqlTableIoWaitCountMetricConfig{}, MysqlTableIoWaitTimeMetricConfig{}, MysqlTableLockWaitReadCountMetricConfig{}, MysqlTableLockWaitReadTimeMetricConfig{}, MysqlTableLockWaitWriteCountMetricConfig{}, MysqlTableLockWaitWriteTimeMetricConfig{}, MysqlTableRowsMetricConfig{}, MysqlTableSizeMetricConfig{}, MysqlTableOpenCacheMetricConfig{}, MysqlThreadsMetricConfig{}, MysqlTmpResourcesMetricConfig{}, MysqlTotalRowsMetricConfig{}, MysqlUptimeMetricConfig{}, ResourceAttributeConfig{}))
 			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
+}
+func TestMysqlBufferPoolDataPagesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlBufferPoolDataPages
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlBufferPoolDataPagesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.buffer_pool.data_pages doesn't have an attribute invalid, valid attributes: [status]")
+
+	cfg = DefaultMetricsConfig().MysqlBufferPoolDataPages
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlBufferPoolOperationsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlBufferPoolOperations
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlBufferPoolOperationsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.buffer_pool.operations doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MysqlBufferPoolOperations
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlBufferPoolPagesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlBufferPoolPages
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlBufferPoolPagesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.buffer_pool.pages doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlBufferPoolPages
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlBufferPoolUsageMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlBufferPoolUsage
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlBufferPoolUsageMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.buffer_pool.usage doesn't have an attribute invalid, valid attributes: [status]")
+
+	cfg = DefaultMetricsConfig().MysqlBufferPoolUsage
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlClientNetworkIoMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlClientNetworkIo
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlClientNetworkIoMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.client.network.io doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlClientNetworkIo
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlCommandsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlCommands
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlCommandsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.commands doesn't have an attribute invalid, valid attributes: [command]")
+
+	cfg = DefaultMetricsConfig().MysqlCommands
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlConnectionErrorsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlConnectionErrors
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlConnectionErrorsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.connection.errors doesn't have an attribute invalid, valid attributes: [error]")
+
+	cfg = DefaultMetricsConfig().MysqlConnectionErrors
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlDoubleWritesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlDoubleWrites
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlDoubleWritesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.double_writes doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlDoubleWrites
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlHandlersMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlHandlers
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlHandlersMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.handlers doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlHandlers
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlIndexIoWaitCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlIndexIoWaitCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlIndexIoWaitCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.index.io.wait.count doesn't have an attribute invalid, valid attributes: [operation, table, schema, index]")
+
+	cfg = DefaultMetricsConfig().MysqlIndexIoWaitCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlIndexIoWaitTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlIndexIoWaitTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlIndexIoWaitTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.index.io.wait.time doesn't have an attribute invalid, valid attributes: [operation, table, schema, index]")
+
+	cfg = DefaultMetricsConfig().MysqlIndexIoWaitTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlJoinsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlJoins
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlJoinsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.joins doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlJoins
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlLocksMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlLocks
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlLocksMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.locks doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlLocks
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlLogOperationsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlLogOperations
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlLogOperationsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.log_operations doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MysqlLogOperations
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlMysqlxConnectionsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlMysqlxConnections
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlMysqlxConnectionsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.mysqlx_connections doesn't have an attribute invalid, valid attributes: [status]")
+
+	cfg = DefaultMetricsConfig().MysqlMysqlxConnections
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlMysqlxWorkerThreadsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlMysqlxWorkerThreads
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlMysqlxWorkerThreadsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.mysqlx_worker_threads doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlMysqlxWorkerThreads
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlOpenedResourcesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlOpenedResources
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlOpenedResourcesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.opened_resources doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlOpenedResources
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlOperationsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlOperations
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlOperationsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.operations doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MysqlOperations
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlPageOperationsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlPageOperations
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlPageOperationsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.page_operations doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MysqlPageOperations
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlPreparedStatementsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlPreparedStatements
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlPreparedStatementsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.prepared_statements doesn't have an attribute invalid, valid attributes: [command]")
+
+	cfg = DefaultMetricsConfig().MysqlPreparedStatements
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlRowLocksMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlRowLocks
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlRowLocksMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.row_locks doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlRowLocks
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlRowOperationsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlRowOperations
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlRowOperationsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.row_operations doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MysqlRowOperations
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlSortsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlSorts
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlSortsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.sorts doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlSorts
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlStatementEventCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlStatementEventCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlStatementEventCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.statement_event.count doesn't have an attribute invalid, valid attributes: [schema, digest, digest_text, kind]")
+
+	cfg = DefaultMetricsConfig().MysqlStatementEventCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlStatementEventCountStarsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlStatementEventCountStars
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlStatementEventCountStarsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.statement_event.count_stars doesn't have an attribute invalid, valid attributes: [schema, digest, digest_text]")
+
+	cfg = DefaultMetricsConfig().MysqlStatementEventCountStars
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlStatementEventErrorsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlStatementEventErrors
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlStatementEventErrorsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.statement_event.errors doesn't have an attribute invalid, valid attributes: [schema, digest, digest_text]")
+
+	cfg = DefaultMetricsConfig().MysqlStatementEventErrors
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlStatementEventWaitTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlStatementEventWaitTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlStatementEventWaitTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.statement_event.wait.time doesn't have an attribute invalid, valid attributes: [schema, digest, digest_text]")
+
+	cfg = DefaultMetricsConfig().MysqlStatementEventWaitTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableAverageRowLengthMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableAverageRowLength
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableAverageRowLengthMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.average_row_length doesn't have an attribute invalid, valid attributes: [table, schema]")
+
+	cfg = DefaultMetricsConfig().MysqlTableAverageRowLength
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableIoWaitCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableIoWaitCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableIoWaitCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.io.wait.count doesn't have an attribute invalid, valid attributes: [operation, table, schema]")
+
+	cfg = DefaultMetricsConfig().MysqlTableIoWaitCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableIoWaitTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableIoWaitTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableIoWaitTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.io.wait.time doesn't have an attribute invalid, valid attributes: [operation, table, schema]")
+
+	cfg = DefaultMetricsConfig().MysqlTableIoWaitTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableLockWaitReadCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableLockWaitReadCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableLockWaitReadCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.lock_wait.read.count doesn't have an attribute invalid, valid attributes: [schema, table, kind]")
+
+	cfg = DefaultMetricsConfig().MysqlTableLockWaitReadCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableLockWaitReadTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableLockWaitReadTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableLockWaitReadTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.lock_wait.read.time doesn't have an attribute invalid, valid attributes: [schema, table, kind]")
+
+	cfg = DefaultMetricsConfig().MysqlTableLockWaitReadTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableLockWaitWriteCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableLockWaitWriteCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableLockWaitWriteCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.lock_wait.write.count doesn't have an attribute invalid, valid attributes: [schema, table, kind]")
+
+	cfg = DefaultMetricsConfig().MysqlTableLockWaitWriteCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableLockWaitWriteTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableLockWaitWriteTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableLockWaitWriteTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.lock_wait.write.time doesn't have an attribute invalid, valid attributes: [schema, table, kind]")
+
+	cfg = DefaultMetricsConfig().MysqlTableLockWaitWriteTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableRowsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableRows
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableRowsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.rows doesn't have an attribute invalid, valid attributes: [table, schema]")
+
+	cfg = DefaultMetricsConfig().MysqlTableRows
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableSizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableSize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableSizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table.size doesn't have an attribute invalid, valid attributes: [table, schema, kind]")
+
+	cfg = DefaultMetricsConfig().MysqlTableSize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTableOpenCacheMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTableOpenCache
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTableOpenCacheMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.table_open_cache doesn't have an attribute invalid, valid attributes: [status]")
+
+	cfg = DefaultMetricsConfig().MysqlTableOpenCache
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlThreadsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlThreads
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlThreadsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.threads doesn't have an attribute invalid, valid attributes: [kind]")
+
+	cfg = DefaultMetricsConfig().MysqlThreads
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTmpResourcesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTmpResources
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTmpResourcesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.tmp_resources doesn't have an attribute invalid, valid attributes: [resource]")
+
+	cfg = DefaultMetricsConfig().MysqlTmpResources
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMysqlTotalRowsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MysqlTotalRows
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MysqlTotalRowsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mysql.total_rows doesn't have an attribute invalid, valid attributes: [dbname]")
+
+	cfg = DefaultMetricsConfig().MysqlTotalRows
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
 }
 
 func loadMetricsBuilderConfig(t *testing.T, name string) MetricsBuilderConfig {

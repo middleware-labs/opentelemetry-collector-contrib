@@ -104,11 +104,9 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sClusterrole.RecordK8sClusterroleRuleCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sClusterrolebinding.RecordK8sClusterrolebindingSubjectCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sContainer.RecordK8sContainerCPULimitDataPoint(ts, 1)
@@ -166,14 +164,12 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sDeployment.RecordK8sDeploymentCurrentDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sDeployment.RecordK8sDeploymentDesiredDataPoint(ts, 1)
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sDeployment.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sHpa.RecordK8sHpaCurrentReplicasDataPoint(ts, 1)
@@ -189,14 +185,12 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sIngress.RecordK8sIngressRuleCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sJob.RecordK8sJobActivePodsDataPoint(ts, 1)
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sJob.RecordK8sJobBackoffLimitDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sJob.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
@@ -215,7 +209,6 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			ebK8sNode.RecordK8sNodeConditionDataPoint(ts, 1, "condition-val")
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sPersistentvolume.RecordK8sPersistentvolumeCapacityDataPoint(ts, 1)
@@ -225,11 +218,9 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			ebK8sPersistentvolume.RecordK8sPersistentvolumeStorageCapacityDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sPersistentvolumeclaim.RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sPersistentvolumeclaim.RecordK8sPersistentvolumeclaimCapacityDataPoint(ts, 1)
@@ -254,14 +245,12 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sReplicaset.RecordK8sReplicasetCurrentDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sReplicaset.RecordK8sReplicasetDesiredDataPoint(ts, 1)
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sReplicaset.RecordK8sReplicasetReadyDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sReplicationcontroller.RecordK8sReplicationControllerAvailableDataPoint(ts, 1)
@@ -274,11 +263,9 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sResourcequota.RecordK8sResourceQuotaUsedDataPoint(ts, 1, "resource-val")
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sRole.RecordK8sRoleRuleCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sRolebinding.RecordK8sRolebindingSubjectCountDataPoint(ts, 1)
@@ -297,11 +284,9 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sService.RecordK8sServicePortCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sServiceaccount.RecordK8sServiceaccountSecretCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			ebK8sStatefulset.RecordK8sStatefulsetCurrentPodsDataPoint(ts, 1)
@@ -1538,6 +1523,8 @@ func TestDeprecatedRecordMethods(t *testing.T) {
 	settings := receivertest.NewNopSettings(receivertest.NopType)
 	settings.Logger = zap.NewNop()
 	mb := NewMetricsBuilder(loadMetricsBuilderConfig(t, "all_set"), settings, WithStartTime(start))
+	mb.RecordK8sClusterroleRuleCountDataPoint(ts, 1)
+	mb.RecordK8sClusterrolebindingSubjectCountDataPoint(ts, 1)
 	mb.RecordK8sContainerCPULimitDataPoint(ts, 1)
 	mb.RecordK8sContainerCPURequestDataPoint(ts, 1)
 	mb.RecordK8sContainerEphemeralstorageLimitDataPoint(ts, 1)
@@ -1556,33 +1543,46 @@ func TestDeprecatedRecordMethods(t *testing.T) {
 	mb.RecordK8sDaemonsetMisscheduledNodesDataPoint(ts, 1)
 	mb.RecordK8sDaemonsetReadyNodesDataPoint(ts, 1)
 	mb.RecordK8sDeploymentAvailableDataPoint(ts, 1)
+	mb.RecordK8sDeploymentCurrentDataPoint(ts, 1)
 	mb.RecordK8sDeploymentDesiredDataPoint(ts, 1)
+	mb.RecordK8sDeploymentUpdatedDataPoint(ts, 1)
 	mb.RecordK8sHpaCurrentReplicasDataPoint(ts, 1)
 	mb.RecordK8sHpaDesiredReplicasDataPoint(ts, 1)
 	mb.RecordK8sHpaMaxReplicasDataPoint(ts, 1)
 	mb.RecordK8sHpaMinReplicasDataPoint(ts, 1)
+	mb.RecordK8sIngressRuleCountDataPoint(ts, 1)
 	mb.RecordK8sJobActivePodsDataPoint(ts, 1)
+	mb.RecordK8sJobBackoffLimitDataPoint(ts, 1)
 	mb.RecordK8sJobDesiredSuccessfulPodsDataPoint(ts, 1)
 	mb.RecordK8sJobFailedPodsDataPoint(ts, 1)
 	mb.RecordK8sJobMaxParallelPodsDataPoint(ts, 1)
 	mb.RecordK8sJobSuccessfulPodsDataPoint(ts, 1)
 	mb.RecordK8sNamespacePhaseDataPoint(ts, 1)
 	mb.RecordK8sNodeConditionDataPoint(ts, 1, "condition-val")
+	mb.RecordK8sPersistentvolumeCapacityDataPoint(ts, 1)
 	mb.RecordK8sPersistentvolumeStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeStatusPhasePending)
 	mb.RecordK8sPersistentvolumeStorageCapacityDataPoint(ts, 1)
+	mb.RecordK8sPersistentvolumeclaimAllocatedDataPoint(ts, 1)
+	mb.RecordK8sPersistentvolumeclaimCapacityDataPoint(ts, 1)
 	mb.RecordK8sPersistentvolumeclaimStatusPhaseDataPoint(ts, 1, AttributeK8sPersistentvolumeclaimStatusPhasePending)
 	mb.RecordK8sPersistentvolumeclaimStorageCapacityDataPoint(ts, 1)
 	mb.RecordK8sPersistentvolumeclaimStorageRequestDataPoint(ts, 1)
 	mb.RecordK8sPodPhaseDataPoint(ts, 1)
 	mb.RecordK8sPodStatusReasonDataPoint(ts, 1)
 	mb.RecordK8sReplicasetAvailableDataPoint(ts, 1)
+	mb.RecordK8sReplicasetCurrentDataPoint(ts, 1)
 	mb.RecordK8sReplicasetDesiredDataPoint(ts, 1)
+	mb.RecordK8sReplicasetReadyDataPoint(ts, 1)
 	mb.RecordK8sReplicationControllerAvailableDataPoint(ts, 1)
 	mb.RecordK8sReplicationControllerDesiredDataPoint(ts, 1)
 	mb.RecordK8sResourceQuotaHardLimitDataPoint(ts, 1, "resource-val")
 	mb.RecordK8sResourceQuotaUsedDataPoint(ts, 1, "resource-val")
+	mb.RecordK8sRoleRuleCountDataPoint(ts, 1)
+	mb.RecordK8sRolebindingSubjectCountDataPoint(ts, 1)
 	mb.RecordK8sServiceEndpointCountDataPoint(ts, 1, AttributeK8sServiceEndpointAddressTypeIPv4, AttributeK8sServiceEndpointConditionReady, "k8s.service.endpoint.zone-val")
 	mb.RecordK8sServiceLoadBalancerIngressCountDataPoint(ts, 1)
+	mb.RecordK8sServicePortCountDataPoint(ts, 1)
+	mb.RecordK8sServiceaccountSecretCountDataPoint(ts, 1)
 	mb.RecordK8sStatefulsetCurrentPodsDataPoint(ts, 1)
 	mb.RecordK8sStatefulsetDesiredPodsDataPoint(ts, 1)
 	mb.RecordK8sStatefulsetPodAvailableDataPoint(ts, 1)

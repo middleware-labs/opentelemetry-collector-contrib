@@ -88,7 +88,7 @@ func TestDefaultConfigHasNoTLS(t *testing.T) {
 }
 
 func TestNewConfigHasNoTLS(t *testing.T) {
-	cfg := NewConfig("unix:///var/run/docker.sock", 0, nil, "")
+	cfg := NewConfig("unix:///var/run/docker.sock", 0, nil, "", false)
 	assert.False(t, cfg.TLS.HasValue(), "NewConfig should have nil TLS by default")
 }
 

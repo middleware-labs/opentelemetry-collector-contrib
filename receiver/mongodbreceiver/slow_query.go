@@ -9,8 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -62,7 +61,7 @@ type SlowOperationEvent struct {
 // Create a slow operation event from a BSON map
 func createSlowOperationEvent(slowOperation bson.M) SlowOperationEvent {
 	var event SlowOperationEvent
-	if ts, ok := slowOperation["ts"].(primitive.DateTime); ok {
+	if ts, ok := slowOperation["ts"].(bson.DateTime); ok {
 		event.Timestamp = ts.Time().UnixMilli() // Convert to milliseconds
 	}
 	event.Database = getStringValue(slowOperation, "dbname")
@@ -355,7 +354,7 @@ func obfuscateSlowOperation(slowOperation bson.M, dbName string) bson.M {
 func collectSlowOperationsFromProfiler(ctx context.Context, client *mongo.Client, dbName string, lastTs time.Time) ([]bson.M, error) {
 	// Query for profiling data from the system.profile collection
 	filter := bson.D{
-		{"ts", bson.D{{"$gte", lastTs}}}, // Filter for timestamps greater than or equal to lastTs(collection_interval)
+		{Key: "ts", Value: bson.D{{Key: "$gte", Value: lastTs}}}, // Filter for timestamps greater than or equal to lastTs(collection_interval)
 	}
 
 	// Execute the query

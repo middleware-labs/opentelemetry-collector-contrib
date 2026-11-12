@@ -48,6 +48,7 @@ require (
 	go.opentelemetry.io/collector/processor/xprocessor v0.163.0
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.163.0
 	go.opentelemetry.io/collector/receiver/receivertest v0.163.0
+	go.opentelemetry.io/collector/semconv v0.128.0
 	go.opentelemetry.io/contrib/detectors/aws/elasticbeanstalk v0.19.0
 	go.opentelemetry.io/contrib/detectors/azure/azureappservice v0.19.0
 	go.opentelemetry.io/contrib/detectors/azure/azurecontainerapps v0.19.0

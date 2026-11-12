@@ -3,6 +3,11 @@ all_set:
   metrics:
     apache.bytes_per_sec:
       enabled: true
+    apache.connection.active:
+      enabled: true
+    apache.connection.status:
+      enabled: true
+      attributes: ["apache.connection.state"]
     apache.connections.async:
       enabled: true
       attributes: ["connection_state"]
@@ -27,6 +32,10 @@ all_set:
       enabled: true
     apache.max_workers:
       enabled: true
+    apache.request.count:
+      enabled: true
+    apache.request.rate:
+      enabled: true
     apache.request.time:
       enabled: true
     apache.requests:
@@ -38,8 +47,19 @@ all_set:
       attributes: ["state"]
     apache.traffic:
       enabled: true
+    apache.traffic.rate:
+      enabled: true
     apache.uptime:
       enabled: true
+    apache.worker.active:
+      enabled: true
+    apache.worker.idle:
+      enabled: true
+    apache.worker.limit:
+      enabled: true
+    apache.worker.status:
+      enabled: true
+      attributes: ["apache.worker.state"]
     apache.workers:
       enabled: true
       attributes: ["state"]
@@ -52,6 +72,11 @@ reaggregate_set:
   metrics:
     apache.bytes_per_sec:
       enabled: true
+    apache.connection.active:
+      enabled: true
+    apache.connection.status:
+      enabled: true
+      attributes: []
     apache.connections.async:
       enabled: true
       attributes: []
@@ -76,6 +101,10 @@ reaggregate_set:
       enabled: true
     apache.max_workers:
       enabled: true
+    apache.request.count:
+      enabled: true
+    apache.request.rate:
+      enabled: true
     apache.request.time:
       enabled: true
     apache.requests:
@@ -87,8 +116,19 @@ reaggregate_set:
       attributes: []
     apache.traffic:
       enabled: true
+    apache.traffic.rate:
+      enabled: true
     apache.uptime:
       enabled: true
+    apache.worker.active:
+      enabled: true
+    apache.worker.idle:
+      enabled: true
+    apache.worker.limit:
+      enabled: true
+    apache.worker.status:
+      enabled: true
+      attributes: []
     apache.workers:
       enabled: true
       attributes: []
@@ -101,6 +141,11 @@ none_set:
   metrics:
     apache.bytes_per_sec:
       enabled: false
+    apache.connection.active:
+      enabled: false
+    apache.connection.status:
+      enabled: false
+      attributes: ["apache.connection.state"]
     apache.connections.async:
       enabled: false
       attributes: ["connection_state"]
@@ -125,6 +170,10 @@ none_set:
       enabled: false
     apache.max_workers:
       enabled: false
+    apache.request.count:
+      enabled: false
+    apache.request.rate:
+      enabled: false
     apache.request.time:
       enabled: false
     apache.requests:
@@ -136,8 +185,19 @@ none_set:
       attributes: ["state"]
     apache.traffic:
       enabled: false
+    apache.traffic.rate:
+      enabled: false
     apache.uptime:
       enabled: false
+    apache.worker.active:
+      enabled: false
+    apache.worker.idle:
+      enabled: false
+    apache.worker.limit:
+      enabled: false
+    apache.worker.status:
+      enabled: false
+      attributes: ["apache.worker.state"]
     apache.workers:
       enabled: false
       attributes: ["state"]

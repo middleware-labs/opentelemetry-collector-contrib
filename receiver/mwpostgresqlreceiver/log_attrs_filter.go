@@ -23,9 +23,21 @@ func stripEmptyLogAttrs(logs plog.Logs) {
 		for j := 0; j < rl.ScopeLogs().Len(); j++ {
 			sl := rl.ScopeLogs().At(j)
 			for k := 0; k < sl.LogRecords().Len(); k++ {
-				removeZeroAttrs(sl.LogRecords().At(k).Attributes())
+				lr := sl.LogRecords().At(k)
+				setQueryTextBody(lr)
+				removeZeroAttrs(lr.Attributes())
 			}
 		}
+	}
+}
+
+// setQueryTextBody copies db.query.text into the log body for query_sample and
+// top_query events. The backend reads the query from the body. This used to be a
+// hand edit in internal/metadata/generated_logs.go, which mdatagen regeneration
+// erases, so it lives here instead.
+func setQueryTextBody(lr plog.LogRecord) {
+	if v, ok := lr.Attributes().Get("db.query.text"); ok {
+		lr.Body().SetStr(v.Str())
 	}
 }
 

@@ -19,12 +19,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	apiWatch "k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/dynamic/fake"
+	k8s_testing "k8s.io/client-go/testing"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage/storagetest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sinventory"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sleaderelectortest"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sobjectsreceiver/internal/metadata"
-	k8s_testing "k8s.io/client-go/testing"
 )
 
 func TestErrorModes(t *testing.T) {
@@ -82,8 +82,9 @@ func TestErrorModes(t *testing.T) {
 			// include_initial_state defaults to false, no override needed
 			rCfg.Objects = []*K8sObjectsConfig{
 				{
-					Name: tt.objectName,
-					Mode: k8sinventory.PullMode,
+					Name:     tt.objectName,
+					Mode:     k8sinventory.PullMode,
+					Interval: 30 * time.Second,
 				},
 			}
 			r, err := newReceiver(
@@ -122,8 +123,9 @@ func TestNewReceiver(t *testing.T) {
 	rCfg.ErrorMode = PropagateError
 	rCfg.Objects = []*K8sObjectsConfig{
 		{
-			Name: "pods",
-			Mode: k8sinventory.PullMode,
+			Name:     "pods",
+			Mode:     k8sinventory.PullMode,
+			Interval: 30 * time.Second,
 		},
 	}
 
@@ -473,8 +475,9 @@ func TestIncludeInitialStateWithPullMode(t *testing.T) {
 
 	rCfg.Objects = []*K8sObjectsConfig{
 		{
-			Name: "pods",
-			Mode: k8sinventory.PullMode,
+			Name:     "pods",
+			Mode:     k8sinventory.PullMode,
+			Interval: 30 * time.Second,
 		},
 	}
 
@@ -557,8 +560,9 @@ func TestReceiverWithLeaderElection(t *testing.T) {
 	rCfg.ErrorMode = PropagateError
 	rCfg.Objects = []*K8sObjectsConfig{
 		{
-			Name: "pods",
-			Mode: k8sinventory.PullMode,
+			Name:     "pods",
+			Mode:     k8sinventory.PullMode,
+			Interval: 30 * time.Second,
 		},
 	}
 	rCfg.K8sLeaderElector = &leaderElectorID
@@ -617,6 +621,8 @@ func TestReceiverWithLeaderElection(t *testing.T) {
 		return sink.LogRecordCount() == 2
 	}, 20*time.Second, 100*time.Millisecond,
 		"logs not collected")
+
+	assert.NoError(t, r.Shutdown(t.Context()))
 }
 
 func TestNamespaceDenyListWatchObject(t *testing.T) {
@@ -687,7 +693,7 @@ func TestReceiverStorageInitialization(t *testing.T) {
 	}{
 		{
 			name:                "storage configured",
-			storageID:           ptr(storagetest.NewStorageID("file_storage")),
+			storageID:           new(storagetest.NewStorageID("file_storage")),
 			expectStorageClient: true,
 		},
 		{
@@ -748,7 +754,7 @@ func TestReceiverMultipleObjectsPersistence(t *testing.T) {
 	rCfg := createDefaultConfig().(*Config)
 	rCfg.makeDynamicClient = mockClient.getMockDynamicClient
 	rCfg.makeDiscoveryClient = getMockDiscoveryClient
-	rCfg.Storage = ptr(storagetest.NewStorageID("file_storage"))
+	rCfg.Storage = new(storagetest.NewStorageID("file_storage"))
 	rCfg.Objects = []*K8sObjectsConfig{
 		{
 			Name: "pods",
@@ -790,7 +796,7 @@ func TestReceiverStorageClientInitializedWhenConfigured(t *testing.T) {
 	rCfg := createDefaultConfig().(*Config)
 	rCfg.makeDynamicClient = mockClient.getMockDynamicClient
 	rCfg.makeDiscoveryClient = getMockDiscoveryClient
-	rCfg.Storage = ptr(storagetest.NewStorageID("file_storage"))
+	rCfg.Storage = new(storagetest.NewStorageID("file_storage"))
 	rCfg.Objects = []*K8sObjectsConfig{
 		{
 			Name: "pods",
@@ -821,9 +827,4 @@ func TestReceiverStorageClientInitializedWhenConfigured(t *testing.T) {
 
 	err = r.Shutdown(t.Context())
 	require.NoError(t, err)
-}
-
-// ptr is a helper to create a pointer to a value
-func ptr[T any](v T) *T {
-	return &v
 }

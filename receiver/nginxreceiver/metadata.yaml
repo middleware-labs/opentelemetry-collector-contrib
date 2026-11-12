@@ -79,21 +79,21 @@ metrics:
     stability: development
     gauge:
       value_type: int
-    unit: connections
+    unit: "{connections}"
   nginx.net.waiting:
     enabled: true
     description: Current number of connections where NGINX is waiting the response back to the client
     stability: development
     gauge:
       value_type: int
-    unit: connections
+    unit: "{connections}"
   nginx.net.writing:
     enabled: true
     description: Current number of connections where NGINX is writing the response back to the client
     stability: development
     gauge:
       value_type: int
-    unit: connections
+    unit: "{connections}"
   nginx.requests:
     enabled: true
     description: Total number of requests made to the server since it started
@@ -125,7 +125,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: response
+    unit: "{response}"
   nginx.server_zone.responses.2xx:
     enabled: true
     stability: development
@@ -136,7 +136,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: response
+    unit: "{response}"
   nginx.server_zone.responses.3xx:
     enabled: true
     stability: development
@@ -147,7 +147,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: response
+    unit: "{response}"
   nginx.server_zone.responses.4xx:
     enabled: true
     stability: development
@@ -158,7 +158,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: response
+    unit: "{response}"
   nginx.server_zone.responses.5xx:
     enabled: true
     stability: development
@@ -169,7 +169,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: response
+    unit: "{response}"
   nginx.server_zone.sent:
     enabled: true
     stability: development
@@ -224,7 +224,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: requests
+    unit: "{requests}"
   nginx.upstream.peers.response_time:
     stability: development
     attributes:
@@ -246,7 +246,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: responses
+    unit: "{responses}"
   nginx.upstream.peers.responses.2xx:
     enabled: true
     stability: development
@@ -258,7 +258,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: responses
+    unit: "{responses}"
   nginx.upstream.peers.responses.3xx:
     enabled: true
     stability: development
@@ -270,7 +270,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: responses
+    unit: "{responses}"
   nginx.upstream.peers.responses.4xx:
     enabled: true
     stability: development
@@ -282,7 +282,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: responses
+    unit: "{responses}"
   nginx.upstream.peers.responses.5xx:
     enabled: true
     stability: development
@@ -294,7 +294,7 @@ metrics:
       value_type: int
       monotonic: true
       aggregation_temporality: cumulative
-    unit: responses
+    unit: "{responses}"
   nginx.upstream.peers.sent:
     enabled: true
     stability: development
@@ -316,4 +316,4 @@ metrics:
     description: Weight of upstream server
     gauge:
       value_type: double
-    unit: weight
+    unit: "{weight}"

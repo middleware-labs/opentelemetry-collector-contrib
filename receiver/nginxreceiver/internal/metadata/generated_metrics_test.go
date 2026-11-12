@@ -104,154 +104,188 @@ func TestMetricsBuilder(t *testing.T) {
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxLoadTimestampDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxNetReadingDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxNetWaitingDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxNetWritingDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxRequestsDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneReceivedDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneReceivedDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneReceivedDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneReceived.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneResponses1xxDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneResponses1xxDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneResponses1xxDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneResponses1xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneResponses2xxDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneResponses2xxDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneResponses2xxDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneResponses2xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneResponses3xxDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneResponses3xxDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneResponses3xxDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneResponses3xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneResponses4xxDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneResponses4xxDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneResponses4xxDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneResponses4xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneResponses5xxDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneResponses5xxDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneResponses5xxDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneResponses5xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxServerZoneSentDataPoint(ts, 1, "serverzone_name-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxServerZoneSentDataPoint(ts, 3, "serverzone_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxServerZoneSentDataPoint(ts+1, 3, "serverzone_name-val-2")
+				assert.Equal(t, 2, mb.metricNginxServerZoneSent.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersBackupDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersBackupDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersBackupDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersBackup.data.Gauge().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersHealthChecksLastPassedDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersHealthChecksLastPassed.data.Gauge().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersReceivedDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersReceivedDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersReceivedDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersReceived.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersRequestsDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersRequestsDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersRequestsDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersRequests.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponseTimeDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersResponseTimeDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersResponseTimeDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersResponseTime.data.Gauge().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponses1xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersResponses1xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersResponses1xxDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersResponses1xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponses2xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersResponses2xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersResponses2xxDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersResponses2xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponses3xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersResponses3xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersResponses3xxDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersResponses3xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponses4xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersResponses4xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersResponses4xxDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersResponses4xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersResponses5xxDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersResponses5xxDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersResponses5xxDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersResponses5xx.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersSentDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersSentDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersSentDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersSent.data.Sum().DataPoints().Len())
 			}
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordNginxUpstreamPeersWeightDataPoint(ts, 1, "upstream_block_name-val", "upstream_peer_address-val")
 			if tt.name == "reaggregate_set" {
 				mb.RecordNginxUpstreamPeersWeightDataPoint(ts, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordNginxUpstreamPeersWeightDataPoint(ts+1, 3, "upstream_block_name-val-2", "upstream_peer_address-val-2")
+				assert.Equal(t, 2, mb.metricNginxUpstreamPeersWeight.data.Gauge().DataPoints().Len())
 			}
 
 			res := pcommon.NewResource()
@@ -396,7 +430,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "Current number of connections where NGINX is reading the request header", mi.Description())
-					assert.Equal(t, "connections", mi.Unit())
+					assert.Equal(t, "{connections}", mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
@@ -408,7 +442,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "Current number of connections where NGINX is waiting the response back to the client", mi.Description())
-					assert.Equal(t, "connections", mi.Unit())
+					assert.Equal(t, "{connections}", mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
@@ -420,7 +454,7 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
 					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 					assert.Equal(t, "Current number of connections where NGINX is writing the response back to the client", mi.Description())
-					assert.Equal(t, "connections", mi.Unit())
+					assert.Equal(t, "{connections}", mi.Unit())
 					dp := mi.Gauge().DataPoints().At(0)
 					assert.Equal(t, start, dp.StartTimestamp())
 					assert.Equal(t, ts, dp.Timestamp())
@@ -462,7 +496,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.received"], "Found a duplicate in the metrics slice: nginx.server_zone.received")
 						validatedMetrics["nginx.server_zone.received"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Bytes received by server zones", mi.Description())
 						assert.Equal(t, "By", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
@@ -491,7 +527,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "The number of responses with 1xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -506,9 +542,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.responses.1xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.1xx")
 						validatedMetrics["nginx.server_zone.responses.1xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The number of responses with 1xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -535,7 +573,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "The number of responses with 2xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -550,9 +588,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.responses.2xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.2xx")
 						validatedMetrics["nginx.server_zone.responses.2xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The number of responses with 2xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -579,7 +619,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "The number of responses with 3xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -594,9 +634,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.responses.3xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.3xx")
 						validatedMetrics["nginx.server_zone.responses.3xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The number of responses with 3xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -623,7 +665,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "The number of responses with 4xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -638,9 +680,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.responses.4xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.4xx")
 						validatedMetrics["nginx.server_zone.responses.4xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The number of responses with 4xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -667,7 +711,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "The number of responses with 5xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -682,9 +726,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.responses.5xx"], "Found a duplicate in the metrics slice: nginx.server_zone.responses.5xx")
 						validatedMetrics["nginx.server_zone.responses.5xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The number of responses with 5xx status code.", mi.Description())
-						assert.Equal(t, "response", mi.Unit())
+						assert.Equal(t, "{response}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -726,7 +772,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.server_zone.sent"], "Found a duplicate in the metrics slice: nginx.server_zone.sent")
 						validatedMetrics["nginx.server_zone.sent"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Bytes sent by server zones", mi.Description())
 						assert.Equal(t, "By", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
@@ -771,7 +819,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.backup"], "Found a duplicate in the metrics slice: nginx.upstream.peers.backup")
 						validatedMetrics["nginx.upstream.peers.backup"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Whether upstream server is a backup server", mi.Description())
 						assert.Equal(t, "{state}", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
@@ -816,7 +866,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.health_checks.last_passed"], "Found a duplicate in the metrics slice: nginx.upstream.peers.health_checks.last_passed")
 						validatedMetrics["nginx.upstream.peers.health_checks.last_passed"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Boolean indicating if the last health check request was successful and passed tests.", mi.Description())
 						assert.Equal(t, "{status}", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
@@ -863,7 +915,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.received"], "Found a duplicate in the metrics slice: nginx.upstream.peers.received")
 						validatedMetrics["nginx.upstream.peers.received"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Bytes received from upstream servers", mi.Description())
 						assert.Equal(t, "By", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
@@ -894,7 +948,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "Number of requests made to upstream servers", mi.Description())
-						assert.Equal(t, "requests", mi.Unit())
+						assert.Equal(t, "{requests}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -912,9 +966,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.requests"], "Found a duplicate in the metrics slice: nginx.upstream.peers.requests")
 						validatedMetrics["nginx.upstream.peers.requests"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Number of requests made to upstream servers", mi.Description())
-						assert.Equal(t, "requests", mi.Unit())
+						assert.Equal(t, "{requests}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -959,7 +1015,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.response_time"], "Found a duplicate in the metrics slice: nginx.upstream.peers.response_time")
 						validatedMetrics["nginx.upstream.peers.response_time"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "The average time to receive the last byte of data from this server.", mi.Description())
 						assert.Equal(t, "ms", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
@@ -988,7 +1046,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "Number of responses from upstream with 1xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1006,9 +1064,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.1xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.1xx")
 						validatedMetrics["nginx.upstream.peers.responses.1xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Number of responses from upstream with 1xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1037,7 +1097,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "Number of responses from upstream with 2xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1055,9 +1115,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.2xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.2xx")
 						validatedMetrics["nginx.upstream.peers.responses.2xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Number of responses from upstream with 2xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1086,7 +1148,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "Number of responses from upstream with 3xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1104,9 +1166,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.3xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.3xx")
 						validatedMetrics["nginx.upstream.peers.responses.3xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Number of responses from upstream with 3xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1135,7 +1199,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "Number of responses from upstream with 4xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1153,9 +1217,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.4xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.4xx")
 						validatedMetrics["nginx.upstream.peers.responses.4xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Number of responses from upstream with 4xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1184,7 +1250,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
 						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
 						assert.Equal(t, "Number of responses from upstream with 5xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1202,9 +1268,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.responses.5xx"], "Found a duplicate in the metrics slice: nginx.upstream.peers.responses.5xx")
 						validatedMetrics["nginx.upstream.peers.responses.5xx"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Number of responses from upstream with 5xx status codes", mi.Description())
-						assert.Equal(t, "responses", mi.Unit())
+						assert.Equal(t, "{responses}", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
 						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
 						dp := mi.Sum().DataPoints().At(0)
@@ -1251,7 +1319,9 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.sent"], "Found a duplicate in the metrics slice: nginx.upstream.peers.sent")
 						validatedMetrics["nginx.upstream.peers.sent"] = true
 						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Bytes sent from upstream servers", mi.Description())
 						assert.Equal(t, "By", mi.Unit())
 						assert.True(t, mi.Sum().IsMonotonic())
@@ -1282,7 +1352,7 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
 						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
 						assert.Equal(t, "Weight of upstream server", mi.Description())
-						assert.Equal(t, "weight", mi.Unit())
+						assert.Equal(t, "{weight}", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
 						assert.Equal(t, start, dp.StartTimestamp())
 						assert.Equal(t, ts, dp.Timestamp())
@@ -1298,9 +1368,11 @@ func TestMetricsBuilder(t *testing.T) {
 						assert.False(t, validatedMetrics["nginx.upstream.peers.weight"], "Found a duplicate in the metrics slice: nginx.upstream.peers.weight")
 						validatedMetrics["nginx.upstream.peers.weight"] = true
 						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
 						assert.Equal(t, "Weight of upstream server", mi.Description())
-						assert.Equal(t, "weight", mi.Unit())
+						assert.Equal(t, "{weight}", mi.Unit())
 						dp := mi.Gauge().DataPoints().At(0)
 						assert.Equal(t, start, dp.StartTimestamp())
 						assert.Equal(t, ts, dp.Timestamp())

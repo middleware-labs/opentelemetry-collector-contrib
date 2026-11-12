@@ -26,985 +26,1571 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "all_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					MongodbActiveReads: MetricConfig{
-						Enabled: true,
-					},
-					MongodbActiveWrites: MetricConfig{
-						Enabled: true,
-					},
-					MongodbAssertsMsgps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbAssertsRegularps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbAssertsRolloversps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbAssertsUserps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbAssertsWarningps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbBackgroundflushingAverageMs: MetricConfig{
-						Enabled: true,
-					},
-					MongodbBackgroundflushingFlushesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbBackgroundflushingLastMs: MetricConfig{
-						Enabled: true,
-					},
-					MongodbBackgroundflushingTotalMs: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCacheOperations: MetricConfig{
-						Enabled: true,
-					},
-					MongodbChunksJumbo: MetricConfig{
-						Enabled: true,
-					},
-					MongodbChunksTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionAvgobjsize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionCapped: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionIndexsizes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionMax: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionMaxsize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionNindexes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionObjects: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionSize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCollectionStoragesize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCommandsRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionPoolNumascopedconnections: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionPoolNumclientconnections: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionPoolTotalavailable: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionPoolTotalcreatedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionPoolTotalinuse: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionPoolTotalrefreshing: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsActive: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsAvailable: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsAwaitingtopologychanges: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsCurrent: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsExhausthello: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsExhaustismaster: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsLoadbalanced: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsRejected: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsThreaded: MetricConfig{
-						Enabled: true,
-					},
-					MongodbConnectionsTotalcreated: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCursorCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCursorTimeoutCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCursorsTimedout: MetricConfig{
-						Enabled: true,
-					},
-					MongodbCursorsTotalopen: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDataSize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDatabaseCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDeletesRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDocumentOperationCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurCommits: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurCommitsinwritelock: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurCompression: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurEarlycommits: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurJournaledmb: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsCommits: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsCommitsinwritelock: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsDt: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsPreplogbuffer: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsRemapprivateview: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsWritetodatafiles: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurTimemsWritetojournal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbDurWritetodatafilesmb: MetricConfig{
-						Enabled: true,
-					},
-					MongodbExtentCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbExtraInfoHeapUsageBytesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbExtraInfoPageFaultsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbFlushesRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbFsynclocked: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGetmoresRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGlobalLockTime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockActiveclientsReaders: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockActiveclientsTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockActiveclientsWriters: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockCurrentqueueReaders: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockCurrentqueueTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockCurrentqueueWriters: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockLocktime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockRatio: MetricConfig{
-						Enabled: true,
-					},
-					MongodbGloballockTotaltime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbHealth: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexAccessCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexSize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexcountersAccessesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexcountersHitsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexcountersMissesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexcountersMissratio: MetricConfig{
-						Enabled: true,
-					},
-					MongodbIndexcountersResetsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbInsertsRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLockAcquireCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLockAcquireTime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLockAcquireWaitCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLockDeadlockCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionAcquirecountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionAcquirecountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionAcquirecountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionAcquirewaitcountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionAcquirewaitcountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionTimeacquiringmicrosExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksCollectionTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirecountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirecountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirecountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirewaitcountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirewaitcountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseAcquirewaitcountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirecountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirecountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirecountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirewaitcountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirewaitcountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalAcquirewaitcountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMetadataAcquirecountExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMetadataAcquirecountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMmapv1journalAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMmapv1journalAcquirecountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksOplogAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksOplogAcquirecountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksOplogAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksOplogAcquirewaitcountSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbLocksOplogTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMemBits: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMemMapped: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMemMappedwithjournal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMemResident: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMemVirtual: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMemoryUsage: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsCountFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsCountTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsCreateindexesFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsCreateindexesTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsDeleteFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsDeleteTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsEvalFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsEvalTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsFindandmodifyFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsFindandmodifyTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsInsertFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsInsertTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsUpdateFailedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCommandsUpdateTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCursorOpenNotimeout: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCursorOpenPinned: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCursorOpenTotal: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsCursorTimedoutps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsDocumentDeletedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsDocumentInsertedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsDocumentReturnedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsDocumentUpdatedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsGetlasterrorWtimeNumps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsGetlasterrorWtimeTotalmillisps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsGetlasterrorWtimeoutsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsOperationFastmodps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsOperationIdhackps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsOperationScanandorderps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsOperationWriteconflictsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsQueryexecutorScannedobjectsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsQueryexecutorScannedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsRecordMovesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplApplyBatchesNumps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplApplyBatchesTotalmillisps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplApplyOpsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplBufferCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplBufferMaxsizebytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplBufferSizebytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplNetworkBytesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplNetworkGetmoresNumps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplNetworkGetmoresTotalmillisps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplNetworkOpsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplNetworkReaderscreatedps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplPreloadDocsNumps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplPreloadDocsTotalmillisps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplPreloadIndexesNumps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsReplPreloadIndexesTotalmillisps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsTTLDeleteddocumentsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbMetricsTTLPassesps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbNetworkBytesinps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbNetworkBytesoutps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbNetworkIoReceive: MetricConfig{
-						Enabled: true,
-					},
-					MongodbNetworkIoTransmit: MetricConfig{
-						Enabled: true,
-					},
-					MongodbNetworkNumrequestsps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbNetworkRequestCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbObjectCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersCommandps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersDeleteps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersGetmoreps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersInsertps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersQueryps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersUpdateps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersreplCommandps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersreplDeleteps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersreplGetmoreps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersreplInsertps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersreplQueryps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOpcountersreplUpdateps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOperationCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOperationLatencyTime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOperationReplCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOperationTime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplatenciesCommandsLatency: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplatenciesCommandsLatencyps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplatenciesReadsLatency: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplatenciesReadsLatencyps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplatenciesWritesLatency: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplatenciesWritesLatencyps: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplogLogsizemb: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplogTimediff: MetricConfig{
-						Enabled: true,
-					},
-					MongodbOplogUsedsizemb: MetricConfig{
-						Enabled: true,
-					},
-					MongodbPageFaults: MetricConfig{
-						Enabled: true,
-					},
-					MongodbProfilingLevel: MetricConfig{
-						Enabled: true,
-					},
-					MongodbProfilingSlowms: MetricConfig{
-						Enabled: true,
-					},
-					MongodbQueriesRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplCommandsPerSec: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplDeletesPerSec: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplGetmoresPerSec: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplInsertsPerSec: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplQueriesPerSec: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplUpdatesPerSec: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplsetHealth: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplsetOptimeLag: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplsetReplicationlag: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplsetState: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplsetVotefraction: MetricConfig{
-						Enabled: true,
-					},
-					MongodbReplsetVotes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSessionCount: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationCPUNanos: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationDocsExamined: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationKeysExamined: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationKeysInserted: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationNdeleted: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationNinserted: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationNmatched: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationNmodified: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationNreturned: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationNumYields: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationPlanningTimeMicros: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationResponseLength: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationTime: MetricConfig{
-						Enabled: true,
-					},
-					MongodbSlowOperationWriteConflicts: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsAvgobjsize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsCollections: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsDatasize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsFilesize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsIndexes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsIndexsize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsNumextents: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsObjects: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStatsStoragesize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbStorageSize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocGenericCurrentAllocatedBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocGenericHeapSize: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocAggressiveMemoryDecommit: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocCentralCacheFreeBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocMaxTotalThreadCacheBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocPageheapFreeBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocPageheapUnmappedBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocSpinlockTotalDelayNs: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocThreadCacheFreeBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbTcmallocTcmallocTransferCacheFreeBytes: MetricConfig{
-						Enabled: true,
-					},
-					MongodbUpdatesRate: MetricConfig{
-						Enabled: true,
-					},
-					MongodbUptime: MetricConfig{
-						Enabled: true,
+					MongodbActiveReads: MongodbActiveReadsMetricConfig{
+						Enabled: true,
+					},
+					MongodbActiveWrites: MongodbActiveWritesMetricConfig{
+						Enabled: true,
+					},
+					MongodbAssertsMsgps: MongodbAssertsMsgpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsMsgpsMetricAttributeKey{MongodbAssertsMsgpsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsRegularps: MongodbAssertsRegularpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsRegularpsMetricAttributeKey{MongodbAssertsRegularpsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsRolloversps: MongodbAssertsRolloverspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsRolloverspsMetricAttributeKey{MongodbAssertsRolloverspsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsUserps: MongodbAssertsUserpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsUserpsMetricAttributeKey{MongodbAssertsUserpsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsWarningps: MongodbAssertsWarningpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsWarningpsMetricAttributeKey{MongodbAssertsWarningpsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingAverageMs: MongodbBackgroundflushingAverageMsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingAverageMsMetricAttributeKey{MongodbBackgroundflushingAverageMsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingFlushesps: MongodbBackgroundflushingFlushespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingFlushespsMetricAttributeKey{MongodbBackgroundflushingFlushespsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingLastMs: MongodbBackgroundflushingLastMsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingLastMsMetricAttributeKey{MongodbBackgroundflushingLastMsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingTotalMs: MongodbBackgroundflushingTotalMsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingTotalMsMetricAttributeKey{MongodbBackgroundflushingTotalMsMetricAttributeKeyDatabase},
+					},
+					MongodbCacheOperations: MongodbCacheOperationsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbCacheOperationsMetricAttributeKey{MongodbCacheOperationsMetricAttributeKeyType},
+					},
+					MongodbChunksJumbo: MongodbChunksJumboMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbChunksJumboMetricAttributeKey{MongodbChunksJumboMetricAttributeKeyDatabase},
+					},
+					MongodbChunksTotal: MongodbChunksTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbChunksTotalMetricAttributeKey{MongodbChunksTotalMetricAttributeKeyDatabase},
+					},
+					MongodbCollectionAvgobjsize: MongodbCollectionAvgobjsizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionAvgobjsizeMetricAttributeKey{MongodbCollectionAvgobjsizeMetricAttributeKeyDatabase, MongodbCollectionAvgobjsizeMetricAttributeKeyCollection},
+					},
+					MongodbCollectionCapped: MongodbCollectionCappedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionCappedMetricAttributeKey{MongodbCollectionCappedMetricAttributeKeyDatabase, MongodbCollectionCappedMetricAttributeKeyCollection},
+					},
+					MongodbCollectionCount: MongodbCollectionCountMetricConfig{
+						Enabled: true,
+					},
+					MongodbCollectionIndexsizes: MongodbCollectionIndexsizesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionIndexsizesMetricAttributeKey{MongodbCollectionIndexsizesMetricAttributeKeyDatabase, MongodbCollectionIndexsizesMetricAttributeKeyCollection, MongodbCollectionIndexsizesMetricAttributeKeyIndex},
+					},
+					MongodbCollectionMax: MongodbCollectionMaxMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionMaxMetricAttributeKey{MongodbCollectionMaxMetricAttributeKeyDatabase, MongodbCollectionMaxMetricAttributeKeyCollection},
+					},
+					MongodbCollectionMaxsize: MongodbCollectionMaxsizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionMaxsizeMetricAttributeKey{MongodbCollectionMaxsizeMetricAttributeKeyDatabase, MongodbCollectionMaxsizeMetricAttributeKeyCollection},
+					},
+					MongodbCollectionNindexes: MongodbCollectionNindexesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionNindexesMetricAttributeKey{MongodbCollectionNindexesMetricAttributeKeyDatabase, MongodbCollectionNindexesMetricAttributeKeyCollection},
+					},
+					MongodbCollectionObjects: MongodbCollectionObjectsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionObjectsMetricAttributeKey{MongodbCollectionObjectsMetricAttributeKeyDatabase, MongodbCollectionObjectsMetricAttributeKeyCollection},
+					},
+					MongodbCollectionSize: MongodbCollectionSizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionSizeMetricAttributeKey{MongodbCollectionSizeMetricAttributeKeyDatabase, MongodbCollectionSizeMetricAttributeKeyCollection},
+					},
+					MongodbCollectionStoragesize: MongodbCollectionStoragesizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionStoragesizeMetricAttributeKey{MongodbCollectionStoragesizeMetricAttributeKeyDatabase, MongodbCollectionStoragesizeMetricAttributeKeyCollection},
+					},
+					MongodbCommandsRate: MongodbCommandsRateMetricConfig{
+						Enabled: true,
+					},
+					MongodbConnectionCount: MongodbConnectionCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbConnectionCountMetricAttributeKey{MongodbConnectionCountMetricAttributeKeyConnectionType},
+					},
+					MongodbConnectionPoolNumascopedconnections: MongodbConnectionPoolNumascopedconnectionsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolNumascopedconnectionsMetricAttributeKey{MongodbConnectionPoolNumascopedconnectionsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageCommandsCount: MetricConfig{
-						Enabled: true,
+					MongodbConnectionPoolNumclientconnections: MongodbConnectionPoolNumclientconnectionsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolNumclientconnectionsMetricAttributeKey{MongodbConnectionPoolNumclientconnectionsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageCommandsCountps: MetricConfig{
-						Enabled: true,
+					MongodbConnectionPoolTotalavailable: MongodbConnectionPoolTotalavailableMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalavailableMetricAttributeKey{MongodbConnectionPoolTotalavailableMetricAttributeKeyDatabase},
 					},
-					MongodbUsageCommandsTime: MetricConfig{
-						Enabled: true,
+					MongodbConnectionPoolTotalcreatedps: MongodbConnectionPoolTotalcreatedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalcreatedpsMetricAttributeKey{MongodbConnectionPoolTotalcreatedpsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageGetmoreCount: MetricConfig{
-						Enabled: true,
+					MongodbConnectionPoolTotalinuse: MongodbConnectionPoolTotalinuseMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalinuseMetricAttributeKey{MongodbConnectionPoolTotalinuseMetricAttributeKeyDatabase},
 					},
-					MongodbUsageGetmoreCountps: MetricConfig{
-						Enabled: true,
+					MongodbConnectionPoolTotalrefreshing: MongodbConnectionPoolTotalrefreshingMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalrefreshingMetricAttributeKey{MongodbConnectionPoolTotalrefreshingMetricAttributeKeyDatabase},
 					},
-					MongodbUsageGetmoreTime: MetricConfig{
-						Enabled: true,
+					MongodbConnectionsActive: MongodbConnectionsActiveMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsActiveMetricAttributeKey{MongodbConnectionsActiveMetricAttributeKeyDatabase},
 					},
-					MongodbUsageInsertCount: MetricConfig{
-						Enabled: true,
+					MongodbConnectionsAvailable: MongodbConnectionsAvailableMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsAvailableMetricAttributeKey{MongodbConnectionsAvailableMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsAwaitingtopologychanges: MongodbConnectionsAwaitingtopologychangesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsAwaitingtopologychangesMetricAttributeKey{MongodbConnectionsAwaitingtopologychangesMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsCurrent: MongodbConnectionsCurrentMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsCurrentMetricAttributeKey{MongodbConnectionsCurrentMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsExhausthello: MongodbConnectionsExhausthelloMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsExhausthelloMetricAttributeKey{MongodbConnectionsExhausthelloMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsExhaustismaster: MongodbConnectionsExhaustismasterMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsExhaustismasterMetricAttributeKey{MongodbConnectionsExhaustismasterMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsLoadbalanced: MongodbConnectionsLoadbalancedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsLoadbalancedMetricAttributeKey{MongodbConnectionsLoadbalancedMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsRejected: MongodbConnectionsRejectedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsRejectedMetricAttributeKey{MongodbConnectionsRejectedMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsThreaded: MongodbConnectionsThreadedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsThreadedMetricAttributeKey{MongodbConnectionsThreadedMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsTotalcreated: MongodbConnectionsTotalcreatedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsTotalcreatedMetricAttributeKey{MongodbConnectionsTotalcreatedMetricAttributeKeyDatabase},
+					},
+					MongodbCursorCount: MongodbCursorCountMetricConfig{
+						Enabled: true,
+					},
+					MongodbCursorTimeoutCount: MongodbCursorTimeoutCountMetricConfig{
+						Enabled: true,
+					},
+					MongodbCursorsTimedout: MongodbCursorsTimedoutMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCursorsTimedoutMetricAttributeKey{MongodbCursorsTimedoutMetricAttributeKeyDatabase},
 					},
-					MongodbUsageInsertCountps: MetricConfig{
+					MongodbCursorsTotalopen: MongodbCursorsTotalopenMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCursorsTotalopenMetricAttributeKey{MongodbCursorsTotalopenMetricAttributeKeyDatabase},
+					},
+					MongodbDataSize: MongodbDataSizeMetricConfig{
 						Enabled: true,
 					},
-					MongodbUsageInsertTime: MetricConfig{
+					MongodbDatabaseCount: MongodbDatabaseCountMetricConfig{
 						Enabled: true,
 					},
-					MongodbUsageQueriesCount: MetricConfig{
+					MongodbDeletesRate: MongodbDeletesRateMetricConfig{
 						Enabled: true,
 					},
-					MongodbUsageQueriesCountps: MetricConfig{
-						Enabled: true,
+					MongodbDocumentOperationCount: MongodbDocumentOperationCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbDocumentOperationCountMetricAttributeKey{MongodbDocumentOperationCountMetricAttributeKeyOperation},
 					},
-					MongodbUsageQueriesTime: MetricConfig{
-						Enabled: true,
+					MongodbDurCommits: MongodbDurCommitsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurCommitsMetricAttributeKey{MongodbDurCommitsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageReadlockCount: MetricConfig{
-						Enabled: true,
+					MongodbDurCommitsinwritelock: MongodbDurCommitsinwritelockMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurCommitsinwritelockMetricAttributeKey{MongodbDurCommitsinwritelockMetricAttributeKeyDatabase},
 					},
-					MongodbUsageReadlockCountps: MetricConfig{
-						Enabled: true,
+					MongodbDurCompression: MongodbDurCompressionMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurCompressionMetricAttributeKey{MongodbDurCompressionMetricAttributeKeyDatabase},
 					},
-					MongodbUsageReadlockTime: MetricConfig{
-						Enabled: true,
+					MongodbDurEarlycommits: MongodbDurEarlycommitsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurEarlycommitsMetricAttributeKey{MongodbDurEarlycommitsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageRemoveCount: MetricConfig{
-						Enabled: true,
+					MongodbDurJournaledmb: MongodbDurJournaledmbMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurJournaledmbMetricAttributeKey{MongodbDurJournaledmbMetricAttributeKeyDatabase},
 					},
-					MongodbUsageRemoveCountps: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsCommits: MongodbDurTimemsCommitsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsCommitsMetricAttributeKey{MongodbDurTimemsCommitsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageRemoveTime: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsCommitsinwritelock: MongodbDurTimemsCommitsinwritelockMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsCommitsinwritelockMetricAttributeKey{MongodbDurTimemsCommitsinwritelockMetricAttributeKeyDatabase},
 					},
-					MongodbUsageTotalCount: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsDt: MongodbDurTimemsDtMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsDtMetricAttributeKey{MongodbDurTimemsDtMetricAttributeKeyDatabase},
 					},
-					MongodbUsageTotalCountps: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsPreplogbuffer: MongodbDurTimemsPreplogbufferMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsPreplogbufferMetricAttributeKey{MongodbDurTimemsPreplogbufferMetricAttributeKeyDatabase},
 					},
-					MongodbUsageTotalTime: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsRemapprivateview: MongodbDurTimemsRemapprivateviewMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsRemapprivateviewMetricAttributeKey{MongodbDurTimemsRemapprivateviewMetricAttributeKeyDatabase},
 					},
-					MongodbUsageUpdateCount: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsWritetodatafiles: MongodbDurTimemsWritetodatafilesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsWritetodatafilesMetricAttributeKey{MongodbDurTimemsWritetodatafilesMetricAttributeKeyDatabase},
 					},
-					MongodbUsageUpdateCountps: MetricConfig{
-						Enabled: true,
+					MongodbDurTimemsWritetojournal: MongodbDurTimemsWritetojournalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsWritetojournalMetricAttributeKey{MongodbDurTimemsWritetojournalMetricAttributeKeyDatabase},
 					},
-					MongodbUsageUpdateTime: MetricConfig{
-						Enabled: true,
+					MongodbDurWritetodatafilesmb: MongodbDurWritetodatafilesmbMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurWritetodatafilesmbMetricAttributeKey{MongodbDurWritetodatafilesmbMetricAttributeKeyDatabase},
 					},
-					MongodbUsageWritelockCount: MetricConfig{
+					MongodbExtentCount: MongodbExtentCountMetricConfig{
 						Enabled: true,
 					},
-					MongodbUsageWritelockCountps: MetricConfig{
-						Enabled: true,
+					MongodbExtraInfoHeapUsageBytesps: MongodbExtraInfoHeapUsageBytespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbExtraInfoHeapUsageBytespsMetricAttributeKey{MongodbExtraInfoHeapUsageBytespsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageWritelockTime: MetricConfig{
-						Enabled: true,
+					MongodbExtraInfoPageFaultsps: MongodbExtraInfoPageFaultspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbExtraInfoPageFaultspsMetricAttributeKey{MongodbExtraInfoPageFaultspsMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheBytesCurrentlyInCache: MetricConfig{
+					MongodbFlushesRate: MongodbFlushesRateMetricConfig{
 						Enabled: true,
 					},
-					MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps: MetricConfig{
-						Enabled: true,
+					MongodbFsynclocked: MongodbFsynclockedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbFsynclockedMetricAttributeKey{MongodbFsynclockedMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheInMemoryPageSplits: MetricConfig{
+					MongodbGetmoresRate: MongodbGetmoresRateMetricConfig{
 						Enabled: true,
 					},
-					MongodbWiredtigerCacheMaximumBytesConfigured: MetricConfig{
+					MongodbGlobalLockTime: MongodbGlobalLockTimeMetricConfig{
 						Enabled: true,
 					},
-					MongodbWiredtigerCacheMaximumPageSizeAtEviction: MetricConfig{
-						Enabled: true,
+					MongodbGloballockActiveclientsReaders: MongodbGloballockActiveclientsReadersMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockActiveclientsReadersMetricAttributeKey{MongodbGloballockActiveclientsReadersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheModifiedPagesEvicted: MetricConfig{
-						Enabled: true,
+					MongodbGloballockActiveclientsTotal: MongodbGloballockActiveclientsTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockActiveclientsTotalMetricAttributeKey{MongodbGloballockActiveclientsTotalMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesCurrentlyHeldInCache: MetricConfig{
-						Enabled: true,
+					MongodbGloballockActiveclientsWriters: MongodbGloballockActiveclientsWritersMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockActiveclientsWritersMetricAttributeKey{MongodbGloballockActiveclientsWritersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesEvictedByApplicationThreadsps: MetricConfig{
-						Enabled: true,
+					MongodbGloballockCurrentqueueReaders: MongodbGloballockCurrentqueueReadersMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockCurrentqueueReadersMetricAttributeKey{MongodbGloballockCurrentqueueReadersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps: MetricConfig{
-						Enabled: true,
+					MongodbGloballockCurrentqueueTotal: MongodbGloballockCurrentqueueTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockCurrentqueueTotalMetricAttributeKey{MongodbGloballockCurrentqueueTotalMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesReadIntoCache: MetricConfig{
-						Enabled: true,
+					MongodbGloballockCurrentqueueWriters: MongodbGloballockCurrentqueueWritersMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockCurrentqueueWritersMetricAttributeKey{MongodbGloballockCurrentqueueWritersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesWrittenFromCache: MetricConfig{
-						Enabled: true,
+					MongodbGloballockLocktime: MongodbGloballockLocktimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockLocktimeMetricAttributeKey{MongodbGloballockLocktimeMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheTrackedDirtyBytesInCache: MetricConfig{
-						Enabled: true,
+					MongodbGloballockRatio: MongodbGloballockRatioMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockRatioMetricAttributeKey{MongodbGloballockRatioMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheUnmodifiedPagesEvicted: MetricConfig{
-						Enabled: true,
+					MongodbGloballockTotaltime: MongodbGloballockTotaltimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockTotaltimeMetricAttributeKey{MongodbGloballockTotaltimeMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerConcurrenttransactionsReadAvailable: MetricConfig{
+					MongodbHealth: MongodbHealthMetricConfig{
 						Enabled: true,
 					},
-					MongodbWiredtigerConcurrenttransactionsReadOut: MetricConfig{
-						Enabled: true,
+					MongodbIndexAccessCount: MongodbIndexAccessCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbIndexAccessCountMetricAttributeKey{MongodbIndexAccessCountMetricAttributeKeyCollection},
 					},
-					MongodbWiredtigerConcurrenttransactionsReadTotaltickets: MetricConfig{
+					MongodbIndexCount: MongodbIndexCountMetricConfig{
 						Enabled: true,
 					},
-					MongodbWiredtigerConcurrenttransactionsWriteAvailable: MetricConfig{
+					MongodbIndexSize: MongodbIndexSizeMetricConfig{
 						Enabled: true,
 					},
-					MongodbWiredtigerConcurrenttransactionsWriteOut: MetricConfig{
-						Enabled: true,
+					MongodbIndexcountersAccessesps: MongodbIndexcountersAccessespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersAccessespsMetricAttributeKey{MongodbIndexcountersAccessespsMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerConcurrenttransactionsWriteTotaltickets: MetricConfig{
-						Enabled: true,
+					MongodbIndexcountersHitsps: MongodbIndexcountersHitspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersHitspsMetricAttributeKey{MongodbIndexcountersHitspsMetricAttributeKeyDatabase},
 					},
-					MongodbWtcacheBytesRead: MetricConfig{
+					MongodbIndexcountersMissesps: MongodbIndexcountersMissespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersMissespsMetricAttributeKey{MongodbIndexcountersMissespsMetricAttributeKeyDatabase},
+					},
+					MongodbIndexcountersMissratio: MongodbIndexcountersMissratioMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersMissratioMetricAttributeKey{MongodbIndexcountersMissratioMetricAttributeKeyDatabase},
+					},
+					MongodbIndexcountersResetsps: MongodbIndexcountersResetspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersResetspsMetricAttributeKey{MongodbIndexcountersResetspsMetricAttributeKeyDatabase},
+					},
+					MongodbInsertsRate: MongodbInsertsRateMetricConfig{
+						Enabled: true,
+					},
+					MongodbLockAcquireCount: MongodbLockAcquireCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockAcquireCountMetricAttributeKey{MongodbLockAcquireCountMetricAttributeKeyLockType, MongodbLockAcquireCountMetricAttributeKeyLockMode},
+					},
+					MongodbLockAcquireTime: MongodbLockAcquireTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockAcquireTimeMetricAttributeKey{MongodbLockAcquireTimeMetricAttributeKeyLockType, MongodbLockAcquireTimeMetricAttributeKeyLockMode},
+					},
+					MongodbLockAcquireWaitCount: MongodbLockAcquireWaitCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockAcquireWaitCountMetricAttributeKey{MongodbLockAcquireWaitCountMetricAttributeKeyLockType, MongodbLockAcquireWaitCountMetricAttributeKeyLockMode},
+					},
+					MongodbLockDeadlockCount: MongodbLockDeadlockCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockDeadlockCountMetricAttributeKey{MongodbLockDeadlockCountMetricAttributeKeyLockType, MongodbLockDeadlockCountMetricAttributeKeyLockMode},
+					},
+					MongodbLocksCollectionAcquirecountExclusiveps: MongodbLocksCollectionAcquirecountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountExclusivepsMetricAttributeKey{MongodbLocksCollectionAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirecountIntentExclusiveps: MongodbLocksCollectionAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksCollectionAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirecountIntentSharedps: MongodbLocksCollectionAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksCollectionAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirecountSharedps: MongodbLocksCollectionAcquirecountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountSharedpsMetricAttributeKey{MongodbLocksCollectionAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirewaitcountExclusiveps: MongodbLocksCollectionAcquirewaitcountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirewaitcountExclusivepsMetricAttributeKey{MongodbLocksCollectionAcquirewaitcountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirewaitcountSharedps: MongodbLocksCollectionAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksCollectionAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionTimeacquiringmicrosExclusiveps: MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricAttributeKey{MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionTimeacquiringmicrosSharedps: MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountExclusiveps: MongodbLocksDatabaseAcquirecountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountIntentExclusiveps: MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountIntentSharedps: MongodbLocksDatabaseAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountSharedps: MongodbLocksDatabaseAcquirecountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountExclusiveps: MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps: MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountIntentSharedps: MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountSharedps: MongodbLocksDatabaseAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosExclusiveps: MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps: MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps: MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosSharedps: MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountExclusiveps: MongodbLocksGlobalAcquirecountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountIntentExclusiveps: MongodbLocksGlobalAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountIntentSharedps: MongodbLocksGlobalAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountSharedps: MongodbLocksGlobalAcquirecountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountExclusiveps: MongodbLocksGlobalAcquirewaitcountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountIntentExclusiveps: MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountIntentSharedps: MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountSharedps: MongodbLocksGlobalAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosExclusiveps: MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps: MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosIntentSharedps: MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosSharedps: MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMetadataAcquirecountExclusiveps: MongodbLocksMetadataAcquirecountExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMetadataAcquirecountExclusivepsMetricAttributeKey{MongodbLocksMetadataAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMetadataAcquirecountSharedps: MongodbLocksMetadataAcquirecountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMetadataAcquirecountSharedpsMetricAttributeKey{MongodbLocksMetadataAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirecountIntentExclusiveps: MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirecountIntentSharedps: MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps: MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps: MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricAttributeKey{MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps: MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps: MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricAttributeKey{MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirecountIntentExclusiveps: MongodbLocksOplogAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksOplogAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirecountSharedps: MongodbLocksOplogAcquirecountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirecountSharedpsMetricAttributeKey{MongodbLocksOplogAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirewaitcountIntentExclusiveps: MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirewaitcountSharedps: MongodbLocksOplogAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksOplogAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps: MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogTimeacquiringmicrosSharedps: MongodbLocksOplogTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksOplogTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMemBits: MongodbMemBitsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemBitsMetricAttributeKey{MongodbMemBitsMetricAttributeKeyDatabase},
+					},
+					MongodbMemMapped: MongodbMemMappedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemMappedMetricAttributeKey{MongodbMemMappedMetricAttributeKeyDatabase},
+					},
+					MongodbMemMappedwithjournal: MongodbMemMappedwithjournalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemMappedwithjournalMetricAttributeKey{MongodbMemMappedwithjournalMetricAttributeKeyDatabase},
+					},
+					MongodbMemResident: MongodbMemResidentMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemResidentMetricAttributeKey{MongodbMemResidentMetricAttributeKeyDatabase},
+					},
+					MongodbMemVirtual: MongodbMemVirtualMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemVirtualMetricAttributeKey{MongodbMemVirtualMetricAttributeKeyDatabase},
+					},
+					MongodbMemoryUsage: MongodbMemoryUsageMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbMemoryUsageMetricAttributeKey{MongodbMemoryUsageMetricAttributeKeyMemoryType},
+					},
+					MongodbMetricsCommandsCountFailedps: MongodbMetricsCommandsCountFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCountFailedpsMetricAttributeKey{MongodbMetricsCommandsCountFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsCountTotal: MongodbMetricsCommandsCountTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCountTotalMetricAttributeKey{MongodbMetricsCommandsCountTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsCreateindexesFailedps: MongodbMetricsCommandsCreateindexesFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCreateindexesFailedpsMetricAttributeKey{MongodbMetricsCommandsCreateindexesFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsCreateindexesTotal: MongodbMetricsCommandsCreateindexesTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCreateindexesTotalMetricAttributeKey{MongodbMetricsCommandsCreateindexesTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsDeleteFailedps: MongodbMetricsCommandsDeleteFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsDeleteFailedpsMetricAttributeKey{MongodbMetricsCommandsDeleteFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsDeleteTotal: MongodbMetricsCommandsDeleteTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsDeleteTotalMetricAttributeKey{MongodbMetricsCommandsDeleteTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsEvalFailedps: MongodbMetricsCommandsEvalFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsEvalFailedpsMetricAttributeKey{MongodbMetricsCommandsEvalFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsEvalTotal: MongodbMetricsCommandsEvalTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsEvalTotalMetricAttributeKey{MongodbMetricsCommandsEvalTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsFindandmodifyFailedps: MongodbMetricsCommandsFindandmodifyFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsFindandmodifyFailedpsMetricAttributeKey{MongodbMetricsCommandsFindandmodifyFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsFindandmodifyTotal: MongodbMetricsCommandsFindandmodifyTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsFindandmodifyTotalMetricAttributeKey{MongodbMetricsCommandsFindandmodifyTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsInsertFailedps: MongodbMetricsCommandsInsertFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsInsertFailedpsMetricAttributeKey{MongodbMetricsCommandsInsertFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsInsertTotal: MongodbMetricsCommandsInsertTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsInsertTotalMetricAttributeKey{MongodbMetricsCommandsInsertTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsUpdateFailedps: MongodbMetricsCommandsUpdateFailedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsUpdateFailedpsMetricAttributeKey{MongodbMetricsCommandsUpdateFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsUpdateTotal: MongodbMetricsCommandsUpdateTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsUpdateTotalMetricAttributeKey{MongodbMetricsCommandsUpdateTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorOpenNotimeout: MongodbMetricsCursorOpenNotimeoutMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorOpenNotimeoutMetricAttributeKey{MongodbMetricsCursorOpenNotimeoutMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorOpenPinned: MongodbMetricsCursorOpenPinnedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorOpenPinnedMetricAttributeKey{MongodbMetricsCursorOpenPinnedMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorOpenTotal: MongodbMetricsCursorOpenTotalMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorOpenTotalMetricAttributeKey{MongodbMetricsCursorOpenTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorTimedoutps: MongodbMetricsCursorTimedoutpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorTimedoutpsMetricAttributeKey{MongodbMetricsCursorTimedoutpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentDeletedps: MongodbMetricsDocumentDeletedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentDeletedpsMetricAttributeKey{MongodbMetricsDocumentDeletedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentInsertedps: MongodbMetricsDocumentInsertedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentInsertedpsMetricAttributeKey{MongodbMetricsDocumentInsertedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentReturnedps: MongodbMetricsDocumentReturnedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentReturnedpsMetricAttributeKey{MongodbMetricsDocumentReturnedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentUpdatedps: MongodbMetricsDocumentUpdatedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentUpdatedpsMetricAttributeKey{MongodbMetricsDocumentUpdatedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsGetlasterrorWtimeNumps: MongodbMetricsGetlasterrorWtimeNumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsGetlasterrorWtimeNumpsMetricAttributeKey{MongodbMetricsGetlasterrorWtimeNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsGetlasterrorWtimeTotalmillisps: MongodbMetricsGetlasterrorWtimeTotalmillispsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsGetlasterrorWtimeTotalmillispsMetricAttributeKey{MongodbMetricsGetlasterrorWtimeTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsGetlasterrorWtimeoutsps: MongodbMetricsGetlasterrorWtimeoutspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsGetlasterrorWtimeoutspsMetricAttributeKey{MongodbMetricsGetlasterrorWtimeoutspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationFastmodps: MongodbMetricsOperationFastmodpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationFastmodpsMetricAttributeKey{MongodbMetricsOperationFastmodpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationIdhackps: MongodbMetricsOperationIdhackpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationIdhackpsMetricAttributeKey{MongodbMetricsOperationIdhackpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationScanandorderps: MongodbMetricsOperationScanandorderpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationScanandorderpsMetricAttributeKey{MongodbMetricsOperationScanandorderpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationWriteconflictsps: MongodbMetricsOperationWriteconflictspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationWriteconflictspsMetricAttributeKey{MongodbMetricsOperationWriteconflictspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsQueryexecutorScannedobjectsps: MongodbMetricsQueryexecutorScannedobjectspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsQueryexecutorScannedobjectspsMetricAttributeKey{MongodbMetricsQueryexecutorScannedobjectspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsQueryexecutorScannedps: MongodbMetricsQueryexecutorScannedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsQueryexecutorScannedpsMetricAttributeKey{MongodbMetricsQueryexecutorScannedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsRecordMovesps: MongodbMetricsRecordMovespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsRecordMovespsMetricAttributeKey{MongodbMetricsRecordMovespsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplApplyBatchesNumps: MongodbMetricsReplApplyBatchesNumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplApplyBatchesNumpsMetricAttributeKey{MongodbMetricsReplApplyBatchesNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplApplyBatchesTotalmillisps: MongodbMetricsReplApplyBatchesTotalmillispsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplApplyBatchesTotalmillispsMetricAttributeKey{MongodbMetricsReplApplyBatchesTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplApplyOpsps: MongodbMetricsReplApplyOpspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplApplyOpspsMetricAttributeKey{MongodbMetricsReplApplyOpspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplBufferCount: MongodbMetricsReplBufferCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplBufferCountMetricAttributeKey{MongodbMetricsReplBufferCountMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplBufferMaxsizebytes: MongodbMetricsReplBufferMaxsizebytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplBufferMaxsizebytesMetricAttributeKey{MongodbMetricsReplBufferMaxsizebytesMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplBufferSizebytes: MongodbMetricsReplBufferSizebytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplBufferSizebytesMetricAttributeKey{MongodbMetricsReplBufferSizebytesMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkBytesps: MongodbMetricsReplNetworkBytespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkBytespsMetricAttributeKey{MongodbMetricsReplNetworkBytespsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkGetmoresNumps: MongodbMetricsReplNetworkGetmoresNumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkGetmoresNumpsMetricAttributeKey{MongodbMetricsReplNetworkGetmoresNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkGetmoresTotalmillisps: MongodbMetricsReplNetworkGetmoresTotalmillispsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkGetmoresTotalmillispsMetricAttributeKey{MongodbMetricsReplNetworkGetmoresTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkOpsps: MongodbMetricsReplNetworkOpspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkOpspsMetricAttributeKey{MongodbMetricsReplNetworkOpspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkReaderscreatedps: MongodbMetricsReplNetworkReaderscreatedpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkReaderscreatedpsMetricAttributeKey{MongodbMetricsReplNetworkReaderscreatedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadDocsNumps: MongodbMetricsReplPreloadDocsNumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadDocsNumpsMetricAttributeKey{MongodbMetricsReplPreloadDocsNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadDocsTotalmillisps: MongodbMetricsReplPreloadDocsTotalmillispsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadDocsTotalmillispsMetricAttributeKey{MongodbMetricsReplPreloadDocsTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadIndexesNumps: MongodbMetricsReplPreloadIndexesNumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadIndexesNumpsMetricAttributeKey{MongodbMetricsReplPreloadIndexesNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadIndexesTotalmillisps: MongodbMetricsReplPreloadIndexesTotalmillispsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadIndexesTotalmillispsMetricAttributeKey{MongodbMetricsReplPreloadIndexesTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsTTLDeleteddocumentsps: MongodbMetricsTTLDeleteddocumentspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsTTLDeleteddocumentspsMetricAttributeKey{MongodbMetricsTTLDeleteddocumentspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsTTLPassesps: MongodbMetricsTTLPassespsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsTTLPassespsMetricAttributeKey{MongodbMetricsTTLPassespsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkBytesinps: MongodbNetworkBytesinpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbNetworkBytesinpsMetricAttributeKey{MongodbNetworkBytesinpsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkBytesoutps: MongodbNetworkBytesoutpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbNetworkBytesoutpsMetricAttributeKey{MongodbNetworkBytesoutpsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkIoReceive: MongodbNetworkIoReceiveMetricConfig{
+						Enabled: true,
+					},
+					MongodbNetworkIoTransmit: MongodbNetworkIoTransmitMetricConfig{
+						Enabled: true,
+					},
+					MongodbNetworkNumrequestsps: MongodbNetworkNumrequestspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbNetworkNumrequestspsMetricAttributeKey{MongodbNetworkNumrequestspsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkRequestCount: MongodbNetworkRequestCountMetricConfig{
+						Enabled: true,
+					},
+					MongodbObjectCount: MongodbObjectCountMetricConfig{
+						Enabled: true,
+					},
+					MongodbOpcountersCommandps: MongodbOpcountersCommandpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersCommandpsMetricAttributeKey{MongodbOpcountersCommandpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersDeleteps: MongodbOpcountersDeletepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersDeletepsMetricAttributeKey{MongodbOpcountersDeletepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersGetmoreps: MongodbOpcountersGetmorepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersGetmorepsMetricAttributeKey{MongodbOpcountersGetmorepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersInsertps: MongodbOpcountersInsertpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersInsertpsMetricAttributeKey{MongodbOpcountersInsertpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersQueryps: MongodbOpcountersQuerypsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersQuerypsMetricAttributeKey{MongodbOpcountersQuerypsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersUpdateps: MongodbOpcountersUpdatepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersUpdatepsMetricAttributeKey{MongodbOpcountersUpdatepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplCommandps: MongodbOpcountersreplCommandpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplCommandpsMetricAttributeKey{MongodbOpcountersreplCommandpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplDeleteps: MongodbOpcountersreplDeletepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplDeletepsMetricAttributeKey{MongodbOpcountersreplDeletepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplGetmoreps: MongodbOpcountersreplGetmorepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplGetmorepsMetricAttributeKey{MongodbOpcountersreplGetmorepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplInsertps: MongodbOpcountersreplInsertpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplInsertpsMetricAttributeKey{MongodbOpcountersreplInsertpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplQueryps: MongodbOpcountersreplQuerypsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplQuerypsMetricAttributeKey{MongodbOpcountersreplQuerypsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplUpdateps: MongodbOpcountersreplUpdatepsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplUpdatepsMetricAttributeKey{MongodbOpcountersreplUpdatepsMetricAttributeKeyDatabase},
+					},
+					MongodbOperationCount: MongodbOperationCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbOperationCountMetricAttributeKey{MongodbOperationCountMetricAttributeKeyOperation},
+					},
+					MongodbOperationLatencyTime: MongodbOperationLatencyTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOperationLatencyTimeMetricAttributeKey{MongodbOperationLatencyTimeMetricAttributeKeyOperationLatency},
+					},
+					MongodbOperationReplCount: MongodbOperationReplCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbOperationReplCountMetricAttributeKey{MongodbOperationReplCountMetricAttributeKeyOperation},
+					},
+					MongodbOperationTime: MongodbOperationTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbOperationTimeMetricAttributeKey{MongodbOperationTimeMetricAttributeKeyOperation},
+					},
+					MongodbOplatenciesCommandsLatency: MongodbOplatenciesCommandsLatencyMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesCommandsLatencyMetricAttributeKey{MongodbOplatenciesCommandsLatencyMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesCommandsLatencyps: MongodbOplatenciesCommandsLatencypsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesCommandsLatencypsMetricAttributeKey{MongodbOplatenciesCommandsLatencypsMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesReadsLatency: MongodbOplatenciesReadsLatencyMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesReadsLatencyMetricAttributeKey{MongodbOplatenciesReadsLatencyMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesReadsLatencyps: MongodbOplatenciesReadsLatencypsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesReadsLatencypsMetricAttributeKey{MongodbOplatenciesReadsLatencypsMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesWritesLatency: MongodbOplatenciesWritesLatencyMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesWritesLatencyMetricAttributeKey{MongodbOplatenciesWritesLatencyMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesWritesLatencyps: MongodbOplatenciesWritesLatencypsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesWritesLatencypsMetricAttributeKey{MongodbOplatenciesWritesLatencypsMetricAttributeKeyDatabase},
+					},
+					MongodbOplogLogsizemb: MongodbOplogLogsizembMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplogLogsizembMetricAttributeKey{MongodbOplogLogsizembMetricAttributeKeyDatabase},
+					},
+					MongodbOplogTimediff: MongodbOplogTimediffMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplogTimediffMetricAttributeKey{MongodbOplogTimediffMetricAttributeKeyDatabase},
+					},
+					MongodbOplogUsedsizemb: MongodbOplogUsedsizembMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplogUsedsizembMetricAttributeKey{MongodbOplogUsedsizembMetricAttributeKeyDatabase},
+					},
+					MongodbPageFaults: MongodbPageFaultsMetricConfig{
+						Enabled: true,
+					},
+					MongodbProfilingLevel: MongodbProfilingLevelMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbProfilingLevelMetricAttributeKey{MongodbProfilingLevelMetricAttributeKeyDatabase},
+					},
+					MongodbProfilingSlowms: MongodbProfilingSlowmsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbProfilingSlowmsMetricAttributeKey{MongodbProfilingSlowmsMetricAttributeKeyDatabase},
+					},
+					MongodbQueriesRate: MongodbQueriesRateMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplCommandsPerSec: MongodbReplCommandsPerSecMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplDeletesPerSec: MongodbReplDeletesPerSecMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplGetmoresPerSec: MongodbReplGetmoresPerSecMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplInsertsPerSec: MongodbReplInsertsPerSecMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplQueriesPerSec: MongodbReplQueriesPerSecMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplUpdatesPerSec: MongodbReplUpdatesPerSecMetricConfig{
+						Enabled: true,
+					},
+					MongodbReplsetHealth: MongodbReplsetHealthMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetHealthMetricAttributeKey{MongodbReplsetHealthMetricAttributeKeyDatabase, MongodbReplsetHealthMetricAttributeKeyReplicaSet, MongodbReplsetHealthMetricAttributeKeyMemberName, MongodbReplsetHealthMetricAttributeKeyMemberID, MongodbReplsetHealthMetricAttributeKeyMemberState},
+					},
+					MongodbReplsetOptimeLag: MongodbReplsetOptimeLagMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetOptimeLagMetricAttributeKey{MongodbReplsetOptimeLagMetricAttributeKeyDatabase, MongodbReplsetOptimeLagMetricAttributeKeyReplicaSet, MongodbReplsetOptimeLagMetricAttributeKeyMemberName, MongodbReplsetOptimeLagMetricAttributeKeyMemberID},
+					},
+					MongodbReplsetReplicationlag: MongodbReplsetReplicationlagMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetReplicationlagMetricAttributeKey{MongodbReplsetReplicationlagMetricAttributeKeyDatabase, MongodbReplsetReplicationlagMetricAttributeKeyReplicaSet, MongodbReplsetReplicationlagMetricAttributeKeyMemberName, MongodbReplsetReplicationlagMetricAttributeKeyMemberID},
+					},
+					MongodbReplsetState: MongodbReplsetStateMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetStateMetricAttributeKey{MongodbReplsetStateMetricAttributeKeyDatabase, MongodbReplsetStateMetricAttributeKeyReplicaSet, MongodbReplsetStateMetricAttributeKeyMemberName, MongodbReplsetStateMetricAttributeKeyMemberID, MongodbReplsetStateMetricAttributeKeyMemberState},
+					},
+					MongodbReplsetVotefraction: MongodbReplsetVotefractionMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetVotefractionMetricAttributeKey{MongodbReplsetVotefractionMetricAttributeKeyDatabase, MongodbReplsetVotefractionMetricAttributeKeyReplicaSet, MongodbReplsetVotefractionMetricAttributeKeyMemberName, MongodbReplsetVotefractionMetricAttributeKeyMemberID},
+					},
+					MongodbReplsetVotes: MongodbReplsetVotesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetVotesMetricAttributeKey{MongodbReplsetVotesMetricAttributeKeyDatabase, MongodbReplsetVotesMetricAttributeKeyReplicaSet, MongodbReplsetVotesMetricAttributeKeyMemberName, MongodbReplsetVotesMetricAttributeKeyMemberID},
+					},
+					MongodbSessionCount: MongodbSessionCountMetricConfig{
+						Enabled: true,
+					},
+					MongodbSlowOperationCPUNanos: MongodbSlowOperationCPUNanosMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationCPUNanosMetricAttributeKey{MongodbSlowOperationCPUNanosMetricAttributeKeyQueryID, MongodbSlowOperationCPUNanosMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationDocsExamined: MongodbSlowOperationDocsExaminedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationDocsExaminedMetricAttributeKey{MongodbSlowOperationDocsExaminedMetricAttributeKeyQueryID, MongodbSlowOperationDocsExaminedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationKeysExamined: MongodbSlowOperationKeysExaminedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationKeysExaminedMetricAttributeKey{MongodbSlowOperationKeysExaminedMetricAttributeKeyQueryID, MongodbSlowOperationKeysExaminedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationKeysInserted: MongodbSlowOperationKeysInsertedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationKeysInsertedMetricAttributeKey{MongodbSlowOperationKeysInsertedMetricAttributeKeyQueryID, MongodbSlowOperationKeysInsertedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNdeleted: MongodbSlowOperationNdeletedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNdeletedMetricAttributeKey{MongodbSlowOperationNdeletedMetricAttributeKeyQueryID, MongodbSlowOperationNdeletedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNinserted: MongodbSlowOperationNinsertedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNinsertedMetricAttributeKey{MongodbSlowOperationNinsertedMetricAttributeKeyQueryID, MongodbSlowOperationNinsertedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNmatched: MongodbSlowOperationNmatchedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNmatchedMetricAttributeKey{MongodbSlowOperationNmatchedMetricAttributeKeyQueryID, MongodbSlowOperationNmatchedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNmodified: MongodbSlowOperationNmodifiedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNmodifiedMetricAttributeKey{MongodbSlowOperationNmodifiedMetricAttributeKeyQueryID, MongodbSlowOperationNmodifiedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNreturned: MongodbSlowOperationNreturnedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNreturnedMetricAttributeKey{MongodbSlowOperationNreturnedMetricAttributeKeyQueryID, MongodbSlowOperationNreturnedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNumYields: MongodbSlowOperationNumYieldsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNumYieldsMetricAttributeKey{MongodbSlowOperationNumYieldsMetricAttributeKeyQueryID, MongodbSlowOperationNumYieldsMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationPlanningTimeMicros: MongodbSlowOperationPlanningTimeMicrosMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationPlanningTimeMicrosMetricAttributeKey{MongodbSlowOperationPlanningTimeMicrosMetricAttributeKeyQueryID, MongodbSlowOperationPlanningTimeMicrosMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationResponseLength: MongodbSlowOperationResponseLengthMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationResponseLengthMetricAttributeKey{MongodbSlowOperationResponseLengthMetricAttributeKeyQueryID, MongodbSlowOperationResponseLengthMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationTime: MongodbSlowOperationTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationTimeMetricAttributeKey{MongodbSlowOperationTimeMetricAttributeKeyQueryTimestamp, MongodbSlowOperationTimeMetricAttributeKeyDatabase, MongodbSlowOperationTimeMetricAttributeKeyOperation, MongodbSlowOperationTimeMetricAttributeKeyNs, MongodbSlowOperationTimeMetricAttributeKeyPlanSummary, MongodbSlowOperationTimeMetricAttributeKeyQuerySignature, MongodbSlowOperationTimeMetricAttributeKeyQueryID, MongodbSlowOperationTimeMetricAttributeKeyUser, MongodbSlowOperationTimeMetricAttributeKeyApplication, MongodbSlowOperationTimeMetricAttributeKeyStatement, MongodbSlowOperationTimeMetricAttributeKeyRawQuery, MongodbSlowOperationTimeMetricAttributeKeyQueryHash, MongodbSlowOperationTimeMetricAttributeKeyQueryShapeHash, MongodbSlowOperationTimeMetricAttributeKeyPlanCacheKey, MongodbSlowOperationTimeMetricAttributeKeyQueryFramework, MongodbSlowOperationTimeMetricAttributeKeyComment, MongodbSlowOperationTimeMetricAttributeKeyMills, MongodbSlowOperationTimeMetricAttributeKeyNumYields, MongodbSlowOperationTimeMetricAttributeKeyResponseLength, MongodbSlowOperationTimeMetricAttributeKeyNreturned, MongodbSlowOperationTimeMetricAttributeKeyNmatched, MongodbSlowOperationTimeMetricAttributeKeyNmodified, MongodbSlowOperationTimeMetricAttributeKeyNinserted, MongodbSlowOperationTimeMetricAttributeKeyNdeleted, MongodbSlowOperationTimeMetricAttributeKeyKeysExamined, MongodbSlowOperationTimeMetricAttributeKeyDocsExamined, MongodbSlowOperationTimeMetricAttributeKeyKeysInserted, MongodbSlowOperationTimeMetricAttributeKeyWriteConflicts, MongodbSlowOperationTimeMetricAttributeKeyCPUNanos, MongodbSlowOperationTimeMetricAttributeKeyPlanningTimeMicros, MongodbSlowOperationTimeMetricAttributeKeyCursorExhausted, MongodbSlowOperationTimeMetricAttributeKeyUpsert, MongodbSlowOperationTimeMetricAttributeKeyHasSortStage, MongodbSlowOperationTimeMetricAttributeKeyUsedDisk, MongodbSlowOperationTimeMetricAttributeKeyFromMultiPlanner, MongodbSlowOperationTimeMetricAttributeKeyReplanned, MongodbSlowOperationTimeMetricAttributeKeyReplanReason, MongodbSlowOperationTimeMetricAttributeKeyClient, MongodbSlowOperationTimeMetricAttributeKeyCursor, MongodbSlowOperationTimeMetricAttributeKeyLockStats, MongodbSlowOperationTimeMetricAttributeKeyFlowControlStats},
+					},
+					MongodbSlowOperationWriteConflicts: MongodbSlowOperationWriteConflictsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationWriteConflictsMetricAttributeKey{MongodbSlowOperationWriteConflictsMetricAttributeKeyQueryID, MongodbSlowOperationWriteConflictsMetricAttributeKeyQuerySignature},
+					},
+					MongodbStatsAvgobjsize: MongodbStatsAvgobjsizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsAvgobjsizeMetricAttributeKey{MongodbStatsAvgobjsizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsCollections: MongodbStatsCollectionsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsCollectionsMetricAttributeKey{MongodbStatsCollectionsMetricAttributeKeyDatabase},
+					},
+					MongodbStatsDatasize: MongodbStatsDatasizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsDatasizeMetricAttributeKey{MongodbStatsDatasizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsFilesize: MongodbStatsFilesizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsFilesizeMetricAttributeKey{MongodbStatsFilesizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsIndexes: MongodbStatsIndexesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsIndexesMetricAttributeKey{MongodbStatsIndexesMetricAttributeKeyDatabase},
+					},
+					MongodbStatsIndexsize: MongodbStatsIndexsizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsIndexsizeMetricAttributeKey{MongodbStatsIndexsizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsNumextents: MongodbStatsNumextentsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsNumextentsMetricAttributeKey{MongodbStatsNumextentsMetricAttributeKeyDatabase},
+					},
+					MongodbStatsObjects: MongodbStatsObjectsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsObjectsMetricAttributeKey{MongodbStatsObjectsMetricAttributeKeyDatabase},
+					},
+					MongodbStatsStoragesize: MongodbStatsStoragesizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsStoragesizeMetricAttributeKey{MongodbStatsStoragesizeMetricAttributeKeyDatabase},
+					},
+					MongodbStorageSize: MongodbStorageSizeMetricConfig{
+						Enabled: true,
+					},
+					MongodbTcmallocGenericCurrentAllocatedBytes: MongodbTcmallocGenericCurrentAllocatedBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocGenericCurrentAllocatedBytesMetricAttributeKey{MongodbTcmallocGenericCurrentAllocatedBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocGenericHeapSize: MongodbTcmallocGenericHeapSizeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocGenericHeapSizeMetricAttributeKey{MongodbTcmallocGenericHeapSizeMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocAggressiveMemoryDecommit: MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricAttributeKey{MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocCentralCacheFreeBytes: MongodbTcmallocTcmallocCentralCacheFreeBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocCentralCacheFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocCentralCacheFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes: MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricAttributeKey{MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocMaxTotalThreadCacheBytes: MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricAttributeKey{MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocPageheapFreeBytes: MongodbTcmallocTcmallocPageheapFreeBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocPageheapFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocPageheapFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocPageheapUnmappedBytes: MongodbTcmallocTcmallocPageheapUnmappedBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocPageheapUnmappedBytesMetricAttributeKey{MongodbTcmallocTcmallocPageheapUnmappedBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocSpinlockTotalDelayNs: MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricAttributeKey{MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocThreadCacheFreeBytes: MongodbTcmallocTcmallocThreadCacheFreeBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocThreadCacheFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocThreadCacheFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocTransferCacheFreeBytes: MongodbTcmallocTcmallocTransferCacheFreeBytesMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocTransferCacheFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocTransferCacheFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbUpdatesRate: MongodbUpdatesRateMetricConfig{
+						Enabled: true,
+					},
+					MongodbUptime: MongodbUptimeMetricConfig{
+						Enabled: true,
+					},
+					MongodbUsageCommandsCount: MongodbUsageCommandsCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageCommandsCountMetricAttributeKey{MongodbUsageCommandsCountMetricAttributeKeyDatabase, MongodbUsageCommandsCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageCommandsCountps: MongodbUsageCommandsCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageCommandsCountpsMetricAttributeKey{MongodbUsageCommandsCountpsMetricAttributeKeyDatabase, MongodbUsageCommandsCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageCommandsTime: MongodbUsageCommandsTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageCommandsTimeMetricAttributeKey{MongodbUsageCommandsTimeMetricAttributeKeyDatabase, MongodbUsageCommandsTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageGetmoreCount: MongodbUsageGetmoreCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageGetmoreCountMetricAttributeKey{MongodbUsageGetmoreCountMetricAttributeKeyDatabase, MongodbUsageGetmoreCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageGetmoreCountps: MongodbUsageGetmoreCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageGetmoreCountpsMetricAttributeKey{MongodbUsageGetmoreCountpsMetricAttributeKeyDatabase, MongodbUsageGetmoreCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageGetmoreTime: MongodbUsageGetmoreTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageGetmoreTimeMetricAttributeKey{MongodbUsageGetmoreTimeMetricAttributeKeyDatabase, MongodbUsageGetmoreTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageInsertCount: MongodbUsageInsertCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageInsertCountMetricAttributeKey{MongodbUsageInsertCountMetricAttributeKeyDatabase, MongodbUsageInsertCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageInsertCountps: MongodbUsageInsertCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageInsertCountpsMetricAttributeKey{MongodbUsageInsertCountpsMetricAttributeKeyDatabase, MongodbUsageInsertCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageInsertTime: MongodbUsageInsertTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageInsertTimeMetricAttributeKey{MongodbUsageInsertTimeMetricAttributeKeyDatabase, MongodbUsageInsertTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageQueriesCount: MongodbUsageQueriesCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageQueriesCountMetricAttributeKey{MongodbUsageQueriesCountMetricAttributeKeyDatabase, MongodbUsageQueriesCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageQueriesCountps: MongodbUsageQueriesCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageQueriesCountpsMetricAttributeKey{MongodbUsageQueriesCountpsMetricAttributeKeyDatabase, MongodbUsageQueriesCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageQueriesTime: MongodbUsageQueriesTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageQueriesTimeMetricAttributeKey{MongodbUsageQueriesTimeMetricAttributeKeyDatabase, MongodbUsageQueriesTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageReadlockCount: MongodbUsageReadlockCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageReadlockCountMetricAttributeKey{MongodbUsageReadlockCountMetricAttributeKeyDatabase, MongodbUsageReadlockCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageReadlockCountps: MongodbUsageReadlockCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageReadlockCountpsMetricAttributeKey{MongodbUsageReadlockCountpsMetricAttributeKeyDatabase, MongodbUsageReadlockCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageReadlockTime: MongodbUsageReadlockTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageReadlockTimeMetricAttributeKey{MongodbUsageReadlockTimeMetricAttributeKeyDatabase, MongodbUsageReadlockTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageRemoveCount: MongodbUsageRemoveCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageRemoveCountMetricAttributeKey{MongodbUsageRemoveCountMetricAttributeKeyDatabase, MongodbUsageRemoveCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageRemoveCountps: MongodbUsageRemoveCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageRemoveCountpsMetricAttributeKey{MongodbUsageRemoveCountpsMetricAttributeKeyDatabase, MongodbUsageRemoveCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageRemoveTime: MongodbUsageRemoveTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageRemoveTimeMetricAttributeKey{MongodbUsageRemoveTimeMetricAttributeKeyDatabase, MongodbUsageRemoveTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageTotalCount: MongodbUsageTotalCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageTotalCountMetricAttributeKey{MongodbUsageTotalCountMetricAttributeKeyDatabase, MongodbUsageTotalCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageTotalCountps: MongodbUsageTotalCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageTotalCountpsMetricAttributeKey{MongodbUsageTotalCountpsMetricAttributeKeyDatabase, MongodbUsageTotalCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageTotalTime: MongodbUsageTotalTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageTotalTimeMetricAttributeKey{MongodbUsageTotalTimeMetricAttributeKeyDatabase, MongodbUsageTotalTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageUpdateCount: MongodbUsageUpdateCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageUpdateCountMetricAttributeKey{MongodbUsageUpdateCountMetricAttributeKeyDatabase, MongodbUsageUpdateCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageUpdateCountps: MongodbUsageUpdateCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageUpdateCountpsMetricAttributeKey{MongodbUsageUpdateCountpsMetricAttributeKeyDatabase, MongodbUsageUpdateCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageUpdateTime: MongodbUsageUpdateTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageUpdateTimeMetricAttributeKey{MongodbUsageUpdateTimeMetricAttributeKeyDatabase, MongodbUsageUpdateTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageWritelockCount: MongodbUsageWritelockCountMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageWritelockCountMetricAttributeKey{MongodbUsageWritelockCountMetricAttributeKeyDatabase, MongodbUsageWritelockCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageWritelockCountps: MongodbUsageWritelockCountpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageWritelockCountpsMetricAttributeKey{MongodbUsageWritelockCountpsMetricAttributeKeyDatabase, MongodbUsageWritelockCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageWritelockTime: MongodbUsageWritelockTimeMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageWritelockTimeMetricAttributeKey{MongodbUsageWritelockTimeMetricAttributeKeyDatabase, MongodbUsageWritelockTimeMetricAttributeKeyCollection},
+					},
+					MongodbWiredtigerCacheBytesCurrentlyInCache: MongodbWiredtigerCacheBytesCurrentlyInCacheMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheBytesCurrentlyInCacheMetricAttributeKey{MongodbWiredtigerCacheBytesCurrentlyInCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps: MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricAttributeKey{MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheInMemoryPageSplits: MongodbWiredtigerCacheInMemoryPageSplitsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheInMemoryPageSplitsMetricAttributeKey{MongodbWiredtigerCacheInMemoryPageSplitsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheMaximumBytesConfigured: MongodbWiredtigerCacheMaximumBytesConfiguredMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheMaximumBytesConfiguredMetricAttributeKey{MongodbWiredtigerCacheMaximumBytesConfiguredMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheMaximumPageSizeAtEviction: MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricAttributeKey{MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheModifiedPagesEvicted: MongodbWiredtigerCacheModifiedPagesEvictedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheModifiedPagesEvictedMetricAttributeKey{MongodbWiredtigerCacheModifiedPagesEvictedMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesCurrentlyHeldInCache: MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricAttributeKey{MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesEvictedByApplicationThreadsps: MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricAttributeKey{MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps: MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricAttributeKey{MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesReadIntoCache: MongodbWiredtigerCachePagesReadIntoCacheMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesReadIntoCacheMetricAttributeKey{MongodbWiredtigerCachePagesReadIntoCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesWrittenFromCache: MongodbWiredtigerCachePagesWrittenFromCacheMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesWrittenFromCacheMetricAttributeKey{MongodbWiredtigerCachePagesWrittenFromCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheTrackedDirtyBytesInCache: MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricAttributeKey{MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheUnmodifiedPagesEvicted: MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricAttributeKey{MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsReadAvailable: MongodbWiredtigerConcurrenttransactionsReadAvailableMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsReadAvailableMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsReadAvailableMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsReadOut: MongodbWiredtigerConcurrenttransactionsReadOutMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsReadOutMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsReadOutMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsReadTotaltickets: MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsWriteAvailable: MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsWriteOut: MongodbWiredtigerConcurrenttransactionsWriteOutMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsWriteOutMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsWriteOutMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsWriteTotaltickets: MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricConfig{
+						Enabled:             true,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricAttributeKeyDatabase},
+					},
+					MongodbWtcacheBytesRead: MongodbWtcacheBytesReadMetricConfig{
 						Enabled: true,
 					},
 				},
@@ -1020,985 +1606,1571 @@ func TestMetricsBuilderConfig(t *testing.T) {
 			name: "none_set",
 			want: MetricsBuilderConfig{
 				Metrics: MetricsConfig{
-					MongodbActiveReads: MetricConfig{
-						Enabled: false,
-					},
-					MongodbActiveWrites: MetricConfig{
-						Enabled: false,
-					},
-					MongodbAssertsMsgps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbAssertsRegularps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbAssertsRolloversps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbAssertsUserps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbAssertsWarningps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbBackgroundflushingAverageMs: MetricConfig{
-						Enabled: false,
-					},
-					MongodbBackgroundflushingFlushesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbBackgroundflushingLastMs: MetricConfig{
-						Enabled: false,
-					},
-					MongodbBackgroundflushingTotalMs: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCacheOperations: MetricConfig{
-						Enabled: false,
-					},
-					MongodbChunksJumbo: MetricConfig{
-						Enabled: false,
-					},
-					MongodbChunksTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionAvgobjsize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionCapped: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionIndexsizes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionMax: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionMaxsize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionNindexes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionObjects: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionSize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCollectionStoragesize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCommandsRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionPoolNumascopedconnections: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionPoolNumclientconnections: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionPoolTotalavailable: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionPoolTotalcreatedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionPoolTotalinuse: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionPoolTotalrefreshing: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsActive: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsAvailable: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsAwaitingtopologychanges: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsCurrent: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsExhausthello: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsExhaustismaster: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsLoadbalanced: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsRejected: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsThreaded: MetricConfig{
-						Enabled: false,
-					},
-					MongodbConnectionsTotalcreated: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCursorCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCursorTimeoutCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCursorsTimedout: MetricConfig{
-						Enabled: false,
-					},
-					MongodbCursorsTotalopen: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDataSize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDatabaseCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDeletesRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDocumentOperationCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurCommits: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurCommitsinwritelock: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurCompression: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurEarlycommits: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurJournaledmb: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsCommits: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsCommitsinwritelock: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsDt: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsPreplogbuffer: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsRemapprivateview: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsWritetodatafiles: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurTimemsWritetojournal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbDurWritetodatafilesmb: MetricConfig{
-						Enabled: false,
-					},
-					MongodbExtentCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbExtraInfoHeapUsageBytesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbExtraInfoPageFaultsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbFlushesRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbFsynclocked: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGetmoresRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGlobalLockTime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockActiveclientsReaders: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockActiveclientsTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockActiveclientsWriters: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockCurrentqueueReaders: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockCurrentqueueTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockCurrentqueueWriters: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockLocktime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockRatio: MetricConfig{
-						Enabled: false,
-					},
-					MongodbGloballockTotaltime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbHealth: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexAccessCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexSize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexcountersAccessesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexcountersHitsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexcountersMissesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexcountersMissratio: MetricConfig{
-						Enabled: false,
-					},
-					MongodbIndexcountersResetsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbInsertsRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLockAcquireCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLockAcquireTime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLockAcquireWaitCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLockDeadlockCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionAcquirecountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionAcquirecountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionAcquirecountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionAcquirewaitcountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionAcquirewaitcountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionTimeacquiringmicrosExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksCollectionTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirecountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirecountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirecountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirewaitcountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirewaitcountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseAcquirewaitcountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksDatabaseTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirecountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirecountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirecountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirewaitcountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirewaitcountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalAcquirewaitcountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksGlobalTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMetadataAcquirecountExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMetadataAcquirecountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMmapv1journalAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMmapv1journalAcquirecountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksOplogAcquirecountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksOplogAcquirecountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksOplogAcquirewaitcountIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksOplogAcquirewaitcountSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbLocksOplogTimeacquiringmicrosSharedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMemBits: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMemMapped: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMemMappedwithjournal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMemResident: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMemVirtual: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMemoryUsage: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsCountFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsCountTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsCreateindexesFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsCreateindexesTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsDeleteFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsDeleteTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsEvalFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsEvalTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsFindandmodifyFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsFindandmodifyTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsInsertFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsInsertTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsUpdateFailedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCommandsUpdateTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCursorOpenNotimeout: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCursorOpenPinned: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCursorOpenTotal: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsCursorTimedoutps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsDocumentDeletedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsDocumentInsertedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsDocumentReturnedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsDocumentUpdatedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsGetlasterrorWtimeNumps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsGetlasterrorWtimeTotalmillisps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsGetlasterrorWtimeoutsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsOperationFastmodps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsOperationIdhackps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsOperationScanandorderps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsOperationWriteconflictsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsQueryexecutorScannedobjectsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsQueryexecutorScannedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsRecordMovesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplApplyBatchesNumps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplApplyBatchesTotalmillisps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplApplyOpsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplBufferCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplBufferMaxsizebytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplBufferSizebytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplNetworkBytesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplNetworkGetmoresNumps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplNetworkGetmoresTotalmillisps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplNetworkOpsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplNetworkReaderscreatedps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplPreloadDocsNumps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplPreloadDocsTotalmillisps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplPreloadIndexesNumps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsReplPreloadIndexesTotalmillisps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsTTLDeleteddocumentsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbMetricsTTLPassesps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbNetworkBytesinps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbNetworkBytesoutps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbNetworkIoReceive: MetricConfig{
-						Enabled: false,
-					},
-					MongodbNetworkIoTransmit: MetricConfig{
-						Enabled: false,
-					},
-					MongodbNetworkNumrequestsps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbNetworkRequestCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbObjectCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersCommandps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersDeleteps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersGetmoreps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersInsertps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersQueryps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersUpdateps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersreplCommandps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersreplDeleteps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersreplGetmoreps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersreplInsertps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersreplQueryps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOpcountersreplUpdateps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOperationCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOperationLatencyTime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOperationReplCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOperationTime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplatenciesCommandsLatency: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplatenciesCommandsLatencyps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplatenciesReadsLatency: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplatenciesReadsLatencyps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplatenciesWritesLatency: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplatenciesWritesLatencyps: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplogLogsizemb: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplogTimediff: MetricConfig{
-						Enabled: false,
-					},
-					MongodbOplogUsedsizemb: MetricConfig{
-						Enabled: false,
-					},
-					MongodbPageFaults: MetricConfig{
-						Enabled: false,
-					},
-					MongodbProfilingLevel: MetricConfig{
-						Enabled: false,
-					},
-					MongodbProfilingSlowms: MetricConfig{
-						Enabled: false,
-					},
-					MongodbQueriesRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplCommandsPerSec: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplDeletesPerSec: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplGetmoresPerSec: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplInsertsPerSec: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplQueriesPerSec: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplUpdatesPerSec: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplsetHealth: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplsetOptimeLag: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplsetReplicationlag: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplsetState: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplsetVotefraction: MetricConfig{
-						Enabled: false,
-					},
-					MongodbReplsetVotes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSessionCount: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationCPUNanos: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationDocsExamined: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationKeysExamined: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationKeysInserted: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationNdeleted: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationNinserted: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationNmatched: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationNmodified: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationNreturned: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationNumYields: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationPlanningTimeMicros: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationResponseLength: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationTime: MetricConfig{
-						Enabled: false,
-					},
-					MongodbSlowOperationWriteConflicts: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsAvgobjsize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsCollections: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsDatasize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsFilesize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsIndexes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsIndexsize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsNumextents: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsObjects: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStatsStoragesize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbStorageSize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocGenericCurrentAllocatedBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocGenericHeapSize: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocAggressiveMemoryDecommit: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocCentralCacheFreeBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocMaxTotalThreadCacheBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocPageheapFreeBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocPageheapUnmappedBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocSpinlockTotalDelayNs: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocThreadCacheFreeBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbTcmallocTcmallocTransferCacheFreeBytes: MetricConfig{
-						Enabled: false,
-					},
-					MongodbUpdatesRate: MetricConfig{
-						Enabled: false,
-					},
-					MongodbUptime: MetricConfig{
-						Enabled: false,
+					MongodbActiveReads: MongodbActiveReadsMetricConfig{
+						Enabled: false,
+					},
+					MongodbActiveWrites: MongodbActiveWritesMetricConfig{
+						Enabled: false,
+					},
+					MongodbAssertsMsgps: MongodbAssertsMsgpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsMsgpsMetricAttributeKey{MongodbAssertsMsgpsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsRegularps: MongodbAssertsRegularpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsRegularpsMetricAttributeKey{MongodbAssertsRegularpsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsRolloversps: MongodbAssertsRolloverspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsRolloverspsMetricAttributeKey{MongodbAssertsRolloverspsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsUserps: MongodbAssertsUserpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsUserpsMetricAttributeKey{MongodbAssertsUserpsMetricAttributeKeyDatabase},
+					},
+					MongodbAssertsWarningps: MongodbAssertsWarningpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbAssertsWarningpsMetricAttributeKey{MongodbAssertsWarningpsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingAverageMs: MongodbBackgroundflushingAverageMsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingAverageMsMetricAttributeKey{MongodbBackgroundflushingAverageMsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingFlushesps: MongodbBackgroundflushingFlushespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingFlushespsMetricAttributeKey{MongodbBackgroundflushingFlushespsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingLastMs: MongodbBackgroundflushingLastMsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingLastMsMetricAttributeKey{MongodbBackgroundflushingLastMsMetricAttributeKeyDatabase},
+					},
+					MongodbBackgroundflushingTotalMs: MongodbBackgroundflushingTotalMsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbBackgroundflushingTotalMsMetricAttributeKey{MongodbBackgroundflushingTotalMsMetricAttributeKeyDatabase},
+					},
+					MongodbCacheOperations: MongodbCacheOperationsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbCacheOperationsMetricAttributeKey{MongodbCacheOperationsMetricAttributeKeyType},
+					},
+					MongodbChunksJumbo: MongodbChunksJumboMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbChunksJumboMetricAttributeKey{MongodbChunksJumboMetricAttributeKeyDatabase},
+					},
+					MongodbChunksTotal: MongodbChunksTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbChunksTotalMetricAttributeKey{MongodbChunksTotalMetricAttributeKeyDatabase},
+					},
+					MongodbCollectionAvgobjsize: MongodbCollectionAvgobjsizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionAvgobjsizeMetricAttributeKey{MongodbCollectionAvgobjsizeMetricAttributeKeyDatabase, MongodbCollectionAvgobjsizeMetricAttributeKeyCollection},
+					},
+					MongodbCollectionCapped: MongodbCollectionCappedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionCappedMetricAttributeKey{MongodbCollectionCappedMetricAttributeKeyDatabase, MongodbCollectionCappedMetricAttributeKeyCollection},
+					},
+					MongodbCollectionCount: MongodbCollectionCountMetricConfig{
+						Enabled: false,
+					},
+					MongodbCollectionIndexsizes: MongodbCollectionIndexsizesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionIndexsizesMetricAttributeKey{MongodbCollectionIndexsizesMetricAttributeKeyDatabase, MongodbCollectionIndexsizesMetricAttributeKeyCollection, MongodbCollectionIndexsizesMetricAttributeKeyIndex},
+					},
+					MongodbCollectionMax: MongodbCollectionMaxMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionMaxMetricAttributeKey{MongodbCollectionMaxMetricAttributeKeyDatabase, MongodbCollectionMaxMetricAttributeKeyCollection},
+					},
+					MongodbCollectionMaxsize: MongodbCollectionMaxsizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionMaxsizeMetricAttributeKey{MongodbCollectionMaxsizeMetricAttributeKeyDatabase, MongodbCollectionMaxsizeMetricAttributeKeyCollection},
+					},
+					MongodbCollectionNindexes: MongodbCollectionNindexesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionNindexesMetricAttributeKey{MongodbCollectionNindexesMetricAttributeKeyDatabase, MongodbCollectionNindexesMetricAttributeKeyCollection},
+					},
+					MongodbCollectionObjects: MongodbCollectionObjectsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionObjectsMetricAttributeKey{MongodbCollectionObjectsMetricAttributeKeyDatabase, MongodbCollectionObjectsMetricAttributeKeyCollection},
+					},
+					MongodbCollectionSize: MongodbCollectionSizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionSizeMetricAttributeKey{MongodbCollectionSizeMetricAttributeKeyDatabase, MongodbCollectionSizeMetricAttributeKeyCollection},
+					},
+					MongodbCollectionStoragesize: MongodbCollectionStoragesizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCollectionStoragesizeMetricAttributeKey{MongodbCollectionStoragesizeMetricAttributeKeyDatabase, MongodbCollectionStoragesizeMetricAttributeKeyCollection},
+					},
+					MongodbCommandsRate: MongodbCommandsRateMetricConfig{
+						Enabled: false,
+					},
+					MongodbConnectionCount: MongodbConnectionCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbConnectionCountMetricAttributeKey{MongodbConnectionCountMetricAttributeKeyConnectionType},
+					},
+					MongodbConnectionPoolNumascopedconnections: MongodbConnectionPoolNumascopedconnectionsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolNumascopedconnectionsMetricAttributeKey{MongodbConnectionPoolNumascopedconnectionsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageCommandsCount: MetricConfig{
-						Enabled: false,
+					MongodbConnectionPoolNumclientconnections: MongodbConnectionPoolNumclientconnectionsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolNumclientconnectionsMetricAttributeKey{MongodbConnectionPoolNumclientconnectionsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageCommandsCountps: MetricConfig{
-						Enabled: false,
+					MongodbConnectionPoolTotalavailable: MongodbConnectionPoolTotalavailableMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalavailableMetricAttributeKey{MongodbConnectionPoolTotalavailableMetricAttributeKeyDatabase},
 					},
-					MongodbUsageCommandsTime: MetricConfig{
-						Enabled: false,
+					MongodbConnectionPoolTotalcreatedps: MongodbConnectionPoolTotalcreatedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalcreatedpsMetricAttributeKey{MongodbConnectionPoolTotalcreatedpsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageGetmoreCount: MetricConfig{
-						Enabled: false,
+					MongodbConnectionPoolTotalinuse: MongodbConnectionPoolTotalinuseMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalinuseMetricAttributeKey{MongodbConnectionPoolTotalinuseMetricAttributeKeyDatabase},
 					},
-					MongodbUsageGetmoreCountps: MetricConfig{
-						Enabled: false,
+					MongodbConnectionPoolTotalrefreshing: MongodbConnectionPoolTotalrefreshingMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionPoolTotalrefreshingMetricAttributeKey{MongodbConnectionPoolTotalrefreshingMetricAttributeKeyDatabase},
 					},
-					MongodbUsageGetmoreTime: MetricConfig{
-						Enabled: false,
+					MongodbConnectionsActive: MongodbConnectionsActiveMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsActiveMetricAttributeKey{MongodbConnectionsActiveMetricAttributeKeyDatabase},
 					},
-					MongodbUsageInsertCount: MetricConfig{
-						Enabled: false,
+					MongodbConnectionsAvailable: MongodbConnectionsAvailableMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsAvailableMetricAttributeKey{MongodbConnectionsAvailableMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsAwaitingtopologychanges: MongodbConnectionsAwaitingtopologychangesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsAwaitingtopologychangesMetricAttributeKey{MongodbConnectionsAwaitingtopologychangesMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsCurrent: MongodbConnectionsCurrentMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsCurrentMetricAttributeKey{MongodbConnectionsCurrentMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsExhausthello: MongodbConnectionsExhausthelloMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsExhausthelloMetricAttributeKey{MongodbConnectionsExhausthelloMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsExhaustismaster: MongodbConnectionsExhaustismasterMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsExhaustismasterMetricAttributeKey{MongodbConnectionsExhaustismasterMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsLoadbalanced: MongodbConnectionsLoadbalancedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsLoadbalancedMetricAttributeKey{MongodbConnectionsLoadbalancedMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsRejected: MongodbConnectionsRejectedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsRejectedMetricAttributeKey{MongodbConnectionsRejectedMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsThreaded: MongodbConnectionsThreadedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsThreadedMetricAttributeKey{MongodbConnectionsThreadedMetricAttributeKeyDatabase},
+					},
+					MongodbConnectionsTotalcreated: MongodbConnectionsTotalcreatedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbConnectionsTotalcreatedMetricAttributeKey{MongodbConnectionsTotalcreatedMetricAttributeKeyDatabase},
+					},
+					MongodbCursorCount: MongodbCursorCountMetricConfig{
+						Enabled: false,
+					},
+					MongodbCursorTimeoutCount: MongodbCursorTimeoutCountMetricConfig{
+						Enabled: false,
+					},
+					MongodbCursorsTimedout: MongodbCursorsTimedoutMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCursorsTimedoutMetricAttributeKey{MongodbCursorsTimedoutMetricAttributeKeyDatabase},
 					},
-					MongodbUsageInsertCountps: MetricConfig{
+					MongodbCursorsTotalopen: MongodbCursorsTotalopenMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbCursorsTotalopenMetricAttributeKey{MongodbCursorsTotalopenMetricAttributeKeyDatabase},
+					},
+					MongodbDataSize: MongodbDataSizeMetricConfig{
 						Enabled: false,
 					},
-					MongodbUsageInsertTime: MetricConfig{
+					MongodbDatabaseCount: MongodbDatabaseCountMetricConfig{
 						Enabled: false,
 					},
-					MongodbUsageQueriesCount: MetricConfig{
+					MongodbDeletesRate: MongodbDeletesRateMetricConfig{
 						Enabled: false,
 					},
-					MongodbUsageQueriesCountps: MetricConfig{
-						Enabled: false,
+					MongodbDocumentOperationCount: MongodbDocumentOperationCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbDocumentOperationCountMetricAttributeKey{MongodbDocumentOperationCountMetricAttributeKeyOperation},
 					},
-					MongodbUsageQueriesTime: MetricConfig{
-						Enabled: false,
+					MongodbDurCommits: MongodbDurCommitsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurCommitsMetricAttributeKey{MongodbDurCommitsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageReadlockCount: MetricConfig{
-						Enabled: false,
+					MongodbDurCommitsinwritelock: MongodbDurCommitsinwritelockMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurCommitsinwritelockMetricAttributeKey{MongodbDurCommitsinwritelockMetricAttributeKeyDatabase},
 					},
-					MongodbUsageReadlockCountps: MetricConfig{
-						Enabled: false,
+					MongodbDurCompression: MongodbDurCompressionMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurCompressionMetricAttributeKey{MongodbDurCompressionMetricAttributeKeyDatabase},
 					},
-					MongodbUsageReadlockTime: MetricConfig{
-						Enabled: false,
+					MongodbDurEarlycommits: MongodbDurEarlycommitsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurEarlycommitsMetricAttributeKey{MongodbDurEarlycommitsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageRemoveCount: MetricConfig{
-						Enabled: false,
+					MongodbDurJournaledmb: MongodbDurJournaledmbMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurJournaledmbMetricAttributeKey{MongodbDurJournaledmbMetricAttributeKeyDatabase},
 					},
-					MongodbUsageRemoveCountps: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsCommits: MongodbDurTimemsCommitsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsCommitsMetricAttributeKey{MongodbDurTimemsCommitsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageRemoveTime: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsCommitsinwritelock: MongodbDurTimemsCommitsinwritelockMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsCommitsinwritelockMetricAttributeKey{MongodbDurTimemsCommitsinwritelockMetricAttributeKeyDatabase},
 					},
-					MongodbUsageTotalCount: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsDt: MongodbDurTimemsDtMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsDtMetricAttributeKey{MongodbDurTimemsDtMetricAttributeKeyDatabase},
 					},
-					MongodbUsageTotalCountps: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsPreplogbuffer: MongodbDurTimemsPreplogbufferMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsPreplogbufferMetricAttributeKey{MongodbDurTimemsPreplogbufferMetricAttributeKeyDatabase},
 					},
-					MongodbUsageTotalTime: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsRemapprivateview: MongodbDurTimemsRemapprivateviewMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsRemapprivateviewMetricAttributeKey{MongodbDurTimemsRemapprivateviewMetricAttributeKeyDatabase},
 					},
-					MongodbUsageUpdateCount: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsWritetodatafiles: MongodbDurTimemsWritetodatafilesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsWritetodatafilesMetricAttributeKey{MongodbDurTimemsWritetodatafilesMetricAttributeKeyDatabase},
 					},
-					MongodbUsageUpdateCountps: MetricConfig{
-						Enabled: false,
+					MongodbDurTimemsWritetojournal: MongodbDurTimemsWritetojournalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurTimemsWritetojournalMetricAttributeKey{MongodbDurTimemsWritetojournalMetricAttributeKeyDatabase},
 					},
-					MongodbUsageUpdateTime: MetricConfig{
-						Enabled: false,
+					MongodbDurWritetodatafilesmb: MongodbDurWritetodatafilesmbMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbDurWritetodatafilesmbMetricAttributeKey{MongodbDurWritetodatafilesmbMetricAttributeKeyDatabase},
 					},
-					MongodbUsageWritelockCount: MetricConfig{
+					MongodbExtentCount: MongodbExtentCountMetricConfig{
 						Enabled: false,
 					},
-					MongodbUsageWritelockCountps: MetricConfig{
-						Enabled: false,
+					MongodbExtraInfoHeapUsageBytesps: MongodbExtraInfoHeapUsageBytespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbExtraInfoHeapUsageBytespsMetricAttributeKey{MongodbExtraInfoHeapUsageBytespsMetricAttributeKeyDatabase},
 					},
-					MongodbUsageWritelockTime: MetricConfig{
-						Enabled: false,
+					MongodbExtraInfoPageFaultsps: MongodbExtraInfoPageFaultspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbExtraInfoPageFaultspsMetricAttributeKey{MongodbExtraInfoPageFaultspsMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheBytesCurrentlyInCache: MetricConfig{
+					MongodbFlushesRate: MongodbFlushesRateMetricConfig{
 						Enabled: false,
 					},
-					MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps: MetricConfig{
-						Enabled: false,
+					MongodbFsynclocked: MongodbFsynclockedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbFsynclockedMetricAttributeKey{MongodbFsynclockedMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheInMemoryPageSplits: MetricConfig{
+					MongodbGetmoresRate: MongodbGetmoresRateMetricConfig{
 						Enabled: false,
 					},
-					MongodbWiredtigerCacheMaximumBytesConfigured: MetricConfig{
+					MongodbGlobalLockTime: MongodbGlobalLockTimeMetricConfig{
 						Enabled: false,
 					},
-					MongodbWiredtigerCacheMaximumPageSizeAtEviction: MetricConfig{
-						Enabled: false,
+					MongodbGloballockActiveclientsReaders: MongodbGloballockActiveclientsReadersMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockActiveclientsReadersMetricAttributeKey{MongodbGloballockActiveclientsReadersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheModifiedPagesEvicted: MetricConfig{
-						Enabled: false,
+					MongodbGloballockActiveclientsTotal: MongodbGloballockActiveclientsTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockActiveclientsTotalMetricAttributeKey{MongodbGloballockActiveclientsTotalMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesCurrentlyHeldInCache: MetricConfig{
-						Enabled: false,
+					MongodbGloballockActiveclientsWriters: MongodbGloballockActiveclientsWritersMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockActiveclientsWritersMetricAttributeKey{MongodbGloballockActiveclientsWritersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesEvictedByApplicationThreadsps: MetricConfig{
-						Enabled: false,
+					MongodbGloballockCurrentqueueReaders: MongodbGloballockCurrentqueueReadersMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockCurrentqueueReadersMetricAttributeKey{MongodbGloballockCurrentqueueReadersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps: MetricConfig{
-						Enabled: false,
+					MongodbGloballockCurrentqueueTotal: MongodbGloballockCurrentqueueTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockCurrentqueueTotalMetricAttributeKey{MongodbGloballockCurrentqueueTotalMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesReadIntoCache: MetricConfig{
-						Enabled: false,
+					MongodbGloballockCurrentqueueWriters: MongodbGloballockCurrentqueueWritersMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockCurrentqueueWritersMetricAttributeKey{MongodbGloballockCurrentqueueWritersMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCachePagesWrittenFromCache: MetricConfig{
-						Enabled: false,
+					MongodbGloballockLocktime: MongodbGloballockLocktimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockLocktimeMetricAttributeKey{MongodbGloballockLocktimeMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheTrackedDirtyBytesInCache: MetricConfig{
-						Enabled: false,
+					MongodbGloballockRatio: MongodbGloballockRatioMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockRatioMetricAttributeKey{MongodbGloballockRatioMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerCacheUnmodifiedPagesEvicted: MetricConfig{
-						Enabled: false,
+					MongodbGloballockTotaltime: MongodbGloballockTotaltimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbGloballockTotaltimeMetricAttributeKey{MongodbGloballockTotaltimeMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerConcurrenttransactionsReadAvailable: MetricConfig{
+					MongodbHealth: MongodbHealthMetricConfig{
 						Enabled: false,
 					},
-					MongodbWiredtigerConcurrenttransactionsReadOut: MetricConfig{
-						Enabled: false,
+					MongodbIndexAccessCount: MongodbIndexAccessCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbIndexAccessCountMetricAttributeKey{MongodbIndexAccessCountMetricAttributeKeyCollection},
 					},
-					MongodbWiredtigerConcurrenttransactionsReadTotaltickets: MetricConfig{
+					MongodbIndexCount: MongodbIndexCountMetricConfig{
 						Enabled: false,
 					},
-					MongodbWiredtigerConcurrenttransactionsWriteAvailable: MetricConfig{
+					MongodbIndexSize: MongodbIndexSizeMetricConfig{
 						Enabled: false,
 					},
-					MongodbWiredtigerConcurrenttransactionsWriteOut: MetricConfig{
-						Enabled: false,
+					MongodbIndexcountersAccessesps: MongodbIndexcountersAccessespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersAccessespsMetricAttributeKey{MongodbIndexcountersAccessespsMetricAttributeKeyDatabase},
 					},
-					MongodbWiredtigerConcurrenttransactionsWriteTotaltickets: MetricConfig{
-						Enabled: false,
+					MongodbIndexcountersHitsps: MongodbIndexcountersHitspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersHitspsMetricAttributeKey{MongodbIndexcountersHitspsMetricAttributeKeyDatabase},
 					},
-					MongodbWtcacheBytesRead: MetricConfig{
+					MongodbIndexcountersMissesps: MongodbIndexcountersMissespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersMissespsMetricAttributeKey{MongodbIndexcountersMissespsMetricAttributeKeyDatabase},
+					},
+					MongodbIndexcountersMissratio: MongodbIndexcountersMissratioMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersMissratioMetricAttributeKey{MongodbIndexcountersMissratioMetricAttributeKeyDatabase},
+					},
+					MongodbIndexcountersResetsps: MongodbIndexcountersResetspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbIndexcountersResetspsMetricAttributeKey{MongodbIndexcountersResetspsMetricAttributeKeyDatabase},
+					},
+					MongodbInsertsRate: MongodbInsertsRateMetricConfig{
+						Enabled: false,
+					},
+					MongodbLockAcquireCount: MongodbLockAcquireCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockAcquireCountMetricAttributeKey{MongodbLockAcquireCountMetricAttributeKeyLockType, MongodbLockAcquireCountMetricAttributeKeyLockMode},
+					},
+					MongodbLockAcquireTime: MongodbLockAcquireTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockAcquireTimeMetricAttributeKey{MongodbLockAcquireTimeMetricAttributeKeyLockType, MongodbLockAcquireTimeMetricAttributeKeyLockMode},
+					},
+					MongodbLockAcquireWaitCount: MongodbLockAcquireWaitCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockAcquireWaitCountMetricAttributeKey{MongodbLockAcquireWaitCountMetricAttributeKeyLockType, MongodbLockAcquireWaitCountMetricAttributeKeyLockMode},
+					},
+					MongodbLockDeadlockCount: MongodbLockDeadlockCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbLockDeadlockCountMetricAttributeKey{MongodbLockDeadlockCountMetricAttributeKeyLockType, MongodbLockDeadlockCountMetricAttributeKeyLockMode},
+					},
+					MongodbLocksCollectionAcquirecountExclusiveps: MongodbLocksCollectionAcquirecountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountExclusivepsMetricAttributeKey{MongodbLocksCollectionAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirecountIntentExclusiveps: MongodbLocksCollectionAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksCollectionAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirecountIntentSharedps: MongodbLocksCollectionAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksCollectionAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirecountSharedps: MongodbLocksCollectionAcquirecountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirecountSharedpsMetricAttributeKey{MongodbLocksCollectionAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirewaitcountExclusiveps: MongodbLocksCollectionAcquirewaitcountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirewaitcountExclusivepsMetricAttributeKey{MongodbLocksCollectionAcquirewaitcountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionAcquirewaitcountSharedps: MongodbLocksCollectionAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksCollectionAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionTimeacquiringmicrosExclusiveps: MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricAttributeKey{MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksCollectionTimeacquiringmicrosSharedps: MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountExclusiveps: MongodbLocksDatabaseAcquirecountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountIntentExclusiveps: MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountIntentSharedps: MongodbLocksDatabaseAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirecountSharedps: MongodbLocksDatabaseAcquirecountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirecountSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountExclusiveps: MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps: MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountIntentSharedps: MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseAcquirewaitcountSharedps: MongodbLocksDatabaseAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksDatabaseAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosExclusiveps: MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps: MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps: MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksDatabaseTimeacquiringmicrosSharedps: MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountExclusiveps: MongodbLocksGlobalAcquirecountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountIntentExclusiveps: MongodbLocksGlobalAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountIntentSharedps: MongodbLocksGlobalAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirecountSharedps: MongodbLocksGlobalAcquirecountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirecountSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountExclusiveps: MongodbLocksGlobalAcquirewaitcountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountIntentExclusiveps: MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountIntentSharedps: MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalAcquirewaitcountSharedps: MongodbLocksGlobalAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksGlobalAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosExclusiveps: MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps: MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosIntentSharedps: MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksGlobalTimeacquiringmicrosSharedps: MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMetadataAcquirecountExclusiveps: MongodbLocksMetadataAcquirecountExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMetadataAcquirecountExclusivepsMetricAttributeKey{MongodbLocksMetadataAcquirecountExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMetadataAcquirecountSharedps: MongodbLocksMetadataAcquirecountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMetadataAcquirecountSharedpsMetricAttributeKey{MongodbLocksMetadataAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirecountIntentExclusiveps: MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirecountIntentSharedps: MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricAttributeKey{MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps: MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps: MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricAttributeKey{MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps: MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps: MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricAttributeKey{MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirecountIntentExclusiveps: MongodbLocksOplogAcquirecountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirecountIntentExclusivepsMetricAttributeKey{MongodbLocksOplogAcquirecountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirecountSharedps: MongodbLocksOplogAcquirecountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirecountSharedpsMetricAttributeKey{MongodbLocksOplogAcquirecountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirewaitcountIntentExclusiveps: MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricAttributeKey{MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogAcquirewaitcountSharedps: MongodbLocksOplogAcquirewaitcountSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogAcquirewaitcountSharedpsMetricAttributeKey{MongodbLocksOplogAcquirewaitcountSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps: MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricAttributeKeyDatabase},
+					},
+					MongodbLocksOplogTimeacquiringmicrosSharedps: MongodbLocksOplogTimeacquiringmicrosSharedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbLocksOplogTimeacquiringmicrosSharedpsMetricAttributeKey{MongodbLocksOplogTimeacquiringmicrosSharedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMemBits: MongodbMemBitsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemBitsMetricAttributeKey{MongodbMemBitsMetricAttributeKeyDatabase},
+					},
+					MongodbMemMapped: MongodbMemMappedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemMappedMetricAttributeKey{MongodbMemMappedMetricAttributeKeyDatabase},
+					},
+					MongodbMemMappedwithjournal: MongodbMemMappedwithjournalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemMappedwithjournalMetricAttributeKey{MongodbMemMappedwithjournalMetricAttributeKeyDatabase},
+					},
+					MongodbMemResident: MongodbMemResidentMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemResidentMetricAttributeKey{MongodbMemResidentMetricAttributeKeyDatabase},
+					},
+					MongodbMemVirtual: MongodbMemVirtualMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMemVirtualMetricAttributeKey{MongodbMemVirtualMetricAttributeKeyDatabase},
+					},
+					MongodbMemoryUsage: MongodbMemoryUsageMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbMemoryUsageMetricAttributeKey{MongodbMemoryUsageMetricAttributeKeyMemoryType},
+					},
+					MongodbMetricsCommandsCountFailedps: MongodbMetricsCommandsCountFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCountFailedpsMetricAttributeKey{MongodbMetricsCommandsCountFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsCountTotal: MongodbMetricsCommandsCountTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCountTotalMetricAttributeKey{MongodbMetricsCommandsCountTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsCreateindexesFailedps: MongodbMetricsCommandsCreateindexesFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCreateindexesFailedpsMetricAttributeKey{MongodbMetricsCommandsCreateindexesFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsCreateindexesTotal: MongodbMetricsCommandsCreateindexesTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsCreateindexesTotalMetricAttributeKey{MongodbMetricsCommandsCreateindexesTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsDeleteFailedps: MongodbMetricsCommandsDeleteFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsDeleteFailedpsMetricAttributeKey{MongodbMetricsCommandsDeleteFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsDeleteTotal: MongodbMetricsCommandsDeleteTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsDeleteTotalMetricAttributeKey{MongodbMetricsCommandsDeleteTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsEvalFailedps: MongodbMetricsCommandsEvalFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsEvalFailedpsMetricAttributeKey{MongodbMetricsCommandsEvalFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsEvalTotal: MongodbMetricsCommandsEvalTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsEvalTotalMetricAttributeKey{MongodbMetricsCommandsEvalTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsFindandmodifyFailedps: MongodbMetricsCommandsFindandmodifyFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsFindandmodifyFailedpsMetricAttributeKey{MongodbMetricsCommandsFindandmodifyFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsFindandmodifyTotal: MongodbMetricsCommandsFindandmodifyTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsFindandmodifyTotalMetricAttributeKey{MongodbMetricsCommandsFindandmodifyTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsInsertFailedps: MongodbMetricsCommandsInsertFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsInsertFailedpsMetricAttributeKey{MongodbMetricsCommandsInsertFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsInsertTotal: MongodbMetricsCommandsInsertTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsInsertTotalMetricAttributeKey{MongodbMetricsCommandsInsertTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsUpdateFailedps: MongodbMetricsCommandsUpdateFailedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsUpdateFailedpsMetricAttributeKey{MongodbMetricsCommandsUpdateFailedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCommandsUpdateTotal: MongodbMetricsCommandsUpdateTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCommandsUpdateTotalMetricAttributeKey{MongodbMetricsCommandsUpdateTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorOpenNotimeout: MongodbMetricsCursorOpenNotimeoutMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorOpenNotimeoutMetricAttributeKey{MongodbMetricsCursorOpenNotimeoutMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorOpenPinned: MongodbMetricsCursorOpenPinnedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorOpenPinnedMetricAttributeKey{MongodbMetricsCursorOpenPinnedMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorOpenTotal: MongodbMetricsCursorOpenTotalMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorOpenTotalMetricAttributeKey{MongodbMetricsCursorOpenTotalMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsCursorTimedoutps: MongodbMetricsCursorTimedoutpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsCursorTimedoutpsMetricAttributeKey{MongodbMetricsCursorTimedoutpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentDeletedps: MongodbMetricsDocumentDeletedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentDeletedpsMetricAttributeKey{MongodbMetricsDocumentDeletedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentInsertedps: MongodbMetricsDocumentInsertedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentInsertedpsMetricAttributeKey{MongodbMetricsDocumentInsertedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentReturnedps: MongodbMetricsDocumentReturnedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentReturnedpsMetricAttributeKey{MongodbMetricsDocumentReturnedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsDocumentUpdatedps: MongodbMetricsDocumentUpdatedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsDocumentUpdatedpsMetricAttributeKey{MongodbMetricsDocumentUpdatedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsGetlasterrorWtimeNumps: MongodbMetricsGetlasterrorWtimeNumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsGetlasterrorWtimeNumpsMetricAttributeKey{MongodbMetricsGetlasterrorWtimeNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsGetlasterrorWtimeTotalmillisps: MongodbMetricsGetlasterrorWtimeTotalmillispsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsGetlasterrorWtimeTotalmillispsMetricAttributeKey{MongodbMetricsGetlasterrorWtimeTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsGetlasterrorWtimeoutsps: MongodbMetricsGetlasterrorWtimeoutspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsGetlasterrorWtimeoutspsMetricAttributeKey{MongodbMetricsGetlasterrorWtimeoutspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationFastmodps: MongodbMetricsOperationFastmodpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationFastmodpsMetricAttributeKey{MongodbMetricsOperationFastmodpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationIdhackps: MongodbMetricsOperationIdhackpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationIdhackpsMetricAttributeKey{MongodbMetricsOperationIdhackpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationScanandorderps: MongodbMetricsOperationScanandorderpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationScanandorderpsMetricAttributeKey{MongodbMetricsOperationScanandorderpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsOperationWriteconflictsps: MongodbMetricsOperationWriteconflictspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsOperationWriteconflictspsMetricAttributeKey{MongodbMetricsOperationWriteconflictspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsQueryexecutorScannedobjectsps: MongodbMetricsQueryexecutorScannedobjectspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsQueryexecutorScannedobjectspsMetricAttributeKey{MongodbMetricsQueryexecutorScannedobjectspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsQueryexecutorScannedps: MongodbMetricsQueryexecutorScannedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsQueryexecutorScannedpsMetricAttributeKey{MongodbMetricsQueryexecutorScannedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsRecordMovesps: MongodbMetricsRecordMovespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsRecordMovespsMetricAttributeKey{MongodbMetricsRecordMovespsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplApplyBatchesNumps: MongodbMetricsReplApplyBatchesNumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplApplyBatchesNumpsMetricAttributeKey{MongodbMetricsReplApplyBatchesNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplApplyBatchesTotalmillisps: MongodbMetricsReplApplyBatchesTotalmillispsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplApplyBatchesTotalmillispsMetricAttributeKey{MongodbMetricsReplApplyBatchesTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplApplyOpsps: MongodbMetricsReplApplyOpspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplApplyOpspsMetricAttributeKey{MongodbMetricsReplApplyOpspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplBufferCount: MongodbMetricsReplBufferCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplBufferCountMetricAttributeKey{MongodbMetricsReplBufferCountMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplBufferMaxsizebytes: MongodbMetricsReplBufferMaxsizebytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplBufferMaxsizebytesMetricAttributeKey{MongodbMetricsReplBufferMaxsizebytesMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplBufferSizebytes: MongodbMetricsReplBufferSizebytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplBufferSizebytesMetricAttributeKey{MongodbMetricsReplBufferSizebytesMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkBytesps: MongodbMetricsReplNetworkBytespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkBytespsMetricAttributeKey{MongodbMetricsReplNetworkBytespsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkGetmoresNumps: MongodbMetricsReplNetworkGetmoresNumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkGetmoresNumpsMetricAttributeKey{MongodbMetricsReplNetworkGetmoresNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkGetmoresTotalmillisps: MongodbMetricsReplNetworkGetmoresTotalmillispsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkGetmoresTotalmillispsMetricAttributeKey{MongodbMetricsReplNetworkGetmoresTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkOpsps: MongodbMetricsReplNetworkOpspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkOpspsMetricAttributeKey{MongodbMetricsReplNetworkOpspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplNetworkReaderscreatedps: MongodbMetricsReplNetworkReaderscreatedpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplNetworkReaderscreatedpsMetricAttributeKey{MongodbMetricsReplNetworkReaderscreatedpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadDocsNumps: MongodbMetricsReplPreloadDocsNumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadDocsNumpsMetricAttributeKey{MongodbMetricsReplPreloadDocsNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadDocsTotalmillisps: MongodbMetricsReplPreloadDocsTotalmillispsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadDocsTotalmillispsMetricAttributeKey{MongodbMetricsReplPreloadDocsTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadIndexesNumps: MongodbMetricsReplPreloadIndexesNumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadIndexesNumpsMetricAttributeKey{MongodbMetricsReplPreloadIndexesNumpsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsReplPreloadIndexesTotalmillisps: MongodbMetricsReplPreloadIndexesTotalmillispsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsReplPreloadIndexesTotalmillispsMetricAttributeKey{MongodbMetricsReplPreloadIndexesTotalmillispsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsTTLDeleteddocumentsps: MongodbMetricsTTLDeleteddocumentspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsTTLDeleteddocumentspsMetricAttributeKey{MongodbMetricsTTLDeleteddocumentspsMetricAttributeKeyDatabase},
+					},
+					MongodbMetricsTTLPassesps: MongodbMetricsTTLPassespsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbMetricsTTLPassespsMetricAttributeKey{MongodbMetricsTTLPassespsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkBytesinps: MongodbNetworkBytesinpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbNetworkBytesinpsMetricAttributeKey{MongodbNetworkBytesinpsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkBytesoutps: MongodbNetworkBytesoutpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbNetworkBytesoutpsMetricAttributeKey{MongodbNetworkBytesoutpsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkIoReceive: MongodbNetworkIoReceiveMetricConfig{
+						Enabled: false,
+					},
+					MongodbNetworkIoTransmit: MongodbNetworkIoTransmitMetricConfig{
+						Enabled: false,
+					},
+					MongodbNetworkNumrequestsps: MongodbNetworkNumrequestspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbNetworkNumrequestspsMetricAttributeKey{MongodbNetworkNumrequestspsMetricAttributeKeyDatabase},
+					},
+					MongodbNetworkRequestCount: MongodbNetworkRequestCountMetricConfig{
+						Enabled: false,
+					},
+					MongodbObjectCount: MongodbObjectCountMetricConfig{
+						Enabled: false,
+					},
+					MongodbOpcountersCommandps: MongodbOpcountersCommandpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersCommandpsMetricAttributeKey{MongodbOpcountersCommandpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersDeleteps: MongodbOpcountersDeletepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersDeletepsMetricAttributeKey{MongodbOpcountersDeletepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersGetmoreps: MongodbOpcountersGetmorepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersGetmorepsMetricAttributeKey{MongodbOpcountersGetmorepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersInsertps: MongodbOpcountersInsertpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersInsertpsMetricAttributeKey{MongodbOpcountersInsertpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersQueryps: MongodbOpcountersQuerypsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersQuerypsMetricAttributeKey{MongodbOpcountersQuerypsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersUpdateps: MongodbOpcountersUpdatepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersUpdatepsMetricAttributeKey{MongodbOpcountersUpdatepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplCommandps: MongodbOpcountersreplCommandpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplCommandpsMetricAttributeKey{MongodbOpcountersreplCommandpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplDeleteps: MongodbOpcountersreplDeletepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplDeletepsMetricAttributeKey{MongodbOpcountersreplDeletepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplGetmoreps: MongodbOpcountersreplGetmorepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplGetmorepsMetricAttributeKey{MongodbOpcountersreplGetmorepsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplInsertps: MongodbOpcountersreplInsertpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplInsertpsMetricAttributeKey{MongodbOpcountersreplInsertpsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplQueryps: MongodbOpcountersreplQuerypsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplQuerypsMetricAttributeKey{MongodbOpcountersreplQuerypsMetricAttributeKeyDatabase},
+					},
+					MongodbOpcountersreplUpdateps: MongodbOpcountersreplUpdatepsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOpcountersreplUpdatepsMetricAttributeKey{MongodbOpcountersreplUpdatepsMetricAttributeKeyDatabase},
+					},
+					MongodbOperationCount: MongodbOperationCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbOperationCountMetricAttributeKey{MongodbOperationCountMetricAttributeKeyOperation},
+					},
+					MongodbOperationLatencyTime: MongodbOperationLatencyTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOperationLatencyTimeMetricAttributeKey{MongodbOperationLatencyTimeMetricAttributeKeyOperationLatency},
+					},
+					MongodbOperationReplCount: MongodbOperationReplCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbOperationReplCountMetricAttributeKey{MongodbOperationReplCountMetricAttributeKeyOperation},
+					},
+					MongodbOperationTime: MongodbOperationTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategySum,
+						EnabledAttributes:   []MongodbOperationTimeMetricAttributeKey{MongodbOperationTimeMetricAttributeKeyOperation},
+					},
+					MongodbOplatenciesCommandsLatency: MongodbOplatenciesCommandsLatencyMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesCommandsLatencyMetricAttributeKey{MongodbOplatenciesCommandsLatencyMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesCommandsLatencyps: MongodbOplatenciesCommandsLatencypsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesCommandsLatencypsMetricAttributeKey{MongodbOplatenciesCommandsLatencypsMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesReadsLatency: MongodbOplatenciesReadsLatencyMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesReadsLatencyMetricAttributeKey{MongodbOplatenciesReadsLatencyMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesReadsLatencyps: MongodbOplatenciesReadsLatencypsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesReadsLatencypsMetricAttributeKey{MongodbOplatenciesReadsLatencypsMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesWritesLatency: MongodbOplatenciesWritesLatencyMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesWritesLatencyMetricAttributeKey{MongodbOplatenciesWritesLatencyMetricAttributeKeyDatabase},
+					},
+					MongodbOplatenciesWritesLatencyps: MongodbOplatenciesWritesLatencypsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplatenciesWritesLatencypsMetricAttributeKey{MongodbOplatenciesWritesLatencypsMetricAttributeKeyDatabase},
+					},
+					MongodbOplogLogsizemb: MongodbOplogLogsizembMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplogLogsizembMetricAttributeKey{MongodbOplogLogsizembMetricAttributeKeyDatabase},
+					},
+					MongodbOplogTimediff: MongodbOplogTimediffMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplogTimediffMetricAttributeKey{MongodbOplogTimediffMetricAttributeKeyDatabase},
+					},
+					MongodbOplogUsedsizemb: MongodbOplogUsedsizembMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbOplogUsedsizembMetricAttributeKey{MongodbOplogUsedsizembMetricAttributeKeyDatabase},
+					},
+					MongodbPageFaults: MongodbPageFaultsMetricConfig{
+						Enabled: false,
+					},
+					MongodbProfilingLevel: MongodbProfilingLevelMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbProfilingLevelMetricAttributeKey{MongodbProfilingLevelMetricAttributeKeyDatabase},
+					},
+					MongodbProfilingSlowms: MongodbProfilingSlowmsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbProfilingSlowmsMetricAttributeKey{MongodbProfilingSlowmsMetricAttributeKeyDatabase},
+					},
+					MongodbQueriesRate: MongodbQueriesRateMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplCommandsPerSec: MongodbReplCommandsPerSecMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplDeletesPerSec: MongodbReplDeletesPerSecMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplGetmoresPerSec: MongodbReplGetmoresPerSecMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplInsertsPerSec: MongodbReplInsertsPerSecMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplQueriesPerSec: MongodbReplQueriesPerSecMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplUpdatesPerSec: MongodbReplUpdatesPerSecMetricConfig{
+						Enabled: false,
+					},
+					MongodbReplsetHealth: MongodbReplsetHealthMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetHealthMetricAttributeKey{MongodbReplsetHealthMetricAttributeKeyDatabase, MongodbReplsetHealthMetricAttributeKeyReplicaSet, MongodbReplsetHealthMetricAttributeKeyMemberName, MongodbReplsetHealthMetricAttributeKeyMemberID, MongodbReplsetHealthMetricAttributeKeyMemberState},
+					},
+					MongodbReplsetOptimeLag: MongodbReplsetOptimeLagMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetOptimeLagMetricAttributeKey{MongodbReplsetOptimeLagMetricAttributeKeyDatabase, MongodbReplsetOptimeLagMetricAttributeKeyReplicaSet, MongodbReplsetOptimeLagMetricAttributeKeyMemberName, MongodbReplsetOptimeLagMetricAttributeKeyMemberID},
+					},
+					MongodbReplsetReplicationlag: MongodbReplsetReplicationlagMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetReplicationlagMetricAttributeKey{MongodbReplsetReplicationlagMetricAttributeKeyDatabase, MongodbReplsetReplicationlagMetricAttributeKeyReplicaSet, MongodbReplsetReplicationlagMetricAttributeKeyMemberName, MongodbReplsetReplicationlagMetricAttributeKeyMemberID},
+					},
+					MongodbReplsetState: MongodbReplsetStateMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetStateMetricAttributeKey{MongodbReplsetStateMetricAttributeKeyDatabase, MongodbReplsetStateMetricAttributeKeyReplicaSet, MongodbReplsetStateMetricAttributeKeyMemberName, MongodbReplsetStateMetricAttributeKeyMemberID, MongodbReplsetStateMetricAttributeKeyMemberState},
+					},
+					MongodbReplsetVotefraction: MongodbReplsetVotefractionMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetVotefractionMetricAttributeKey{MongodbReplsetVotefractionMetricAttributeKeyDatabase, MongodbReplsetVotefractionMetricAttributeKeyReplicaSet, MongodbReplsetVotefractionMetricAttributeKeyMemberName, MongodbReplsetVotefractionMetricAttributeKeyMemberID},
+					},
+					MongodbReplsetVotes: MongodbReplsetVotesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbReplsetVotesMetricAttributeKey{MongodbReplsetVotesMetricAttributeKeyDatabase, MongodbReplsetVotesMetricAttributeKeyReplicaSet, MongodbReplsetVotesMetricAttributeKeyMemberName, MongodbReplsetVotesMetricAttributeKeyMemberID},
+					},
+					MongodbSessionCount: MongodbSessionCountMetricConfig{
+						Enabled: false,
+					},
+					MongodbSlowOperationCPUNanos: MongodbSlowOperationCPUNanosMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationCPUNanosMetricAttributeKey{MongodbSlowOperationCPUNanosMetricAttributeKeyQueryID, MongodbSlowOperationCPUNanosMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationDocsExamined: MongodbSlowOperationDocsExaminedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationDocsExaminedMetricAttributeKey{MongodbSlowOperationDocsExaminedMetricAttributeKeyQueryID, MongodbSlowOperationDocsExaminedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationKeysExamined: MongodbSlowOperationKeysExaminedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationKeysExaminedMetricAttributeKey{MongodbSlowOperationKeysExaminedMetricAttributeKeyQueryID, MongodbSlowOperationKeysExaminedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationKeysInserted: MongodbSlowOperationKeysInsertedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationKeysInsertedMetricAttributeKey{MongodbSlowOperationKeysInsertedMetricAttributeKeyQueryID, MongodbSlowOperationKeysInsertedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNdeleted: MongodbSlowOperationNdeletedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNdeletedMetricAttributeKey{MongodbSlowOperationNdeletedMetricAttributeKeyQueryID, MongodbSlowOperationNdeletedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNinserted: MongodbSlowOperationNinsertedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNinsertedMetricAttributeKey{MongodbSlowOperationNinsertedMetricAttributeKeyQueryID, MongodbSlowOperationNinsertedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNmatched: MongodbSlowOperationNmatchedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNmatchedMetricAttributeKey{MongodbSlowOperationNmatchedMetricAttributeKeyQueryID, MongodbSlowOperationNmatchedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNmodified: MongodbSlowOperationNmodifiedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNmodifiedMetricAttributeKey{MongodbSlowOperationNmodifiedMetricAttributeKeyQueryID, MongodbSlowOperationNmodifiedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNreturned: MongodbSlowOperationNreturnedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNreturnedMetricAttributeKey{MongodbSlowOperationNreturnedMetricAttributeKeyQueryID, MongodbSlowOperationNreturnedMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationNumYields: MongodbSlowOperationNumYieldsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationNumYieldsMetricAttributeKey{MongodbSlowOperationNumYieldsMetricAttributeKeyQueryID, MongodbSlowOperationNumYieldsMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationPlanningTimeMicros: MongodbSlowOperationPlanningTimeMicrosMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationPlanningTimeMicrosMetricAttributeKey{MongodbSlowOperationPlanningTimeMicrosMetricAttributeKeyQueryID, MongodbSlowOperationPlanningTimeMicrosMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationResponseLength: MongodbSlowOperationResponseLengthMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationResponseLengthMetricAttributeKey{MongodbSlowOperationResponseLengthMetricAttributeKeyQueryID, MongodbSlowOperationResponseLengthMetricAttributeKeyQuerySignature},
+					},
+					MongodbSlowOperationTime: MongodbSlowOperationTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationTimeMetricAttributeKey{MongodbSlowOperationTimeMetricAttributeKeyQueryTimestamp, MongodbSlowOperationTimeMetricAttributeKeyDatabase, MongodbSlowOperationTimeMetricAttributeKeyOperation, MongodbSlowOperationTimeMetricAttributeKeyNs, MongodbSlowOperationTimeMetricAttributeKeyPlanSummary, MongodbSlowOperationTimeMetricAttributeKeyQuerySignature, MongodbSlowOperationTimeMetricAttributeKeyQueryID, MongodbSlowOperationTimeMetricAttributeKeyUser, MongodbSlowOperationTimeMetricAttributeKeyApplication, MongodbSlowOperationTimeMetricAttributeKeyStatement, MongodbSlowOperationTimeMetricAttributeKeyRawQuery, MongodbSlowOperationTimeMetricAttributeKeyQueryHash, MongodbSlowOperationTimeMetricAttributeKeyQueryShapeHash, MongodbSlowOperationTimeMetricAttributeKeyPlanCacheKey, MongodbSlowOperationTimeMetricAttributeKeyQueryFramework, MongodbSlowOperationTimeMetricAttributeKeyComment, MongodbSlowOperationTimeMetricAttributeKeyMills, MongodbSlowOperationTimeMetricAttributeKeyNumYields, MongodbSlowOperationTimeMetricAttributeKeyResponseLength, MongodbSlowOperationTimeMetricAttributeKeyNreturned, MongodbSlowOperationTimeMetricAttributeKeyNmatched, MongodbSlowOperationTimeMetricAttributeKeyNmodified, MongodbSlowOperationTimeMetricAttributeKeyNinserted, MongodbSlowOperationTimeMetricAttributeKeyNdeleted, MongodbSlowOperationTimeMetricAttributeKeyKeysExamined, MongodbSlowOperationTimeMetricAttributeKeyDocsExamined, MongodbSlowOperationTimeMetricAttributeKeyKeysInserted, MongodbSlowOperationTimeMetricAttributeKeyWriteConflicts, MongodbSlowOperationTimeMetricAttributeKeyCPUNanos, MongodbSlowOperationTimeMetricAttributeKeyPlanningTimeMicros, MongodbSlowOperationTimeMetricAttributeKeyCursorExhausted, MongodbSlowOperationTimeMetricAttributeKeyUpsert, MongodbSlowOperationTimeMetricAttributeKeyHasSortStage, MongodbSlowOperationTimeMetricAttributeKeyUsedDisk, MongodbSlowOperationTimeMetricAttributeKeyFromMultiPlanner, MongodbSlowOperationTimeMetricAttributeKeyReplanned, MongodbSlowOperationTimeMetricAttributeKeyReplanReason, MongodbSlowOperationTimeMetricAttributeKeyClient, MongodbSlowOperationTimeMetricAttributeKeyCursor, MongodbSlowOperationTimeMetricAttributeKeyLockStats, MongodbSlowOperationTimeMetricAttributeKeyFlowControlStats},
+					},
+					MongodbSlowOperationWriteConflicts: MongodbSlowOperationWriteConflictsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbSlowOperationWriteConflictsMetricAttributeKey{MongodbSlowOperationWriteConflictsMetricAttributeKeyQueryID, MongodbSlowOperationWriteConflictsMetricAttributeKeyQuerySignature},
+					},
+					MongodbStatsAvgobjsize: MongodbStatsAvgobjsizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsAvgobjsizeMetricAttributeKey{MongodbStatsAvgobjsizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsCollections: MongodbStatsCollectionsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsCollectionsMetricAttributeKey{MongodbStatsCollectionsMetricAttributeKeyDatabase},
+					},
+					MongodbStatsDatasize: MongodbStatsDatasizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsDatasizeMetricAttributeKey{MongodbStatsDatasizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsFilesize: MongodbStatsFilesizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsFilesizeMetricAttributeKey{MongodbStatsFilesizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsIndexes: MongodbStatsIndexesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsIndexesMetricAttributeKey{MongodbStatsIndexesMetricAttributeKeyDatabase},
+					},
+					MongodbStatsIndexsize: MongodbStatsIndexsizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsIndexsizeMetricAttributeKey{MongodbStatsIndexsizeMetricAttributeKeyDatabase},
+					},
+					MongodbStatsNumextents: MongodbStatsNumextentsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsNumextentsMetricAttributeKey{MongodbStatsNumextentsMetricAttributeKeyDatabase},
+					},
+					MongodbStatsObjects: MongodbStatsObjectsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsObjectsMetricAttributeKey{MongodbStatsObjectsMetricAttributeKeyDatabase},
+					},
+					MongodbStatsStoragesize: MongodbStatsStoragesizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbStatsStoragesizeMetricAttributeKey{MongodbStatsStoragesizeMetricAttributeKeyDatabase},
+					},
+					MongodbStorageSize: MongodbStorageSizeMetricConfig{
+						Enabled: false,
+					},
+					MongodbTcmallocGenericCurrentAllocatedBytes: MongodbTcmallocGenericCurrentAllocatedBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocGenericCurrentAllocatedBytesMetricAttributeKey{MongodbTcmallocGenericCurrentAllocatedBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocGenericHeapSize: MongodbTcmallocGenericHeapSizeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocGenericHeapSizeMetricAttributeKey{MongodbTcmallocGenericHeapSizeMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocAggressiveMemoryDecommit: MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricAttributeKey{MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocCentralCacheFreeBytes: MongodbTcmallocTcmallocCentralCacheFreeBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocCentralCacheFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocCentralCacheFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes: MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricAttributeKey{MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocMaxTotalThreadCacheBytes: MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricAttributeKey{MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocPageheapFreeBytes: MongodbTcmallocTcmallocPageheapFreeBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocPageheapFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocPageheapFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocPageheapUnmappedBytes: MongodbTcmallocTcmallocPageheapUnmappedBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocPageheapUnmappedBytesMetricAttributeKey{MongodbTcmallocTcmallocPageheapUnmappedBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocSpinlockTotalDelayNs: MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricAttributeKey{MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocThreadCacheFreeBytes: MongodbTcmallocTcmallocThreadCacheFreeBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocThreadCacheFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocThreadCacheFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbTcmallocTcmallocTransferCacheFreeBytes: MongodbTcmallocTcmallocTransferCacheFreeBytesMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbTcmallocTcmallocTransferCacheFreeBytesMetricAttributeKey{MongodbTcmallocTcmallocTransferCacheFreeBytesMetricAttributeKeyDatabase},
+					},
+					MongodbUpdatesRate: MongodbUpdatesRateMetricConfig{
+						Enabled: false,
+					},
+					MongodbUptime: MongodbUptimeMetricConfig{
+						Enabled: false,
+					},
+					MongodbUsageCommandsCount: MongodbUsageCommandsCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageCommandsCountMetricAttributeKey{MongodbUsageCommandsCountMetricAttributeKeyDatabase, MongodbUsageCommandsCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageCommandsCountps: MongodbUsageCommandsCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageCommandsCountpsMetricAttributeKey{MongodbUsageCommandsCountpsMetricAttributeKeyDatabase, MongodbUsageCommandsCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageCommandsTime: MongodbUsageCommandsTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageCommandsTimeMetricAttributeKey{MongodbUsageCommandsTimeMetricAttributeKeyDatabase, MongodbUsageCommandsTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageGetmoreCount: MongodbUsageGetmoreCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageGetmoreCountMetricAttributeKey{MongodbUsageGetmoreCountMetricAttributeKeyDatabase, MongodbUsageGetmoreCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageGetmoreCountps: MongodbUsageGetmoreCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageGetmoreCountpsMetricAttributeKey{MongodbUsageGetmoreCountpsMetricAttributeKeyDatabase, MongodbUsageGetmoreCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageGetmoreTime: MongodbUsageGetmoreTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageGetmoreTimeMetricAttributeKey{MongodbUsageGetmoreTimeMetricAttributeKeyDatabase, MongodbUsageGetmoreTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageInsertCount: MongodbUsageInsertCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageInsertCountMetricAttributeKey{MongodbUsageInsertCountMetricAttributeKeyDatabase, MongodbUsageInsertCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageInsertCountps: MongodbUsageInsertCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageInsertCountpsMetricAttributeKey{MongodbUsageInsertCountpsMetricAttributeKeyDatabase, MongodbUsageInsertCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageInsertTime: MongodbUsageInsertTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageInsertTimeMetricAttributeKey{MongodbUsageInsertTimeMetricAttributeKeyDatabase, MongodbUsageInsertTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageQueriesCount: MongodbUsageQueriesCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageQueriesCountMetricAttributeKey{MongodbUsageQueriesCountMetricAttributeKeyDatabase, MongodbUsageQueriesCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageQueriesCountps: MongodbUsageQueriesCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageQueriesCountpsMetricAttributeKey{MongodbUsageQueriesCountpsMetricAttributeKeyDatabase, MongodbUsageQueriesCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageQueriesTime: MongodbUsageQueriesTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageQueriesTimeMetricAttributeKey{MongodbUsageQueriesTimeMetricAttributeKeyDatabase, MongodbUsageQueriesTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageReadlockCount: MongodbUsageReadlockCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageReadlockCountMetricAttributeKey{MongodbUsageReadlockCountMetricAttributeKeyDatabase, MongodbUsageReadlockCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageReadlockCountps: MongodbUsageReadlockCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageReadlockCountpsMetricAttributeKey{MongodbUsageReadlockCountpsMetricAttributeKeyDatabase, MongodbUsageReadlockCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageReadlockTime: MongodbUsageReadlockTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageReadlockTimeMetricAttributeKey{MongodbUsageReadlockTimeMetricAttributeKeyDatabase, MongodbUsageReadlockTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageRemoveCount: MongodbUsageRemoveCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageRemoveCountMetricAttributeKey{MongodbUsageRemoveCountMetricAttributeKeyDatabase, MongodbUsageRemoveCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageRemoveCountps: MongodbUsageRemoveCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageRemoveCountpsMetricAttributeKey{MongodbUsageRemoveCountpsMetricAttributeKeyDatabase, MongodbUsageRemoveCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageRemoveTime: MongodbUsageRemoveTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageRemoveTimeMetricAttributeKey{MongodbUsageRemoveTimeMetricAttributeKeyDatabase, MongodbUsageRemoveTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageTotalCount: MongodbUsageTotalCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageTotalCountMetricAttributeKey{MongodbUsageTotalCountMetricAttributeKeyDatabase, MongodbUsageTotalCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageTotalCountps: MongodbUsageTotalCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageTotalCountpsMetricAttributeKey{MongodbUsageTotalCountpsMetricAttributeKeyDatabase, MongodbUsageTotalCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageTotalTime: MongodbUsageTotalTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageTotalTimeMetricAttributeKey{MongodbUsageTotalTimeMetricAttributeKeyDatabase, MongodbUsageTotalTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageUpdateCount: MongodbUsageUpdateCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageUpdateCountMetricAttributeKey{MongodbUsageUpdateCountMetricAttributeKeyDatabase, MongodbUsageUpdateCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageUpdateCountps: MongodbUsageUpdateCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageUpdateCountpsMetricAttributeKey{MongodbUsageUpdateCountpsMetricAttributeKeyDatabase, MongodbUsageUpdateCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageUpdateTime: MongodbUsageUpdateTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageUpdateTimeMetricAttributeKey{MongodbUsageUpdateTimeMetricAttributeKeyDatabase, MongodbUsageUpdateTimeMetricAttributeKeyCollection},
+					},
+					MongodbUsageWritelockCount: MongodbUsageWritelockCountMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageWritelockCountMetricAttributeKey{MongodbUsageWritelockCountMetricAttributeKeyDatabase, MongodbUsageWritelockCountMetricAttributeKeyCollection},
+					},
+					MongodbUsageWritelockCountps: MongodbUsageWritelockCountpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageWritelockCountpsMetricAttributeKey{MongodbUsageWritelockCountpsMetricAttributeKeyDatabase, MongodbUsageWritelockCountpsMetricAttributeKeyCollection},
+					},
+					MongodbUsageWritelockTime: MongodbUsageWritelockTimeMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbUsageWritelockTimeMetricAttributeKey{MongodbUsageWritelockTimeMetricAttributeKeyDatabase, MongodbUsageWritelockTimeMetricAttributeKeyCollection},
+					},
+					MongodbWiredtigerCacheBytesCurrentlyInCache: MongodbWiredtigerCacheBytesCurrentlyInCacheMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheBytesCurrentlyInCacheMetricAttributeKey{MongodbWiredtigerCacheBytesCurrentlyInCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps: MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricAttributeKey{MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheInMemoryPageSplits: MongodbWiredtigerCacheInMemoryPageSplitsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheInMemoryPageSplitsMetricAttributeKey{MongodbWiredtigerCacheInMemoryPageSplitsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheMaximumBytesConfigured: MongodbWiredtigerCacheMaximumBytesConfiguredMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheMaximumBytesConfiguredMetricAttributeKey{MongodbWiredtigerCacheMaximumBytesConfiguredMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheMaximumPageSizeAtEviction: MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricAttributeKey{MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheModifiedPagesEvicted: MongodbWiredtigerCacheModifiedPagesEvictedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheModifiedPagesEvictedMetricAttributeKey{MongodbWiredtigerCacheModifiedPagesEvictedMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesCurrentlyHeldInCache: MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricAttributeKey{MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesEvictedByApplicationThreadsps: MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricAttributeKey{MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps: MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricAttributeKey{MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesReadIntoCache: MongodbWiredtigerCachePagesReadIntoCacheMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesReadIntoCacheMetricAttributeKey{MongodbWiredtigerCachePagesReadIntoCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCachePagesWrittenFromCache: MongodbWiredtigerCachePagesWrittenFromCacheMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCachePagesWrittenFromCacheMetricAttributeKey{MongodbWiredtigerCachePagesWrittenFromCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheTrackedDirtyBytesInCache: MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricAttributeKey{MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerCacheUnmodifiedPagesEvicted: MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricAttributeKey{MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsReadAvailable: MongodbWiredtigerConcurrenttransactionsReadAvailableMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsReadAvailableMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsReadAvailableMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsReadOut: MongodbWiredtigerConcurrenttransactionsReadOutMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsReadOutMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsReadOutMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsReadTotaltickets: MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsWriteAvailable: MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsWriteOut: MongodbWiredtigerConcurrenttransactionsWriteOutMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsWriteOutMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsWriteOutMetricAttributeKeyDatabase},
+					},
+					MongodbWiredtigerConcurrenttransactionsWriteTotaltickets: MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricConfig{
+						Enabled:             false,
+						AggregationStrategy: AggregationStrategyAvg,
+						EnabledAttributes:   []MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricAttributeKey{MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricAttributeKeyDatabase},
+					},
+					MongodbWtcacheBytesRead: MongodbWtcacheBytesReadMetricConfig{
 						Enabled: false,
 					},
 				},
@@ -2014,10 +3186,3526 @@ func TestMetricsBuilderConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := loadMetricsBuilderConfig(t, tt.name)
-			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MetricConfig{}, ResourceAttributeConfig{}))
+			diff := cmp.Diff(tt.want, cfg, cmpopts.IgnoreUnexported(MongodbActiveReadsMetricConfig{}, MongodbActiveWritesMetricConfig{}, MongodbAssertsMsgpsMetricConfig{}, MongodbAssertsRegularpsMetricConfig{}, MongodbAssertsRolloverspsMetricConfig{}, MongodbAssertsUserpsMetricConfig{}, MongodbAssertsWarningpsMetricConfig{}, MongodbBackgroundflushingAverageMsMetricConfig{}, MongodbBackgroundflushingFlushespsMetricConfig{}, MongodbBackgroundflushingLastMsMetricConfig{}, MongodbBackgroundflushingTotalMsMetricConfig{}, MongodbCacheOperationsMetricConfig{}, MongodbChunksJumboMetricConfig{}, MongodbChunksTotalMetricConfig{}, MongodbCollectionAvgobjsizeMetricConfig{}, MongodbCollectionCappedMetricConfig{}, MongodbCollectionCountMetricConfig{}, MongodbCollectionIndexsizesMetricConfig{}, MongodbCollectionMaxMetricConfig{}, MongodbCollectionMaxsizeMetricConfig{}, MongodbCollectionNindexesMetricConfig{}, MongodbCollectionObjectsMetricConfig{}, MongodbCollectionSizeMetricConfig{}, MongodbCollectionStoragesizeMetricConfig{}, MongodbCommandsRateMetricConfig{}, MongodbConnectionCountMetricConfig{}, MongodbConnectionPoolNumascopedconnectionsMetricConfig{}, MongodbConnectionPoolNumclientconnectionsMetricConfig{}, MongodbConnectionPoolTotalavailableMetricConfig{}, MongodbConnectionPoolTotalcreatedpsMetricConfig{}, MongodbConnectionPoolTotalinuseMetricConfig{}, MongodbConnectionPoolTotalrefreshingMetricConfig{}, MongodbConnectionsActiveMetricConfig{}, MongodbConnectionsAvailableMetricConfig{}, MongodbConnectionsAwaitingtopologychangesMetricConfig{}, MongodbConnectionsCurrentMetricConfig{}, MongodbConnectionsExhausthelloMetricConfig{}, MongodbConnectionsExhaustismasterMetricConfig{}, MongodbConnectionsLoadbalancedMetricConfig{}, MongodbConnectionsRejectedMetricConfig{}, MongodbConnectionsThreadedMetricConfig{}, MongodbConnectionsTotalcreatedMetricConfig{}, MongodbCursorCountMetricConfig{}, MongodbCursorTimeoutCountMetricConfig{}, MongodbCursorsTimedoutMetricConfig{}, MongodbCursorsTotalopenMetricConfig{}, MongodbDataSizeMetricConfig{}, MongodbDatabaseCountMetricConfig{}, MongodbDeletesRateMetricConfig{}, MongodbDocumentOperationCountMetricConfig{}, MongodbDurCommitsMetricConfig{}, MongodbDurCommitsinwritelockMetricConfig{}, MongodbDurCompressionMetricConfig{}, MongodbDurEarlycommitsMetricConfig{}, MongodbDurJournaledmbMetricConfig{}, MongodbDurTimemsCommitsMetricConfig{}, MongodbDurTimemsCommitsinwritelockMetricConfig{}, MongodbDurTimemsDtMetricConfig{}, MongodbDurTimemsPreplogbufferMetricConfig{}, MongodbDurTimemsRemapprivateviewMetricConfig{}, MongodbDurTimemsWritetodatafilesMetricConfig{}, MongodbDurTimemsWritetojournalMetricConfig{}, MongodbDurWritetodatafilesmbMetricConfig{}, MongodbExtentCountMetricConfig{}, MongodbExtraInfoHeapUsageBytespsMetricConfig{}, MongodbExtraInfoPageFaultspsMetricConfig{}, MongodbFlushesRateMetricConfig{}, MongodbFsynclockedMetricConfig{}, MongodbGetmoresRateMetricConfig{}, MongodbGlobalLockTimeMetricConfig{}, MongodbGloballockActiveclientsReadersMetricConfig{}, MongodbGloballockActiveclientsTotalMetricConfig{}, MongodbGloballockActiveclientsWritersMetricConfig{}, MongodbGloballockCurrentqueueReadersMetricConfig{}, MongodbGloballockCurrentqueueTotalMetricConfig{}, MongodbGloballockCurrentqueueWritersMetricConfig{}, MongodbGloballockLocktimeMetricConfig{}, MongodbGloballockRatioMetricConfig{}, MongodbGloballockTotaltimeMetricConfig{}, MongodbHealthMetricConfig{}, MongodbIndexAccessCountMetricConfig{}, MongodbIndexCountMetricConfig{}, MongodbIndexSizeMetricConfig{}, MongodbIndexcountersAccessespsMetricConfig{}, MongodbIndexcountersHitspsMetricConfig{}, MongodbIndexcountersMissespsMetricConfig{}, MongodbIndexcountersMissratioMetricConfig{}, MongodbIndexcountersResetspsMetricConfig{}, MongodbInsertsRateMetricConfig{}, MongodbLockAcquireCountMetricConfig{}, MongodbLockAcquireTimeMetricConfig{}, MongodbLockAcquireWaitCountMetricConfig{}, MongodbLockDeadlockCountMetricConfig{}, MongodbLocksCollectionAcquirecountExclusivepsMetricConfig{}, MongodbLocksCollectionAcquirecountIntentExclusivepsMetricConfig{}, MongodbLocksCollectionAcquirecountIntentSharedpsMetricConfig{}, MongodbLocksCollectionAcquirecountSharedpsMetricConfig{}, MongodbLocksCollectionAcquirewaitcountExclusivepsMetricConfig{}, MongodbLocksCollectionAcquirewaitcountSharedpsMetricConfig{}, MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricConfig{}, MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricConfig{}, MongodbLocksDatabaseAcquirecountExclusivepsMetricConfig{}, MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricConfig{}, MongodbLocksDatabaseAcquirecountIntentSharedpsMetricConfig{}, MongodbLocksDatabaseAcquirecountSharedpsMetricConfig{}, MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricConfig{}, MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricConfig{}, MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricConfig{}, MongodbLocksDatabaseAcquirewaitcountSharedpsMetricConfig{}, MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricConfig{}, MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricConfig{}, MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricConfig{}, MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricConfig{}, MongodbLocksGlobalAcquirecountExclusivepsMetricConfig{}, MongodbLocksGlobalAcquirecountIntentExclusivepsMetricConfig{}, MongodbLocksGlobalAcquirecountIntentSharedpsMetricConfig{}, MongodbLocksGlobalAcquirecountSharedpsMetricConfig{}, MongodbLocksGlobalAcquirewaitcountExclusivepsMetricConfig{}, MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricConfig{}, MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricConfig{}, MongodbLocksGlobalAcquirewaitcountSharedpsMetricConfig{}, MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricConfig{}, MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricConfig{}, MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricConfig{}, MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricConfig{}, MongodbLocksMetadataAcquirecountExclusivepsMetricConfig{}, MongodbLocksMetadataAcquirecountSharedpsMetricConfig{}, MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricConfig{}, MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricConfig{}, MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricConfig{}, MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricConfig{}, MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricConfig{}, MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricConfig{}, MongodbLocksOplogAcquirecountIntentExclusivepsMetricConfig{}, MongodbLocksOplogAcquirecountSharedpsMetricConfig{}, MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricConfig{}, MongodbLocksOplogAcquirewaitcountSharedpsMetricConfig{}, MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricConfig{}, MongodbLocksOplogTimeacquiringmicrosSharedpsMetricConfig{}, MongodbMemBitsMetricConfig{}, MongodbMemMappedMetricConfig{}, MongodbMemMappedwithjournalMetricConfig{}, MongodbMemResidentMetricConfig{}, MongodbMemVirtualMetricConfig{}, MongodbMemoryUsageMetricConfig{}, MongodbMetricsCommandsCountFailedpsMetricConfig{}, MongodbMetricsCommandsCountTotalMetricConfig{}, MongodbMetricsCommandsCreateindexesFailedpsMetricConfig{}, MongodbMetricsCommandsCreateindexesTotalMetricConfig{}, MongodbMetricsCommandsDeleteFailedpsMetricConfig{}, MongodbMetricsCommandsDeleteTotalMetricConfig{}, MongodbMetricsCommandsEvalFailedpsMetricConfig{}, MongodbMetricsCommandsEvalTotalMetricConfig{}, MongodbMetricsCommandsFindandmodifyFailedpsMetricConfig{}, MongodbMetricsCommandsFindandmodifyTotalMetricConfig{}, MongodbMetricsCommandsInsertFailedpsMetricConfig{}, MongodbMetricsCommandsInsertTotalMetricConfig{}, MongodbMetricsCommandsUpdateFailedpsMetricConfig{}, MongodbMetricsCommandsUpdateTotalMetricConfig{}, MongodbMetricsCursorOpenNotimeoutMetricConfig{}, MongodbMetricsCursorOpenPinnedMetricConfig{}, MongodbMetricsCursorOpenTotalMetricConfig{}, MongodbMetricsCursorTimedoutpsMetricConfig{}, MongodbMetricsDocumentDeletedpsMetricConfig{}, MongodbMetricsDocumentInsertedpsMetricConfig{}, MongodbMetricsDocumentReturnedpsMetricConfig{}, MongodbMetricsDocumentUpdatedpsMetricConfig{}, MongodbMetricsGetlasterrorWtimeNumpsMetricConfig{}, MongodbMetricsGetlasterrorWtimeTotalmillispsMetricConfig{}, MongodbMetricsGetlasterrorWtimeoutspsMetricConfig{}, MongodbMetricsOperationFastmodpsMetricConfig{}, MongodbMetricsOperationIdhackpsMetricConfig{}, MongodbMetricsOperationScanandorderpsMetricConfig{}, MongodbMetricsOperationWriteconflictspsMetricConfig{}, MongodbMetricsQueryexecutorScannedobjectspsMetricConfig{}, MongodbMetricsQueryexecutorScannedpsMetricConfig{}, MongodbMetricsRecordMovespsMetricConfig{}, MongodbMetricsReplApplyBatchesNumpsMetricConfig{}, MongodbMetricsReplApplyBatchesTotalmillispsMetricConfig{}, MongodbMetricsReplApplyOpspsMetricConfig{}, MongodbMetricsReplBufferCountMetricConfig{}, MongodbMetricsReplBufferMaxsizebytesMetricConfig{}, MongodbMetricsReplBufferSizebytesMetricConfig{}, MongodbMetricsReplNetworkBytespsMetricConfig{}, MongodbMetricsReplNetworkGetmoresNumpsMetricConfig{}, MongodbMetricsReplNetworkGetmoresTotalmillispsMetricConfig{}, MongodbMetricsReplNetworkOpspsMetricConfig{}, MongodbMetricsReplNetworkReaderscreatedpsMetricConfig{}, MongodbMetricsReplPreloadDocsNumpsMetricConfig{}, MongodbMetricsReplPreloadDocsTotalmillispsMetricConfig{}, MongodbMetricsReplPreloadIndexesNumpsMetricConfig{}, MongodbMetricsReplPreloadIndexesTotalmillispsMetricConfig{}, MongodbMetricsTTLDeleteddocumentspsMetricConfig{}, MongodbMetricsTTLPassespsMetricConfig{}, MongodbNetworkBytesinpsMetricConfig{}, MongodbNetworkBytesoutpsMetricConfig{}, MongodbNetworkIoReceiveMetricConfig{}, MongodbNetworkIoTransmitMetricConfig{}, MongodbNetworkNumrequestspsMetricConfig{}, MongodbNetworkRequestCountMetricConfig{}, MongodbObjectCountMetricConfig{}, MongodbOpcountersCommandpsMetricConfig{}, MongodbOpcountersDeletepsMetricConfig{}, MongodbOpcountersGetmorepsMetricConfig{}, MongodbOpcountersInsertpsMetricConfig{}, MongodbOpcountersQuerypsMetricConfig{}, MongodbOpcountersUpdatepsMetricConfig{}, MongodbOpcountersreplCommandpsMetricConfig{}, MongodbOpcountersreplDeletepsMetricConfig{}, MongodbOpcountersreplGetmorepsMetricConfig{}, MongodbOpcountersreplInsertpsMetricConfig{}, MongodbOpcountersreplQuerypsMetricConfig{}, MongodbOpcountersreplUpdatepsMetricConfig{}, MongodbOperationCountMetricConfig{}, MongodbOperationLatencyTimeMetricConfig{}, MongodbOperationReplCountMetricConfig{}, MongodbOperationTimeMetricConfig{}, MongodbOplatenciesCommandsLatencyMetricConfig{}, MongodbOplatenciesCommandsLatencypsMetricConfig{}, MongodbOplatenciesReadsLatencyMetricConfig{}, MongodbOplatenciesReadsLatencypsMetricConfig{}, MongodbOplatenciesWritesLatencyMetricConfig{}, MongodbOplatenciesWritesLatencypsMetricConfig{}, MongodbOplogLogsizembMetricConfig{}, MongodbOplogTimediffMetricConfig{}, MongodbOplogUsedsizembMetricConfig{}, MongodbPageFaultsMetricConfig{}, MongodbProfilingLevelMetricConfig{}, MongodbProfilingSlowmsMetricConfig{}, MongodbQueriesRateMetricConfig{}, MongodbReplCommandsPerSecMetricConfig{}, MongodbReplDeletesPerSecMetricConfig{}, MongodbReplGetmoresPerSecMetricConfig{}, MongodbReplInsertsPerSecMetricConfig{}, MongodbReplQueriesPerSecMetricConfig{}, MongodbReplUpdatesPerSecMetricConfig{}, MongodbReplsetHealthMetricConfig{}, MongodbReplsetOptimeLagMetricConfig{}, MongodbReplsetReplicationlagMetricConfig{}, MongodbReplsetStateMetricConfig{}, MongodbReplsetVotefractionMetricConfig{}, MongodbReplsetVotesMetricConfig{}, MongodbSessionCountMetricConfig{}, MongodbSlowOperationCPUNanosMetricConfig{}, MongodbSlowOperationDocsExaminedMetricConfig{}, MongodbSlowOperationKeysExaminedMetricConfig{}, MongodbSlowOperationKeysInsertedMetricConfig{}, MongodbSlowOperationNdeletedMetricConfig{}, MongodbSlowOperationNinsertedMetricConfig{}, MongodbSlowOperationNmatchedMetricConfig{}, MongodbSlowOperationNmodifiedMetricConfig{}, MongodbSlowOperationNreturnedMetricConfig{}, MongodbSlowOperationNumYieldsMetricConfig{}, MongodbSlowOperationPlanningTimeMicrosMetricConfig{}, MongodbSlowOperationResponseLengthMetricConfig{}, MongodbSlowOperationTimeMetricConfig{}, MongodbSlowOperationWriteConflictsMetricConfig{}, MongodbStatsAvgobjsizeMetricConfig{}, MongodbStatsCollectionsMetricConfig{}, MongodbStatsDatasizeMetricConfig{}, MongodbStatsFilesizeMetricConfig{}, MongodbStatsIndexesMetricConfig{}, MongodbStatsIndexsizeMetricConfig{}, MongodbStatsNumextentsMetricConfig{}, MongodbStatsObjectsMetricConfig{}, MongodbStatsStoragesizeMetricConfig{}, MongodbStorageSizeMetricConfig{}, MongodbTcmallocGenericCurrentAllocatedBytesMetricConfig{}, MongodbTcmallocGenericHeapSizeMetricConfig{}, MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricConfig{}, MongodbTcmallocTcmallocCentralCacheFreeBytesMetricConfig{}, MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricConfig{}, MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricConfig{}, MongodbTcmallocTcmallocPageheapFreeBytesMetricConfig{}, MongodbTcmallocTcmallocPageheapUnmappedBytesMetricConfig{}, MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricConfig{}, MongodbTcmallocTcmallocThreadCacheFreeBytesMetricConfig{}, MongodbTcmallocTcmallocTransferCacheFreeBytesMetricConfig{}, MongodbUpdatesRateMetricConfig{}, MongodbUptimeMetricConfig{}, MongodbUsageCommandsCountMetricConfig{}, MongodbUsageCommandsCountpsMetricConfig{}, MongodbUsageCommandsTimeMetricConfig{}, MongodbUsageGetmoreCountMetricConfig{}, MongodbUsageGetmoreCountpsMetricConfig{}, MongodbUsageGetmoreTimeMetricConfig{}, MongodbUsageInsertCountMetricConfig{}, MongodbUsageInsertCountpsMetricConfig{}, MongodbUsageInsertTimeMetricConfig{}, MongodbUsageQueriesCountMetricConfig{}, MongodbUsageQueriesCountpsMetricConfig{}, MongodbUsageQueriesTimeMetricConfig{}, MongodbUsageReadlockCountMetricConfig{}, MongodbUsageReadlockCountpsMetricConfig{}, MongodbUsageReadlockTimeMetricConfig{}, MongodbUsageRemoveCountMetricConfig{}, MongodbUsageRemoveCountpsMetricConfig{}, MongodbUsageRemoveTimeMetricConfig{}, MongodbUsageTotalCountMetricConfig{}, MongodbUsageTotalCountpsMetricConfig{}, MongodbUsageTotalTimeMetricConfig{}, MongodbUsageUpdateCountMetricConfig{}, MongodbUsageUpdateCountpsMetricConfig{}, MongodbUsageUpdateTimeMetricConfig{}, MongodbUsageWritelockCountMetricConfig{}, MongodbUsageWritelockCountpsMetricConfig{}, MongodbUsageWritelockTimeMetricConfig{}, MongodbWiredtigerCacheBytesCurrentlyInCacheMetricConfig{}, MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricConfig{}, MongodbWiredtigerCacheInMemoryPageSplitsMetricConfig{}, MongodbWiredtigerCacheMaximumBytesConfiguredMetricConfig{}, MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricConfig{}, MongodbWiredtigerCacheModifiedPagesEvictedMetricConfig{}, MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricConfig{}, MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricConfig{}, MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricConfig{}, MongodbWiredtigerCachePagesReadIntoCacheMetricConfig{}, MongodbWiredtigerCachePagesWrittenFromCacheMetricConfig{}, MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricConfig{}, MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricConfig{}, MongodbWiredtigerConcurrenttransactionsReadAvailableMetricConfig{}, MongodbWiredtigerConcurrenttransactionsReadOutMetricConfig{}, MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricConfig{}, MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricConfig{}, MongodbWiredtigerConcurrenttransactionsWriteOutMetricConfig{}, MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricConfig{}, MongodbWtcacheBytesReadMetricConfig{}, ResourceAttributeConfig{}))
 			require.Emptyf(t, diff, "Config mismatch (-expected +actual):\n%s", diff)
 		})
 	}
+}
+
+func TestMongodbAssertsMsgpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbAssertsMsgps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbAssertsMsgpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.asserts.msgps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbAssertsMsgps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbAssertsRegularpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbAssertsRegularps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbAssertsRegularpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.asserts.regularps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbAssertsRegularps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbAssertsRolloverspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbAssertsRolloversps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbAssertsRolloverspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.asserts.rolloversps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbAssertsRolloversps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbAssertsUserpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbAssertsUserps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbAssertsUserpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.asserts.userps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbAssertsUserps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbAssertsWarningpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbAssertsWarningps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbAssertsWarningpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.asserts.warningps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbAssertsWarningps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbBackgroundflushingAverageMsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbBackgroundflushingAverageMs
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbBackgroundflushingAverageMsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.backgroundflushing.average_ms doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbBackgroundflushingAverageMs
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbBackgroundflushingFlushespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbBackgroundflushingFlushesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbBackgroundflushingFlushespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.backgroundflushing.flushesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbBackgroundflushingFlushesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbBackgroundflushingLastMsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbBackgroundflushingLastMs
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbBackgroundflushingLastMsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.backgroundflushing.last_ms doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbBackgroundflushingLastMs
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbBackgroundflushingTotalMsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbBackgroundflushingTotalMs
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbBackgroundflushingTotalMsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.backgroundflushing.total_ms doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbBackgroundflushingTotalMs
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCacheOperationsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCacheOperations
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCacheOperationsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.cache.operations doesn't have an attribute invalid, valid attributes: [type]")
+
+	cfg = DefaultMetricsConfig().MongodbCacheOperations
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbChunksJumboMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbChunksJumbo
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbChunksJumboMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.chunks.jumbo doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbChunksJumbo
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbChunksTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbChunksTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbChunksTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.chunks.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbChunksTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionAvgobjsizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionAvgobjsize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionAvgobjsizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.avgobjsize doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionAvgobjsize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionCappedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionCapped
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionCappedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.capped doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionCapped
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionIndexsizesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionIndexsizes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionIndexsizesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.indexsizes doesn't have an attribute invalid, valid attributes: [database, collection, index]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionIndexsizes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionMaxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionMax
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionMaxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.max doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionMax
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionMaxsizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionMaxsize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionMaxsizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.maxsize doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionMaxsize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionNindexesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionNindexes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionNindexesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.nindexes doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionNindexes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionObjectsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionObjects
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionObjectsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.objects doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionObjects
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionSizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionSize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionSizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.size doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionSize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCollectionStoragesizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCollectionStoragesize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCollectionStoragesizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.collection.storagesize doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbCollectionStoragesize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection.count doesn't have an attribute invalid, valid attributes: [type]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionPoolNumascopedconnectionsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionPoolNumascopedconnections
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionPoolNumascopedconnectionsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection_pool.numascopedconnections doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionPoolNumascopedconnections
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionPoolNumclientconnectionsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionPoolNumclientconnections
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionPoolNumclientconnectionsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection_pool.numclientconnections doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionPoolNumclientconnections
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionPoolTotalavailableMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionPoolTotalavailable
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionPoolTotalavailableMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection_pool.totalavailable doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionPoolTotalavailable
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionPoolTotalcreatedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionPoolTotalcreatedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionPoolTotalcreatedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection_pool.totalcreatedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionPoolTotalcreatedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionPoolTotalinuseMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionPoolTotalinuse
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionPoolTotalinuseMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection_pool.totalinuse doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionPoolTotalinuse
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionPoolTotalrefreshingMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionPoolTotalrefreshing
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionPoolTotalrefreshingMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connection_pool.totalrefreshing doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionPoolTotalrefreshing
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsActiveMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsActive
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsActiveMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.active doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsActive
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsAvailableMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsAvailable
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsAvailableMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.available doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsAvailable
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsAwaitingtopologychangesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsAwaitingtopologychanges
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsAwaitingtopologychangesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.awaitingtopologychanges doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsAwaitingtopologychanges
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsCurrentMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsCurrent
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsCurrentMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.current doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsCurrent
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsExhausthelloMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsExhausthello
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsExhausthelloMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.exhausthello doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsExhausthello
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsExhaustismasterMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsExhaustismaster
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsExhaustismasterMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.exhaustismaster doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsExhaustismaster
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsLoadbalancedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsLoadbalanced
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsLoadbalancedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.loadbalanced doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsLoadbalanced
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsRejectedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsRejected
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsRejectedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.rejected doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsRejected
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsThreadedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsThreaded
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsThreadedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.threaded doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsThreaded
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbConnectionsTotalcreatedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbConnectionsTotalcreated
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbConnectionsTotalcreatedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.connections.totalcreated doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbConnectionsTotalcreated
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCursorsTimedoutMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCursorsTimedout
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCursorsTimedoutMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.cursors.timedout doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbCursorsTimedout
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbCursorsTotalopenMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbCursorsTotalopen
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbCursorsTotalopenMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.cursors.totalopen doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbCursorsTotalopen
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDocumentOperationCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDocumentOperationCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDocumentOperationCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.document.operation.count doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MongodbDocumentOperationCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurCommitsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurCommits
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurCommitsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.commits doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurCommits
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurCommitsinwritelockMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurCommitsinwritelock
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurCommitsinwritelockMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.commitsinwritelock doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurCommitsinwritelock
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurCompressionMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurCompression
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurCompressionMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.compression doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurCompression
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurEarlycommitsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurEarlycommits
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurEarlycommitsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.earlycommits doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurEarlycommits
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurJournaledmbMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurJournaledmb
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurJournaledmbMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.journaledmb doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurJournaledmb
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsCommitsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsCommits
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsCommitsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.commits doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsCommits
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsCommitsinwritelockMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsCommitsinwritelock
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsCommitsinwritelockMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.commitsinwritelock doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsCommitsinwritelock
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsDtMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsDt
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsDtMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.dt doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsDt
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsPreplogbufferMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsPreplogbuffer
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsPreplogbufferMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.preplogbuffer doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsPreplogbuffer
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsRemapprivateviewMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsRemapprivateview
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsRemapprivateviewMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.remapprivateview doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsRemapprivateview
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsWritetodatafilesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsWritetodatafiles
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsWritetodatafilesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.writetodatafiles doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsWritetodatafiles
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurTimemsWritetojournalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurTimemsWritetojournal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurTimemsWritetojournalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.timems.writetojournal doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurTimemsWritetojournal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbDurWritetodatafilesmbMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbDurWritetodatafilesmb
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbDurWritetodatafilesmbMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.dur.writetodatafilesmb doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbDurWritetodatafilesmb
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbExtraInfoHeapUsageBytespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbExtraInfoHeapUsageBytesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbExtraInfoHeapUsageBytespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.extra_info.heap_usage_bytesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbExtraInfoHeapUsageBytesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbExtraInfoPageFaultspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbExtraInfoPageFaultsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbExtraInfoPageFaultspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.extra_info.page_faultsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbExtraInfoPageFaultsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbFsynclockedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbFsynclocked
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbFsynclockedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.fsynclocked doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbFsynclocked
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockActiveclientsReadersMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockActiveclientsReaders
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockActiveclientsReadersMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.activeclients.readers doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockActiveclientsReaders
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockActiveclientsTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockActiveclientsTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockActiveclientsTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.activeclients.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockActiveclientsTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockActiveclientsWritersMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockActiveclientsWriters
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockActiveclientsWritersMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.activeclients.writers doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockActiveclientsWriters
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockCurrentqueueReadersMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockCurrentqueueReaders
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockCurrentqueueReadersMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.currentqueue.readers doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockCurrentqueueReaders
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockCurrentqueueTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockCurrentqueueTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockCurrentqueueTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.currentqueue.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockCurrentqueueTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockCurrentqueueWritersMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockCurrentqueueWriters
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockCurrentqueueWritersMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.currentqueue.writers doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockCurrentqueueWriters
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockLocktimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockLocktime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockLocktimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.locktime doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockLocktime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockRatioMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockRatio
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockRatioMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.ratio doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockRatio
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbGloballockTotaltimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbGloballockTotaltime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbGloballockTotaltimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.globallock.totaltime doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbGloballockTotaltime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbIndexAccessCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbIndexAccessCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbIndexAccessCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.index.access.count doesn't have an attribute invalid, valid attributes: [collection]")
+
+	cfg = DefaultMetricsConfig().MongodbIndexAccessCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbIndexcountersAccessespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbIndexcountersAccessesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbIndexcountersAccessespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.indexcounters.accessesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbIndexcountersAccessesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbIndexcountersHitspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbIndexcountersHitsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbIndexcountersHitspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.indexcounters.hitsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbIndexcountersHitsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbIndexcountersMissespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbIndexcountersMissesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbIndexcountersMissespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.indexcounters.missesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbIndexcountersMissesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbIndexcountersMissratioMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbIndexcountersMissratio
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbIndexcountersMissratioMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.indexcounters.missratio doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbIndexcountersMissratio
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbIndexcountersResetspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbIndexcountersResetsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbIndexcountersResetspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.indexcounters.resetsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbIndexcountersResetsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLockAcquireCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLockAcquireCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLockAcquireCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.lock.acquire.count doesn't have an attribute invalid, valid attributes: [lock_type, lock_mode]")
+
+	cfg = DefaultMetricsConfig().MongodbLockAcquireCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLockAcquireTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLockAcquireTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLockAcquireTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.lock.acquire.time doesn't have an attribute invalid, valid attributes: [lock_type, lock_mode]")
+
+	cfg = DefaultMetricsConfig().MongodbLockAcquireTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLockAcquireWaitCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLockAcquireWaitCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLockAcquireWaitCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.lock.acquire.wait_count doesn't have an attribute invalid, valid attributes: [lock_type, lock_mode]")
+
+	cfg = DefaultMetricsConfig().MongodbLockAcquireWaitCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLockDeadlockCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLockDeadlockCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLockDeadlockCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.lock.deadlock.count doesn't have an attribute invalid, valid attributes: [lock_type, lock_mode]")
+
+	cfg = DefaultMetricsConfig().MongodbLockDeadlockCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionAcquirecountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionAcquirecountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionAcquirecountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.acquirecount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionAcquirecountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionAcquirecountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionAcquirecountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionAcquirecountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.acquirecount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionAcquirecountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionAcquirecountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionAcquirecountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionAcquirecountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.acquirecount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionAcquirecountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionAcquirecountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionAcquirecountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionAcquirecountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.acquirecount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionAcquirecountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionAcquirewaitcountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionAcquirewaitcountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionAcquirewaitcountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.acquirewaitcount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionAcquirewaitcountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionAcquirewaitcountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionAcquirewaitcountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionAcquirewaitcountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.acquirewaitcount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionAcquirewaitcountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionTimeacquiringmicrosExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionTimeacquiringmicrosExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.timeacquiringmicros.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionTimeacquiringmicrosExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksCollectionTimeacquiringmicrosSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksCollectionTimeacquiringmicrosSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksCollectionTimeacquiringmicrosSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.collection.timeacquiringmicros.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksCollectionTimeacquiringmicrosSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirecountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirecountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirecount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirecountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirecountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirecount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirecountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirecountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirecount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirecountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirecountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirecount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirecountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirewaitcountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirewaitcountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirewaitcount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirewaitcountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirewaitcount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirewaitcountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirewaitcount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseAcquirewaitcountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseAcquirewaitcountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.acquirewaitcount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseAcquirewaitcountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseTimeacquiringmicrosExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.timeacquiringmicros.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.timeacquiringmicros.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseTimeacquiringmicrosIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.timeacquiringmicros.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksDatabaseTimeacquiringmicrosSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.database.timeacquiringmicros.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksDatabaseTimeacquiringmicrosSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirecountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirecountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirecountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirecount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirecountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirecountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirecountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirecountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirecount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirecountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirecountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirecountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirecountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirecount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirecountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirecountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirecountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirecountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirecount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirecountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirewaitcountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirewaitcountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirewaitcount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirewaitcountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirewaitcount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirewaitcountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirewaitcount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalAcquirewaitcountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalAcquirewaitcountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.acquirewaitcount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalAcquirewaitcountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalTimeacquiringmicrosExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.timeacquiringmicros.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.timeacquiringmicros.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalTimeacquiringmicrosIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.timeacquiringmicros.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksGlobalTimeacquiringmicrosSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksGlobalTimeacquiringmicrosSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.global.timeacquiringmicros.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksGlobalTimeacquiringmicrosSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMetadataAcquirecountExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMetadataAcquirecountExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMetadataAcquirecountExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.metadata.acquirecount.exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMetadataAcquirecountExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMetadataAcquirecountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMetadataAcquirecountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMetadataAcquirecountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.metadata.acquirecount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMetadataAcquirecountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirecountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMmapv1journalAcquirecountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.mmapv1journal.acquirecount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirecountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirecountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMmapv1journalAcquirecountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.mmapv1journal.acquirecount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirecountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMmapv1journalAcquirewaitcountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.mmapv1journal.acquirewaitcount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirewaitcountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMmapv1journalAcquirewaitcountIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.mmapv1journal.acquirewaitcount.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMmapv1journalAcquirewaitcountIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.mmapv1journal.timeacquiringmicros.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMmapv1journalTimeacquiringmicrosIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.mmapv1journal.timeacquiringmicros.intent_sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksMmapv1journalTimeacquiringmicrosIntentSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksOplogAcquirecountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksOplogAcquirecountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksOplogAcquirecountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.oplog.acquirecount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksOplogAcquirecountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksOplogAcquirecountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksOplogAcquirecountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksOplogAcquirecountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.oplog.acquirecount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksOplogAcquirecountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksOplogAcquirewaitcountIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksOplogAcquirewaitcountIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.oplog.acquirewaitcount.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksOplogAcquirewaitcountIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksOplogAcquirewaitcountSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksOplogAcquirewaitcountSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksOplogAcquirewaitcountSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.oplog.acquirewaitcount.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksOplogAcquirewaitcountSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksOplogTimeacquiringmicrosIntentExclusivepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.oplog.timeacquiringmicros.intent_exclusiveps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksOplogTimeacquiringmicrosIntentExclusiveps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbLocksOplogTimeacquiringmicrosSharedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbLocksOplogTimeacquiringmicrosSharedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbLocksOplogTimeacquiringmicrosSharedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.locks.oplog.timeacquiringmicros.sharedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbLocksOplogTimeacquiringmicrosSharedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMemBitsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMemBits
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMemBitsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.mem.bits doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMemBits
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMemMappedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMemMapped
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMemMappedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.mem.mapped doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMemMapped
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMemMappedwithjournalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMemMappedwithjournal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMemMappedwithjournalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.mem.mappedwithjournal doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMemMappedwithjournal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMemResidentMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMemResident
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMemResidentMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.mem.resident doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMemResident
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMemVirtualMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMemVirtual
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMemVirtualMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.mem.virtual doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMemVirtual
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMemoryUsageMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMemoryUsage
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMemoryUsageMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.memory.usage doesn't have an attribute invalid, valid attributes: [type]")
+
+	cfg = DefaultMetricsConfig().MongodbMemoryUsage
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsCountFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsCountFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsCountFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.count.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsCountFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsCountTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsCountTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsCountTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.count.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsCountTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsCreateindexesFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsCreateindexesFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsCreateindexesFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.createindexes.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsCreateindexesFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsCreateindexesTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsCreateindexesTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsCreateindexesTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.createindexes.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsCreateindexesTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsDeleteFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsDeleteFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsDeleteFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.delete.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsDeleteFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsDeleteTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsDeleteTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsDeleteTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.delete.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsDeleteTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsEvalFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsEvalFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsEvalFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.eval.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsEvalFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsEvalTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsEvalTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsEvalTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.eval.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsEvalTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsFindandmodifyFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsFindandmodifyFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsFindandmodifyFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.findandmodify.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsFindandmodifyFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsFindandmodifyTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsFindandmodifyTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsFindandmodifyTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.findandmodify.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsFindandmodifyTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsInsertFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsInsertFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsInsertFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.insert.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsInsertFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsInsertTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsInsertTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsInsertTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.insert.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsInsertTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsUpdateFailedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsUpdateFailedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsUpdateFailedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.update.failedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsUpdateFailedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCommandsUpdateTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCommandsUpdateTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCommandsUpdateTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.commands.update.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCommandsUpdateTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCursorOpenNotimeoutMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCursorOpenNotimeout
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCursorOpenNotimeoutMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.cursor.open.notimeout doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCursorOpenNotimeout
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCursorOpenPinnedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCursorOpenPinned
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCursorOpenPinnedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.cursor.open.pinned doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCursorOpenPinned
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCursorOpenTotalMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCursorOpenTotal
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCursorOpenTotalMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.cursor.open.total doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCursorOpenTotal
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsCursorTimedoutpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsCursorTimedoutps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsCursorTimedoutpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.cursor.timedoutps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsCursorTimedoutps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsDocumentDeletedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsDocumentDeletedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsDocumentDeletedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.document.deletedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsDocumentDeletedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsDocumentInsertedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsDocumentInsertedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsDocumentInsertedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.document.insertedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsDocumentInsertedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsDocumentReturnedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsDocumentReturnedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsDocumentReturnedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.document.returnedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsDocumentReturnedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsDocumentUpdatedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsDocumentUpdatedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsDocumentUpdatedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.document.updatedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsDocumentUpdatedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsGetlasterrorWtimeNumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsGetlasterrorWtimeNumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsGetlasterrorWtimeNumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.getlasterror.wtime.numps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsGetlasterrorWtimeNumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsGetlasterrorWtimeTotalmillispsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsGetlasterrorWtimeTotalmillisps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsGetlasterrorWtimeTotalmillispsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.getlasterror.wtime.totalmillisps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsGetlasterrorWtimeTotalmillisps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsGetlasterrorWtimeoutspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsGetlasterrorWtimeoutsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsGetlasterrorWtimeoutspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.getlasterror.wtimeoutsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsGetlasterrorWtimeoutsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsOperationFastmodpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsOperationFastmodps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsOperationFastmodpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.operation.fastmodps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsOperationFastmodps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsOperationIdhackpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsOperationIdhackps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsOperationIdhackpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.operation.idhackps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsOperationIdhackps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsOperationScanandorderpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsOperationScanandorderps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsOperationScanandorderpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.operation.scanandorderps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsOperationScanandorderps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsOperationWriteconflictspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsOperationWriteconflictsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsOperationWriteconflictspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.operation.writeconflictsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsOperationWriteconflictsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsQueryexecutorScannedobjectspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsQueryexecutorScannedobjectsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsQueryexecutorScannedobjectspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.queryexecutor.scannedobjectsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsQueryexecutorScannedobjectsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsQueryexecutorScannedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsQueryexecutorScannedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsQueryexecutorScannedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.queryexecutor.scannedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsQueryexecutorScannedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsRecordMovespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsRecordMovesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsRecordMovespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.record.movesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsRecordMovesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplApplyBatchesNumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplApplyBatchesNumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplApplyBatchesNumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.apply.batches.numps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplApplyBatchesNumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplApplyBatchesTotalmillispsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplApplyBatchesTotalmillisps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplApplyBatchesTotalmillispsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.apply.batches.totalmillisps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplApplyBatchesTotalmillisps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplApplyOpspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplApplyOpsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplApplyOpspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.apply.opsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplApplyOpsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplBufferCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplBufferCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplBufferCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.buffer.count doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplBufferCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplBufferMaxsizebytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplBufferMaxsizebytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplBufferMaxsizebytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.buffer.maxsizebytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplBufferMaxsizebytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplBufferSizebytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplBufferSizebytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplBufferSizebytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.buffer.sizebytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplBufferSizebytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplNetworkBytespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplNetworkBytesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplNetworkBytespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.network.bytesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplNetworkBytesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplNetworkGetmoresNumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplNetworkGetmoresNumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplNetworkGetmoresNumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.network.getmores.numps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplNetworkGetmoresNumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplNetworkGetmoresTotalmillispsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplNetworkGetmoresTotalmillisps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplNetworkGetmoresTotalmillispsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.network.getmores.totalmillisps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplNetworkGetmoresTotalmillisps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplNetworkOpspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplNetworkOpsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplNetworkOpspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.network.opsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplNetworkOpsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplNetworkReaderscreatedpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplNetworkReaderscreatedps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplNetworkReaderscreatedpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.network.readerscreatedps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplNetworkReaderscreatedps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplPreloadDocsNumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplPreloadDocsNumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplPreloadDocsNumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.preload.docs.numps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplPreloadDocsNumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplPreloadDocsTotalmillispsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplPreloadDocsTotalmillisps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplPreloadDocsTotalmillispsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.preload.docs.totalmillisps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplPreloadDocsTotalmillisps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplPreloadIndexesNumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplPreloadIndexesNumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplPreloadIndexesNumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.preload.indexes.numps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplPreloadIndexesNumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsReplPreloadIndexesTotalmillispsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsReplPreloadIndexesTotalmillisps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsReplPreloadIndexesTotalmillispsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.repl.preload.indexes.totalmillisps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsReplPreloadIndexesTotalmillisps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsTTLDeleteddocumentspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsTTLDeleteddocumentsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsTTLDeleteddocumentspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.ttl.deleteddocumentsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsTTLDeleteddocumentsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbMetricsTTLPassespsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbMetricsTTLPassesps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbMetricsTTLPassespsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.metrics.ttl.passesps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbMetricsTTLPassesps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbNetworkBytesinpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbNetworkBytesinps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbNetworkBytesinpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.network.bytesinps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbNetworkBytesinps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbNetworkBytesoutpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbNetworkBytesoutps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbNetworkBytesoutpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.network.bytesoutps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbNetworkBytesoutps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbNetworkNumrequestspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbNetworkNumrequestsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbNetworkNumrequestspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.network.numrequestsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbNetworkNumrequestsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersCommandpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersCommandps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersCommandpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcounters.commandps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersCommandps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersDeletepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersDeleteps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersDeletepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcounters.deleteps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersDeleteps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersGetmorepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersGetmoreps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersGetmorepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcounters.getmoreps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersGetmoreps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersInsertpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersInsertps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersInsertpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcounters.insertps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersInsertps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersQuerypsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersQueryps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersQuerypsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcounters.queryps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersQueryps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersUpdatepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersUpdateps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersUpdatepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcounters.updateps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersUpdateps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersreplCommandpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersreplCommandps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersreplCommandpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcountersrepl.commandps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersreplCommandps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersreplDeletepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersreplDeleteps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersreplDeletepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcountersrepl.deleteps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersreplDeleteps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersreplGetmorepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersreplGetmoreps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersreplGetmorepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcountersrepl.getmoreps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersreplGetmoreps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersreplInsertpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersreplInsertps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersreplInsertpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcountersrepl.insertps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersreplInsertps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersreplQuerypsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersreplQueryps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersreplQuerypsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcountersrepl.queryps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersreplQueryps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOpcountersreplUpdatepsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOpcountersreplUpdateps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOpcountersreplUpdatepsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.opcountersrepl.updateps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOpcountersreplUpdateps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOperationCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOperationCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOperationCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.operation.count doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MongodbOperationCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOperationLatencyTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOperationLatencyTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOperationLatencyTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.operation.latency.time doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MongodbOperationLatencyTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOperationReplCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOperationReplCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOperationReplCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.operation.repl.count doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MongodbOperationReplCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOperationTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOperationTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOperationTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.operation.time doesn't have an attribute invalid, valid attributes: [operation]")
+
+	cfg = DefaultMetricsConfig().MongodbOperationTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplatenciesCommandsLatencyMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplatenciesCommandsLatency
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplatenciesCommandsLatencyMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplatencies.commands.latency doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplatenciesCommandsLatency
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplatenciesCommandsLatencypsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplatenciesCommandsLatencyps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplatenciesCommandsLatencypsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplatencies.commands.latencyps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplatenciesCommandsLatencyps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplatenciesReadsLatencyMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplatenciesReadsLatency
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplatenciesReadsLatencyMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplatencies.reads.latency doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplatenciesReadsLatency
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplatenciesReadsLatencypsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplatenciesReadsLatencyps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplatenciesReadsLatencypsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplatencies.reads.latencyps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplatenciesReadsLatencyps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplatenciesWritesLatencyMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplatenciesWritesLatency
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplatenciesWritesLatencyMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplatencies.writes.latency doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplatenciesWritesLatency
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplatenciesWritesLatencypsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplatenciesWritesLatencyps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplatenciesWritesLatencypsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplatencies.writes.latencyps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplatenciesWritesLatencyps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplogLogsizembMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplogLogsizemb
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplogLogsizembMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplog.logsizemb doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplogLogsizemb
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplogTimediffMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplogTimediff
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplogTimediffMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplog.timediff doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplogTimediff
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbOplogUsedsizembMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbOplogUsedsizemb
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbOplogUsedsizembMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.oplog.usedsizemb doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbOplogUsedsizemb
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbProfilingLevelMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbProfilingLevel
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbProfilingLevelMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.profiling.level doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbProfilingLevel
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbProfilingSlowmsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbProfilingSlowms
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbProfilingSlowmsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.profiling.slowms doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbProfilingSlowms
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbReplsetHealthMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbReplsetHealth
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbReplsetHealthMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.replset.health doesn't have an attribute invalid, valid attributes: [database, replset, name, id, state]")
+
+	cfg = DefaultMetricsConfig().MongodbReplsetHealth
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbReplsetOptimeLagMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbReplsetOptimeLag
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbReplsetOptimeLagMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.replset.optime_lag doesn't have an attribute invalid, valid attributes: [database, replset, name, id]")
+
+	cfg = DefaultMetricsConfig().MongodbReplsetOptimeLag
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbReplsetReplicationlagMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbReplsetReplicationlag
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbReplsetReplicationlagMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.replset.replicationlag doesn't have an attribute invalid, valid attributes: [database, replset, name, id]")
+
+	cfg = DefaultMetricsConfig().MongodbReplsetReplicationlag
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbReplsetStateMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbReplsetState
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbReplsetStateMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.replset.state doesn't have an attribute invalid, valid attributes: [database, replset, name, id, state]")
+
+	cfg = DefaultMetricsConfig().MongodbReplsetState
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbReplsetVotefractionMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbReplsetVotefraction
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbReplsetVotefractionMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.replset.votefraction doesn't have an attribute invalid, valid attributes: [database, replset, name, id]")
+
+	cfg = DefaultMetricsConfig().MongodbReplsetVotefraction
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbReplsetVotesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbReplsetVotes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbReplsetVotesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.replset.votes doesn't have an attribute invalid, valid attributes: [database, replset, name, id]")
+
+	cfg = DefaultMetricsConfig().MongodbReplsetVotes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationCPUNanosMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationCPUNanos
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationCPUNanosMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.cpu_nanos doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationCPUNanos
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationDocsExaminedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationDocsExamined
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationDocsExaminedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.docs_examined doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationDocsExamined
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationKeysExaminedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationKeysExamined
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationKeysExaminedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.keys_examined doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationKeysExamined
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationKeysInsertedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationKeysInserted
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationKeysInsertedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.keys_inserted doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationKeysInserted
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationNdeletedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationNdeleted
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationNdeletedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.ndeleted doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationNdeleted
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationNinsertedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationNinserted
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationNinsertedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.ninserted doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationNinserted
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationNmatchedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationNmatched
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationNmatchedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.nmatched doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationNmatched
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationNmodifiedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationNmodified
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationNmodifiedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.nmodified doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationNmodified
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationNreturnedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationNreturned
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationNreturnedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.nreturned doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationNreturned
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationNumYieldsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationNumYields
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationNumYieldsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.num_yields doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationNumYields
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationPlanningTimeMicrosMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationPlanningTimeMicros
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationPlanningTimeMicrosMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.planning_time_micros doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationPlanningTimeMicros
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationResponseLengthMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationResponseLength
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationResponseLengthMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.response_length doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationResponseLength
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.time doesn't have an attribute invalid, valid attributes: [query_timestamp, database, operation, ns, plan_summary, query_signature, query_id, user, application, statement, raw_query, query_hash, query_shape_hash, plan_cache_key, query_framework, comment, mills, num_yields, response_length, nreturned, nmatched, nmodified, ninserted, ndeleted, keys_examined, docs_examined, keys_inserted, write_conflicts, cpu_nanos, planning_time_micros, cursor_exhausted, upsert, has_sort_stage, used_disk, from_multi_planner, replanned, replan_reason, client, cursor, lock_stats, flow_control_stats]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbSlowOperationWriteConflictsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbSlowOperationWriteConflicts
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbSlowOperationWriteConflictsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.slow_operation.write_conflicts doesn't have an attribute invalid, valid attributes: [query_id, query_signature]")
+
+	cfg = DefaultMetricsConfig().MongodbSlowOperationWriteConflicts
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsAvgobjsizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsAvgobjsize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsAvgobjsizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.avgobjsize doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsAvgobjsize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsCollectionsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsCollections
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsCollectionsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.collections doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsCollections
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsDatasizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsDatasize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsDatasizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.datasize doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsDatasize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsFilesizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsFilesize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsFilesizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.filesize doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsFilesize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsIndexesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsIndexes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsIndexesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.indexes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsIndexes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsIndexsizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsIndexsize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsIndexsizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.indexsize doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsIndexsize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsNumextentsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsNumextents
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsNumextentsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.numextents doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsNumextents
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsObjectsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsObjects
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsObjectsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.objects doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsObjects
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbStatsStoragesizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbStatsStoragesize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbStatsStoragesizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.stats.storagesize doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbStatsStoragesize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocGenericCurrentAllocatedBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocGenericCurrentAllocatedBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocGenericCurrentAllocatedBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.generic.current_allocated_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocGenericCurrentAllocatedBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocGenericHeapSizeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocGenericHeapSize
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocGenericHeapSizeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.generic.heap_size doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocGenericHeapSize
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocAggressiveMemoryDecommitMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocAggressiveMemoryDecommit
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocAggressiveMemoryDecommitMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.aggressive_memory_decommit doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocAggressiveMemoryDecommit
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocCentralCacheFreeBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocCentralCacheFreeBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocCentralCacheFreeBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.central_cache_free_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocCentralCacheFreeBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocCurrentTotalThreadCacheBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.current_total_thread_cache_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocCurrentTotalThreadCacheBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocMaxTotalThreadCacheBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocMaxTotalThreadCacheBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.max_total_thread_cache_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocMaxTotalThreadCacheBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocPageheapFreeBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocPageheapFreeBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocPageheapFreeBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.pageheap_free_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocPageheapFreeBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocPageheapUnmappedBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocPageheapUnmappedBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocPageheapUnmappedBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.pageheap_unmapped_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocPageheapUnmappedBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocSpinlockTotalDelayNsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocSpinlockTotalDelayNs
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocSpinlockTotalDelayNsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.spinlock_total_delay_ns doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocSpinlockTotalDelayNs
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocThreadCacheFreeBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocThreadCacheFreeBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocThreadCacheFreeBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.thread_cache_free_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocThreadCacheFreeBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbTcmallocTcmallocTransferCacheFreeBytesMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbTcmallocTcmallocTransferCacheFreeBytes
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbTcmallocTcmallocTransferCacheFreeBytesMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.tcmalloc.tcmalloc.transfer_cache_free_bytes doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbTcmallocTcmallocTransferCacheFreeBytes
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageCommandsCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageCommandsCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageCommandsCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.commands.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageCommandsCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageCommandsCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageCommandsCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageCommandsCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.commands.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageCommandsCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageCommandsTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageCommandsTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageCommandsTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.commands.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageCommandsTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageGetmoreCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageGetmoreCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageGetmoreCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.getmore.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageGetmoreCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageGetmoreCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageGetmoreCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageGetmoreCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.getmore.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageGetmoreCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageGetmoreTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageGetmoreTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageGetmoreTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.getmore.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageGetmoreTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageInsertCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageInsertCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageInsertCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.insert.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageInsertCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageInsertCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageInsertCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageInsertCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.insert.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageInsertCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageInsertTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageInsertTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageInsertTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.insert.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageInsertTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageQueriesCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageQueriesCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageQueriesCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.queries.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageQueriesCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageQueriesCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageQueriesCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageQueriesCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.queries.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageQueriesCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageQueriesTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageQueriesTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageQueriesTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.queries.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageQueriesTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageReadlockCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageReadlockCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageReadlockCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.readlock.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageReadlockCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageReadlockCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageReadlockCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageReadlockCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.readlock.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageReadlockCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageReadlockTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageReadlockTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageReadlockTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.readlock.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageReadlockTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageRemoveCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageRemoveCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageRemoveCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.remove.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageRemoveCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageRemoveCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageRemoveCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageRemoveCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.remove.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageRemoveCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageRemoveTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageRemoveTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageRemoveTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.remove.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageRemoveTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageTotalCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageTotalCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageTotalCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.total.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageTotalCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageTotalCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageTotalCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageTotalCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.total.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageTotalCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageTotalTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageTotalTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageTotalTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.total.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageTotalTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageUpdateCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageUpdateCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageUpdateCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.update.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageUpdateCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageUpdateCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageUpdateCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageUpdateCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.update.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageUpdateCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageUpdateTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageUpdateTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageUpdateTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.update.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageUpdateTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageWritelockCountMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageWritelockCount
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageWritelockCountMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.writelock.count doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageWritelockCount
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageWritelockCountpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageWritelockCountps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageWritelockCountpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.writelock.countps doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageWritelockCountps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbUsageWritelockTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbUsageWritelockTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbUsageWritelockTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.usage.writelock.time doesn't have an attribute invalid, valid attributes: [database, collection]")
+
+	cfg = DefaultMetricsConfig().MongodbUsageWritelockTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheBytesCurrentlyInCacheMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheBytesCurrentlyInCache
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheBytesCurrentlyInCacheMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.bytes_currently_in_cache doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheBytesCurrentlyInCache
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.failed_eviction_of_pages_exceeding_the_in_memory_maximumps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheFailedEvictionOfPagesExceedingTheInMemoryMaximumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheInMemoryPageSplitsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheInMemoryPageSplits
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheInMemoryPageSplitsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.in_memory_page_splits doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheInMemoryPageSplits
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheMaximumBytesConfiguredMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheMaximumBytesConfigured
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheMaximumBytesConfiguredMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.maximum_bytes_configured doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheMaximumBytesConfigured
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheMaximumPageSizeAtEviction
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheMaximumPageSizeAtEvictionMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.maximum_page_size_at_eviction doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheMaximumPageSizeAtEviction
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheModifiedPagesEvictedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheModifiedPagesEvicted
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheModifiedPagesEvictedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.modified_pages_evicted doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheModifiedPagesEvicted
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCachePagesCurrentlyHeldInCache
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCachePagesCurrentlyHeldInCacheMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.pages_currently_held_in_cache doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCachePagesCurrentlyHeldInCache
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCachePagesEvictedByApplicationThreadsps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCachePagesEvictedByApplicationThreadspsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.pages_evicted_by_application_threadsps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCachePagesEvictedByApplicationThreadsps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumpsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.pages_evicted_exceeding_the_in_memory_maximumps doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCachePagesEvictedExceedingTheInMemoryMaximumps
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCachePagesReadIntoCacheMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCachePagesReadIntoCache
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCachePagesReadIntoCacheMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.pages_read_into_cache doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCachePagesReadIntoCache
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCachePagesWrittenFromCacheMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCachePagesWrittenFromCache
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCachePagesWrittenFromCacheMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.pages_written_from_cache doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCachePagesWrittenFromCache
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheTrackedDirtyBytesInCache
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheTrackedDirtyBytesInCacheMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.tracked_dirty_bytes_in_cache doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheTrackedDirtyBytesInCache
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerCacheUnmodifiedPagesEvictedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerCacheUnmodifiedPagesEvicted
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerCacheUnmodifiedPagesEvictedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.cache.unmodified_pages_evicted doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerCacheUnmodifiedPagesEvicted
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerConcurrenttransactionsReadAvailableMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsReadAvailable
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerConcurrenttransactionsReadAvailableMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.concurrenttransactions.read.available doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsReadAvailable
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerConcurrenttransactionsReadOutMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsReadOut
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerConcurrenttransactionsReadOutMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.concurrenttransactions.read.out doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsReadOut
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsReadTotaltickets
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerConcurrenttransactionsReadTotalticketsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.concurrenttransactions.read.totaltickets doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsReadTotaltickets
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerConcurrenttransactionsWriteAvailableMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsWriteAvailable
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerConcurrenttransactionsWriteAvailableMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.concurrenttransactions.write.available doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsWriteAvailable
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerConcurrenttransactionsWriteOutMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsWriteOut
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerConcurrenttransactionsWriteOutMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.concurrenttransactions.write.out doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsWriteOut
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestMongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsWriteTotaltickets
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []MongodbWiredtigerConcurrenttransactionsWriteTotalticketsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric mongodb.wiredtiger.concurrenttransactions.write.totaltickets doesn't have an attribute invalid, valid attributes: [database]")
+
+	cfg = DefaultMetricsConfig().MongodbWiredtigerConcurrenttransactionsWriteTotaltickets
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
 }
 
 func loadMetricsBuilderConfig(t *testing.T, name string) MetricsBuilderConfig {

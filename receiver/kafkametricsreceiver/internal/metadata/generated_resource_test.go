@@ -14,6 +14,7 @@ func TestResourceBuilder(t *testing.T) {
 			cfg := loadResourceAttributesConfig(t, tt)
 			rb := NewResourceBuilder(cfg)
 			rb.SetKafkaClusterAlias("kafka.cluster.alias-val")
+			rb.SetKafkaClusterID("kafka.cluster.id-val")
 			rb.SetRuntimeMetricsKafka("runtime.metrics.kafka-val")
 
 			res := rb.Emit()
@@ -23,7 +24,7 @@ func TestResourceBuilder(t *testing.T) {
 			case "default":
 				assert.Equal(t, 1, res.Attributes().Len())
 			case "all_set":
-				assert.Equal(t, 2, res.Attributes().Len())
+				assert.Equal(t, 3, res.Attributes().Len())
 			case "none_set":
 				assert.Equal(t, 0, res.Attributes().Len())
 				return
@@ -34,6 +35,11 @@ func TestResourceBuilder(t *testing.T) {
 			assert.Equal(t, tt == "all_set", ok)
 			if ok {
 				assert.Equal(t, "kafka.cluster.alias-val", kafkaClusterAliasAttrVal.Str())
+			}
+			kafkaClusterIDAttrVal, ok := res.Attributes().Get("kafka.cluster.id")
+			assert.Equal(t, tt == "all_set", ok)
+			if ok {
+				assert.Equal(t, "kafka.cluster.id-val", kafkaClusterIDAttrVal.Str())
 			}
 			runtimeMetricsKafkaAttrVal, ok := res.Attributes().Get("runtime.metrics.kafka")
 			assert.True(t, ok)

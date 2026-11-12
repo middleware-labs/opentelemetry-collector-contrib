@@ -18,7 +18,7 @@ The total number of accepted client connections
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| connections | Sum | Int | Cumulative | true | Development |
+| {connections} | Sum | Int | Cumulative | true | Development |
 
 ### nginx.connections_current
 
@@ -26,7 +26,7 @@ The current number of nginx connections by state
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| connections | Sum | Int | Cumulative | false | Development |
+| {connections} | Sum | Int | Cumulative | false | Development |
 
 #### Attributes
 
@@ -40,7 +40,7 @@ The total number of handled connections. Generally, the parameter value is the s
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| connections | Sum | Int | Cumulative | true | Development |
+| {connections} | Sum | Int | Cumulative | true | Development |
 
 ### nginx.load_timestamp
 
@@ -56,7 +56,7 @@ Current number of connections where NGINX is reading the request header
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
-| connections | Gauge | Int | Development |
+| {connections} | Gauge | Int | Development |
 
 ### nginx.net.waiting
 
@@ -64,7 +64,7 @@ Current number of connections where NGINX is waiting the response back to the cl
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
-| connections | Gauge | Int | Development |
+| {connections} | Gauge | Int | Development |
 
 ### nginx.net.writing
 
@@ -72,7 +72,7 @@ Current number of connections where NGINX is writing the response back to the cl
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
-| connections | Gauge | Int | Development |
+| {connections} | Gauge | Int | Development |
 
 ### nginx.requests
 
@@ -80,7 +80,7 @@ Total number of requests made to the server since it started
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| requests | Sum | Int | Cumulative | true | Development |
+| {requests} | Sum | Int | Cumulative | true | Development |
 
 ### nginx.server_zone.received
 
@@ -102,7 +102,7 @@ The number of responses with 1xx status code.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| response | Sum | Int | Cumulative | true | Development |
+| {response} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -116,7 +116,7 @@ The number of responses with 2xx status code.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| response | Sum | Int | Cumulative | true | Development |
+| {response} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -130,7 +130,7 @@ The number of responses with 3xx status code.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| response | Sum | Int | Cumulative | true | Development |
+| {response} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -144,7 +144,7 @@ The number of responses with 4xx status code.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| response | Sum | Int | Cumulative | true | Development |
+| {response} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -158,7 +158,7 @@ The number of responses with 5xx status code.
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| response | Sum | Int | Cumulative | true | Development |
+| {response} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -231,7 +231,7 @@ Number of requests made to upstream servers
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| requests | Sum | Int | Cumulative | true | Development |
+| {requests} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -261,7 +261,7 @@ Number of responses from upstream with 1xx status codes
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| responses | Sum | Int | Cumulative | true | Development |
+| {responses} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -276,7 +276,7 @@ Number of responses from upstream with 2xx status codes
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| responses | Sum | Int | Cumulative | true | Development |
+| {responses} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -291,7 +291,7 @@ Number of responses from upstream with 3xx status codes
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| responses | Sum | Int | Cumulative | true | Development |
+| {responses} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -306,7 +306,7 @@ Number of responses from upstream with 4xx status codes
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| responses | Sum | Int | Cumulative | true | Development |
+| {responses} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -321,7 +321,7 @@ Number of responses from upstream with 5xx status codes
 
 | Unit | Metric Type | Value Type | Aggregation Temporality | Monotonic | Stability |
 | ---- | ----------- | ---------- | ----------------------- | --------- | --------- |
-| responses | Sum | Int | Cumulative | true | Development |
+| {responses} | Sum | Int | Cumulative | true | Development |
 
 #### Attributes
 
@@ -351,7 +351,7 @@ Weight of upstream server
 
 | Unit | Metric Type | Value Type | Stability |
 | ---- | ----------- | ---------- | --------- |
-| weight | Gauge | Double | Development |
+| {weight} | Gauge | Double | Development |
 
 #### Attributes
 

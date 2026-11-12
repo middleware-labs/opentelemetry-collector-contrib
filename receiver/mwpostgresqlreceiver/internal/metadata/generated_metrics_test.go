@@ -19,6 +19,7 @@ const (
 	testDataSetDefault testDataSet = iota
 	testDataSetAll
 	testDataSetNone
+	testDataSetReag
 )
 
 func TestMetricsBuilder(t *testing.T) {
@@ -35,6 +36,11 @@ func TestMetricsBuilder(t *testing.T) {
 			name:        "all_set",
 			metricsSet:  testDataSetAll,
 			resAttrsSet: testDataSetAll,
+		},
+		{
+			name:        "reaggregate_set",
+			metricsSet:  testDataSetReag,
+			resAttrsSet: testDataSetReag,
 		},
 		{
 			name:        "none_set",
@@ -60,45 +66,78 @@ func TestMetricsBuilder(t *testing.T) {
 			settings := receivertest.NewNopSettings(receivertest.NopType)
 			settings.Logger = zap.New(observedZapCore)
 			mb := NewMetricsBuilder(loadMetricsBuilderConfig(t, tt.name), settings, WithStartTime(start))
+			aggMap := make(map[string]string) // contains the aggregation strategies for each metric name
+			aggMap["postgresql.bgwriter.buffers.writes"] = mb.metricPostgresqlBgwriterBuffersWrites.config.AggregationStrategy
+			aggMap["postgresql.bgwriter.checkpoint.count"] = mb.metricPostgresqlBgwriterCheckpointCount.config.AggregationStrategy
+			aggMap["postgresql.bgwriter.duration"] = mb.metricPostgresqlBgwriterDuration.config.AggregationStrategy
+			aggMap["postgresql.blocks_read"] = mb.metricPostgresqlBlocksRead.config.AggregationStrategy
+			aggMap["postgresql.buffer_hit"] = mb.metricPostgresqlBufferHit.config.AggregationStrategy
+			aggMap["postgresql.connection.count"] = mb.metricPostgresqlConnectionCount.config.AggregationStrategy
+			aggMap["postgresql.database.locks"] = mb.metricPostgresqlDatabaseLocks.config.AggregationStrategy
+			aggMap["postgresql.function.calls"] = mb.metricPostgresqlFunctionCalls.config.AggregationStrategy
+			aggMap["postgresql.index.blocks_read"] = mb.metricPostgresqlIndexBlocksRead.config.AggregationStrategy
+			aggMap["postgresql.live_rows"] = mb.metricPostgresqlLiveRows.config.AggregationStrategy
+			aggMap["postgresql.operations"] = mb.metricPostgresqlOperations.config.AggregationStrategy
+			aggMap["postgresql.query.count"] = mb.metricPostgresqlQueryCount.config.AggregationStrategy
+			aggMap["postgresql.query.total_exec_time"] = mb.metricPostgresqlQueryTotalExecTime.config.AggregationStrategy
+			aggMap["postgresql.replication.data_delay"] = mb.metricPostgresqlReplicationDataDelay.config.AggregationStrategy
+			aggMap["postgresql.rows"] = mb.metricPostgresqlRows.config.AggregationStrategy
+			aggMap["postgresql.rows_deleted"] = mb.metricPostgresqlRowsDeleted.config.AggregationStrategy
+			aggMap["postgresql.rows_fetched"] = mb.metricPostgresqlRowsFetched.config.AggregationStrategy
+			aggMap["postgresql.rows_inserted"] = mb.metricPostgresqlRowsInserted.config.AggregationStrategy
+			aggMap["postgresql.rows_updated"] = mb.metricPostgresqlRowsUpdated.config.AggregationStrategy
+			aggMap["postgresql.wal.delay"] = mb.metricPostgresqlWalDelay.config.AggregationStrategy
+			aggMap["postgresql.wal.lag"] = mb.metricPostgresqlWalLag.config.AggregationStrategy
 
 			expectedWarnings := 0
-			assert.Equal(t, expectedWarnings, observedLogs.Len())
+			if tt.metricsSet != testDataSetReag {
+				assert.Equal(t, expectedWarnings, observedLogs.Len())
+			}
 
 			defaultMetricsCount := 0
 			allMetricsCount := 0
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAnalyzedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAutoanalyzedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlAutovacuumedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBackendsDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersAllocatedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterBuffersWritesDataPoint(ts, 1, AttributeBgBufferSourceBackend)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlBgwriterBuffersWritesDataPoint(ts, 3, AttributeBgBufferSourceBackendFsync)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlBgwriterBuffersWritesDataPoint(ts+1, 3, AttributeBgBufferSourceBackendFsync)
+				assert.Equal(t, 2, mb.metricPostgresqlBgwriterBuffersWrites.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterCheckpointCountDataPoint(ts, 1, AttributeBgCheckpointTypeRequested)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlBgwriterCheckpointCountDataPoint(ts, 3, AttributeBgCheckpointTypeScheduled)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlBgwriterCheckpointCountDataPoint(ts+1, 3, AttributeBgCheckpointTypeScheduled)
+				assert.Equal(t, 2, mb.metricPostgresqlBgwriterCheckpointCount.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterDurationDataPoint(ts, 1, AttributeBgDurationTypeSync)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlBgwriterDurationDataPoint(ts, 3, AttributeBgDurationTypeWrite)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlBgwriterDurationDataPoint(ts+1, 3, AttributeBgDurationTypeWrite)
+				assert.Equal(t, 2, mb.metricPostgresqlBgwriterDuration.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBgwriterMaxwrittenDataPoint(ts, 1)
@@ -114,34 +153,51 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			mb.RecordPostgresqlBlksReadDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBlocksReadDataPoint(ts, 1, AttributeSourceHeapRead)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlBlocksReadDataPoint(ts, 3, AttributeSourceHeapHit)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlBlocksReadDataPoint(ts+1, 3, AttributeSourceHeapHit)
+				assert.Equal(t, 2, mb.metricPostgresqlBlocksRead.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlBufferHitDataPoint(ts, 1, "dbname-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlBufferHitDataPoint(ts, 3, "dbname-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlBufferHitDataPoint(ts+1, 3, "dbname-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlBufferHit.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlCommitsDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConnectionCountDataPoint(ts, 1, "postgresql.state-val", "postgresql.application_name-val", "user.name-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlConnectionCountDataPoint(ts, 3, "postgresql.state-val-2", "postgresql.application_name-val-2", "user.name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlConnectionCountDataPoint(ts+1, 3, "postgresql.state-val-2", "postgresql.application_name-val-2", "user.name-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlConnectionCount.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlConnectionMaxDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDatabaseCountDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlDatabaseLocksDataPoint(ts, 1, "relation-val", "mode-val", "lock_type-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlDatabaseLocksDataPoint(ts, 3, "relation-val-2", "mode-val-2", "lock_type-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlDatabaseLocksDataPoint(ts+1, 3, "relation-val-2", "mode-val-2", "lock_type-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlDatabaseLocks.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlDbSizeDataPoint(ts, 1)
@@ -151,89 +207,141 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			mb.RecordPostgresqlFunctionCallsDataPoint(ts, 1, "function-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlFunctionCallsDataPoint(ts, 3, "function-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlFunctionCallsDataPoint(ts+1, 3, "function-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlFunctionCalls.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBlocksReadDataPoint(ts, 1, AttributeSourceHeapRead)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlIndexBlocksReadDataPoint(ts, 3, AttributeSourceHeapHit)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlIndexBlocksReadDataPoint(ts+1, 3, AttributeSourceHeapHit)
+				assert.Equal(t, 2, mb.metricPostgresqlIndexBlocksRead.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexRowsReadDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexScansDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexSizeDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlIndexBloatDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlLiveRowsDataPoint(ts, 1, "relation_name-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlLiveRowsDataPoint(ts, 3, "relation_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlLiveRowsDataPoint(ts+1, 3, "relation_name-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlLiveRows.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlOperationsDataPoint(ts, 1, AttributeOperationIns)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlOperationsDataPoint(ts, 3, AttributeOperationUpd)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlOperationsDataPoint(ts+1, 3, AttributeOperationUpd)
+				assert.Equal(t, 2, mb.metricPostgresqlOperations.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueryCountDataPoint(ts, 1, "query_text-val", "query_id-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlQueryCountDataPoint(ts, 3, "query_text-val-2", "query_id-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlQueryCountDataPoint(ts+1, 3, "query_text-val-2", "query_id-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlQueryCount.data.Sum().DataPoints().Len())
+			}
 
 			allMetricsCount++
 			mb.RecordPostgresqlQueryDeallocationsDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlQueryTotalExecTimeDataPoint(ts, 1, "query_text-val", "query_id-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlQueryTotalExecTimeDataPoint(ts, 3, "query_text-val-2", "query_id-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlQueryTotalExecTimeDataPoint(ts+1, 3, "query_text-val-2", "query_id-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlQueryTotalExecTime.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlReplicationDataDelayDataPoint(ts, 1, "replication_client-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlReplicationDataDelayDataPoint(ts, 3, "replication_client-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlReplicationDataDelayDataPoint(ts+1, 3, "replication_client-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlReplicationDataDelay.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRollbacksDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDataPoint(ts, 1, AttributeStateDead)
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlRowsDataPoint(ts, 3, AttributeStateLive)
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlRowsDataPoint(ts+1, 3, AttributeStateLive)
+				assert.Equal(t, 2, mb.metricPostgresqlRows.data.Sum().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsDeletedDataPoint(ts, 1, "relation_name-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlRowsDeletedDataPoint(ts, 3, "relation_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlRowsDeletedDataPoint(ts+1, 3, "relation_name-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlRowsDeleted.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsFetchedDataPoint(ts, 1, "relation_name-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlRowsFetchedDataPoint(ts, 3, "relation_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlRowsFetchedDataPoint(ts+1, 3, "relation_name-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlRowsFetched.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsInsertedDataPoint(ts, 1, "relation_name-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlRowsInsertedDataPoint(ts, 3, "relation_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlRowsInsertedDataPoint(ts+1, 3, "relation_name-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlRowsInserted.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlRowsUpdatedDataPoint(ts, 1, "relation_name-val")
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlRowsUpdatedDataPoint(ts, 3, "relation_name-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlRowsUpdatedDataPoint(ts+1, 3, "relation_name-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlRowsUpdated.data.Gauge().DataPoints().Len())
+			}
 
 			allMetricsCount++
 			mb.RecordPostgresqlSequentialScansDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableSizeDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableVacuumCountDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTableBloatDataPoint(ts, 1)
@@ -243,23 +351,18 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			mb.RecordPostgresqlTempFilesDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastBlocksHitDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastIndexBlocksReadDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlToastSizeDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTransactionsDurationMaxDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlTransactionsDurationSumDataPoint(ts, 1)
@@ -278,22 +381,30 @@ func TestMetricsBuilder(t *testing.T) {
 
 			allMetricsCount++
 			mb.RecordPostgresqlTupUpdatedDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalAgeDataPoint(ts, 1)
-
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalCountDataPoint(ts, 1)
 
 			allMetricsCount++
 			mb.RecordPostgresqlWalDelayDataPoint(ts, 1, AttributeWalOperationLagFlush, "replication_client-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlWalDelayDataPoint(ts, 3, AttributeWalOperationLagReplay, "replication_client-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlWalDelayDataPoint(ts+1, 3, AttributeWalOperationLagReplay, "replication_client-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlWalDelay.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalLagDataPoint(ts, 1, AttributeWalOperationLagFlush, "replication_client-val")
-
+			if tt.name == "reaggregate_set" {
+				mb.RecordPostgresqlWalLagDataPoint(ts, 3, AttributeWalOperationLagReplay, "replication_client-val-2")
+				// a different timestamp is a different key: must not merge with the above.
+				mb.RecordPostgresqlWalLagDataPoint(ts+1, 3, AttributeWalOperationLagReplay, "replication_client-val-2")
+				assert.Equal(t, 2, mb.metricPostgresqlWalLag.data.Gauge().DataPoints().Len())
+			}
 			defaultMetricsCount++
 			allMetricsCount++
 			mb.RecordPostgresqlWalSizeDataPoint(ts, 1)
@@ -307,6 +418,29 @@ func TestMetricsBuilder(t *testing.T) {
 			rb.SetServiceInstanceID("service.instance.id-val")
 			res := rb.Emit()
 			metrics := mb.Emit(WithResource(res))
+			if tt.name == "reaggregate_set" {
+				assert.Empty(t, mb.metricPostgresqlBgwriterBuffersWrites.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlBgwriterCheckpointCount.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlBgwriterDuration.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlBlocksRead.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlBufferHit.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlConnectionCount.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlDatabaseLocks.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlFunctionCalls.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlIndexBlocksRead.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlLiveRows.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlOperations.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlQueryCount.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlQueryTotalExecTime.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlReplicationDataDelay.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlRows.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlRowsDeleted.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlRowsFetched.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlRowsInserted.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlRowsUpdated.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlWalDelay.aggDataPoints)
+				assert.Empty(t, mb.metricPostgresqlWalLag.aggDataPoints)
+			}
 
 			if tt.expectEmpty {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
@@ -404,56 +538,143 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.bgwriter.buffers.writes":
-					assert.False(t, validatedMetrics["postgresql.bgwriter.buffers.writes"], "Found a duplicate in the metrics slice: postgresql.bgwriter.buffers.writes")
-					validatedMetrics["postgresql.bgwriter.buffers.writes"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "Number of buffers written.", mi.Description())
-					assert.Equal(t, "{buffers}", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					bgBufferSourceAttrVal, ok := dp.Attributes().Get("source")
-					assert.True(t, ok)
-					assert.Equal(t, "backend", bgBufferSourceAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.bgwriter.buffers.writes"], "Found a duplicate in the metrics slice: postgresql.bgwriter.buffers.writes")
+						validatedMetrics["postgresql.bgwriter.buffers.writes"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of buffers written.", mi.Description())
+						assert.Equal(t, "{buffers}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						bgBufferSourceAttrVal, ok := dp.Attributes().Get("source")
+						assert.True(t, ok)
+						assert.Equal(t, "backend", bgBufferSourceAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.bgwriter.buffers.writes"], "Found a duplicate in the metrics slice: postgresql.bgwriter.buffers.writes")
+						validatedMetrics["postgresql.bgwriter.buffers.writes"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Number of buffers written.", mi.Description())
+						assert.Equal(t, "{buffers}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.bgwriter.buffers.writes"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("source")
+						assert.False(t, ok)
+					}
 				case "postgresql.bgwriter.checkpoint.count":
-					assert.False(t, validatedMetrics["postgresql.bgwriter.checkpoint.count"], "Found a duplicate in the metrics slice: postgresql.bgwriter.checkpoint.count")
-					validatedMetrics["postgresql.bgwriter.checkpoint.count"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "The number of checkpoints performed.", mi.Description())
-					assert.Equal(t, "{checkpoints}", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					bgCheckpointTypeAttrVal, ok := dp.Attributes().Get("type")
-					assert.True(t, ok)
-					assert.Equal(t, "requested", bgCheckpointTypeAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.bgwriter.checkpoint.count"], "Found a duplicate in the metrics slice: postgresql.bgwriter.checkpoint.count")
+						validatedMetrics["postgresql.bgwriter.checkpoint.count"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of checkpoints performed.", mi.Description())
+						assert.Equal(t, "{checkpoints}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						bgCheckpointTypeAttrVal, ok := dp.Attributes().Get("type")
+						assert.True(t, ok)
+						assert.Equal(t, "requested", bgCheckpointTypeAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.bgwriter.checkpoint.count"], "Found a duplicate in the metrics slice: postgresql.bgwriter.checkpoint.count")
+						validatedMetrics["postgresql.bgwriter.checkpoint.count"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of checkpoints performed.", mi.Description())
+						assert.Equal(t, "{checkpoints}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.bgwriter.checkpoint.count"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("type")
+						assert.False(t, ok)
+					}
 				case "postgresql.bgwriter.duration":
-					assert.False(t, validatedMetrics["postgresql.bgwriter.duration"], "Found a duplicate in the metrics slice: postgresql.bgwriter.duration")
-					validatedMetrics["postgresql.bgwriter.duration"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "Total time spent writing and syncing files to disk by checkpoints.", mi.Description())
-					assert.Equal(t, "ms", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
-					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
-					bgDurationTypeAttrVal, ok := dp.Attributes().Get("type")
-					assert.True(t, ok)
-					assert.Equal(t, "sync", bgDurationTypeAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.bgwriter.duration"], "Found a duplicate in the metrics slice: postgresql.bgwriter.duration")
+						validatedMetrics["postgresql.bgwriter.duration"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Total time spent writing and syncing files to disk by checkpoints.", mi.Description())
+						assert.Equal(t, "ms", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						bgDurationTypeAttrVal, ok := dp.Attributes().Get("type")
+						assert.True(t, ok)
+						assert.Equal(t, "sync", bgDurationTypeAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.bgwriter.duration"], "Found a duplicate in the metrics slice: postgresql.bgwriter.duration")
+						validatedMetrics["postgresql.bgwriter.duration"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Total time spent writing and syncing files to disk by checkpoints.", mi.Description())
+						assert.Equal(t, "ms", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						switch aggMap["postgresql.bgwriter.duration"] {
+						case "sum":
+							assert.InDelta(t, float64(4), dp.DoubleValue(), 0.01)
+						case "avg":
+							assert.InDelta(t, float64(2), dp.DoubleValue(), 0.01)
+						case "min":
+							assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						case "max":
+							assert.InDelta(t, float64(3), dp.DoubleValue(), 0.01)
+						}
+						_, ok := dp.Attributes().Get("type")
+						assert.False(t, ok)
+					}
 				case "postgresql.bgwriter.maxwritten":
 					assert.False(t, validatedMetrics["postgresql.bgwriter.maxwritten"], "Found a duplicate in the metrics slice: postgresql.bgwriter.maxwritten")
 					validatedMetrics["postgresql.bgwriter.maxwritten"] = true
@@ -525,37 +746,93 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.blocks_read":
-					assert.False(t, validatedMetrics["postgresql.blocks_read"], "Found a duplicate in the metrics slice: postgresql.blocks_read")
-					validatedMetrics["postgresql.blocks_read"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "The number of blocks read.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					sourceAttrVal, ok := dp.Attributes().Get("source")
-					assert.True(t, ok)
-					assert.Equal(t, "heap_read", sourceAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.blocks_read"], "Found a duplicate in the metrics slice: postgresql.blocks_read")
+						validatedMetrics["postgresql.blocks_read"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of blocks read.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						sourceAttrVal, ok := dp.Attributes().Get("source")
+						assert.True(t, ok)
+						assert.Equal(t, "heap_read", sourceAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.blocks_read"], "Found a duplicate in the metrics slice: postgresql.blocks_read")
+						validatedMetrics["postgresql.blocks_read"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of blocks read.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.blocks_read"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("source")
+						assert.False(t, ok)
+					}
 				case "postgresql.buffer_hit":
-					assert.False(t, validatedMetrics["postgresql.buffer_hit"], "Found a duplicate in the metrics slice: postgresql.buffer_hit")
-					validatedMetrics["postgresql.buffer_hit"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.", mi.Description())
-					assert.Equal(t, "{hit}/s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					dbnameAttrVal, ok := dp.Attributes().Get("dbname")
-					assert.True(t, ok)
-					assert.Equal(t, "dbname-val", dbnameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.buffer_hit"], "Found a duplicate in the metrics slice: postgresql.buffer_hit")
+						validatedMetrics["postgresql.buffer_hit"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.", mi.Description())
+						assert.Equal(t, "{hit}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						dbnameAttrVal, ok := dp.Attributes().Get("dbname")
+						assert.True(t, ok)
+						assert.Equal(t, "dbname-val", dbnameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.buffer_hit"], "Found a duplicate in the metrics slice: postgresql.buffer_hit")
+						validatedMetrics["postgresql.buffer_hit"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of disk block hits in the buffer cache, thereby avoiding database reads, tagged with database name.", mi.Description())
+						assert.Equal(t, "{hit}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.buffer_hit"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("dbname")
+						assert.False(t, ok)
+					}
 				case "postgresql.commits":
 					assert.False(t, validatedMetrics["postgresql.commits"], "Found a duplicate in the metrics slice: postgresql.commits")
 					validatedMetrics["postgresql.commits"] = true
@@ -571,26 +848,57 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.connection.count":
-					assert.False(t, validatedMetrics["postgresql.connection.count"], "Found a duplicate in the metrics slice: postgresql.connection.count")
-					validatedMetrics["postgresql.connection.count"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user", mi.Description())
-					assert.Equal(t, "{connection}", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					postgresqlStateAttrVal, ok := dp.Attributes().Get("postgresql.state")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.state-val", postgresqlStateAttrVal.Str())
-					postgresqlApplicationNameAttrVal, ok := dp.Attributes().Get("postgresql.application_name")
-					assert.True(t, ok)
-					assert.Equal(t, "postgresql.application_name-val", postgresqlApplicationNameAttrVal.Str())
-					userNameAttrVal, ok := dp.Attributes().Get("user.name")
-					assert.True(t, ok)
-					assert.Equal(t, "user.name-val", userNameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.connection.count"], "Found a duplicate in the metrics slice: postgresql.connection.count")
+						validatedMetrics["postgresql.connection.count"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user", mi.Description())
+						assert.Equal(t, "{connection}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						postgresqlStateAttrVal, ok := dp.Attributes().Get("postgresql.state")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.state-val", postgresqlStateAttrVal.Str())
+						postgresqlApplicationNameAttrVal, ok := dp.Attributes().Get("postgresql.application_name")
+						assert.True(t, ok)
+						assert.Equal(t, "postgresql.application_name-val", postgresqlApplicationNameAttrVal.Str())
+						userNameAttrVal, ok := dp.Attributes().Get("user.name")
+						assert.True(t, ok)
+						assert.Equal(t, "user.name-val", userNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.connection.count"], "Found a duplicate in the metrics slice: postgresql.connection.count")
+						validatedMetrics["postgresql.connection.count"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of active connections to this database. If DBM is enabled, this metric is tagged with state, app, db and user", mi.Description())
+						assert.Equal(t, "{connection}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.connection.count"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("postgresql.state")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("postgresql.application_name")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("user.name")
+						assert.False(t, ok)
+					}
 				case "postgresql.connection.max":
 					assert.False(t, validatedMetrics["postgresql.connection.max"], "Found a duplicate in the metrics slice: postgresql.connection.max")
 					validatedMetrics["postgresql.connection.max"] = true
@@ -618,26 +926,57 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.database.locks":
-					assert.False(t, validatedMetrics["postgresql.database.locks"], "Found a duplicate in the metrics slice: postgresql.database.locks")
-					validatedMetrics["postgresql.database.locks"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The number of database locks.", mi.Description())
-					assert.Equal(t, "{lock}", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					relationAttrVal, ok := dp.Attributes().Get("relation")
-					assert.True(t, ok)
-					assert.Equal(t, "relation-val", relationAttrVal.Str())
-					modeAttrVal, ok := dp.Attributes().Get("mode")
-					assert.True(t, ok)
-					assert.Equal(t, "mode-val", modeAttrVal.Str())
-					lockTypeAttrVal, ok := dp.Attributes().Get("lock_type")
-					assert.True(t, ok)
-					assert.Equal(t, "lock_type-val", lockTypeAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.database.locks"], "Found a duplicate in the metrics slice: postgresql.database.locks")
+						validatedMetrics["postgresql.database.locks"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The number of database locks.", mi.Description())
+						assert.Equal(t, "{lock}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						relationAttrVal, ok := dp.Attributes().Get("relation")
+						assert.True(t, ok)
+						assert.Equal(t, "relation-val", relationAttrVal.Str())
+						modeAttrVal, ok := dp.Attributes().Get("mode")
+						assert.True(t, ok)
+						assert.Equal(t, "mode-val", modeAttrVal.Str())
+						lockTypeAttrVal, ok := dp.Attributes().Get("lock_type")
+						assert.True(t, ok)
+						assert.Equal(t, "lock_type-val", lockTypeAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.database.locks"], "Found a duplicate in the metrics slice: postgresql.database.locks")
+						validatedMetrics["postgresql.database.locks"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of database locks.", mi.Description())
+						assert.Equal(t, "{lock}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.database.locks"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("relation")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("mode")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("lock_type")
+						assert.False(t, ok)
+					}
 				case "postgresql.db_size":
 					assert.False(t, validatedMetrics["postgresql.db_size"], "Found a duplicate in the metrics slice: postgresql.db_size")
 					validatedMetrics["postgresql.db_size"] = true
@@ -667,39 +1006,97 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.function.calls":
-					assert.False(t, validatedMetrics["postgresql.function.calls"], "Found a duplicate in the metrics slice: postgresql.function.calls")
-					validatedMetrics["postgresql.function.calls"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "The number of calls made to a function. Requires `track_functions=pl|all` in Postgres config.", mi.Description())
-					assert.Equal(t, "{call}", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					functionAttrVal, ok := dp.Attributes().Get("function")
-					assert.True(t, ok)
-					assert.Equal(t, "function-val", functionAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.function.calls"], "Found a duplicate in the metrics slice: postgresql.function.calls")
+						validatedMetrics["postgresql.function.calls"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of calls made to a function. Requires `track_functions=pl|all` in Postgres config.", mi.Description())
+						assert.Equal(t, "{call}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						functionAttrVal, ok := dp.Attributes().Get("function")
+						assert.True(t, ok)
+						assert.Equal(t, "function-val", functionAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.function.calls"], "Found a duplicate in the metrics slice: postgresql.function.calls")
+						validatedMetrics["postgresql.function.calls"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of calls made to a function. Requires `track_functions=pl|all` in Postgres config.", mi.Description())
+						assert.Equal(t, "{call}", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.function.calls"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("function")
+						assert.False(t, ok)
+					}
 				case "postgresql.index.blocks_read":
-					assert.False(t, validatedMetrics["postgresql.index.blocks_read"], "Found a duplicate in the metrics slice: postgresql.index.blocks_read")
-					validatedMetrics["postgresql.index.blocks_read"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "The number of disk blocks read by this index.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					sourceAttrVal, ok := dp.Attributes().Get("source")
-					assert.True(t, ok)
-					assert.Equal(t, "heap_read", sourceAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.index.blocks_read"], "Found a duplicate in the metrics slice: postgresql.index.blocks_read")
+						validatedMetrics["postgresql.index.blocks_read"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of disk blocks read by this index.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						sourceAttrVal, ok := dp.Attributes().Get("source")
+						assert.True(t, ok)
+						assert.Equal(t, "heap_read", sourceAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.index.blocks_read"], "Found a duplicate in the metrics slice: postgresql.index.blocks_read")
+						validatedMetrics["postgresql.index.blocks_read"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of disk blocks read by this index.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.index.blocks_read"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("source")
+						assert.False(t, ok)
+					}
 				case "postgresql.index.rows_read":
 					assert.False(t, validatedMetrics["postgresql.index.rows_read"], "Found a duplicate in the metrics slice: postgresql.index.rows_read")
 					validatedMetrics["postgresql.index.rows_read"] = true
@@ -753,57 +1150,144 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
 					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
 				case "postgresql.live_rows":
-					assert.False(t, validatedMetrics["postgresql.live_rows"], "Found a duplicate in the metrics slice: postgresql.live_rows")
-					validatedMetrics["postgresql.live_rows"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The approximate number of live rows, tagged with relation name.", mi.Description())
-					assert.Equal(t, "{row}", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
-					assert.True(t, ok)
-					assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.live_rows"], "Found a duplicate in the metrics slice: postgresql.live_rows")
+						validatedMetrics["postgresql.live_rows"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The approximate number of live rows, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
+						assert.True(t, ok)
+						assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.live_rows"], "Found a duplicate in the metrics slice: postgresql.live_rows")
+						validatedMetrics["postgresql.live_rows"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The approximate number of live rows, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.live_rows"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("relation_name")
+						assert.False(t, ok)
+					}
 				case "postgresql.operations":
-					assert.False(t, validatedMetrics["postgresql.operations"], "Found a duplicate in the metrics slice: postgresql.operations")
-					validatedMetrics["postgresql.operations"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "The number of db row operations.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					assert.True(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					operationAttrVal, ok := dp.Attributes().Get("operation")
-					assert.True(t, ok)
-					assert.Equal(t, "ins", operationAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.operations"], "Found a duplicate in the metrics slice: postgresql.operations")
+						validatedMetrics["postgresql.operations"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of db row operations.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						operationAttrVal, ok := dp.Attributes().Get("operation")
+						assert.True(t, ok)
+						assert.Equal(t, "ins", operationAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.operations"], "Found a duplicate in the metrics slice: postgresql.operations")
+						validatedMetrics["postgresql.operations"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of db row operations.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.True(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.operations"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("operation")
+						assert.False(t, ok)
+					}
 				case "postgresql.query.count":
-					assert.False(t, validatedMetrics["postgresql.query.count"], "Found a duplicate in the metrics slice: postgresql.query.count")
-					validatedMetrics["postgresql.query.count"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "Number of times the statement was executed.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					assert.False(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					queryTextAttrVal, ok := dp.Attributes().Get("query_text")
-					assert.True(t, ok)
-					assert.Equal(t, "query_text-val", queryTextAttrVal.Str())
-					queryIDAttrVal, ok := dp.Attributes().Get("query_id")
-					assert.True(t, ok)
-					assert.Equal(t, "query_id-val", queryIDAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.query.count"], "Found a duplicate in the metrics slice: postgresql.query.count")
+						validatedMetrics["postgresql.query.count"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Number of times the statement was executed.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.False(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						queryTextAttrVal, ok := dp.Attributes().Get("query_text")
+						assert.True(t, ok)
+						assert.Equal(t, "query_text-val", queryTextAttrVal.Str())
+						queryIDAttrVal, ok := dp.Attributes().Get("query_id")
+						assert.True(t, ok)
+						assert.Equal(t, "query_id-val", queryIDAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.query.count"], "Found a duplicate in the metrics slice: postgresql.query.count")
+						validatedMetrics["postgresql.query.count"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Number of times the statement was executed.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.False(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.query.count"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("query_text")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("query_id")
+						assert.False(t, ok)
+					}
 				case "postgresql.query.deallocations":
 					assert.False(t, validatedMetrics["postgresql.query.deallocations"], "Found a duplicate in the metrics slice: postgresql.query.deallocations")
 					validatedMetrics["postgresql.query.deallocations"] = true
@@ -819,40 +1303,98 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.query.total_exec_time":
-					assert.False(t, validatedMetrics["postgresql.query.total_exec_time"], "Found a duplicate in the metrics slice: postgresql.query.total_exec_time")
-					validatedMetrics["postgresql.query.total_exec_time"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "Total wait time of the normalised timed events in nanaoseconds.", mi.Description())
-					assert.Equal(t, "ns", mi.Unit())
-					assert.False(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					queryTextAttrVal, ok := dp.Attributes().Get("query_text")
-					assert.True(t, ok)
-					assert.Equal(t, "query_text-val", queryTextAttrVal.Str())
-					queryIDAttrVal, ok := dp.Attributes().Get("query_id")
-					assert.True(t, ok)
-					assert.Equal(t, "query_id-val", queryIDAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.query.total_exec_time"], "Found a duplicate in the metrics slice: postgresql.query.total_exec_time")
+						validatedMetrics["postgresql.query.total_exec_time"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "Total wait time of the normalised timed events in nanaoseconds.", mi.Description())
+						assert.Equal(t, "ns", mi.Unit())
+						assert.False(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						queryTextAttrVal, ok := dp.Attributes().Get("query_text")
+						assert.True(t, ok)
+						assert.Equal(t, "query_text-val", queryTextAttrVal.Str())
+						queryIDAttrVal, ok := dp.Attributes().Get("query_id")
+						assert.True(t, ok)
+						assert.Equal(t, "query_id-val", queryIDAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.query.total_exec_time"], "Found a duplicate in the metrics slice: postgresql.query.total_exec_time")
+						validatedMetrics["postgresql.query.total_exec_time"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Total wait time of the normalised timed events in nanaoseconds.", mi.Description())
+						assert.Equal(t, "ns", mi.Unit())
+						assert.False(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.query.total_exec_time"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("query_text")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("query_id")
+						assert.False(t, ok)
+					}
 				case "postgresql.replication.data_delay":
-					assert.False(t, validatedMetrics["postgresql.replication.data_delay"], "Found a duplicate in the metrics slice: postgresql.replication.data_delay")
-					validatedMetrics["postgresql.replication.data_delay"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "The amount of data delayed in replication.", mi.Description())
-					assert.Equal(t, "By", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					replicationClientAttrVal, ok := dp.Attributes().Get("replication_client")
-					assert.True(t, ok)
-					assert.Equal(t, "replication_client-val", replicationClientAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.replication.data_delay"], "Found a duplicate in the metrics slice: postgresql.replication.data_delay")
+						validatedMetrics["postgresql.replication.data_delay"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "The amount of data delayed in replication.", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						replicationClientAttrVal, ok := dp.Attributes().Get("replication_client")
+						assert.True(t, ok)
+						assert.Equal(t, "replication_client-val", replicationClientAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.replication.data_delay"], "Found a duplicate in the metrics slice: postgresql.replication.data_delay")
+						validatedMetrics["postgresql.replication.data_delay"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The amount of data delayed in replication.", mi.Description())
+						assert.Equal(t, "By", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.replication.data_delay"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("replication_client")
+						assert.False(t, ok)
+					}
 				case "postgresql.rollbacks":
 					assert.False(t, validatedMetrics["postgresql.rollbacks"], "Found a duplicate in the metrics slice: postgresql.rollbacks")
 					validatedMetrics["postgresql.rollbacks"] = true
@@ -868,82 +1410,219 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.rows":
-					assert.False(t, validatedMetrics["postgresql.rows"], "Found a duplicate in the metrics slice: postgresql.rows")
-					validatedMetrics["postgresql.rows"] = true
-					assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
-					assert.Equal(t, 1, mi.Sum().DataPoints().Len())
-					assert.Equal(t, "The number of rows in the database.", mi.Description())
-					assert.Equal(t, "1", mi.Unit())
-					assert.False(t, mi.Sum().IsMonotonic())
-					assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
-					dp := mi.Sum().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					stateAttrVal, ok := dp.Attributes().Get("state")
-					assert.True(t, ok)
-					assert.Equal(t, "dead", stateAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.rows"], "Found a duplicate in the metrics slice: postgresql.rows")
+						validatedMetrics["postgresql.rows"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						assert.Equal(t, 1, mi.Sum().DataPoints().Len())
+						assert.Equal(t, "The number of rows in the database.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.False(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						stateAttrVal, ok := dp.Attributes().Get("state")
+						assert.True(t, ok)
+						assert.Equal(t, "dead", stateAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.rows"], "Found a duplicate in the metrics slice: postgresql.rows")
+						validatedMetrics["postgresql.rows"] = true
+						assert.Equal(t, pmetric.MetricTypeSum, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Sum().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Sum().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "The number of rows in the database.", mi.Description())
+						assert.Equal(t, "1", mi.Unit())
+						assert.False(t, mi.Sum().IsMonotonic())
+						assert.Equal(t, pmetric.AggregationTemporalityCumulative, mi.Sum().AggregationTemporality())
+						dp := mi.Sum().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.rows"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("state")
+						assert.False(t, ok)
+					}
 				case "postgresql.rows_deleted":
-					assert.False(t, validatedMetrics["postgresql.rows_deleted"], "Found a duplicate in the metrics slice: postgresql.rows_deleted")
-					validatedMetrics["postgresql.rows_deleted"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "Rows deleted by queries in this db, tagged with relation name.", mi.Description())
-					assert.Equal(t, "{row}/s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
-					assert.True(t, ok)
-					assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.rows_deleted"], "Found a duplicate in the metrics slice: postgresql.rows_deleted")
+						validatedMetrics["postgresql.rows_deleted"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Rows deleted by queries in this db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
+						assert.True(t, ok)
+						assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.rows_deleted"], "Found a duplicate in the metrics slice: postgresql.rows_deleted")
+						validatedMetrics["postgresql.rows_deleted"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Rows deleted by queries in this db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.rows_deleted"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("relation_name")
+						assert.False(t, ok)
+					}
 				case "postgresql.rows_fetched":
-					assert.False(t, validatedMetrics["postgresql.rows_fetched"], "Found a duplicate in the metrics slice: postgresql.rows_fetched")
-					validatedMetrics["postgresql.rows_fetched"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "Rows fetched by queries in this db, tagged with relation name.", mi.Description())
-					assert.Equal(t, "{row}/s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
-					assert.True(t, ok)
-					assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.rows_fetched"], "Found a duplicate in the metrics slice: postgresql.rows_fetched")
+						validatedMetrics["postgresql.rows_fetched"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Rows fetched by queries in this db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
+						assert.True(t, ok)
+						assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.rows_fetched"], "Found a duplicate in the metrics slice: postgresql.rows_fetched")
+						validatedMetrics["postgresql.rows_fetched"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Rows fetched by queries in this db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.rows_fetched"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("relation_name")
+						assert.False(t, ok)
+					}
 				case "postgresql.rows_inserted":
-					assert.False(t, validatedMetrics["postgresql.rows_inserted"], "Found a duplicate in the metrics slice: postgresql.rows_inserted")
-					validatedMetrics["postgresql.rows_inserted"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "Rows inserted by queries in the db, tagged with relation name.", mi.Description())
-					assert.Equal(t, "{row}/s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
-					assert.True(t, ok)
-					assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.rows_inserted"], "Found a duplicate in the metrics slice: postgresql.rows_inserted")
+						validatedMetrics["postgresql.rows_inserted"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Rows inserted by queries in the db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
+						assert.True(t, ok)
+						assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.rows_inserted"], "Found a duplicate in the metrics slice: postgresql.rows_inserted")
+						validatedMetrics["postgresql.rows_inserted"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Rows inserted by queries in the db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.rows_inserted"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("relation_name")
+						assert.False(t, ok)
+					}
 				case "postgresql.rows_updated":
-					assert.False(t, validatedMetrics["postgresql.rows_updated"], "Found a duplicate in the metrics slice: postgresql.rows_updated")
-					validatedMetrics["postgresql.rows_updated"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "Rows updated by queries in the db, tagged with relation name.", mi.Description())
-					assert.Equal(t, "{row}/s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
-					assert.True(t, ok)
-					assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.rows_updated"], "Found a duplicate in the metrics slice: postgresql.rows_updated")
+						validatedMetrics["postgresql.rows_updated"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Rows updated by queries in the db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						relationNameAttrVal, ok := dp.Attributes().Get("relation_name")
+						assert.True(t, ok)
+						assert.Equal(t, "relation_name-val", relationNameAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.rows_updated"], "Found a duplicate in the metrics slice: postgresql.rows_updated")
+						validatedMetrics["postgresql.rows_updated"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Rows updated by queries in the db, tagged with relation name.", mi.Description())
+						assert.Equal(t, "{row}/s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.rows_updated"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("relation_name")
+						assert.False(t, ok)
+					}
 				case "postgresql.sequential_scans":
 					assert.False(t, validatedMetrics["postgresql.sequential_scans"], "Found a duplicate in the metrics slice: postgresql.sequential_scans")
 					validatedMetrics["postgresql.sequential_scans"] = true
@@ -1199,41 +1878,99 @@ func TestMetricsBuilder(t *testing.T) {
 					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
 					assert.Equal(t, int64(1), dp.IntValue())
 				case "postgresql.wal.delay":
-					assert.False(t, validatedMetrics["postgresql.wal.delay"], "Found a duplicate in the metrics slice: postgresql.wal.delay")
-					validatedMetrics["postgresql.wal.delay"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.", mi.Description())
-					assert.Equal(t, "s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
-					assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
-					walOperationLagAttrVal, ok := dp.Attributes().Get("operation")
-					assert.True(t, ok)
-					assert.Equal(t, "flush", walOperationLagAttrVal.Str())
-					replicationClientAttrVal, ok := dp.Attributes().Get("replication_client")
-					assert.True(t, ok)
-					assert.Equal(t, "replication_client-val", replicationClientAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.wal.delay"], "Found a duplicate in the metrics slice: postgresql.wal.delay")
+						validatedMetrics["postgresql.wal.delay"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						walOperationLagAttrVal, ok := dp.Attributes().Get("operation")
+						assert.True(t, ok)
+						assert.Equal(t, "flush", walOperationLagAttrVal.Str())
+						replicationClientAttrVal, ok := dp.Attributes().Get("replication_client")
+						assert.True(t, ok)
+						assert.Equal(t, "replication_client-val", replicationClientAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.wal.delay"], "Found a duplicate in the metrics slice: postgresql.wal.delay")
+						validatedMetrics["postgresql.wal.delay"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeDouble, dp.ValueType())
+						switch aggMap["postgresql.wal.delay"] {
+						case "sum":
+							assert.InDelta(t, float64(4), dp.DoubleValue(), 0.01)
+						case "avg":
+							assert.InDelta(t, float64(2), dp.DoubleValue(), 0.01)
+						case "min":
+							assert.InDelta(t, float64(1), dp.DoubleValue(), 0.01)
+						case "max":
+							assert.InDelta(t, float64(3), dp.DoubleValue(), 0.01)
+						}
+						_, ok := dp.Attributes().Get("operation")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("replication_client")
+						assert.False(t, ok)
+					}
 				case "postgresql.wal.lag":
-					assert.False(t, validatedMetrics["postgresql.wal.lag"], "Found a duplicate in the metrics slice: postgresql.wal.lag")
-					validatedMetrics["postgresql.wal.lag"] = true
-					assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
-					assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
-					assert.Equal(t, "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.", mi.Description())
-					assert.Equal(t, "s", mi.Unit())
-					dp := mi.Gauge().DataPoints().At(0)
-					assert.Equal(t, start, dp.StartTimestamp())
-					assert.Equal(t, ts, dp.Timestamp())
-					assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
-					assert.Equal(t, int64(1), dp.IntValue())
-					walOperationLagAttrVal, ok := dp.Attributes().Get("operation")
-					assert.True(t, ok)
-					assert.Equal(t, "flush", walOperationLagAttrVal.Str())
-					replicationClientAttrVal, ok := dp.Attributes().Get("replication_client")
-					assert.True(t, ok)
-					assert.Equal(t, "replication_client-val", replicationClientAttrVal.Str())
+					if tt.name != "reaggregate_set" {
+						assert.False(t, validatedMetrics["postgresql.wal.lag"], "Found a duplicate in the metrics slice: postgresql.wal.lag")
+						validatedMetrics["postgresql.wal.lag"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						assert.Equal(t, 1, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						assert.Equal(t, int64(1), dp.IntValue())
+						walOperationLagAttrVal, ok := dp.Attributes().Get("operation")
+						assert.True(t, ok)
+						assert.Equal(t, "flush", walOperationLagAttrVal.Str())
+						replicationClientAttrVal, ok := dp.Attributes().Get("replication_client")
+						assert.True(t, ok)
+						assert.Equal(t, "replication_client-val", replicationClientAttrVal.Str())
+					} else {
+						assert.False(t, validatedMetrics["postgresql.wal.lag"], "Found a duplicate in the metrics slice: postgresql.wal.lag")
+						validatedMetrics["postgresql.wal.lag"] = true
+						assert.Equal(t, pmetric.MetricTypeGauge, mi.Type())
+						// 2 points: the merged one above, plus one with a different timestamp that must not have merged with it.
+						assert.Equal(t, 2, mi.Gauge().DataPoints().Len())
+						assert.Equal(t, ts+1, mi.Gauge().DataPoints().At(1).Timestamp())
+						assert.Equal(t, "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.", mi.Description())
+						assert.Equal(t, "s", mi.Unit())
+						dp := mi.Gauge().DataPoints().At(0)
+						assert.Equal(t, start, dp.StartTimestamp())
+						assert.Equal(t, ts, dp.Timestamp())
+						assert.Equal(t, pmetric.NumberDataPointValueTypeInt, dp.ValueType())
+						switch aggMap["postgresql.wal.lag"] {
+						case "sum":
+							assert.Equal(t, int64(4), dp.IntValue())
+						case "avg":
+							assert.Equal(t, int64(2), dp.IntValue())
+						case "min":
+							assert.Equal(t, int64(1), dp.IntValue())
+						case "max":
+							assert.Equal(t, int64(3), dp.IntValue())
+						}
+						_, ok := dp.Attributes().Get("operation")
+						assert.False(t, ok)
+						_, ok = dp.Attributes().Get("replication_client")
+						assert.False(t, ok)
+					}
 				case "postgresql.wal.size":
 					assert.False(t, validatedMetrics["postgresql.wal.size"], "Found a duplicate in the metrics slice: postgresql.wal.size")
 					validatedMetrics["postgresql.wal.size"] = true

@@ -14,8 +14,8 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/config/configtls"
+	"go.opentelemetry.io/collector/confmap"
 	"go.opentelemetry.io/collector/confmap/confmaptest"
-	"go.opentelemetry.io/collector/confmap/xconfmap"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver/internal/metadata"
 )
@@ -147,7 +147,7 @@ func TestValidate(t *testing.T) {
 			factory := NewFactory()
 			cfg := factory.CreateDefaultConfig().(*Config)
 			tC.defaultConfigModifier(cfg)
-			actual := xconfmap.Validate(cfg)
+			actual := confmap.Validate(cfg)
 			if len(tC.expected) > 0 {
 				for _, err := range tC.expected {
 					require.ErrorContains(t, actual, err.Error())
@@ -276,7 +276,7 @@ func TestLoadConfig(t *testing.T) {
 		expected.TopQueryCollection.Interval = time.Minute
 
 		require.Equal(t, expected, cfg)
-		require.NoError(t, xconfmap.Validate(cfg))
+		require.NoError(t, confmap.Validate(cfg))
 	})
 
 }

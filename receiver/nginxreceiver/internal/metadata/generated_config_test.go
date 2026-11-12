@@ -300,6 +300,234 @@ func TestNginxConnectionsCurrentMetricsConfig_Validate(t *testing.T) {
 	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
 }
 
+func TestNginxServerZoneReceivedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneReceived
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneReceivedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.received doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneReceived
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxServerZoneResponses1xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneResponses1xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneResponses1xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.responses.1xx doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneResponses1xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxServerZoneResponses2xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneResponses2xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneResponses2xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.responses.2xx doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneResponses2xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxServerZoneResponses3xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneResponses3xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneResponses3xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.responses.3xx doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneResponses3xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxServerZoneResponses4xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneResponses4xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneResponses4xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.responses.4xx doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneResponses4xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxServerZoneResponses5xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneResponses5xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneResponses5xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.responses.5xx doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneResponses5xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxServerZoneSentMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxServerZoneSent
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxServerZoneSentMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.server_zone.sent doesn't have an attribute invalid, valid attributes: [serverzone_name]")
+
+	cfg = DefaultMetricsConfig().NginxServerZoneSent
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersBackupMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersBackup
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersBackupMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.backup doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersBackup
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersHealthChecksLastPassedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersHealthChecksLastPassed
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersHealthChecksLastPassedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.health_checks.last_passed doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersHealthChecksLastPassed
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersReceivedMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersReceived
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersReceivedMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.received doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersReceived
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersRequestsMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersRequests
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersRequestsMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.requests doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersRequests
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersResponseTimeMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersResponseTime
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersResponseTimeMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.response_time doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersResponseTime
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersResponses1xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersResponses1xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersResponses1xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.responses.1xx doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersResponses1xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersResponses2xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersResponses2xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersResponses2xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.responses.2xx doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersResponses2xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersResponses3xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersResponses3xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersResponses3xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.responses.3xx doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersResponses3xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersResponses4xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersResponses4xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersResponses4xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.responses.4xx doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersResponses4xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersResponses5xxMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersResponses5xx
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersResponses5xxMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.responses.5xx doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersResponses5xx
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersSentMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersSent
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersSentMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.sent doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersSent
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
+func TestNginxUpstreamPeersWeightMetricsConfig_Validate(t *testing.T) {
+	cfg := DefaultMetricsConfig().NginxUpstreamPeersWeight
+	require.NoError(t, cfg.Validate())
+
+	cfg.EnabledAttributes = []NginxUpstreamPeersWeightMetricAttributeKey{"invalid"}
+	require.ErrorContains(t, cfg.Validate(), "metric nginx.upstream.peers.weight doesn't have an attribute invalid, valid attributes: [upstream_block_name, upstream_peer_address]")
+
+	cfg = DefaultMetricsConfig().NginxUpstreamPeersWeight
+	cfg.AggregationStrategy = "invalid"
+	require.ErrorContains(t, cfg.Validate(), "invalid aggregation strategy")
+}
+
 func loadMetricsBuilderConfig(t *testing.T, name string) MetricsBuilderConfig {
 	cm, err := confmaptest.LoadConf(filepath.Join("testdata", "config.yaml"))
 	require.NoError(t, err)

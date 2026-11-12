@@ -19,7 +19,7 @@ import (
 
 	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/processor"
-	semconv "go.opentelemetry.io/collector/semconv/v1.5.0"
+	conventions "go.opentelemetry.io/otel/semconv/v1.40.0"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor/internal"
 )
@@ -64,14 +64,14 @@ type cycleServerInfo struct {
 
 type Detector struct{}
 
-func NewDetector(processor.Settings, internal.DetectorConfig) (internal.Detector, error) {
+func NewDetector(processor.Settings, internal.DetectorConfig, bool) (internal.Detector, error) {
 	return &Detector{}, nil
 }
 
 func (d *Detector) Detect(context.Context) (resource pcommon.Resource, schemaURL string, err error) {
 	res := pcommon.NewResource()
 
-	res.Attributes().PutStr(semconv.AttributeOSType, semconv.AttributeOSTypeLinux)
+	res.Attributes().PutStr(string(conventions.OSTypeKey), conventions.OSTypeLinux.Value.AsString())
 	cycleAPIToken := os.Getenv(cycleAPITokenEnvVar)
 	if cycleAPIToken != "" {
 		serverInfo, err := getServerInfo(cycleAPIToken)
@@ -80,12 +80,12 @@ func (d *Detector) Detect(context.Context) (resource pcommon.Resource, schemaURL
 		}
 		data := serverInfo.Data
 
-		res.Attributes().PutStr(semconv.AttributeCloudProvider, getCloudProvider(data.Provider.Vendor))
-		res.Attributes().PutStr(semconv.AttributeCloudRegion, data.Provider.Location)
-		res.Attributes().PutStr(semconv.AttributeCloudAvailabilityZone, data.Provider.Zone)
-		res.Attributes().PutStr(semconv.AttributeHostID, data.ID)
-		res.Attributes().PutStr(semconv.AttributeHostName, data.Hostname)
-		res.Attributes().PutStr(semconv.AttributeHostType, data.Provider.Model)
+		res.Attributes().PutStr(string(conventions.CloudProviderKey), getCloudProvider(data.Provider.Vendor))
+		res.Attributes().PutStr(string(conventions.CloudRegionKey), data.Provider.Location)
+		res.Attributes().PutStr(string(conventions.CloudAvailabilityZoneKey), data.Provider.Zone)
+		res.Attributes().PutStr(string(conventions.HostIDKey), data.ID)
+		res.Attributes().PutStr(string(conventions.HostNameKey), data.Hostname)
+		res.Attributes().PutStr(string(conventions.HostTypeKey), data.Provider.Model)
 		res.Attributes().PutEmptySlice("host.ip").FromRaw(data.Provider.InitIPs)
 
 		res.Attributes().PutStr("cycle.cluster.id", data.Cluster)
@@ -95,20 +95,20 @@ func (d *Detector) Detect(context.Context) (resource pcommon.Resource, schemaURL
 		if vendor == "" {
 			vendor = "unknown"
 		}
-		res.Attributes().PutStr(semconv.AttributeCloudProvider, getCloudProvider(vendor))
+		res.Attributes().PutStr(string(conventions.CloudProviderKey), getCloudProvider(vendor))
 
 		region := os.Getenv(providerLocation)
 		if region == "" {
 			region = "unknown"
 		}
-		res.Attributes().PutStr(semconv.AttributeCloudRegion, region)
+		res.Attributes().PutStr(string(conventions.CloudRegionKey), region)
 
 		hostID := os.Getenv(hostnameEnvVar)
 		if hostID == "" {
 			hostID = "cycleio-server"
 		}
-		res.Attributes().PutStr(semconv.AttributeHostID, hostID)
-		res.Attributes().PutStr(semconv.AttributeHostName, hostID)
+		res.Attributes().PutStr(string(conventions.HostIDKey), hostID)
+		res.Attributes().PutStr(string(conventions.HostNameKey), hostID)
 
 		cluster := os.Getenv(clusterEnvVar)
 		if cluster == "" {
@@ -123,11 +123,11 @@ func (d *Detector) Detect(context.Context) (resource pcommon.Resource, schemaURL
 func getCloudProvider(provider string) string {
 	switch provider {
 	case "aws":
-		return semconv.AttributeCloudProviderAWS
+		return conventions.CloudProviderAWS.Value.AsString()
 	case "gcp":
-		return semconv.AttributeCloudProviderGCP
+		return conventions.CloudProviderGCP.Value.AsString()
 	case "azure":
-		return semconv.AttributeCloudProviderAzure
+		return conventions.CloudProviderAzure.Value.AsString()
 	default:
 		return provider
 	}

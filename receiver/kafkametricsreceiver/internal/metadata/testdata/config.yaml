@@ -51,6 +51,8 @@ all_set:
   resource_attributes:
     kafka.cluster.alias:
       enabled: true
+    kafka.cluster.id:
+      enabled: true
     runtime.metrics.kafka:
       enabled: true
 reaggregate_set:
@@ -104,6 +106,8 @@ reaggregate_set:
       attributes: []
   resource_attributes:
     kafka.cluster.alias:
+      enabled: true
+    kafka.cluster.id:
       enabled: true
     runtime.metrics.kafka:
       enabled: true
@@ -159,11 +163,17 @@ none_set:
   resource_attributes:
     kafka.cluster.alias:
       enabled: false
+    kafka.cluster.id:
+      enabled: false
     runtime.metrics.kafka:
       enabled: false
 filter_set_include:
   resource_attributes:
     kafka.cluster.alias:
+      enabled: true
+      metrics_include:
+        - regexp: ".*"
+    kafka.cluster.id:
       enabled: true
       metrics_include:
         - regexp: ".*"
@@ -177,6 +187,10 @@ filter_set_exclude:
       enabled: true
       metrics_exclude:
         - strict: "kafka.cluster.alias-val"
+    kafka.cluster.id:
+      enabled: true
+      metrics_exclude:
+        - strict: "kafka.cluster.id-val"
     runtime.metrics.kafka:
       enabled: true
       metrics_exclude:

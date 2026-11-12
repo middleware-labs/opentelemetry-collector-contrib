@@ -39,7 +39,7 @@ func createDefaultConfig() component.Config {
 			Endpoint:  "localhost:3306",
 			Transport: confignet.TransportTypeTCP,
 		},
-		MetricsBuilderConfig: metadata.DefaultMetricsBuilderConfig(),
+		MetricsBuilderConfig: metadata.NewDefaultMetricsBuilderConfig(),
 		StatementEvents: StatementEventsConfig{
 			DigestTextLimit: defaultStatementEventsDigestTextLimit,
 			Limit:           defaultStatementEventsLimit,
@@ -76,7 +76,7 @@ func createMetricsReceiver(
 
 	return scraperhelper.NewMetricsController(
 		&cfg.ControllerConfig, params, consumer,
-		scraperhelper.AddScraper(metadata.Type, s),
+		scraperhelper.AddMetricsScraper(metadata.Type, s),
 	)
 }
 

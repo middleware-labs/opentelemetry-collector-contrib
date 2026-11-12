@@ -28,6 +28,13 @@ func (rb *ResourceBuilder) SetKafkaClusterAlias(val string) {
 	}
 }
 
+// SetKafkaClusterID sets provided value as "kafka.cluster.id" attribute.
+func (rb *ResourceBuilder) SetKafkaClusterID(val string) {
+	if rb.config.KafkaClusterID.Enabled {
+		rb.res.Attributes().PutStr("kafka.cluster.id", val)
+	}
+}
+
 // SetRuntimeMetricsKafka sets provided value as "runtime.metrics.kafka" attribute.
 func (rb *ResourceBuilder) SetRuntimeMetricsKafka(val string) {
 	if rb.config.RuntimeMetricsKafka.Enabled {

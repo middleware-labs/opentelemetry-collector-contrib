@@ -8,6 +8,11 @@ resources:
         - name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/apachereceiver
           version: latest
           metrics:
+            - name: apache.bytes_per_sec
+              type: sum
+              unit: '{bytes/second}'
+              temporality: cumulative
+              monotonic: true
             - name: apache.connections.async
               type: gauge
               unit: '{connections}'
@@ -53,6 +58,9 @@ resources:
             - name: apache.load.5
               type: gauge
               unit: '%'
+            - name: apache.max_workers
+              type: gauge
+              unit: '{thread}'
             - name: apache.request.time
               type: sum
               unit: ms
@@ -61,6 +69,11 @@ resources:
             - name: apache.requests
               type: sum
               unit: '{requests}'
+              temporality: cumulative
+              monotonic: true
+            - name: apache.requests_per_sec
+              type: sum
+              unit: '{request/second}'
               temporality: cumulative
               monotonic: true
             - name: apache.scoreboard
